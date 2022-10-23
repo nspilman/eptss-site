@@ -17,7 +17,7 @@
   height:100%;
   width:100%;
   margin:0;
-  background: linear-gradient(var(--darkbluehero), var(--darkbluehero)), url('./img/adrian-korte-5gn2soeAc40-unsplash.jpg') center center / cover no-repeat;
+  background: linear-gradient(var(--darkbluehero), var(--darkbluehero)), url('https://images.unsplash.com/photo-1458560871784-56d23406c091?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80') center center / cover no-repeat;
   background-attachment: fixed;
   color: white;
   font-size: 1rem;
