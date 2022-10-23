@@ -1,4 +1,4 @@
-import type { GetStaticProps, NextPage, InferGetStaticPropsType } from "next";
+import type { GetStaticProps } from "next";
 import { Homepage } from "../components/Homepage";
 import { RoundDetails } from "../types";
 
