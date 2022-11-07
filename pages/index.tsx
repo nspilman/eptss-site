@@ -23,10 +23,10 @@ export const getStaticProps: GetStaticProps = async () => {
   const body = await response.json();
   const { signupSheet, mailingList, blurb } = await body;
 
-  const supabaseUrl = "https://tnmvxyuawoxbvxvegylr.supabase.co";
+  const supabaseUrl = process.env.DB_SERVER;
   const supabaseKey = process.env.SUPABASE_KEY;
 
-  const supabase = createClient(supabaseUrl, supabaseKey || "");
+  const supabase = createClient(supabaseUrl || "", supabaseKey || "");
 
   interface RoundEntity {
     title: string;
