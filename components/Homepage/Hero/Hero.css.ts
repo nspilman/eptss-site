@@ -1,9 +1,17 @@
 /* HERO STYLES */
 
 import { style } from "@vanilla-extract/css";
+import { mobileBreakpoint, titleFont } from "../../../styles/theme.css";
 
 export const title = style({
-  fontFamily: "'Rock Salt', sans-serif",
+  fontFamily: titleFont,
+  fontSize: "48px",
+  fontWeight: 300,
+  "@media": {
+    [mobileBreakpoint]: {
+      fontSize: "24px",
+    },
+  },
 });
 
 export const hero = style({
@@ -26,4 +34,5 @@ export const container = style({
 
 export const text = style({
   margin: "auto",
+  paddingBottom: "32px",
 });

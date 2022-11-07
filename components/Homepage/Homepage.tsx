@@ -1,8 +1,8 @@
 import { RoundDetails } from "../../types";
 import { Footer } from "./Footer";
-import { Header } from "./Header";
 import { Hero } from "./Hero";
 import { Main } from "./Main";
+import Head from "next/head";
 
 interface Props {
   signupSheet: string;
@@ -19,7 +19,9 @@ export const Homepage = ({
 }: Props) => {
   return (
     <>
-      <Header />
+      <Head>
+        <title>Home | Everyone Plays the Same Song</title>
+      </Head>
       <Hero />
       <Main blurb={blurb} roundContent={roundContent} />
       <Footer />

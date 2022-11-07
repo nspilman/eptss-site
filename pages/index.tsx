@@ -2,6 +2,8 @@ import type { GetStaticProps } from "next";
 import { Homepage } from "../components/Homepage";
 import { RoundDetails } from "../types";
 
+import { createClient } from "@supabase/supabase-js";
+
 interface Props {
   signupSheet: string;
   mailingList: string;
@@ -19,21 +21,36 @@ export const getStaticProps: GetStaticProps = async () => {
   );
 
   const body = await response.json();
-  const { Round, signupSheet, mailingList, blurb } = await body;
-  const currentRound = JSON.parse(await Round);
+  const { signupSheet, mailingList, blurb } = await body;
 
-  const roundContent = [];
-  for (let i = currentRound; i > 0; i--) {
-    try {
-      const roundReponse = await fetch(
-        `https://pioneer-django.herokuapp.com/eptss/${i}`
-      );
-      const body = await roundReponse.json();
-      roundContent.push(body[0]);
-    } catch (e) {
-      console.log({ e });
-    }
+  const supabaseUrl = "https://tnmvxyuawoxbvxvegylr.supabase.co";
+  const supabaseKey = process.env.SUPABASE_KEY;
+
+  const supabase = createClient(supabaseUrl, supabaseKey || "");
+
+  interface RoundEntity {
+    title: string;
+    artist: string;
+    playlist_url: string;
+    id: string;
   }
+
+  const { data, error } = await supabase
+    .from("round_metadata")
+    .select("*")
+    .order("id", { ascending: false });
+  if (error) {
+    throw new Error(JSON.stringify(error));
+  }
+
+  const roundContent = data?.map(
+    ({ title, artist, playlist_url, id }: RoundEntity) => ({
+      title,
+      artist,
+      round: id,
+      playlist: playlist_url,
+    })
+  );
 
   return {
     props: {
