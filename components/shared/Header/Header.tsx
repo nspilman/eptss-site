@@ -1,12 +1,11 @@
 import Link from "next/link";
 import React, { ReactElement } from "react";
-import { useGetSignupLink } from "../../../hooks/useGetSignupLink";
+import { useNavOptions } from "../../../hooks/useNavOptions";
+import { SignupButton } from "../../Homepage/SignupButton";
 import * as styles from "./Header.css";
 
-const learnMoreLink = "/how-it-works";
-
 export const Header = (): ReactElement => {
-  const signupLink = useGetSignupLink();
+  const { howItWorks } = useNavOptions();
 
   return (
     <header id="header" className={styles.header}>
@@ -14,12 +13,10 @@ export const Header = (): ReactElement => {
         <span className={styles.titleText}>Everyone Plays the Same Song</span>
       </Link>
       <div className={styles.navButtons}>
-        <Link href={learnMoreLink}>
+        <Link href={howItWorks}>
           <button>The rules</button>
         </Link>
-        <Link href={signupLink}>
-          <button className={styles.removeAtTabletWidth}>Sign up</button>
-        </Link>
+        <SignupButton />
       </div>
     </header>
   );

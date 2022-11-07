@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GENERAL_INFO_SLUG } from "../../../constants";
+import { useNavOptions } from "../../../hooks/useNavOptions";
 import { centered } from "../../../styles/theme.css";
 import { RoundDetails } from "../../../types";
 import { SignupButton } from "../SignupButton";
@@ -29,6 +29,7 @@ interface Props {
 }
 
 export const Main = ({ blurb, roundContent }: Props) => {
+  const { howItWorks } = useNavOptions();
   return (
     <main className="main">
       <div className={styles.container}>
@@ -47,7 +48,7 @@ export const Main = ({ blurb, roundContent }: Props) => {
           </div>
           <p className={styles.howItWorksText}>{blurb}</p>
           <div className={centered}>
-            <Link href={GENERAL_INFO_SLUG} id="learn">
+            <Link href={howItWorks} id="learn">
               <button>Learn More</button>
             </Link>
             <button>

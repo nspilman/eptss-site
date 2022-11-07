@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { GENERAL_INFO_SLUG } from "../../../constants";
+import { useNavOptions } from "../../../hooks/useNavOptions";
 import { centered } from "../../../styles/theme.css";
 import { SignupButton } from "../SignupButton";
 import * as styles from "./Hero.css";
 
 export const Hero = () => {
+  const { howItWorks } = useNavOptions();
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
@@ -16,7 +17,7 @@ export const Hero = () => {
           join us for the next round.
         </p>
         <div className={centered}>
-          <Link href={GENERAL_INFO_SLUG}>
+          <Link href={howItWorks}>
             <button>Learn</button>
           </Link>
           <Link href="/#listen">
