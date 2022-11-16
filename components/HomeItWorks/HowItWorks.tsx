@@ -1,13 +1,9 @@
-import Head from "next/head";
 import React from "react";
-import * as styles from "./HowItWorks.styles.css";
+import { PageContainer } from "../shared/PageContainer/PageContainer";
 
 export const HowItWorks = () => (
-  <div className={styles.container}>
-    <Head>
-      <title>How it works | Everyone Plays the Same Song</title>
-    </Head>
-    <div className={styles.body}>
+  <PageContainer title="How it works | Everyone Plays the Same Song">
+    <>
       <h2>Project Details</h2>
       <p>
         {`I present, Everyone Plays the Same Song - a covers project. The way it
@@ -65,6 +61,6 @@ export const HowItWorks = () => (
       with everyone's versions, which we'll all listen to together at a
       post-submission listening party. Thanks for being involved, Nate`}
       </p>
-    </div>
-  </div>
+    </>
+  </PageContainer>
 );

@@ -1,5 +1,5 @@
 export const useNavOptions = () => {
   const howItWorks = "/how-it-works";
-  const signUp = "https://forms.gle/uEfQrkmMQvSBnzqQ9";
+  const signUp = "/sign-up";
   return { howItWorks, signUp };
 };

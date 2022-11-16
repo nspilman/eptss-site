@@ -1,16 +1,13 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Header } from "../components/shared/Header";
-import * as styles from "./_app.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <body className={styles.body}>
+    <div>
       <Header />
-      <div>
-        <Component {...pageProps} />
-      </div>
-    </body>
+      <Component {...pageProps} />
+    </div>
   );
 }
 

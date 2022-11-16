@@ -1,0 +1,47 @@
+import { style } from "@vanilla-extract/css";
+import { colors } from "../../../../styles/theme.css";
+
+export const container = style({
+  backgroundColor: colors.lightgray,
+  display: "flex",
+  flexDirection: "column",
+  borderRadius: "1rem",
+  padding: "1rem",
+  margin: ".5rem",
+  flexBasis: "auto",
+  boxSizing: "border-box",
+});
+
+export const small = style({
+  flexGrow: 1,
+});
+
+export const large = style({
+  flex: "0 0 98%",
+  minWidth: "275px",
+});
+
+export const label = style({
+  fontSize: ".75rem",
+  paddingBottom: ".25rem",
+  color: colors.grayblue,
+});
+
+export const errorMessage = style({
+  fontSize: ".75rem",
+  color: colors.grayblue,
+  "::before": {
+    content: " *",
+    color: "red",
+  },
+});
+
+export const input = style({
+  border: "none",
+  borderRadius: ".5rem",
+  padding: ".5rem",
+});
+
+export const errorContainer = style({
+  height: "1rem",
+});

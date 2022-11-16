@@ -5,8 +5,7 @@ export const container = style({
 });
 
 export const body = style({
-  padding: "32px",
-  marginTop: "32px",
+  padding: "64px 32px",
   display: "flex",
   flexWrap: "wrap",
   flexDirection: "column",

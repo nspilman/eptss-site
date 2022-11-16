@@ -23,8 +23,8 @@ export const getStaticProps: GetStaticProps = async () => {
   const body = await response.json();
   const { signupSheet, mailingList, blurb } = await body;
 
-  const supabaseUrl = process.env.DB_SERVER;
-  const supabaseKey = process.env.SUPABASE_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_DB_SERVER;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
 
   const supabase = createClient(supabaseUrl || "", supabaseKey || "");
 
