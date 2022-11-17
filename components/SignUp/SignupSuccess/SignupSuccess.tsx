@@ -7,7 +7,7 @@ export const SignupSuccess = () => {
         Thank you for signing up for this round of Everyone Plays the Same Song!
       </h2>
       <p>
-        You will get a welcome email with all the information and dates you'll
+        You will get a welcome email with all the information and dates you will
         need
       </p>
     </div>
