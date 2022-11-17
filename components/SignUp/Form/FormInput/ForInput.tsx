@@ -38,7 +38,7 @@ export const FormInput = ({
         className={styles.input}
         type={type}
         placeholder={placeholder}
-        {...register(field, { required, maxLength: 30 })}
+        {...register(field, { required, maxLength: 300 })}
       />
       <div className={styles.errorContainer}>
         {errors[field] && (
