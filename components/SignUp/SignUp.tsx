@@ -5,17 +5,15 @@ import { Form } from "./Form";
 import { SignupEntity, SignupModel } from "./types";
 import * as styles from "./Signup.css";
 import { SignupSuccess } from "./SignupSuccess";
+import { useSupabase } from "../../hooks/useSupabaseClient";
 export const SignUp = () => {
   const currentRound = 16;
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_DB_SERVER;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
-
-  const supabase = createClient(supabaseUrl || "", supabaseKey || "");
 
   const [signupSubmissionResponse, setSignupSubmissionResponse] = useState<
     "success" | "error"
   >();
+
+  const supabase = useSupabase();
 
   const onSubmit = async (signupModel: SignupModel) => {
     const signupEntity = convertModelToEntity(signupModel);
@@ -57,7 +55,7 @@ export const SignUp = () => {
           <SignupSuccess />
         )}
         {signupSubmissionResponse === "error" &&
-          "An error has occurred. Please try again and/or hit Nate up"}
+          "An error has occurred. Please try again and/or hit Nate up."}
       </div>
     </PageContainer>
   );

@@ -1,4 +1,6 @@
 import * as styles from "./SignupAccess.css";
+import Image from "next/image";
+import Link from "next/link";
 
 export const SignupSuccess = () => {
   return (
@@ -8,8 +10,19 @@ export const SignupSuccess = () => {
       </h2>
       <p>
         You will get a welcome email with all the information and dates you will
-        need
+        need.
       </p>
+      <Image
+        className={styles.image}
+        src={"/welcomeImage.png"}
+        alt={"Welcome to Everyone Plays the Same Song!"}
+        width={500}
+        height={500}
+      />
+      <p>Thanks for participating</p>
+      <Link href="/#listen">
+        <button>Home</button>
+      </Link>
     </div>
   );
 };

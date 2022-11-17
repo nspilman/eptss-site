@@ -59,7 +59,7 @@ export const Main = ({ blurb, roundContent }: Props) => {
         </div>
         <div className={styles.cardHeader}>
           <h2>
-            <a id="listen">Community Covers</a>
+            <a id="listen">The Playlists!</a>
           </h2>
           <hr />
         </div>
