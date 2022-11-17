@@ -14,6 +14,7 @@ export const container = style({
 
 export const small = style({
   flexGrow: 1,
+  minWidth: "250px",
 });
 
 export const large = style({

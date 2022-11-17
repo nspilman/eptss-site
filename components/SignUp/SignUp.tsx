@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import { PageContainer } from "../shared/PageContainer/PageContainer";
 import { Form } from "./Form";
 import { SignupEntity, SignupModel } from "./types";

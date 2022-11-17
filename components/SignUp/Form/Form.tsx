@@ -2,8 +2,7 @@ import { useForm } from "react-hook-form";
 import * as styles from "./Form.css";
 import React from "react";
 import { FormInput } from "./FormInput/ForInput";
-import { createClient } from "@supabase/supabase-js";
-import { SignupEntity, SignupModel } from "../types";
+import { SignupModel } from "../types";
 import Link from "next/link";
 import { useNavOptions } from "../../../hooks/useNavOptions";
 
@@ -32,7 +31,7 @@ export const Form = ({ onSubmit, roundId }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        {/* TODO - this should be outside the form */}
+      {/* TODO - this should be outside the form */}
       <h1 className={styles.title}>
         Sign Up for Everyone Plays the Same Song round {roundId}!
       </h1>
