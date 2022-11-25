@@ -44,8 +44,8 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       voteOptions,
       roundId,
-      notFound: process.env.NODE_ENV === "production",
     },
+    notFound: process.env.NODE_ENV === "production",
   };
 };
 
