@@ -31,6 +31,12 @@ export const SignupForm = ({ onSubmit, roundId }: Props) => {
       size: "large" as const,
     },
     {
+      label: "Youtube link",
+      placeholder: "Youtube link",
+      field: "youtubeLink" as const,
+      size: "large" as const,
+    },
+    {
       label: "Additional Comments",
       placeholder: "Additional Comments",
       field: "additionalComments" as const,
