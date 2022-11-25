@@ -2,7 +2,7 @@ import classnames from "classnames";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
 import * as styles from "./InputField.css";
-import { getFieldErrorId } from "./testUtils";
+import { getFieldErrorId, getFieldTestId } from "./testUtils";
 import { TextInput } from "./TextInput";
 import { VoteInput } from "./VoteInput";
 
@@ -24,6 +24,7 @@ export function InputField<T extends FieldValues>({
         styles.container,
         size === "small" ? styles.small : styles.large
       )}
+      data-testid={getFieldTestId(field.field, type)}
     >
       {type === "vote" ? (
         <VoteInput register={register} label={label} field={fieldId} />

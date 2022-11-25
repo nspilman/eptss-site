@@ -42,9 +42,11 @@ export const getStaticProps: GetStaticProps = async () => {
   }
 
   const voteOptions =
-    resultEntities?.map((result) => {
-      return result && entityToModel(result as VoteOptionEntity);
-    }) || [];
+    resultEntities
+      ?.filter((result) => result.song_id)
+      .map((result) => {
+        return result && entityToModel(result as VoteOptionEntity);
+      }) || [];
 
   return {
     props: {
@@ -64,7 +66,7 @@ const entityToModel = ({
 }: VoteOptionEntity): VoteOptionModel => {
   const { artist, title } = song;
   if (!artist || !title) {
-    // throw new Error("artist or title is null");
+    throw new Error("artist or title is null");
   }
   return {
     artist,

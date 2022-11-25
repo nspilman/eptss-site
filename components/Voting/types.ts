@@ -11,6 +11,8 @@ export interface VoteOptionEntity {
     title: string;
     artist: string;
   };
+  song_title: string;
+  artist: string;
   song_id: number;
   round_id: string;
 }

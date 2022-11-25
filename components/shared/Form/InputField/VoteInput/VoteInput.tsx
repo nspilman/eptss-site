@@ -1,6 +1,5 @@
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import * as inputStyles from "../InputField.css";
-import { getFieldTestId } from "../testUtils";
 import * as styles from "./VoteInput.css";
 
 interface Props<T extends FieldValues> {
@@ -17,7 +16,7 @@ export function VoteInput<T extends FieldValues>({
   optional,
 }: Props<T>) {
   return (
-    <div data-testid={getFieldTestId(field, "vote")}>
+    <>
       <label className={inputStyles.label}>{label}</label>
       <div className={styles.voteOptions}>
         {["1", "2", "3", "4", "5"].map((value, i) => (
@@ -32,6 +31,6 @@ export function VoteInput<T extends FieldValues>({
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }
