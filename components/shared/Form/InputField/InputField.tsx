@@ -2,6 +2,7 @@ import classnames from "classnames";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
 import * as styles from "./InputField.css";
+import { getFieldErrorId } from "./testUtils";
 import { TextInput } from "./TextInput";
 import { VoteInput } from "./VoteInput";
 
@@ -37,7 +38,12 @@ export function InputField<T extends FieldValues>({
       )}
       <div className={styles.errorContainer}>
         {errors[fieldId] && (
-          <span className={styles.errorMessage}>This field is required</span>
+          <span
+            data-testid={getFieldErrorId(fieldId)}
+            className={styles.errorMessage}
+          >
+            This field is required
+          </span>
         )}
       </div>
     </div>

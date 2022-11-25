@@ -40,7 +40,9 @@ export function Form<T extends FieldValues>({
           );
         })}
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" data-testid="form-submission">
+        Submit
+      </button>
     </form>
   );
 }

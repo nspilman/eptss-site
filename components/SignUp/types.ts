@@ -1,12 +1,3 @@
-export enum FormField {
-  Email = "email",
-  Name = "name",
-  SongTitle = "songTitle",
-  Artist = "artist",
-  YoutubeLink = "youtubeLink",
-  AdditionalComments = "additionalComments",
-}
-
 export interface SignupModel {
   createdAt: string;
   email: string;

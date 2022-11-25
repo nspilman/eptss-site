@@ -7,13 +7,17 @@ interface Props {
   successState?: "success" | "error";
 }
 
-export const FormContainer = ({ form, successBlock, successState }: Props) => {
+export const FormContainer = ({
+  form,
+  successBlock,
+  successState,
+  errorMessage,
+}: Props) => {
   return (
     <div className={styles.formWrapper}>
       <>
         {successState !== "success" ? form : successBlock}
-        {successState === "error" &&
-          "An error has occurred. Please try again and/or hit Nate up."}
+        {successState === "error" && errorMessage}
       </>
     </div>
   );
