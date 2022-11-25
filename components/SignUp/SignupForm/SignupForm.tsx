@@ -41,6 +41,7 @@ export const SignupForm = ({ onSubmit, roundId }: Props) => {
       placeholder: "Additional Comments",
       field: "additionalComments" as const,
       size: "large" as const,
+      optional: true,
     },
   ];
 
