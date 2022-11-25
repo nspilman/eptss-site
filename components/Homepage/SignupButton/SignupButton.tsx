@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement } from "react";
-import { useNavOptions } from "../../../hooks/useNavOptions";
+import { useNavOptions } from "../../hooks/useNavOptions";
 import * as styles from "./SignupButton.css";
 
 export const SignupButton = (): ReactElement => {

@@ -2,7 +2,7 @@ import React from "react";
 import { Form } from "../../shared/Form/Form";
 import { SignupModel } from "../types";
 import Link from "next/link";
-import { useNavOptions } from "../../../hooks/useNavOptions";
+import { useNavOptions } from "../../hooks/useNavOptions";
 import { yourEmail, yourName } from "../../shared/Form/fieldValues";
 
 interface Props {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement } from "react";
-import { useNavOptions } from "../../../hooks/useNavOptions";
+import { useNavOptions } from "../../hooks/useNavOptions";
 import { SignupButton } from "../../Homepage/SignupButton";
 import * as styles from "./Header.css";
 

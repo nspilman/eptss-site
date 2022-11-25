@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useNavOptions } from "../../../hooks/useNavOptions";
+import { useNavOptions } from "../../hooks/useNavOptions";
 import { centered } from "../../../styles/theme.css";
 import { SignupButton } from "../SignupButton";
 import * as styles from "./Hero.css";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useNavOptions } from "../../../hooks/useNavOptions";
+import { useNavOptions } from "../../hooks/useNavOptions";
 import { centered } from "../../../styles/theme.css";
 import { RoundDetails } from "../../../types";
 import { SignupButton } from "../SignupButton";

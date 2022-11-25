@@ -1,6 +1,6 @@
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
-import { useSuccessState } from "../../hooks/useSuccessState";
-import { useSupabase } from "../../hooks/useSupabaseClient";
+import { useSuccessState } from "../hooks/useSuccessState";
+import { useSupabase } from "../hooks/useSupabaseClient";
 import { getIsSuccess } from "../../utils/utils";
 import { Form } from "../shared/Form";
 import { yourName, yourEmail } from "../shared/Form/fieldValues";
