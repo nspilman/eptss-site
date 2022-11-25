@@ -3,6 +3,7 @@ import { Homepage } from "../components/Homepage";
 import { RoundDetails } from "../types";
 
 import { createClient } from "@supabase/supabase-js";
+import { getSupabaseClient } from "../utils/getSupabaseClient";
 
 interface Props {
   signupSheet: string;
@@ -23,17 +24,14 @@ export const getStaticProps: GetStaticProps = async () => {
   const body = await response.json();
   const { signupSheet, mailingList, blurb } = await body;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_DB_SERVER;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY;
-
-  const supabase = createClient(supabaseUrl || "", supabaseKey || "");
-
   interface RoundEntity {
     title: string;
     artist: string;
     playlist_url: string;
     id: string;
   }
+
+  const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
     .from("round_metadata")

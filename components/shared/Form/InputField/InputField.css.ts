@@ -37,12 +37,6 @@ export const errorMessage = style({
   },
 });
 
-export const input = style({
-  border: "none",
-  borderRadius: ".5rem",
-  padding: ".5rem",
-});
-
 export const errorContainer = style({
   height: "1rem",
 });
