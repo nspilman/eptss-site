@@ -12,8 +12,6 @@ interface Props {
 }
 
 export const Homepage = ({
-  signupSheet,
-  mailingList,
   blurb,
   roundContent,
 }: Props) => {

@@ -6,4 +6,5 @@ export const formWrapper = style({
   alignItems: "center",
   justifyContent: "center",
   paddingTop: "2rem",
+  flexDirection: "column",
 });
