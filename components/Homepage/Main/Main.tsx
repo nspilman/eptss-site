@@ -63,9 +63,11 @@ export const Main = ({ blurb, roundContent }: Props) => {
           </h2>
           <hr />
         </div>
-        {roundContent.map((round) => {
-          return <RoundDisplay key={round.round} round={round} />;
-        })}
+        {roundContent
+          .filter((round) => round.title)
+          .map((round) => {
+            return <RoundDisplay key={round.round} round={round} />;
+          })}
       </div>
     </main>
   );

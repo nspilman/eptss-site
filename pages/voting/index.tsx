@@ -6,6 +6,8 @@ import {
 } from "../../components/Voting/types";
 import { Voting } from "../../components/Voting";
 import { getSupabaseClient } from "../../utils/getSupabaseClient";
+import { getCurrentRound } from "../../components/shared/queries";
+import { getIsSuccess } from "../../utils/utils";
 
 const VotingPage = ({
   voteOptions,
@@ -16,7 +18,11 @@ const VotingPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
-  const roundId = 16;
+  const { roundId, status } = await getCurrentRound(supabase);
+  if (!getIsSuccess(status)) {
+    throw new Error("failed to get RoundId");
+  }
+
   const { data: resultEntities, error } = await supabase
     .from("sign_ups")
     .select(
@@ -29,7 +35,7 @@ export const getStaticProps: GetStaticProps = async () => {
       )
   `
     )
-    .eq("round_id", 16);
+    .eq("round_id", roundId);
 
   if (error) {
     throw new Error(JSON.stringify(error));
@@ -58,7 +64,7 @@ const entityToModel = ({
 }: VoteOptionEntity): VoteOptionModel => {
   const { artist, title } = song;
   if (!artist || !title) {
-    throw new Error("artist or title is null");
+    // throw new Error("artist or title is null");
   }
   return {
     artist,

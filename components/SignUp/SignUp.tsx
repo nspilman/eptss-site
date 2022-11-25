@@ -8,9 +8,12 @@ import { useSuccessState } from "../hooks/useSuccessState";
 import { FormContainer } from "../shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { getIsSuccess } from "../../utils/utils";
-export const SignUp = () => {
-  const currentRound = 16;
 
+interface Props {
+  roundId: number;
+}
+
+export const SignUp = ({ roundId }: Props) => {
   const [successState, setSuccessState] = useSuccessState();
 
   const supabase = useSupabase();
@@ -37,15 +40,15 @@ export const SignUp = () => {
       song_title: songTitle,
       youtube_link: youtubeLink,
       additional_comments: additionalComments,
-      round_id: currentRound,
+      round_id: roundId,
       created_at: createdAt,
     };
   };
 
   return (
-    <PageContainer title={`Sign up for round ${currentRound}`}>
+    <PageContainer title={`Sign up for round ${roundId}`}>
       <FormContainer
-        form={<SignupForm onSubmit={onSubmit} roundId={currentRound} />}
+        form={<SignupForm onSubmit={onSubmit} roundId={roundId} />}
         successBlock={<SignupSuccess />}
         errorMessage={GENERIC_ERROR_MESSAGE}
         successState={successState}
