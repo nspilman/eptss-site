@@ -8,8 +8,8 @@ export interface SignupModel {
   additionalComments: string;
 }
 
-export interface SignupEntity
-  extends Pick<SignupModel, "name" | "email" | "artist"> {
+export interface SignupEntity extends Pick<SignupModel, "name" | "email"> {
+  artist_name: string;
   created_at: string;
   song_title: string;
   youtube_link: string;

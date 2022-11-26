@@ -20,7 +20,7 @@ export const SignUp = ({ roundId }: Props) => {
 
   const onSubmit = async (signupModel: SignupModel) => {
     const signupEntity = convertModelToEntity(signupModel);
-    const { status } = await supabase.from("sign_ups").insert(signupEntity);
+    const { status } = await supabase.rpc("signup", signupEntity);
     setSuccessState(getIsSuccess(status) ? "success" : "error");
   };
 
@@ -36,7 +36,7 @@ export const SignUp = ({ roundId }: Props) => {
     return {
       email,
       name,
-      artist,
+      artist_name: artist,
       song_title: songTitle,
       youtube_link: youtubeLink,
       additional_comments: additionalComments,
