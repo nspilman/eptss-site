@@ -7,7 +7,7 @@ export const form = style({
   display: "flex",
   borderRadius: "20px",
   boxSizing: "border-box",
-  padding: "20px",
+  padding: "2rem 3rem",
   flexDirection: "column",
 });
 

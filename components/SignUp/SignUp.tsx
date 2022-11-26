@@ -1,13 +1,11 @@
 import React from "react";
 import { PageContainer } from "../shared/PageContainer";
 import { SignupForm } from "./SignupForm";
-import { SignupEntity, SignupModel } from "./types";
 import { SignupSuccess } from "./SignupSuccess";
-import { useSupabase } from "../hooks/useSupabaseClient";
 import { useSuccessState } from "../hooks/useSuccessState";
-import { FormContainer } from "../shared/FormContainer";
+import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
-import { getIsSuccess } from "../../utils/utils";
+import { useSignup } from "./useSignup";
 
 interface Props {
   roundId: number;
@@ -16,39 +14,12 @@ interface Props {
 export const SignUp = ({ roundId }: Props) => {
   const [successState, setSuccessState] = useSuccessState();
 
-  const supabase = useSupabase();
-
-  const onSubmit = async (signupModel: SignupModel) => {
-    const signupEntity = convertModelToEntity(signupModel);
-    const { status } = await supabase.rpc("signup", signupEntity);
-    setSuccessState(getIsSuccess(status) ? "success" : "error");
-  };
-
-  const convertModelToEntity = ({
-    createdAt,
-    email,
-    name,
-    songTitle,
-    artist,
-    youtubeLink,
-    additionalComments,
-  }: SignupModel): SignupEntity => {
-    return {
-      email,
-      name,
-      artist_name: artist,
-      song_title: songTitle,
-      youtube_link: youtubeLink,
-      additional_comments: additionalComments,
-      round_id: roundId,
-      created_at: createdAt,
-    };
-  };
+  const { signUp } = useSignup(roundId, setSuccessState);
 
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
       <FormContainer
-        form={<SignupForm onSubmit={onSubmit} roundId={roundId} />}
+        form={<SignupForm onSubmit={signUp} roundId={roundId} />}
         successBlock={<SignupSuccess />}
         errorMessage={GENERIC_ERROR_MESSAGE}
         successState={successState}

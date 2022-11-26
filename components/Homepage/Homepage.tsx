@@ -1,4 +1,4 @@
-import { RoundDetails } from "../../types";
+import { RoundDetails } from "types";
 import { Footer } from "./Footer";
 import { Hero } from "./Hero";
 import { Main } from "./Main";
@@ -11,10 +11,7 @@ interface Props {
   roundContent: RoundDetails[];
 }
 
-export const Homepage = ({
-  blurb,
-  roundContent,
-}: Props) => {
+export const Homepage = ({ blurb, roundContent }: Props) => {
   return (
     <>
       <Head>

@@ -26,12 +26,12 @@ export function InputField<T extends FieldValues>({
       )}
       data-testid={getFieldTestId(field.field, type)}
     >
+      <label className={styles.label}>{label}</label>
       {type === "vote" ? (
-        <VoteInput register={register} label={label} field={fieldId} />
+        <VoteInput register={register} field={fieldId} />
       ) : (
         <TextInput
           register={register}
-          label={label}
           field={fieldId}
           optional={optional}
           placeholder={field.placeholder}

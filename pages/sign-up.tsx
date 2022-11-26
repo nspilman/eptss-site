@@ -1,9 +1,8 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import React from "react";
-import { getCurrentRound } from "../../components/shared/queries";
-import { SignUp } from "../../components/SignUp/SignUp";
-import { getSupabaseClient } from "../../utils/getSupabaseClient";
-import { getIsSuccess } from "../../utils/utils";
+import { getCurrentRound } from "queries";
+import { SignUp } from "components/SignUp/SignUp";
+import { getSupabaseClient } from "utils/getSupabaseClient";
 
 const SignupPage = ({
   roundId,
@@ -13,10 +12,8 @@ const SignupPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
-  const { roundId, status } = await getCurrentRound(supabase);
-  if (!getIsSuccess(status)) {
-    // throw new Error("Error retrieving current round");
-  }
+  const { roundId } = await getCurrentRound(supabase);
+
   return {
     props: {
       roundId,

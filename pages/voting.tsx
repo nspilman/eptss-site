@@ -1,13 +1,10 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import React from "react";
-import {
-  VoteOptionEntity,
-  VoteOptionModel,
-} from "../../components/Voting/types";
-import { Voting } from "../../components/Voting";
-import { getSupabaseClient } from "../../utils/getSupabaseClient";
-import { getCurrentRound } from "../../components/shared/queries";
-import { getIsSuccess } from "../../utils/utils";
+import { VoteOptionEntity, VoteOptionModel } from "../components/Voting/types";
+import { Voting } from "../components/Voting";
+import { getSupabaseClient } from "../utils/getSupabaseClient";
+import { getCurrentRound, getSignupsByRound } from "../queries";
+import { getIsSuccess } from "../utils";
 
 const VotingPage = ({
   voteOptions,
@@ -16,37 +13,11 @@ const VotingPage = ({
   return <Voting voteOptions={voteOptions} roundId={roundId} />;
 };
 
+const supabase = getSupabaseClient();
+
 export const getStaticProps: GetStaticProps = async () => {
-  const supabase = getSupabaseClient();
-  const { roundId, status } = await getCurrentRound(supabase);
-  if (!getIsSuccess(status)) {
-    throw new Error("failed to get RoundId");
-  }
-
-  const { data: resultEntities, error } = await supabase
-    .from("sign_ups")
-    .select(
-      `
-      round_id,
-      song_id,
-      song:songs (
-          title,
-          artist
-      )
-  `
-    )
-    .eq("round_id", roundId);
-
-  if (error) {
-    throw new Error(JSON.stringify(error));
-  }
-
-  const voteOptions =
-    resultEntities
-      ?.filter((result) => result.song_id)
-      .map((result) => {
-        return result && entityToModel(result as VoteOptionEntity);
-      }) || [];
+  const roundId = await getRound();
+  const voteOptions = await getVoteOptions(roundId);
 
   return {
     props: {
@@ -58,6 +29,35 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 export default VotingPage;
+
+// private
+
+const getRound = async () => {
+  const { roundId, status } = await getCurrentRound(supabase);
+  if (!getIsSuccess(status)) {
+    throw new Error("failed to get RoundId");
+  }
+  return roundId;
+};
+
+const getVoteOptions = async (roundId: number) => {
+  const { data: resultEntities, error } = await getSignupsByRound(
+    supabase,
+    roundId
+  );
+
+  if (error) {
+    throw new Error(JSON.stringify(error));
+  }
+
+  return (
+    resultEntities
+      ?.filter((result) => result.song_id)
+      .map((result) => {
+        return result && entityToModel(result as VoteOptionEntity);
+      }) || []
+  );
+};
 
 const entityToModel = ({
   song,

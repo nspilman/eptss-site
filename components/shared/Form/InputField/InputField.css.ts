@@ -1,5 +1,5 @@
 import { style } from "@vanilla-extract/css";
-import { colors } from "../../../../styles/theme.css";
+import { colors, titleFont } from "styles/theme.css";
 
 export const container = style({
   backgroundColor: colors.lightgray,
@@ -26,6 +26,7 @@ export const label = style({
   fontSize: ".75rem",
   paddingBottom: ".25rem",
   color: colors.grayblue,
+  fontFamily: titleFont,
 });
 
 export const errorMessage = style({

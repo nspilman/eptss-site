@@ -9,7 +9,6 @@ interface Props<T extends FieldValues> {
   register: UseFormRegister<T>;
   type?: "email" | "text";
   placeholder: string;
-  label: string;
 }
 
 export function TextInput<T extends FieldValues>({
@@ -18,18 +17,14 @@ export function TextInput<T extends FieldValues>({
   register,
   type = "text",
   placeholder,
-  label,
 }: Props<T>) {
   const required = !optional;
   return (
-    <>
-      <label className={inputStyles.label}>{label}</label>
-      <input
-        className={styles.input}
-        type={type}
-        placeholder={placeholder}
-        {...register(field, { required, maxLength: 300 })}
-      />
-    </>
+    <input
+      className={styles.input}
+      type={type}
+      placeholder={placeholder}
+      {...register(field, { required, maxLength: 300 })}
+    />
   );
 }

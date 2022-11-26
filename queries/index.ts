@@ -19,5 +19,24 @@ export const getCurrentRound = async (
       return { roundId, status, error };
     }
   }
+
   return { roundId: -1, status, error };
 };
+
+export const getSignupsByRound = async (
+  supabase: SupabaseClient<any, "public", any>,
+  roundId: number
+) =>
+  supabase
+    .from("sign_ups")
+    .select(
+      `
+  round_id,
+  song_id,
+  song:songs (
+      title,
+      artist
+  )
+`
+    )
+    .eq("round_id", roundId);

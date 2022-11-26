@@ -1,56 +1,29 @@
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { useSuccessState } from "../hooks/useSuccessState";
-import { useSupabase } from "../hooks/useSupabaseClient";
-import { getIsSuccess } from "../../utils/utils";
 import { Form } from "../shared/Form";
-import { yourName, yourEmail } from "../shared/Form/fieldValues";
 import { FormContainer } from "../shared/FormContainer";
 import { VoteOptionModel } from "./types";
+import { useVoting } from "./useVoting";
 
 interface Props {
   voteOptions: VoteOptionModel[];
-  roundId: string;
+  roundId: number;
 }
 
 export const Voting = ({ voteOptions, roundId }: Props) => {
-  const subapase = useSupabase();
-
   const title = `Vote for the songs you want to cover in Round ${roundId}`;
   const [successState, setSuccessState] = useSuccessState();
 
-  const onSubmit = async (formPayload: Record<string, string>) => {
-    const { email } = formPayload;
-    const voteKeys = Object.keys(formPayload).filter(
-      (key) => !["name", "email"].includes(key)
-    );
+  const { submitVotes, getFields } = useVoting(roundId, setSuccessState);
 
-    const votes = voteKeys.map((key) => ({
-      song_id: key,
-      vote: formPayload[key],
-      submitter_email: email,
-      round_id: roundId,
-    }));
-
-    const { status } = await subapase
-      .from("song_selection_votes")
-      .insert(votes);
-    const isSuccess = getIsSuccess(status);
-    setSuccessState(isSuccess ? "success" : "error");
-  };
-
-  const votingFields = voteOptions.map((option) => ({
-    ...option,
-    type: "vote" as const,
-  }));
-
-  const fields = [yourName, yourEmail, ...votingFields];
+  const fields = getFields(voteOptions);
 
   return (
     <div style={{ padding: "64px" }}>
       <FormContainer
         form={
           <Form
-            onSubmit={onSubmit}
+            onSubmit={submitVotes}
             title={title}
             description={<></>}
             fields={fields}
