@@ -51,7 +51,11 @@ export const SignupForm = ({ onSubmit, roundId }: Props) => {
       title={title}
       description={
         <>
-          <p>Sign up with your name, email and the song you want to cover!</p>
+          <p>
+            Sign up with your name, email and the song you want to cover!
+            <br />
+            Signups close Midnight of December 5th.
+          </p>
           <Link href={howItWorks}> Full rules here</Link>
         </>
       }
