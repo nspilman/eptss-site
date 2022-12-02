@@ -9,7 +9,7 @@ export const Hero = () => {
   return (
     <section className={styles.hero}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Everyone Plays the Same Song</h1>
+        <h1>Everyone Plays the Same Song</h1>
         <div className={centered}>
           <Link href={howItWorks}>
             <button>Learn</button>

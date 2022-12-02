@@ -1,4 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { getCurrentRound } from "queries";
 import React from "react";
 
 import { Reporting } from "../components/Reporting";
@@ -16,13 +17,12 @@ export const getStaticProps: GetStaticProps = async () => {
     "get_all_songs_data"
   );
 
-  console.log({ error });
+  const roundId = await getCurrentRound(supabase);
 
   return {
     props: {
-      allSongsData,
+      allSongsData: allSongsData?.filter((song) => song.round_id !== roundId),
     },
-    notFound: process.env.NODE_ENV === "production",
   };
 };
 

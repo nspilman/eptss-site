@@ -17,13 +17,6 @@ const Home = (props: Props) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const response = await fetch(
-    "https://pioneer-django.herokuapp.com/eptss/state"
-  );
-
-  const body = await response.json();
-  const { signupSheet, mailingList, blurb } = await body;
-
   interface RoundEntity {
     title: string;
     artist: string;
@@ -53,9 +46,6 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       roundContent,
-      signupSheet,
-      mailingList,
-      blurb,
     },
   };
 };

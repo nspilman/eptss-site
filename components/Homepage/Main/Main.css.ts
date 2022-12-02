@@ -1,4 +1,5 @@
 import { style } from "@vanilla-extract/css";
+import { colors } from "styles/theme.css";
 
 export const container = style({
   maxWidth: "1200px",
@@ -32,10 +33,10 @@ export const howItWorks = style({
   margin: "auto",
 });
 
-export const howItWorksText = style({
+export const blurb = style({
   margin: "15px auto",
-  fontWeight: "bold",
   textAlign: "center",
+  color: colors.yellow,
 });
 
 export const itemThird = style({

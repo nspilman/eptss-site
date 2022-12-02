@@ -1,6 +1,6 @@
 import { style, globalStyle } from "@vanilla-extract/css";
 
-export const mobileBreakpointPixels = 600;
+export const mobileBreakpointPixels = 640;
 export const tabletBreakpointPixels = 1024;
 
 export const centered = style({
@@ -45,4 +45,18 @@ globalStyle("body", {
 
 globalStyle("a", {
   color: colors.yellow,
+});
+
+globalStyle("h1", {
+  fontFamily: titleFont,
+  fontSize: "48px",
+  fontWeight: 300,
+  "@media": {
+    [tabletBreakpoint]: {
+      fontSize: "36px",
+    },
+    [mobileBreakpoint]: {
+      fontSize: "24px",
+    },
+  },
 });

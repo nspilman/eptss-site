@@ -24,11 +24,10 @@ const howItWorksContent = [
 ];
 
 interface Props {
-  blurb: string;
   roundContent: RoundDetails[];
 }
 
-export const Main = ({ blurb, roundContent }: Props) => {
+export const Main = ({ roundContent }: Props) => {
   const { howItWorks } = useNavOptions();
   return (
     <main className="main">
@@ -46,7 +45,9 @@ export const Main = ({ blurb, roundContent }: Props) => {
               </div>
             ))}
           </div>
-          <p className={styles.howItWorksText}>{blurb}</p>
+          <p className={styles.blurb}>
+            {"Signups for round 16 close Monday, December 5th"}
+          </p>
           <div className={centered}>
             <Link href={howItWorks} id="learn">
               <button>Learn More</button>

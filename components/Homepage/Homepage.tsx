@@ -5,20 +5,17 @@ import { Main } from "./Main";
 import Head from "next/head";
 
 interface Props {
-  signupSheet: string;
-  mailingList: string;
-  blurb: string;
   roundContent: RoundDetails[];
 }
 
-export const Homepage = ({ blurb, roundContent }: Props) => {
+export const Homepage = ({ roundContent }: Props) => {
   return (
     <>
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
-      <Main blurb={blurb} roundContent={roundContent} />
+      <Main roundContent={roundContent} />
       <Footer />
     </>
   );
