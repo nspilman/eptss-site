@@ -1,5 +1,5 @@
 import { PageContainer } from "components/shared/PageContainer";
-import { SongsTable } from "./SongsTable/SongsTable";
+import { SongsTable } from "./SongsTable";
 
 interface SongDatum {
   artist: string;

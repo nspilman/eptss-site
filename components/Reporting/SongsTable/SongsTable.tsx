@@ -1,4 +1,4 @@
-import { DataTable } from "components/shared/DataTable/DataTable";
+import { DataTable } from "components/shared/DataTable";
 import { useState } from "react";
 import * as styles from "./SongsTable.css";
 
