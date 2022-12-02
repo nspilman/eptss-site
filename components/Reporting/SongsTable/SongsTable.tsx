@@ -56,7 +56,7 @@ export const SongsTable = ({ allSongsData }: { allSongsData: SongDatum[] }) => {
     <div className={styles.container}>
       <h1>All previously submitted songs</h1>
       <input
-        placeholder="Search by title or artist"
+        placeholder="Search by title, artist or round number"
         className={styles.searchBox}
         onChange={(e) => setSearchString(e.currentTarget.value)}
       />
