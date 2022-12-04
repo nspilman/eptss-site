@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as styles from "./DataTable.css";
 import classnames from "classnames";
 
@@ -14,19 +14,41 @@ interface Props<T extends string> {
 }
 
 export function DataTable<T extends string>({ headers, rows }: Props<T>) {
+  const [sortKey, setSortKey] = useState<T>();
+  const [descSort, setDescSort] = useState(true);
+
+  const onHeaderClick = (newSortKey: T) => {
+    if (newSortKey === sortKey) {
+      setDescSort((descSort) => !descSort);
+    } else {
+      setDescSort(true);
+      setSortKey(newSortKey);
+    }
+  };
+
+  if (sortKey) {
+    rows.sort((rowA, rowB) => {
+      const evaluationByDirection = descSort
+        ? rowA[sortKey] > rowB[sortKey]
+        : rowB[sortKey] > rowA[sortKey];
+      return evaluationByDirection ? -1 : 1;
+    });
+  }
+
   return (
     <table className={styles.table}>
       <thead>
         <tr>
-          {headers.map((header) => (
+          {headers.map(({ key, className, display }) => (
             <th
               className={classnames(
                 styles.headerCell,
-                header.className || styles.defaultColumn
+                className || styles.defaultColumn
               )}
-              key={header.key}
+              key={key}
+              onClick={() => onHeaderClick(key)}
             >
-              {header.display}
+              {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
             </th>
           ))}
         </tr>

@@ -13,15 +13,24 @@ const ReportingPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
-  const { data: allSongsData, error } = await supabase.rpc(
-    "get_all_songs_data"
-  );
-
+  const { data: allSongsData, error } = await supabase.rpc("get_all_songs");
+  const { data: winningSongs, error: winningSongsError } = await supabase
+    .from("round_metadata")
+    .select("song_id, id");
   const roundId = await getCurrentRound(supabase);
 
   return {
     props: {
-      allSongsData: allSongsData?.filter((song) => song.round_id !== roundId),
+      allSongsData: allSongsData
+        ?.filter((song) => song.round_id !== roundId)
+        .map((song) => ({
+          ...song,
+          isWinningSong: winningSongs?.some(
+            (winningSong) =>
+              winningSong.id === song.round_id &&
+              winningSong.song_id === song.id
+          ),
+        })),
     },
   };
 };

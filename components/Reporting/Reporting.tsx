@@ -6,6 +6,7 @@ interface SongDatum {
   title: string;
   round_id: number;
   vote: number;
+  isWinningSong: boolean;
 }
 
 export const Reporting = ({ allSongsData }: { allSongsData: SongDatum[] }) => {

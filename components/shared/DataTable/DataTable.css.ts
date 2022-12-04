@@ -7,6 +7,7 @@ export const headerCell = style({
   fontWeight: 700,
   padding: ".5rem 0",
   textDecoration: "underline",
+  cursor: "pointer",
 });
 
 export const row = style({

@@ -2,7 +2,6 @@ import type { GetStaticProps } from "next";
 import { Homepage } from "../components/Homepage";
 import { RoundDetails } from "../types";
 
-import { createClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "../utils/getSupabaseClient";
 
 interface Props {
@@ -18,8 +17,10 @@ const Home = (props: Props) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   interface RoundEntity {
-    title: string;
-    artist: string;
+    song: {
+      title: string;
+      artist: string;
+    } | null;
     playlist_url: string;
     id: string;
   }
@@ -28,20 +29,31 @@ export const getStaticProps: GetStaticProps = async () => {
 
   const { data, error } = await supabase
     .from("round_metadata")
-    .select("*")
+    .select(
+      `playlist_url, 
+      id, 
+      song_id,
+      song:songs (
+      title, 
+      artist
+    )`
+    )
     .order("id", { ascending: false });
   if (error) {
     throw new Error(JSON.stringify(error));
   }
 
-  const roundContent = data?.map(
-    ({ title, artist, playlist_url, id }: RoundEntity) => ({
-      title,
-      artist,
-      round: id,
-      playlist: playlist_url,
-    })
-  );
+  const roundContent = (data as RoundEntity[])
+    ?.filter(({ song }) => !!song)
+    .map(({ song, playlist_url, id }) => {
+      const { title, artist } = song || {};
+      return {
+        title,
+        artist,
+        round: id,
+        playlist: playlist_url,
+      };
+    });
 
   return {
     props: {
