@@ -1,66 +1,42 @@
 import React from "react";
 import { PageContainer } from "../shared/PageContainer/PageContainer";
+import * as styles from "./HowItWorks.css";
 
 export const HowItWorks = () => (
-  <PageContainer title="How it works | Everyone Plays the Same Song">
-    <>
+  <PageContainer title="How it works">
+    <div className={styles.container}>
       <h2>Project Details</h2>
       <p>
-        {`I present, Everyone Plays the Same Song - a covers project. The way it
-      works is simple - all participants record covers of the same song. The
-      covers are then compiled, and we can enjoy comparing everyone's take. The
-      purpose of this project is to promote musical education, practice and
-      community -`}
+        Join in on the musical fun with Everyone Plays the Same Song! This
+        covers project invites all participants to record covers of the same
+        song. Once the covers are compiled, we can all enjoy comparing different
+        interpretations of the same tune. This project aims to promote musical
+        education, practice, and community.
       </p>
-      <h3>How Signup Works -</h3>
+      <h3>Signup</h3>
       <p>
-        {`If you want to participate, fill out the submission form with your name,
-      email address and at least one song you'd like to cover.`}
+        {`To join the project, simply fill out the submission form with your name, email address, and the song you'd like to cover. It's that easy!`}
       </p>
-      <h3>How Song Selection Works -</h3>
+      <h3>Song Selection</h3>
       <p>
-        {`After song submission closes, all participants will fill out of poll with
-      all submitted songs and their corresponding youtube links to listen to.
-      Participants will rate the songs 1 to 5 on a scale of "Definitely don't
-      want to cover" to "I'm super down to cover this song." Voting a 1 vetos
-      the song - which is a valid move if you don't see the song as technically
-      possible for you as a musician to pull off. The survey will also include
-      the question "In how many weeks should our cover submissions be due?"`}
+        {`After song submission closes, all participants will fill out a poll with all submitted songs and their corresponding YouTube links. 
+        Participants will rate the songs on a scale of 1 to 5, with 1 being "Definitely don't want to cover" and 5 being "I'm super down to cover this song." 
+        Voting a 1 vetoes the song. The survey will also include a question asking how many weeks participants think cover submissions should be due.`}
       </p>
-      <h4>
-        {`Once results are in, we'll strive to make the most fair selection via the
-      following rules -`}
-      </h4>
-      <ul>
-        <li>
-          {`If there is a clear favorite that hasn't been vetoed, then that song
-        will be chosen.`}
-        </li>
-        <li>
-          {` If there are multiple popular songs without vetos, we will randomly
-        choose one of them.`}
-        </li>
-        <li>
-          {`If there are no obvious winners, we will discuss as participants how to
-        move forward - allowing discussion of current submissions as well as
-        opening the pool back up for new songs.`}
-        </li>
-      </ul>
-      <h4>Vote Rubric | Vote | Significance</h4>
+      <h3>Song Submission</h3>
+      <p>
+        {`A deadline for submissions will be set, and all participants will submit a link to their cover on SoundCloud by that date. 
+        The covers will be compiled into a playlist and shared at a post-submission listening party.`}
+      </p>
+      <h3>Voting Rubric</h3>
       <ol>
         <li>Absolutely not</li>
-        <li> {`I'd rather not`}</li>
+        <li>{`I'd rather not`}</li>
         <li>Sure</li>
-        <li> {`I'd like to cover this`}</li>
+        <li>{`I'd like to cover this`}</li>
         <li>{`I'd REALLY like to cover this`}</li>
       </ol>
-      <h3>How Song Submission works -</h3>
-      <p>
-        {`We'll decide on a deadline, and all participants will submit a link to
-      their cover on soundcloud by that deadline. I'll then publish a playlist
-      with everyone's versions, which we'll all listen to together at a
-      post-submission listening party. Thanks for being involved, Nate`}
-      </p>
-    </>
+      <p>{`Join us and share your musical talents! We can't wait to hear your unique take on the chosen song.`}</p>
+    </div>
   </PageContainer>
 );

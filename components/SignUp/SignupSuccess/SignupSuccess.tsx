@@ -1,6 +1,7 @@
 import * as styles from "./SignupAccess.css";
 import Image from "next/image";
 import Link from "next/link";
+import { roundedCorners } from "styles/theme.css";
 
 export const SignupSuccess = () => {
   return (
@@ -13,7 +14,7 @@ export const SignupSuccess = () => {
         need.
       </p>
       <Image
-        className={styles.image}
+        className={roundedCorners}
         src={"/welcomeImage.png"}
         alt={"Welcome to Everyone Plays the Same Song!"}
         width={500}

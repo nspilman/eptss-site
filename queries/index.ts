@@ -39,4 +39,5 @@ export const getSignupsByRound = async (
   )
 `
     )
-    .eq("round_id", roundId);
+    .eq("round_id", roundId)
+    .order("created_at");

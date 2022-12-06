@@ -9,7 +9,3 @@ export const body = style({
   flexDirection: "column",
   alignItems: "center",
 });
-
-export const image = style({
-  borderRadius: "1rem",
-});

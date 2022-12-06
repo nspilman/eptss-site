@@ -4,6 +4,9 @@ import { Form } from "../shared/Form";
 import { FormContainer } from "../shared/FormContainer";
 import { VoteOptionModel } from "./types";
 import { useVoting } from "./useVoting";
+import Image from "next/image";
+import { roundedCorners } from "styles/theme.css";
+import { PageContainer } from "components/shared/PageContainer";
 
 interface Props {
   voteOptions: VoteOptionModel[];
@@ -19,7 +22,7 @@ export const Voting = ({ voteOptions, roundId }: Props) => {
   const fields = getFields(voteOptions);
 
   return (
-    <div style={{ padding: "64px" }}>
+    <PageContainer title={`Sign up for round ${roundId}`}>
       <FormContainer
         form={
           <Form
@@ -29,10 +32,22 @@ export const Voting = ({ voteOptions, roundId }: Props) => {
             fields={fields}
           />
         }
-        successBlock={<div> Thank you for voting! </div>}
+        successBlock={
+          <div>
+            Thank you for voting!
+            <br />
+            <Image
+              className={roundedCorners}
+              src={"/thxForVoting.png"}
+              alt={"Thank you for voting!!"}
+              width={500}
+              height={500}
+            />
+          </div>
+        }
         errorMessage={GENERIC_ERROR_MESSAGE}
         successState={successState}
       />
-    </div>
+    </PageContainer>
   );
 };

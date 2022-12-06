@@ -23,7 +23,6 @@ export const large = style({
 });
 
 export const label = style({
-  fontSize: ".75rem",
   paddingBottom: ".25rem",
   color: colors.grayblue,
   fontFamily: titleFont,

@@ -46,7 +46,7 @@ export const Main = ({ roundContent }: Props) => {
             ))}
           </div>
           <p className={styles.blurb}>
-            {"Signups for round 16 close Monday, December 5th"}
+            {"Round 16 is underway! Votes are due Friday, Dec 16"}
           </p>
           <div className={centered}>
             <Link href={howItWorks} id="learn">

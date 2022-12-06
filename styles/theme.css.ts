@@ -60,3 +60,7 @@ globalStyle("h1", {
     },
   },
 });
+
+export const roundedCorners = style({
+  borderRadius: "1rem",
+});
