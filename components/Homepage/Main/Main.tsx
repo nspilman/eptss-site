@@ -50,7 +50,7 @@ export const Main = ({ roundContent }: Props) => {
           </p>
           <div className={centered}>
             <Link href={howItWorks} id="learn">
-              <button>Learn More</button>
+              <button>Rules</button>
             </Link>
             <button>
               <Link href="#listen">Listen</Link>

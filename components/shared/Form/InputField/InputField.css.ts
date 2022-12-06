@@ -39,8 +39,9 @@ export const linkWrapper = style([
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: ".25rem",
+    padding: ".25rem 1rem",
     borderRadius: ".25rem",
+    fontSize: ".75rem",
   },
 ]);
 
@@ -49,9 +50,10 @@ export const label = style([
     paddingBottom: ".25rem",
     color: colors.grayblue,
     fontFamily: titleFont,
+    fontSize: ".75rem",
     "@media": {
       [tabletBreakpoint]: {
-        fontSize: ".75rem",
+        fontSize: ".5rem",
       },
     },
   },

@@ -22,7 +22,7 @@ export const Voting = ({ voteOptions, roundId }: Props) => {
   const fields = getFields(voteOptions);
 
   return (
-    <PageContainer title={`Sign up for round ${roundId}`}>
+    <PageContainer title={`Vote for the songs you want to cover in ${roundId}`}>
       <FormContainer
         form={
           <Form

@@ -26,6 +26,10 @@ export const colors = {
   graybluehero: "rgba(183, 192, 209, 0.9)",
 };
 
+globalStyle("html", {
+  fontSize: "16px",
+});
+
 globalStyle("body", {
   height: "100%",
   width: "100%",
@@ -34,7 +38,6 @@ globalStyle("body", {
     "linear-gradient(var(--darkbluehero), var(--darkbluehero)), url('https://images.unsplash.com/photo-1458560871784-56d23406c091?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80') center center / cover no-repeat",
   backgroundAttachment: "fixed",
   color: "white",
-  fontSize: "1rem",
   fontFamily: "'Roboto', sans-serif",
   fontWeight: 400,
   overflowX: "hidden",
@@ -49,14 +52,14 @@ globalStyle("a", {
 
 globalStyle("h1", {
   fontFamily: titleFont,
-  fontSize: "48px",
+  fontSize: "4rem",
   fontWeight: 300,
   "@media": {
     [tabletBreakpoint]: {
-      fontSize: "36px",
+      fontSize: "3rem",
     },
     [mobileBreakpoint]: {
-      fontSize: "24px",
+      fontSize: "2rem",
     },
   },
 });
