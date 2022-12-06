@@ -11,7 +11,7 @@ const SignupPage = ({
   const signupsClose = new Date("Dec 5, 2022");
   const today = new Date();
 
-  const areSignupsOpen = today <= signupsClose;
+  const areSignupsOpen = today < signupsClose;
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
       {areSignupsOpen ? (
