@@ -15,6 +15,7 @@ export interface TextField<T> extends BaseField<T> {
 export interface VoteField<T> extends BaseField<T> {
   type: "vote";
   label: string;
+  link: string;
 }
 
 export type InputType<T> = TextField<T> | VoteField<T>;

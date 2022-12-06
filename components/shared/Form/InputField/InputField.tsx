@@ -1,4 +1,5 @@
 import classnames from "classnames";
+import Link from "next/link";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
 import * as styles from "./InputField.css";
@@ -18,6 +19,7 @@ export function InputField<T extends FieldValues>({
   register,
 }: Props<T>) {
   const { size, type, label, field: fieldId, optional } = field;
+  const hasLink = "link" in field;
   return (
     <div
       className={classnames(
@@ -26,9 +28,18 @@ export function InputField<T extends FieldValues>({
       )}
       data-testid={getFieldTestId(field.field, type)}
     >
-      <label className={styles.label}>{label}</label>
+      <div className={styles.labelWrapper}>
+        <label className={styles.label}>{`${label}`}</label>
+        {hasLink && (
+          <div className={styles.linkWrapper}>
+            <a target="_blank" rel="noopener noreferrer" href={field.link}>
+              listen
+            </a>
+          </div>
+        )}
+      </div>
       {type === "vote" ? (
-        <VoteInput register={register} field={fieldId} />
+        <VoteInput register={register} field={fieldId} link={field.link} />
       ) : (
         <TextInput
           register={register}

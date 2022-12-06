@@ -1,15 +1,18 @@
+import Link from "next/link";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 import * as styles from "./VoteInput.css";
 
 interface Props<T extends FieldValues> {
   register: UseFormRegister<T>;
   field: Path<T>;
+  link: string;
   optional?: boolean;
 }
 
 export function VoteInput<T extends FieldValues>({
   register,
   field,
+  link,
   optional,
 }: Props<T>) {
   return (

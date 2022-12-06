@@ -33,6 +33,7 @@ export const getSignupsByRound = async (
       `
   round_id,
   song_id,
+  youtube_link,
   song:songs (
       title,
       artist

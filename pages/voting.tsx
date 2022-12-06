@@ -62,6 +62,7 @@ const entityToModel = ({
   song,
   song_id,
   round_id,
+  youtube_link,
 }: VoteOptionEntity): VoteOptionModel => {
   const { artist, title } = song;
   if (!artist || !title) {
@@ -73,5 +74,6 @@ const entityToModel = ({
     roundId: round_id,
     label: `${title} by ${artist}`,
     field: song_id.toString(),
+    link: youtube_link,
   };
 };

@@ -4,6 +4,7 @@ export interface VoteOptionModel {
   roundId: string;
   label: string;
   field: string;
+  link: string;
 }
 
 export interface VoteOptionEntity {
@@ -11,8 +12,7 @@ export interface VoteOptionEntity {
     title: string;
     artist: string;
   };
-  song_title: string;
-  artist: string;
   song_id: number;
   round_id: string;
+  youtube_link: string;
 }

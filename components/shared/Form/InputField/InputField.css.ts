@@ -1,5 +1,10 @@
 import { style } from "@vanilla-extract/css";
-import { colors, titleFont } from "styles/theme.css";
+import {
+  colors,
+  roundedCorners,
+  tabletBreakpoint,
+  titleFont,
+} from "styles/theme.css";
 
 export const container = style({
   backgroundColor: colors.lightgray,
@@ -22,11 +27,35 @@ export const large = style({
   minWidth: "275px",
 });
 
-export const label = style({
-  paddingBottom: ".25rem",
-  color: colors.grayblue,
-  fontFamily: titleFont,
+export const labelWrapper = style({
+  display: "flex",
+  justifyContent: "space-between",
 });
+
+export const linkWrapper = style([
+  {
+    height: "2rem",
+    backgroundColor: colors.darkblue,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: ".25rem",
+    borderRadius: ".25rem",
+  },
+]);
+
+export const label = style([
+  {
+    paddingBottom: ".25rem",
+    color: colors.grayblue,
+    fontFamily: titleFont,
+    "@media": {
+      [tabletBreakpoint]: {
+        fontSize: ".75rem",
+      },
+    },
+  },
+]);
 
 export const errorMessage = style({
   fontSize: ".75rem",
