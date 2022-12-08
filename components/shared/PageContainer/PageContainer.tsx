@@ -12,7 +12,7 @@ export const PageContainer = ({
   return (
     <div className={styles.container}>
       <Head>
-        <title>{title} | Everyone Plays the Same Song</title>
+        <title>{`${title} | Everyone Plays the Same Song`}</title>
       </Head>
       <div className={styles.body}>{children}</div>
     </div>

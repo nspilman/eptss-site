@@ -9,14 +9,32 @@ export const getCurrentRound = async (
     status,
   } = await supabase
     .from("round_metadata")
-    .select("id")
+    .select(
+      "id, signup_opens, voting_opens, covering_begins, covers_due, listening_party"
+    )
     .order("id", { ascending: false })
     .limit(1);
 
   if (roundData) {
-    const roundId = roundData[0].id;
+    const {
+      id: roundId,
+      signup_opens: signupOpens,
+      voting_opens: votingOpens,
+      covering_begins: coveringBegins,
+      covers_due: coversDue,
+      listening_party: listeningParty,
+    } = roundData[0];
     if (typeof roundId === "number") {
-      return { roundId, status, error };
+      return {
+        roundId,
+        signupOpens,
+        votingOpens,
+        coveringBegins,
+        coversDue,
+        listeningParty,
+        status,
+        error,
+      };
     }
   }
 

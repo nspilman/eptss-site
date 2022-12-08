@@ -5,24 +5,30 @@ import { Voting } from "../components/Voting";
 import { getSupabaseClient } from "../utils/getSupabaseClient";
 import { getCurrentRound, getSignupsByRound } from "../queries";
 import { getIsSuccess } from "../utils";
+import { TimeBot5000 } from "utils/TimeBot5000";
 
 const VotingPage = ({
   voteOptions,
   roundId,
+  isVotingOpen,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  return <Voting voteOptions={voteOptions} roundId={roundId} />;
+  return isVotingOpen && <Voting voteOptions={voteOptions} roundId={roundId} />;
 };
 
 const supabase = getSupabaseClient();
 
 export const getStaticProps: GetStaticProps = async () => {
-  const roundId = await getRound();
-  const voteOptions = await getVoteOptions(roundId);
+  const { roundId } = await getRound();
+  const timebot5000 = await TimeBot5000.build();
+  console.log(timebot5000.getCurrentPhase());
+  const isVotingOpen = timebot5000.getCurrentPhase() === "voting";
+  const voteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
 
   return {
     props: {
       voteOptions,
       roundId,
+      isVotingOpen,
     },
   };
 };
@@ -32,11 +38,12 @@ export default VotingPage;
 // private
 
 const getRound = async () => {
-  const { roundId, status } = await getCurrentRound(supabase);
+  const { roundId, votingOpens, coveringBegins, status } =
+    await getCurrentRound(supabase);
   if (!getIsSuccess(status)) {
     throw new Error("failed to get RoundId");
   }
-  return roundId;
+  return { roundId, votingOpens, coveringBegins };
 };
 
 const getVoteOptions = async (roundId: number) => {

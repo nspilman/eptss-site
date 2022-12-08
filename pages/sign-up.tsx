@@ -4,14 +4,12 @@ import { getCurrentRound } from "queries";
 import { SignUp } from "components/SignUp/SignUp";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 import { PageContainer } from "components/shared/PageContainer";
+import { TimeBot5000 } from "utils/TimeBot5000";
 
 const SignupPage = ({
   roundId,
+  areSignupsOpen,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const signupsClose = new Date("Dec 5, 2022");
-  const today = new Date();
-
-  const areSignupsOpen = today < signupsClose;
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
       {areSignupsOpen ? (
@@ -28,10 +26,13 @@ const SignupPage = ({
 export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
   const { roundId } = await getCurrentRound(supabase);
+  const timebot5000 = await TimeBot5000.build();
+  const areSignupsOpen = timebot5000.getCurrentPhase() === "signups";
 
   return {
     props: {
       roundId,
+      areSignupsOpen,
     },
   };
 };

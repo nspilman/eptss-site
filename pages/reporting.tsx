@@ -17,7 +17,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const { data: winningSongs, error: winningSongsError } = await supabase
     .from("round_metadata")
     .select("song_id, id");
-  const roundId = await getCurrentRound(supabase);
+  const { roundId } = await getCurrentRound(supabase);
 
   return {
     props: {

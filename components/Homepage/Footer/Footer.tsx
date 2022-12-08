@@ -1,4 +1,4 @@
-import { centered } from "../../../styles/theme.css";
+import { centered } from "styles/theme.css";
 import { SignupButton } from "../SignupButton";
 import * as styles from "./Footer.css";
 
