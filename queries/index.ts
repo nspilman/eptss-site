@@ -1,8 +1,21 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { PostgrestError } from "@supabase/supabase-js";
+import { getSupabaseClient } from "utils/getSupabaseClient";
 
-export const getCurrentRound = async (
-  supabase: SupabaseClient<any, "public", any>
-) => {
+const supabase = getSupabaseClient();
+
+interface Round {
+  roundId: number;
+  signupOpens: string;
+  votingOpens: string;
+  coveringBegins: string;
+  coversDue: string;
+  listeningParty: string;
+  status: number;
+}
+
+export const getCurrentRound = async (): Promise<
+  Round & { error: PostgrestError | null }
+> => {
   const {
     data: roundData,
     error,
@@ -38,13 +51,10 @@ export const getCurrentRound = async (
     }
   }
 
-  return { roundId: -1, status, error };
+  throw new Error("Could not find round");
 };
 
-export const getSignupsByRound = async (
-  supabase: SupabaseClient<any, "public", any>,
-  roundId: number
-) =>
+export const getSignupsByRound = async (roundId: number) =>
   supabase
     .from("sign_ups")
     .select(

@@ -1,10 +1,10 @@
 import { getCurrentRound } from "queries";
-import { getSupabaseClient } from "./getSupabaseClient";
 
 interface Props {
   votingOpens: Date;
   coveringBegins: Date;
   coversDue: Date;
+  signupOpens: Date;
   listeningParty: Date;
 }
 
@@ -12,8 +12,25 @@ type Phase = "signups" | "voting" | "covering" | "celebration";
 
 export class TimeBot5000 {
   phase: Phase;
-  constructor({ votingOpens, coveringBegins, coversDue }: Props) {
+
+  private constructor({
+    votingOpens,
+    coveringBegins,
+    coversDue,
+    signupOpens,
+    listeningParty,
+  }: Props) {
     const now = new Date();
+    if (now < signupOpens) {
+      throw new Error(
+        "current date cannot be before signup date. Signup starts the current round"
+      );
+    }
+    if (now > listeningParty) {
+      throw new Error(
+        "current date cannot be after listening party. The Listening Party ends the round"
+      );
+    }
     if (!(votingOpens < coveringBegins && coveringBegins < coversDue)) {
       throw new Error("dates are in incorrect order");
     }
@@ -37,15 +54,26 @@ export class TimeBot5000 {
     return this.phase;
   }
 
-  public static async build() {
-    const supabase = getSupabaseClient();
-    const { votingOpens, coveringBegins, listeningParty, coversDue } =
-      await getCurrentRound(supabase);
+  public static async build(currentRound?: {
+    votingOpens: string;
+    coveringBegins: string;
+    coversDue: string;
+    signupOpens: string;
+    listeningParty: string;
+  }) {
+    const {
+      votingOpens,
+      coveringBegins,
+      coversDue,
+      signupOpens,
+      listeningParty,
+    } = currentRound || (await getCurrentRound());
     const datify = (dateString: string) => new Date(dateString);
     return new TimeBot5000({
       votingOpens: datify(votingOpens),
       coveringBegins: datify(coveringBegins),
       coversDue: datify(coversDue),
+      signupOpens: datify(signupOpens),
       listeningParty: datify(listeningParty),
     });
   }
