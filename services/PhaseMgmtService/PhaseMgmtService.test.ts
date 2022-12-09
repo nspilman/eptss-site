@@ -1,6 +1,6 @@
-import { TimeBot5000 } from "./TimeBot5000";
+import { PhaseMgmtService } from "./PhaseMgmtService";
 
-describe("TimeBot5000 tests", () => {
+describe("PhaseMgmtService tests", () => {
   const signupOpens = "2022-11-17";
   const votingOpens = "2022-12-06";
   const coveringBegins = "2022-12-17";
@@ -23,8 +23,8 @@ describe("TimeBot5000 tests", () => {
 
     const expected = "signups";
 
-    const timeBot5000 = await TimeBot5000.build(mockDates);
-    expect((await timeBot5000).phase).toBe(expected);
+    const phaseMgmtService = await PhaseMgmtService.build(mockDates);
+    expect((await phaseMgmtService).phase).toBe(expected);
   });
 
   test("returns phase voting when date is during voting phase", async () => {
@@ -35,8 +35,8 @@ describe("TimeBot5000 tests", () => {
 
     const expected = "voting";
 
-    const timeBot5000 = await TimeBot5000.build(mockDates);
-    expect((await timeBot5000).phase).toBe(expected);
+    const phaseMgmtService = await PhaseMgmtService.build(mockDates);
+    expect((await phaseMgmtService).phase).toBe(expected);
   });
 
   test("returns phase covering when date is during covering phase", async () => {
@@ -47,8 +47,8 @@ describe("TimeBot5000 tests", () => {
 
     const expected = "covering";
 
-    const timeBot5000 = await TimeBot5000.build(mockDates);
-    expect((await timeBot5000).phase).toBe(expected);
+    const phaseMgmtService = await PhaseMgmtService.build(mockDates);
+    expect((await phaseMgmtService).phase).toBe(expected);
   });
 
   test("returns phase celebration when date is after covering due", async () => {
@@ -59,15 +59,15 @@ describe("TimeBot5000 tests", () => {
 
     const expected = "celebration";
 
-    const timeBot5000 = await TimeBot5000.build(mockDates);
-    expect((await timeBot5000).phase).toBe(expected);
+    const phaseMgmtService = await PhaseMgmtService.build(mockDates);
+    expect((await phaseMgmtService).phase).toBe(expected);
   });
 
   test("throws error when phase dates are not in order signups > voting > covering > celebration", async () => {
     const dateBeforeSignupPhase = "2022-01-01";
 
     try {
-      await TimeBot5000.build({
+      await PhaseMgmtService.build({
         ...mockDates,
         coveringBegins: dateBeforeSignupPhase,
       });
@@ -85,7 +85,7 @@ describe("TimeBot5000 tests", () => {
     jest.setSystemTime(new Date(dateBeforeSignupPhase));
 
     try {
-      await TimeBot5000.build(mockDates);
+      await PhaseMgmtService.build(mockDates);
     } catch (e: unknown) {
       expect((e as { message: string }).message).toBe(
         "current date cannot be before signup date. Signup starts the current round"
@@ -100,10 +100,25 @@ describe("TimeBot5000 tests", () => {
     jest.setSystemTime(new Date(dateAfterListeningParty));
 
     try {
-      await TimeBot5000.build(mockDates);
+      await PhaseMgmtService.build(mockDates);
     } catch (e: unknown) {
       expect((e as { message: string }).message).toBe(
         "current date cannot be after listening party. The Listening Party ends the round"
+      );
+    }
+  });
+
+  test("throws error when datestring of dates from constructor are invalid", async () => {
+    const invalidDateString = "ohyouthoughtthiswasarabbit?";
+
+    try {
+      await PhaseMgmtService.build({
+        ...mockDates,
+        coveringBegins: invalidDateString,
+      });
+    } catch (e: unknown) {
+      expect((e as { message: string }).message).toBe(
+        `${invalidDateString} is an invalid date string`
       );
     }
   });

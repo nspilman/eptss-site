@@ -67,7 +67,7 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
     },
     {
       key: "isWinningSong",
-      display: "Won the vote?",
+      display: "Covered?",
     },
   ];
 

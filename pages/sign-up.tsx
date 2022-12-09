@@ -3,7 +3,7 @@ import React from "react";
 import { getCurrentRound } from "queries";
 import { SignUp } from "components/SignUp/SignUp";
 import { PageContainer } from "components/shared/PageContainer";
-import { TimeBot5000 } from "services/Timebot5000/TimeBot5000";
+import { PhaseMgmtService } from "services/PhaseMgmtService";
 
 const SignupPage = ({
   roundId,
@@ -24,8 +24,8 @@ const SignupPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await getCurrentRound();
-  const timebot5000 = await TimeBot5000.build();
-  const areSignupsOpen = timebot5000.getCurrentPhase() === "signups";
+  const { getCurrentPhase } = await PhaseMgmtService.build();
+  const areSignupsOpen = getCurrentPhase() === "signups";
 
   return {
     props: {

@@ -10,7 +10,7 @@ interface Props {
 
 type Phase = "signups" | "voting" | "covering" | "celebration";
 
-export class TimeBot5000 {
+export class PhaseMgmtService {
   phase: Phase;
 
   private constructor({
@@ -68,8 +68,14 @@ export class TimeBot5000 {
       signupOpens,
       listeningParty,
     } = currentRound || (await getCurrentRound());
-    const datify = (dateString: string) => new Date(dateString);
-    return new TimeBot5000({
+    const datify = (dateString: string) => {
+      const date = new Date(dateString);
+      const isValidDate = date instanceof Date && !isNaN(date.getDate());
+      if (!isValidDate)
+        throw new Error(`${dateString} is an invalid date string`);
+      return date;
+    };
+    return new PhaseMgmtService({
       votingOpens: datify(votingOpens),
       coveringBegins: datify(coveringBegins),
       coversDue: datify(coversDue),

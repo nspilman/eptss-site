@@ -4,7 +4,7 @@ import { VoteOptionEntity, VoteOptionModel } from "../components/Voting/types";
 import { Voting } from "../components/Voting";
 import { getCurrentRound, getSignupsByRound } from "../queries";
 import { getIsSuccess } from "../utils";
-import { TimeBot5000 } from "services/Timebot5000/";
+import { PhaseMgmtService } from "services/PhaseMgmtService";
 
 const VotingPage = ({
   voteOptions,
@@ -16,8 +16,8 @@ const VotingPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await getRound();
-  const timebot5000 = await TimeBot5000.build();
-  const isVotingOpen = timebot5000.getCurrentPhase() === "voting";
+  const { getCurrentPhase } = await PhaseMgmtService.build();
+  const isVotingOpen = getCurrentPhase() === "voting";
   const voteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
 
   return {
