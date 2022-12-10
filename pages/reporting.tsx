@@ -1,6 +1,6 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
-import { getCurrentRound } from "queries";
 import React from "react";
+import { PhaseMgmtService } from "services/PhaseMgmtService";
 
 import { Reporting } from "../components/Reporting";
 import { getSupabaseClient } from "../utils/getSupabaseClient";
@@ -17,7 +17,8 @@ export const getStaticProps: GetStaticProps = async () => {
   const { data: winningSongs, error: winningSongsError } = await supabase
     .from("round_metadata")
     .select("song_id, id");
-  const { roundId } = await getCurrentRound();
+  
+  const { roundId } = await PhaseMgmtService.build();
 
   return {
     props: {

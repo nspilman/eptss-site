@@ -1,17 +1,16 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import React from "react";
-import { VoteOptionEntity, VoteOptionModel } from "../components/Voting/types";
-import { Voting } from "../components/Voting";
-import { getCurrentRound, getSignupsByRound } from "../queries";
-import { getIsSuccess } from "../utils";
+import { VoteOptionEntity, VoteOptionModel } from "components/Voting/types";
+import { Voting } from "components/Voting";
+import { getSignupsByRound } from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 
 const VotingPage = ({
   voteOptions,
   roundId,
   isVotingOpen,
+  coveringStartString,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const coveringStartString = "Saturday, December 17th";
   return (
     isVotingOpen && (
       <Voting
@@ -24,8 +23,14 @@ const VotingPage = ({
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { roundId } = await getRound();
-  const { phase } = await PhaseMgmtService.build();
+  const { roundId } = await PhaseMgmtService.build();
+
+  const {
+    phase,
+    dateLabels: {
+      covering: { opens: coveringStartString },
+    },
+  } = await PhaseMgmtService.build();
   const isVotingOpen = phase === "voting";
   const voteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
 
@@ -34,6 +39,7 @@ export const getStaticProps: GetStaticProps = async () => {
       voteOptions,
       roundId,
       isVotingOpen,
+      coveringStartString,
     },
   };
 };
@@ -41,14 +47,6 @@ export const getStaticProps: GetStaticProps = async () => {
 export default VotingPage;
 
 // private
-
-const getRound = async () => {
-  const { roundId, votingOpens, status } = await getCurrentRound();
-  if (!getIsSuccess(status)) {
-    throw new Error("failed to get RoundId");
-  }
-  return { roundId, votingOpens };
-};
 
 const getVoteOptions = async (roundId: number) => {
   const { data: resultEntities, error } = await getSignupsByRound(roundId);

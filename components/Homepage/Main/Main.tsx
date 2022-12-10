@@ -5,6 +5,8 @@ import { RoundDetails } from "../../../types";
 import { SignupButton } from "../SignupButton";
 import * as styles from "./Main.css";
 import { RoundDisplay } from "./RoundDisplay";
+import { Phase } from "services/PhaseMgmtService";
+import { useBlurb } from "./useBlurb";
 
 const howItWorksContent = [
   {
@@ -25,10 +27,17 @@ const howItWorksContent = [
 
 interface Props {
   roundContent: RoundDetails[];
+  phaseInfo: {
+    phase: Phase;
+    phaseEndsDatelabel: string;
+    roundId: number;
+  };
 }
 
-export const Main = ({ roundContent }: Props) => {
+export const Main = ({ roundContent, phaseInfo }: Props) => {
   const { howItWorks } = useNavOptions();
+  const blurb = useBlurb(phaseInfo);
+
   return (
     <main className="main">
       <div className={styles.container}>
@@ -45,9 +54,7 @@ export const Main = ({ roundContent }: Props) => {
               </div>
             ))}
           </div>
-          <p className={styles.blurb}>
-            {"Round 16 is underway! Votes are due Friday, Dec 16"}
-          </p>
+          <p className={styles.blurb}>{blurb}</p>
           <div className={centered}>
             <Link href={howItWorks} id="learn">
               <button>Rules</button>

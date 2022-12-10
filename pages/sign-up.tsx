@@ -1,6 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import React from "react";
-import { getCurrentRound } from "queries";
 import { SignUp } from "components/SignUp/SignUp";
 import { PageContainer } from "components/shared/PageContainer";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
@@ -18,8 +17,7 @@ const SignupPage = ({
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { roundId } = await getCurrentRound();
-  const { phase } = await PhaseMgmtService.build();
+  const { phase, roundId } = await PhaseMgmtService.build();
   const areSignupsOpen = phase === "signups";
 
   return {

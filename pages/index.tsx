@@ -1,15 +1,8 @@
 import type { GetStaticProps } from "next";
-import { Homepage } from "../components/Homepage";
-import { RoundDetails } from "../types";
+import { PhaseMgmtService } from "services/PhaseMgmtService";
+import { Homepage, Props } from "../components/Homepage";
 
 import { getSupabaseClient } from "../utils/getSupabaseClient";
-
-interface Props {
-  signupSheet: string;
-  mailingList: string;
-  blurb: string;
-  roundContent: RoundDetails[];
-}
 
 const Home = (props: Props) => {
   return <Homepage {...props} />;
@@ -55,9 +48,18 @@ export const getStaticProps: GetStaticProps = async () => {
       };
     });
 
+  const phaseMgmtService = await PhaseMgmtService.build();
+  const { phase, dateLabels, roundId } = phaseMgmtService;
+  const phaseEndsDatelabel = dateLabels[phase].closes;
+
   return {
     props: {
       roundContent,
+      phaseInfo: {
+        phase,
+        phaseEndsDatelabel,
+        roundId,
+      },
     },
   };
 };
