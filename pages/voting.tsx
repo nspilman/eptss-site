@@ -11,13 +11,22 @@ const VotingPage = ({
   roundId,
   isVotingOpen,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  return isVotingOpen && <Voting voteOptions={voteOptions} roundId={roundId} />;
+  const coveringStartString = "Saturday, December 17th";
+  return (
+    isVotingOpen && (
+      <Voting
+        voteOptions={voteOptions}
+        roundId={roundId}
+        coveringStartsLabel={coveringStartString}
+      />
+    )
+  );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await getRound();
-  const phaseMgmtService = await PhaseMgmtService.build();
-  const isVotingOpen = phaseMgmtService.getCurrentPhase() === "voting";
+  const { phase } = await PhaseMgmtService.build();
+  const isVotingOpen = phase === "voting";
   const voteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
 
   return {

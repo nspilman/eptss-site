@@ -1,5 +1,5 @@
 import { useSuccessState } from "components/hooks/useSuccessState";
-import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel/ActionSuccessPanel";
+import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { Form } from "components/shared/Form";
 import {
   additionalComments,

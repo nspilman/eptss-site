@@ -5,7 +5,8 @@ import { VoteOptionModel } from "./types";
 
 export const useVoting = (
   roundId: number,
-  setSuccessState: (successState: "success" | "error") => void
+  setSuccessState: (successState: "success" | "error") => void,
+  coveringStartsLabel: string
 ) => {
   const subapase = useSupabase();
 
@@ -38,5 +39,21 @@ export const useVoting = (
     return [yourName, yourEmail, ...votingFields];
   };
 
-  return { submitVotes, getFields };
+  const successText = {
+    header: `Thank you for voting!!`,
+    body: `The winning song will be announced and covers will start on ${coveringStartsLabel}`,
+    thankyou: `May the best song win!`,
+  };
+
+  const signupSuccessImage = {
+    src: "/thxForVoting.png",
+    alt: "Thank you for voting!!",
+  };
+
+  const successPanelProps = {
+    text: successText,
+    image: signupSuccessImage,
+  };
+
+  return { submitVotes, getFields, successPanelProps };
 };

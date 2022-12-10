@@ -19,8 +19,8 @@ const SignupPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await getCurrentRound();
-  const phaseMgmtService = await PhaseMgmtService.build();
-  const areSignupsOpen = phaseMgmtService.getCurrentPhase() === "signups";
+  const { phase } = await PhaseMgmtService.build();
+  const areSignupsOpen = phase === "signups";
 
   return {
     props: {

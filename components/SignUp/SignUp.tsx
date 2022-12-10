@@ -4,7 +4,7 @@ import { useSuccessState } from "../hooks/useSuccessState";
 import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { useSignup } from "./useSignup";
-import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel/ActionSuccessPanel";
+import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 
 interface Props {
   roundId: number;
