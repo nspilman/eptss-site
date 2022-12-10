@@ -4,6 +4,7 @@ import { getCurrentRound } from "queries";
 import { SignUp } from "components/SignUp/SignUp";
 import { PageContainer } from "components/shared/PageContainer";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
+import { JoinMailingList } from "components/JoinMailingList";
 
 const SignupPage = ({
   roundId,
@@ -11,21 +12,15 @@ const SignupPage = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
-      {areSignupsOpen ? (
-        <SignUp roundId={roundId} />
-      ) : (
-        <div>
-          <h2>Signups are closed - check back soon!</h2>
-        </div>
-      )}
+      {areSignupsOpen ? <SignUp roundId={roundId} /> : <JoinMailingList />}
     </PageContainer>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await getCurrentRound();
-  const { getCurrentPhase } = await PhaseMgmtService.build();
-  const areSignupsOpen = getCurrentPhase() === "signups";
+  const phaseMgmtService = await PhaseMgmtService.build();
+  const areSignupsOpen = phaseMgmtService.getCurrentPhase() === "signups";
 
   return {
     props: {

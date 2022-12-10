@@ -14,6 +14,18 @@ export const useSignup = (
     setSuccessState(getIsSuccess(status) ? "success" : "error");
   };
 
+  const signupSuccessText = {
+    header: `Thank you for signing up for this round of Everyone Plays the Same Song!`,
+    body: ` You will get a welcome email with all the information and dates you will
+    need.`,
+    thankyou: `Thanks for participating`,
+  };
+
+  const signupSuccessImage = {
+    src: "/welcomeImage.png",
+    alt: "Welcome to Everyone Plays the Same Song!",
+  };
+
   const convertModelToEntity = ({
     createdAt,
     email,
@@ -34,5 +46,11 @@ export const useSignup = (
       created_at: createdAt,
     };
   };
-  return { signUp };
+  return {
+    signUp,
+    signupSuccess: {
+      text: signupSuccessText,
+      image: signupSuccessImage,
+    },
+  };
 };

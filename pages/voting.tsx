@@ -16,8 +16,8 @@ const VotingPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await getRound();
-  const { getCurrentPhase } = await PhaseMgmtService.build();
-  const isVotingOpen = getCurrentPhase() === "voting";
+  const phaseMgmtService = await PhaseMgmtService.build();
+  const isVotingOpen = phaseMgmtService.getCurrentPhase() === "voting";
   const voteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
 
   return {

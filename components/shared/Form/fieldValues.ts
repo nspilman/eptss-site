@@ -12,3 +12,11 @@ export const yourEmail = {
   type: "email" as const,
   size: "small" as const,
 };
+
+export const additionalComments = {
+  label: "Additional Comments",
+  placeholder: "Additional Comments",
+  field: "additionalComments" as const,
+  size: "large" as const,
+  optional: true,
+};

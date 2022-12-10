@@ -3,7 +3,11 @@ import { Form } from "../../shared/Form/Form";
 import { SignupModel } from "../types";
 import Link from "next/link";
 import { useNavOptions } from "../../hooks/useNavOptions";
-import { yourEmail, yourName } from "../../shared/Form/fieldValues";
+import {
+  additionalComments,
+  yourEmail,
+  yourName,
+} from "../../shared/Form/fieldValues";
 
 interface Props {
   onSubmit: (signupModel: SignupModel) => void;
@@ -36,13 +40,7 @@ export const SignupForm = ({ onSubmit, roundId }: Props) => {
       field: "youtubeLink" as const,
       size: "large" as const,
     },
-    {
-      label: "Additional Comments",
-      placeholder: "Additional Comments",
-      field: "additionalComments" as const,
-      size: "large" as const,
-      optional: true,
-    },
+    additionalComments,
   ];
 
   return (
