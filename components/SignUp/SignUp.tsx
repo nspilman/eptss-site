@@ -1,26 +1,38 @@
 import React from "react";
-import { SignupForm } from "./SignupForm";
-import { useSuccessState } from "../hooks/useSuccessState";
 import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { useSignup } from "./useSignup";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
+import { useNavOptions } from "components/hooks/useNavOptions";
+import Link from "next/link";
 
 interface Props {
   roundId: number;
+  signupsCloseDateLabel: string;
 }
 
-export const SignUp = ({ roundId }: Props) => {
-  const [successState, setSuccessState] = useSuccessState();
+export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
+  const { signUp, signupSuccess, fields } = useSignup(roundId);
 
-  const { signUp, signupSuccess } = useSignup(roundId, setSuccessState);
+  const { howItWorks } = useNavOptions();
+
+  const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
   return (
     <FormContainer
-      form={<SignupForm onSubmit={signUp} roundId={roundId} />}
+      fields={fields}
+      title={title}
+      description={
+        <div>
+          Sign up with your name, email and the song you want to cover!
+          <br />
+          Signups close Midnight of {signupsCloseDateLabel}.
+          <Link href={howItWorks}> Full rules here</Link>
+        </div>
+      }
       successBlock={<ActionSuccessPanel {...signupSuccess} />}
       errorMessage={GENERIC_ERROR_MESSAGE}
-      successState={successState}
+      onSubmit={signUp}
     />
   );
 };

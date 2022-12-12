@@ -7,9 +7,7 @@ interface MailingListModel {
   additionalComments?: string;
 }
 
-export const useJoinMailingList = (
-  setSuccessState: (successState: "error" | "success") => void
-) => {
+export const useJoinMailingList = () => {
   const supabase = useSupabase();
   const onSubmit = async ({
     additionalComments,
@@ -24,7 +22,7 @@ export const useJoinMailingList = (
     const { status } = await supabase
       .from("mailing_list")
       .insert(mailingListEntity);
-    setSuccessState(getIsSuccess(status) ? "success" : "error");
+    return getIsSuccess(status) ? "success" : "error";
   };
 
   const successText = {

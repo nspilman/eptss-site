@@ -1,17 +1,19 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
+import {
+  additionalComments,
+  yourEmail,
+  yourName,
+} from "components/shared/FormContainer/Form/fieldValues";
 import { getIsSuccess } from "utils";
 import { SignupEntity, SignupModel } from "./types";
 
-export const useSignup = (
-  roundId: number,
-  setSuccessState: (successState: "error" | "success") => void
-) => {
+export const useSignup = (roundId: number) => {
   const supabase = useSupabase();
 
   const signUp = async (signupModel: SignupModel) => {
-    const signupEntity = convertModelToEntity(signupModel);
+    const signupEntity = convertModelToEntity(signupModel, roundId);
     const { status } = await supabase.rpc("signup", signupEntity);
-    setSuccessState(getIsSuccess(status) ? "success" : "error");
+    return getIsSuccess(status) ? "success" : "error";
   };
 
   const signupSuccessText = {
@@ -26,7 +28,42 @@ export const useSignup = (
     alt: "Welcome to Everyone Plays the Same Song!",
   };
 
-  const convertModelToEntity = ({
+  const fields = [
+    yourName,
+    yourEmail,
+    {
+      label: "Song title",
+      placeholder: "Song title",
+      field: "songTitle" as const,
+      size: "large" as const,
+    },
+    {
+      label: "Artist",
+      placeholder: "artist",
+      field: "artist" as const,
+      size: "large" as const,
+    },
+    {
+      label: "Youtube link",
+      placeholder: "Youtube link",
+      field: "youtubeLink" as const,
+      size: "large" as const,
+    },
+    additionalComments,
+  ];
+
+  return {
+    signUp,
+    fields,
+    signupSuccess: {
+      text: signupSuccessText,
+      image: signupSuccessImage,
+    },
+  };
+};
+
+const convertModelToEntity = (
+  {
     createdAt,
     email,
     name,
@@ -34,23 +71,17 @@ export const useSignup = (
     artist,
     youtubeLink,
     additionalComments,
-  }: SignupModel): SignupEntity => {
-    return {
-      email,
-      name,
-      artist_name: artist,
-      song_title: songTitle,
-      youtube_link: youtubeLink,
-      additional_comments: additionalComments,
-      round_id: roundId,
-      created_at: createdAt,
-    };
-  };
+  }: SignupModel,
+  roundId: number
+): SignupEntity => {
   return {
-    signUp,
-    signupSuccess: {
-      text: signupSuccessText,
-      image: signupSuccessImage,
-    },
+    email,
+    name,
+    artist_name: artist,
+    song_title: songTitle,
+    youtube_link: youtubeLink,
+    additional_comments: additionalComments,
+    round_id: roundId,
+    created_at: createdAt,
   };
 };

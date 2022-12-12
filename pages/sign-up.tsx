@@ -8,22 +8,37 @@ import { JoinMailingList } from "components/JoinMailingList";
 const SignupPage = ({
   roundId,
   areSignupsOpen,
+  signupsCloseDateLabel,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
-      {areSignupsOpen ? <SignUp roundId={roundId} /> : <JoinMailingList />}
+      {areSignupsOpen ? (
+        <SignUp
+          roundId={roundId}
+          signupsCloseDateLabel={signupsCloseDateLabel}
+        />
+      ) : (
+        <JoinMailingList />
+      )}
     </PageContainer>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { phase, roundId } = await PhaseMgmtService.build();
+  const {
+    phase,
+    roundId,
+    dateLabels: {
+      signups: { closes: signupsCloseDateLabel },
+    },
+  } = await PhaseMgmtService.build();
   const areSignupsOpen = phase === "signups";
 
   return {
     props: {
       roundId,
       areSignupsOpen,
+      signupsCloseDateLabel,
     },
   };
 };

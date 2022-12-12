@@ -1,31 +1,23 @@
-import { useSuccessState } from "components/hooks/useSuccessState";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import { Form } from "components/shared/Form";
 import {
   additionalComments,
   yourEmail,
   yourName,
-} from "components/shared/Form/fieldValues";
+} from "components/shared/FormContainer/Form/fieldValues";
 import { FormContainer } from "components/shared/FormContainer";
 import { useJoinMailingList } from "./useJoinMailingList";
 
 export const JoinMailingList = () => {
-  const [successState, setSuccessState] = useSuccessState();
-  const { onSubmit, successPanelProps } = useJoinMailingList(setSuccessState);
+  const { onSubmit, successPanelProps } = useJoinMailingList();
   return (
     <FormContainer
-      form={
-        <Form
-          title={"Signups closed - Join the Mailing List"}
-          description={
-            "you will receive email updates on the current round and when signups next open"
-          }
-          fields={[yourName, yourEmail, additionalComments]}
-          onSubmit={onSubmit}
-        />
+      title={"Signups closed - Join the Mailing List"}
+      description={
+        "you will receive email updates on the current round and when signups next open"
       }
+      fields={[yourName, yourEmail, additionalComments]}
+      onSubmit={onSubmit}
       successBlock={<ActionSuccessPanel {...successPanelProps} />}
-      successState={successState}
       errorMessage="Unable to sign up for the mailing list"
     />
   );

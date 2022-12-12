@@ -1,6 +1,4 @@
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
-import { useSuccessState } from "../hooks/useSuccessState";
-import { Form } from "../shared/Form";
 import { FormContainer } from "../shared/FormContainer";
 import { VoteOptionModel } from "./types";
 import { useVoting } from "./useVoting";
@@ -19,11 +17,9 @@ export const Voting = ({
   coveringStartsLabel,
 }: Props) => {
   const title = `Vote for the songs you want to cover in Round ${roundId}`;
-  const [successState, setSuccessState] = useSuccessState();
 
   const { submitVotes, getFields, successPanelProps } = useVoting(
     roundId,
-    setSuccessState,
     coveringStartsLabel
   );
 
@@ -32,17 +28,12 @@ export const Voting = ({
   return (
     <PageContainer title={title}>
       <FormContainer
-        form={
-          <Form
-            onSubmit={submitVotes}
-            title={title}
-            description={<></>}
-            fields={fields}
-          />
-        }
+        onSubmit={submitVotes}
+        title={title}
+        description={<></>}
+        fields={fields}
         successBlock={<ActionSuccessPanel {...successPanelProps} />}
         errorMessage={GENERIC_ERROR_MESSAGE}
-        successState={successState}
       />
     </PageContainer>
   );

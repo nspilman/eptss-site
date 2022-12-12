@@ -1,5 +1,5 @@
 import { style } from "@vanilla-extract/css";
-import { colors, titleFont } from "../../../styles/theme.css";
+import { colors, titleFont } from "../../../../styles/theme.css";
 
 export const form = style({
   alignItems: "center",

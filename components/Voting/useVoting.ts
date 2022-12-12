@@ -1,13 +1,12 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import { yourEmail, yourName } from "components/shared/Form/fieldValues";
+import {
+  yourEmail,
+  yourName,
+} from "components/shared/FormContainer/Form/fieldValues";
 import { getIsSuccess } from "utils";
 import { VoteOptionModel } from "./types";
 
-export const useVoting = (
-  roundId: number,
-  setSuccessState: (successState: "success" | "error") => void,
-  coveringStartsLabel: string
-) => {
+export const useVoting = (roundId: number, coveringStartsLabel: string) => {
   const subapase = useSupabase();
 
   const submitVotes = async (formPayload: Record<string, string>) => {
@@ -27,7 +26,7 @@ export const useVoting = (
       .from("song_selection_votes")
       .insert(votes);
     const isSuccess = getIsSuccess(status);
-    setSuccessState(isSuccess ? "success" : "error");
+    return isSuccess ? "success" : "error";
   };
 
   const getFields = (voteOptions: VoteOptionModel[]) => {
