@@ -8,7 +8,7 @@ interface BaseField<T> {
 }
 
 export interface TextField<T> extends BaseField<T> {
-  type?: "text" | "email";
+  type?: "text" | "email" | "password";
   placeholder: string;
 }
 

@@ -31,6 +31,7 @@ export const getStaticProps: GetStaticProps = async () => {
       covering: { opens: coveringStartString },
     },
   } = await PhaseMgmtService.build();
+
   const isVotingOpen = phase === "voting";
   const voteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
 

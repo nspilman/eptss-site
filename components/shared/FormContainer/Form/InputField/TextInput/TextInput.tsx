@@ -7,7 +7,7 @@ interface Props<T extends FieldValues> {
   optional?: boolean;
   field: Path<T>;
   register: UseFormRegister<T>;
-  type?: "email" | "text";
+  type?: "email" | "text" | "password";
   placeholder: string;
 }
 
@@ -19,6 +19,7 @@ export function TextInput<T extends FieldValues>({
   placeholder,
 }: Props<T>) {
   const required = !optional;
+
   return (
     <input
       className={styles.input}

@@ -13,6 +13,14 @@ export const yourEmail = {
   size: "small" as const,
 };
 
+export const password = {
+  label: "password",
+  placeholder: "",
+  field: "password" as const,
+  type: "password" as const,
+  size: "small" as const,
+};
+
 export const additionalComments = {
   label: "Additional Comments",
   placeholder: "Additional Comments",

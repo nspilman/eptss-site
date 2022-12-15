@@ -1,8 +1,5 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import {
-  yourEmail,
-  yourName,
-} from "components/shared/FormContainer/Form/fieldValues";
+import { yourEmail, yourName } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
 import { VoteOptionModel } from "./types";
 

@@ -3,7 +3,7 @@ import {
   additionalComments,
   yourEmail,
   yourName,
-} from "components/shared/FormContainer/Form/fieldValues";
+} from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
 import { SignupEntity, SignupModel } from "./types";
 

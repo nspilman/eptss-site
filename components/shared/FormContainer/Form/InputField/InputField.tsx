@@ -45,6 +45,7 @@ export function InputField<T extends FieldValues>({
           register={register}
           field={fieldId}
           optional={optional}
+          type={type}
           placeholder={field.placeholder}
         />
       )}

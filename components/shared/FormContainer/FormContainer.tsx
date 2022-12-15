@@ -8,7 +8,7 @@ interface Props<T extends FieldValues> {
   successBlock: React.ReactNode;
   errorMessage: string;
   title: string;
-  description: React.ReactNode;
+  description?: React.ReactNode;
   fields: InputType<T>[];
   onSubmit: (payload: T) => Promise<"success" | "error">;
 }
