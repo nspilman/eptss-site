@@ -1,5 +1,6 @@
 import { Path } from "react-hook-form";
 
+export type FieldTypes = "text" | "email" | "password" | "vote";
 interface BaseField<T> {
   label: string;
   field: Path<T>;
@@ -8,12 +9,12 @@ interface BaseField<T> {
 }
 
 export interface TextField<T> extends BaseField<T> {
-  type?: "text" | "email" | "password";
+  type?: Extract<FieldTypes, "text" | "email" | "password">;
   placeholder: string;
 }
 
 export interface VoteField<T> extends BaseField<T> {
-  type: "vote";
+  type: Extract<FieldTypes, "vote">;
   label: string;
   link: string;
 }
