@@ -1,5 +1,6 @@
 import { AggregateVoteTable } from "./AggregateVoteTable";
 import { OutstandingVotes } from "./OutstandingVotes/OutstandingVotes";
+import * as styles from "./VoteReport.css";
 
 export const VotingReport = ({
   dateLabels,
@@ -11,8 +12,10 @@ export const VotingReport = ({
   return (
     <div>
       Voting: {opens} - {closes}
-      <OutstandingVotes />
-      <AggregateVoteTable />
+      <div className={styles.container}>
+        <OutstandingVotes />
+        <AggregateVoteTable />
+      </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { PostgrestError } from "@supabase/supabase-js";
 import { DataTable } from "components/shared/DataTable";
 import { useEffect, useState } from "react";
 import { SummaryDisplay } from "./SummaryDisplay/SummaryDisplay";
+import * as styles from "./AsyncTableQueryDisplay.css";
 
 interface Props<T extends string> {
   headers: { key: T; display: string }[];
@@ -36,14 +37,14 @@ export function AsyncTableQueryDisplay<T extends string>({
   return (
     <div>
       {isLoading ? (
-        <h2>bruh</h2>
+        <h2>loading</h2>
       ) : (
-        <>
+        <div className={styles.container}>
           {summaryFunction && (
             <SummaryDisplay {...summaryFunction} data={payload} />
           )}
           <DataTable headers={headers} rows={payload} />
-        </>
+        </div>
       )}
     </div>
   );
