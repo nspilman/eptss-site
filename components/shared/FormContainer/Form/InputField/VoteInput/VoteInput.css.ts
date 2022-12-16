@@ -5,6 +5,7 @@ export const voteOptions = style({
   display: "flex",
   flexDirection: "row",
   color: colors.darkblue,
+  alignItems: "center",
 });
 
 export const numberLabel = style({
@@ -14,4 +15,8 @@ export const numberLabel = style({
 
 export const option = style({
   padding: "0 .25rem",
+});
+
+export const optionsLegend = style({
+  fontSize: ".5rem",
 });
