@@ -1,5 +1,4 @@
 import classnames from "classnames";
-import Link from "next/link";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
 import * as styles from "./InputField.css";
@@ -39,7 +38,7 @@ export function InputField<T extends FieldValues>({
         )}
       </div>
       {type === "vote" ? (
-        <VoteInput register={register} field={fieldId} link={field.link} />
+        <VoteInput register={register} field={fieldId} />
       ) : (
         <TextInput
           register={register}
