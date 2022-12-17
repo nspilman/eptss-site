@@ -1,4 +1,4 @@
-function ProfilePage({ pioneer }) {
+function ProfilePage({ pioneer }: { pioneer: string }) {
   return <div>{pioneer}</div>;
 }
 
