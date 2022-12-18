@@ -1,7 +1,6 @@
 import { password, yourEmail } from "components/shared/fieldValues";
 import { FormContainer } from "components/shared/FormContainer";
 import {
-  useUser,
   useSupabaseClient,
   useSessionContext,
 } from "@supabase/auth-helpers-react";

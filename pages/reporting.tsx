@@ -13,12 +13,14 @@ const ReportingPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
-  const { data: allSongsData, error } = await supabase.rpc("get_all_songs");
+  const { roundId } = await PhaseMgmtService.build();
+  const { data: allSongsData, error } = await supabase
+    .from("vote_results")
+    .select("*");
+
   const { data: winningSongs, error: winningSongsError } = await supabase
     .from("round_metadata")
     .select("song_id, id");
-  
-  const { roundId } = await PhaseMgmtService.build();
 
   return {
     props: {

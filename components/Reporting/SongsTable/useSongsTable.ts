@@ -4,7 +4,7 @@ export interface SongDatum {
   artist: string;
   title: string;
   round_id: number;
-  vote: number;
+  average: number;
   isWinningSong: boolean;
 }
 
@@ -13,7 +13,7 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
     "songTitle",
     "artist",
     "roundId",
-    "avgVote",
+    "average",
     "isWinningSong",
   ] as const;
   type Headerkey = typeof headerKeys[number];
@@ -25,11 +25,11 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
   }
 
   const allSongsDisplay = allSongsData.map(
-    ({ artist, title, round_id, vote, isWinningSong }) => ({
+    ({ artist, title, round_id, average, isWinningSong }) => ({
       songTitle: title,
       artist: capitalizeFirstLetter(artist),
       roundId: round_id,
-      avgVote: vote.toPrecision(3),
+      average: average.toPrecision(3),
       isWinningSong: isWinningSong.toString(),
     })
   );
@@ -62,7 +62,7 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
       display: "Round Id",
     },
     {
-      key: "avgVote",
+      key: "average",
       display: "Average Vote",
     },
     {
