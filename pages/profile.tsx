@@ -29,7 +29,6 @@ export async function getServerSideProps(ctx) {
     )
     .filter("submitter_email", "eq", session?.user.email);
 
-  console.log({ data });
   return {
     props: {
       pioneer: JSON.stringify(data, null, 4),
