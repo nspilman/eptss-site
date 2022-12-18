@@ -1,12 +1,20 @@
-import {
-  createBrowserSupabaseClient,
-  createServerSupabaseClient,
-} from "@supabase/auth-helpers-nextjs";
-import { useState } from "react";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { Profile, VoteSummary } from "components/Profile";
+import { PageContainer } from "components/shared/PageContainer";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
-function ProfilePage({ pioneer }: { pioneer: string }) {
-  return <div>{pioneer}</div>;
+function ProfilePage({
+  voteSummary,
+  profileSummary,
+}: {
+  voteSummary: VoteSummary[];
+  profileSummary: { email: string };
+}) {
+  return (
+    <PageContainer title="Profile">
+      <Profile voteSummary={voteSummary} profileSummary={profileSummary} />
+    </PageContainer>
+  );
 }
 
 export async function getServerSideProps(ctx) {
@@ -18,20 +26,24 @@ export async function getServerSideProps(ctx) {
     data: { session },
   } = await authClient.auth.getSession();
 
-  const { data } = await dbClient
-    .from("song_selection_votes")
-    .select(
-      `vote, round_id, song:vote_results (
-        average,
-        id
-    )
-    `
-    )
-    .filter("submitter_email", "eq", session?.user.email);
+  const { email } = session?.user || {};
 
+  const { data } = await dbClient
+    .from("votes_diff_with_average")
+    .select("*")
+    .filter("email", "eq", email);
+
+  const voteSummary = data?.map((vote) => {
+    return {
+      ...vote,
+      average: vote.average.toPrecision(3),
+      delta: (vote.vote - vote.average).toPrecision(2),
+    };
+  });
   return {
     props: {
-      pioneer: JSON.stringify(data, null, 4),
+      voteSummary,
+      profileSummary: { email },
       notFound: process.env.NODE_ENV === "production",
     }, // will be passed to the page component as props
   };
