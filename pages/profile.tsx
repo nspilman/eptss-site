@@ -29,12 +29,19 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   const { email } = session?.user || {};
 
-  const { data } = await dbClient
+  const { data: voteSummaryRaw } = await dbClient
     .from("votes_diff_with_average")
     .select("*")
     .filter("email", "eq", email);
 
-  const voteSummary = data?.map((vote) => {
+  const { data } = await dbClient
+    .from("sign_ups")
+    .select("*")
+    .filter("email", "eq", email);
+
+  console.log({ data });
+
+  const voteSummary = voteSummaryRaw?.map((vote) => {
     return {
       ...vote,
       average: vote.average.toPrecision(3),
