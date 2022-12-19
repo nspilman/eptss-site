@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { Profile, VoteSummary } from "components/Profile";
 import { PageContainer } from "components/shared/PageContainer";
+import { GetServerSidePropsContext } from "next";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
 function ProfilePage({
@@ -17,7 +18,7 @@ function ProfilePage({
   );
 }
 
-export async function getServerSideProps(ctx) {
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   // Create authenticated Supabase Client
   const authClient = createServerSupabaseClient(ctx);
   const dbClient = getSupabaseClient();

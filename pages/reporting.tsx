@@ -4,7 +4,6 @@ import { PhaseMgmtService } from "services/PhaseMgmtService";
 
 import { Reporting } from "../components/Reporting";
 import { getSupabaseClient } from "../utils/getSupabaseClient";
-
 const ReportingPage = ({
   allSongsData,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -13,27 +12,19 @@ const ReportingPage = ({
 
 export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
-  const { roundId } = await PhaseMgmtService.build();
+  const { roundId, phase } = await PhaseMgmtService.build();
+  const roundIdToRemove = ["signups", "voting"].includes(phase) ? roundId : -1;
   const { data: allSongsData, error } = await supabase
     .from("vote_results")
-    .select("*");
-
-  const { data: winningSongs, error: winningSongsError } = await supabase
-    .from("round_metadata")
-    .select("song_id, id");
+    .select("artist, title, round_id, average, id, round_metadata(song_id)")
+    .filter("round_id", "neq", roundIdToRemove);
 
   return {
     props: {
-      allSongsData: allSongsData
-        ?.filter((song) => song.round_id !== roundId)
-        .map((song) => ({
-          ...song,
-          isWinningSong: winningSongs?.some(
-            (winningSong) =>
-              winningSong.id === song.round_id &&
-              winningSong.song_id === song.id
-          ),
-        })),
+      allSongsData: allSongsData?.map((song) => ({
+        ...song,
+        isWinningSong: !!((song.round_metadata as []) || []).length,
+      })),
     },
   };
 };
