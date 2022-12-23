@@ -2,9 +2,13 @@ import { getSupabaseClient } from "utils/getSupabaseClient";
 
 const supabase = getSupabaseClient();
 
+export enum Tables {
+  SignUps = "sign_ups",
+}
+
 export const getSignupsByRound = async (roundId: number) =>
   supabase
-    .from("sign_ups")
+    .from(Tables.SignUps)
     .select(
       `
   round_id,

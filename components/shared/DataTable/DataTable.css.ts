@@ -21,8 +21,37 @@ export const row = style({
 export const table = style({
   display: "flex",
   flexDirection: "column",
+  margin: "1rem",
 });
 
 export const defaultColumn = style({
-  width: "20vw",
+  width: "20%",
+});
+
+export const body = style({
+  overflow: "auto",
+});
+
+export const smallHeight = style({
+  height: "18rem",
+});
+
+export const mediumHeight = style({
+  height: "36rem",
+});
+
+export const largeHeight = style({
+  height: "48rem",
+});
+
+export const smallWidth = style({
+  width: "50vw",
+});
+
+export const mediumWidth = style({
+  width: "70vw",
+});
+
+export const largeWidth = style({
+  width: "90vw",
 });

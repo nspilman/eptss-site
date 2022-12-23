@@ -11,11 +11,32 @@ interface Header<T> {
 interface Props<T extends string> {
   headers: Readonly<Header<T>[]>;
   rows: Record<T, string | number>[];
+  variant?: "small" | "medium" | "large";
 }
 
-export function DataTable<T extends string>({ headers, rows }: Props<T>) {
+const classesByVariant = {
+  small: {
+    height: styles.smallHeight,
+    width: styles.smallWidth,
+  },
+  medium: {
+    height: styles.mediumHeight,
+    width: styles.mediumWidth,
+  },
+  large: {
+    height: styles.largeHeight,
+    width: styles.largeWidth,
+  },
+};
+
+export function DataTable<T extends string>({
+  headers,
+  rows,
+  variant = "medium",
+}: Props<T>) {
   const [sortKey, setSortKey] = useState<T>();
   const [descSort, setDescSort] = useState(true);
+  const classByVariant = classesByVariant[variant];
 
   const onHeaderClick = (newSortKey: T) => {
     if (newSortKey === sortKey) {
@@ -36,7 +57,7 @@ export function DataTable<T extends string>({ headers, rows }: Props<T>) {
   }
 
   return (
-    <table className={styles.table}>
+    <table className={classnames(styles.table, classByVariant.width)}>
       <thead>
         <tr>
           {headers.map(({ key, className, display }) => (
@@ -53,11 +74,14 @@ export function DataTable<T extends string>({ headers, rows }: Props<T>) {
           ))}
         </tr>
       </thead>
-      <tbody>
+      <tbody className={classnames(styles.body, classByVariant.height)}>
         {rows.map((row, i) => (
-          <tr className={styles.row} key={i}>
+          <tr className={styles.row} key={JSON.stringify(row) + i}>
             {headers.map(({ key, className }) => (
-              <td key={row[key]} className={className || styles.defaultColumn}>
+              <td
+                key={JSON.stringify(row) + row[key]}
+                className={className || styles.defaultColumn}
+              >
                 {row[key]}
               </td>
             ))}
