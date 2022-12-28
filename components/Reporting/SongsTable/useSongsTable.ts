@@ -48,26 +48,32 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
   const headers: {
     key: Headerkey;
     display: string;
+    sortable: true;
   }[] = [
     {
       key: "songTitle",
       display: "Song Title",
+      sortable: true,
     },
     {
       key: "artist",
       display: "Artist",
+      sortable: true,
     },
     {
       key: "roundId",
       display: "Round Id",
+      sortable: true,
     },
     {
       key: "average",
       display: "Average Vote",
+      sortable: true,
     },
     {
       key: "isWinningSong",
       display: "Covered?",
+      sortable: true,
     },
   ];
 

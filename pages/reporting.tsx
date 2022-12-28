@@ -1,4 +1,5 @@
 import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { Views } from "queries";
 import React from "react";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 
@@ -15,7 +16,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const { roundId, phase } = await PhaseMgmtService.build();
   const roundIdToRemove = ["signups", "voting"].includes(phase) ? roundId : -1;
   const { data: allSongsData, error } = await supabase
-    .from("vote_results")
+    .from(Views.VoteResults)
     .select("artist, title, round_id, average, id, round_metadata(song_id)")
     .filter("round_id", "neq", roundIdToRemove);
 

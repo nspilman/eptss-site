@@ -4,6 +4,15 @@ const supabase = getSupabaseClient();
 
 export enum Tables {
   SignUps = "sign_ups",
+  RoundMetadata = "round_metadata",
+  MailingList = "mailing_list",
+  Votes = "SongSelectionVotes",
+}
+
+export enum Views {
+  VoteResults = "vote_results",
+  VotesDiffsWithAverage = "votes_diff_with_average",
+  Submissions = "submissions_view",
 }
 
 export const getSignupsByRound = async (roundId: number) =>

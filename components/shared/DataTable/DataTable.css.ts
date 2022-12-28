@@ -7,6 +7,9 @@ export const headerCell = style({
   fontWeight: 700,
   padding: ".5rem 0",
   textDecoration: "underline",
+});
+
+export const sortable = style({
   cursor: "pointer",
 });
 
@@ -22,10 +25,11 @@ export const table = style({
   display: "flex",
   flexDirection: "column",
   margin: "1rem",
+  alignItems: "center",
 });
 
 export const defaultColumn = style({
-  width: "20%",
+  width: "20vw",
 });
 
 export const body = style({

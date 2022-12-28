@@ -1,4 +1,5 @@
 import type { GetStaticProps } from "next";
+import { Tables } from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { Homepage, Props } from "../components/Homepage";
 
@@ -21,7 +22,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
-    .from("round_metadata")
+    .from(Tables.RoundMetadata)
     .select(
       `playlist_url, 
       id, 

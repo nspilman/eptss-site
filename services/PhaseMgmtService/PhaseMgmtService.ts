@@ -1,6 +1,7 @@
 import { format, subDays } from "date-fns";
 import { PostgrestError } from "@supabase/supabase-js";
 import { getSupabaseClient } from "utils/getSupabaseClient";
+import { Tables } from "queries";
 
 interface Props {
   votingOpens: Date;
@@ -136,7 +137,7 @@ export const getCurrentRound = async (): Promise<
     error,
     status,
   } = await supabase
-    .from("round_metadata")
+    .from(Tables.RoundMetadata)
     .select(
       "id, signup_opens, voting_opens, covering_begins, covers_due, listening_party"
     )

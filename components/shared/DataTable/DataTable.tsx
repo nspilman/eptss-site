@@ -6,12 +6,14 @@ interface Header<T> {
   key: T;
   display: string;
   className?: string;
+  sortable?: boolean;
 }
 
 interface Props<T extends string> {
   headers: Readonly<Header<T>[]>;
   rows: Record<T, string | number>[];
   variant?: "small" | "medium" | "large";
+  title?: string;
 }
 
 const classesByVariant = {
@@ -32,11 +34,12 @@ const classesByVariant = {
 export function DataTable<T extends string>({
   headers,
   rows,
-  variant = "medium",
+  title,
+  variant,
 }: Props<T>) {
   const [sortKey, setSortKey] = useState<T>();
   const [descSort, setDescSort] = useState(true);
-  const classByVariant = classesByVariant[variant];
+  const classByVariant = variant ? classesByVariant[variant] : "";
 
   const onHeaderClick = (newSortKey: T) => {
     if (newSortKey === sortKey) {
@@ -56,38 +59,44 @@ export function DataTable<T extends string>({
     });
   }
 
+  const { width, height } = classByVariant || {};
+
   return (
-    <table className={classnames(styles.table, classByVariant.width)}>
-      <thead>
-        <tr>
-          {headers.map(({ key, className, display }) => (
-            <th
-              className={classnames(
-                styles.headerCell,
-                className || styles.defaultColumn
-              )}
-              key={key}
-              onClick={() => onHeaderClick(key)}
-            >
-              {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody className={classnames(styles.body, classByVariant.height)}>
-        {rows.map((row, i) => (
-          <tr className={styles.row} key={JSON.stringify(row) + i}>
-            {headers.map(({ key, className }) => (
-              <td
-                key={JSON.stringify(row) + row[key]}
-                className={className || styles.defaultColumn}
+    <>
+      <b>{title}</b>
+      <table className={classnames(styles.table, width)}>
+        <thead>
+          <tr>
+            {headers.map(({ key, className, display, sortable }) => (
+              <th
+                className={classnames(
+                  styles.headerCell,
+                  sortable && styles.sortable,
+                  className || styles.defaultColumn
+                )}
+                key={key}
+                onClick={() => sortable && onHeaderClick(key)}
               >
-                {row[key]}
-              </td>
+                {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className={classnames(styles.body, height)}>
+          {rows.map((row, i) => (
+            <tr className={styles.row} key={JSON.stringify(row) + i}>
+              {headers.map(({ key, className }) => (
+                <td
+                  key={JSON.stringify(row) + row[key]}
+                  className={className || styles.defaultColumn}
+                >
+                  {row[key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }

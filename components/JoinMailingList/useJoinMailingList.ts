@@ -1,4 +1,5 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
+import { Tables } from "queries";
 import { getIsSuccess } from "utils";
 
 interface MailingListModel {
@@ -20,7 +21,7 @@ export const useJoinMailingList = () => {
       additional_comments: additionalComments,
     };
     const { status } = await supabase
-      .from("mailing_list")
+      .from(Tables.MailingList)
       .insert(mailingListEntity);
     return getIsSuccess(status) ? "success" : "error";
   };

@@ -1,5 +1,6 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { yourEmail, yourName } from "components/shared/fieldValues";
+import { Tables } from "queries";
 import { getIsSuccess } from "utils";
 import { VoteOptionModel } from "./types";
 
@@ -19,9 +20,7 @@ export const useVoting = (roundId: number, coveringStartsLabel: string) => {
       round_id: roundId,
     }));
 
-    const { status } = await subapase
-      .from("song_selection_votes")
-      .insert(votes);
+    const { status } = await subapase.from(Tables.Votes).insert(votes);
     const isSuccess = getIsSuccess(status);
     return isSuccess ? "success" : "error";
   };

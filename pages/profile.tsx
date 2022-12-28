@@ -4,6 +4,7 @@ import { Profile, VoteSummary } from "components/Profile";
 import { PageContainer } from "components/shared/PageContainer";
 import { SignInGate } from "components/SignInGate/SignInGate";
 import { GetServerSidePropsContext } from "next";
+import { Tables, Views } from "queries";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
 function ProfilePage({
@@ -69,13 +70,13 @@ export default ProfilePage;
 // Queries
 const dbClient = getSupabaseClient();
 const getWinningSongs = async () => {
-  const { data } = await dbClient.from("round_metadata").select("song_id");
+  const { data } = await dbClient.from(Tables.RoundMetadata).select("song_id");
   return data;
 };
 
 const getSignups = async (email: string) => {
   const { data } = (await dbClient
-    .from("sign_ups")
+    .from(Tables.SignUps)
     .select(
       `song_id, 
             round_id, 
@@ -107,7 +108,7 @@ const getSignups = async (email: string) => {
 
 const getVotes = async (email: string) => {
   const { data } = await dbClient
-    .from("votes_diff_with_average")
+    .from(Views.VotesDiffsWithAverage)
     .select("*")
     .filter("email", "eq", email);
 
@@ -122,7 +123,7 @@ const getVotes = async (email: string) => {
 
 const getSubmissions = async (email: string) => {
   const { data } = await dbClient
-    .from("submissions_view")
+    .from(Views.Submissions)
     .select("*")
     .filter("email", "eq", email);
   return data;

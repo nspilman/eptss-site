@@ -44,32 +44,35 @@ const headers = [
   {
     key: "artist",
     display: "Artist",
+    sortable: true,
   },
-  { key: "title", display: "Title" },
-  { key: "average", display: "Average Vote" },
-  { key: "vote", display: "Your Vote" },
-  { key: "delta", display: "Delta" },
-  { key: "round_id", display: "Round" },
+  { key: "title", display: "Title", sortable: true },
+  { key: "average", display: "Average Vote, sortable: true" },
+  { key: "vote", display: "Your Vote", sortable: true },
+  { key: "delta", display: "Delta", sortable: true },
+  { key: "round_id", display: "Round", sortable: true },
 ] as const;
 
 const signupHeaders = [
   {
     key: "artist",
     display: "Artist",
+    sortable: true,
   },
-  { key: "title", display: "Title" },
-  { key: "isWinningSong", display: "isWinningSong" },
-  { key: "roundId", display: "Round" },
+  { key: "title", display: "Title", sortable: true },
+  { key: "isWinningSong", display: "isWinningSong", sortable: true },
+  { key: "roundId", display: "Round", sortable: true },
 ] as const;
 
 const submissionHeaders = [
-  { key: "round_id", display: "Round id" },
+  { key: "round_id", display: "Round id", sortable: true },
   {
     key: "artist",
     display: "Artist",
+    sortable: true,
   },
-  { key: "title", display: "Title" },
-  { key: "soundcloud_url", display: "Soundcloud Link" },
+  { key: "title", display: "Title", sortable: true },
+  { key: "soundcloud_url", display: "Soundcloud Link", sortable: true },
 ] as const;
 
 export const Profile = ({
