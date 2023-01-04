@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ReactElement } from "react";
 import { RoundDetails } from "../../../../types";
 import { card } from "../Main.css";
@@ -7,13 +8,15 @@ export const RoundDisplay = ({
 }: {
   round: RoundDetails;
 }): ReactElement => {
-  const { playlist, title, artist } = round;
+  const { playlist, title, artist, round: roundId } = round;
   return (
     <div className={card}>
       <h3>
-        <p className="song-round">
-          {title} by {artist}
-        </p>
+        <Link href={`/round/${roundId}`}>
+          <p className="song-round">
+            Round {roundId} - {title} by {artist}
+          </p>
+        </Link>
       </h3>
       <div>
         {playlist ? (
