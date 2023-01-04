@@ -67,7 +67,7 @@ export const Main = ({ roundContent, phaseInfo }: Props) => {
         </div>
         <div className={styles.cardHeader}>
           <h2>
-            <a id="listen">The Playlists!</a>
+            <p id="listen">The Playlists!</p>
           </h2>
           <hr />
         </div>

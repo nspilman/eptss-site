@@ -48,6 +48,7 @@ globalStyle("body", {
 
 globalStyle("a", {
   color: colors.yellow,
+  cursor: "pointer",
 });
 
 globalStyle("h1", {

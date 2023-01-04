@@ -14,7 +14,9 @@ export const RoundDisplay = ({
       <h3>
         <Link href={`/round/${roundId}`}>
           <p className="song-round">
-            Round {roundId} - {title} by {artist}
+            <a>
+              Round {roundId} - {title} by {artist}
+            </a>
           </p>
         </Link>
       </h3>
