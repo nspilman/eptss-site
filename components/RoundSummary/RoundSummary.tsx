@@ -1,6 +1,5 @@
 import { DataTable } from "components/shared/DataTable";
 import { StackedBarChart } from "components/shared/StackedBarChart";
-import Link from "next/link";
 import { Phase } from "services/PhaseMgmtService";
 import * as styles from "./RoundSummary.css";
 
@@ -119,14 +118,14 @@ export const RoundSummary = ({
       </div>
       <div className={styles.navigationContainer}>
         {navigation.previous && (
-          <Link href={`/round/${navigation.previous}`}>
+          <a href={`/round/${navigation.previous}`}>
             <button>Round {navigation.previous}</button>
-          </Link>
+          </a>
         )}
         {navigation.next && (
-          <Link href={`/round/${navigation.next}`}>
+          <a href={`/round/${navigation.next}`}>
             <button>Round {navigation.next}</button>
-          </Link>
+          </a>
         )}
       </div>
     </div>
