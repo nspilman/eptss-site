@@ -41,8 +41,8 @@ export async function getStaticProps({
   const voteBreakdown = await getVoteBreakdownBySong(id);
 
   const navigation = {
-    previous: id !== 0 ? id - 1 : undefined,
-    next: id !== currentRoundId ? id + 1 : undefined,
+    previous: id !== 0 ? id - 1 : null,
+    next: id !== currentRoundId ? id + 1 : null,
   };
 
   return {

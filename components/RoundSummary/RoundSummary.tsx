@@ -12,8 +12,8 @@ export interface VoteResults {
 [];
 
 export interface Navigation {
-  next?: number;
-  previous?: number;
+  next?: null;
+  previous?: null;
 }
 
 export interface RoundMetadata {
