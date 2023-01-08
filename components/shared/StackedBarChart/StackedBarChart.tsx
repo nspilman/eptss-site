@@ -57,7 +57,7 @@ export const StackedBarChart = ({ data, title }: Props) => {
     <Bar
       options={options}
       data={data}
-      height={800}
+      height={600}
       width={data.labels.length * 75}
     />
   );

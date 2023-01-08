@@ -112,7 +112,6 @@ export const RoundSummary = ({
       />
       <div className={styles.barChartWrapper}>
         <StackedBarChart
-          title="Voting breakdown"
           data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
         />
       </div>
