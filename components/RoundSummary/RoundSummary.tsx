@@ -1,4 +1,6 @@
 import { DataTable } from "components/shared/DataTable";
+import { StackedBarChart } from "components/shared/StackedBarChart";
+import Link from "next/link";
 import { Phase } from "services/PhaseMgmtService";
 import * as styles from "./RoundSummary.css";
 
@@ -9,11 +11,25 @@ export interface VoteResults {
 }
 [];
 
+export interface Navigation {
+  next?: number;
+  previous?: number;
+}
+
 export interface RoundMetadata {
   artist: string;
   title: string;
   playlistUrl: string;
   submitter: string;
+}
+export interface VoteBreakdown {
+  title: string;
+  artist: string;
+  oneCount: number;
+  twoCount: number;
+  threeCount: number;
+  fourCount: number;
+  fiveCount: number;
 }
 
 interface Props {
@@ -23,6 +39,8 @@ interface Props {
   roundId: number;
   metadata: RoundMetadata;
   submissionCount: number;
+  voteBreakdown: VoteBreakdown[];
+  navigation: Navigation;
 }
 
 const voteResultsHeaders = [
@@ -41,6 +59,8 @@ export const RoundSummary = ({
   roundId,
   metadata: { artist, title, playlistUrl, submitter },
   submissionCount,
+  voteBreakdown,
+  navigation,
 }: Props) => {
   const roundSummaryHeaders: {
     display: string;
@@ -73,6 +93,7 @@ export const RoundSummary = ({
       submissionCount: `${submissionCount} submissions`,
     },
   ];
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}> Round {roundId} Info</h1>
@@ -90,6 +111,69 @@ export const RoundSummary = ({
         headers={voteResultsHeaders}
         rows={voteResults}
       />
+      <div className={styles.barChartWrapper}>
+        <StackedBarChart
+          title="Voting breakdown"
+          data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
+        />
+      </div>
+      <div className={styles.navigationContainer}>
+        {navigation.previous && (
+          <Link href={`/round/${navigation.previous}`}>
+            <button>Round {navigation.previous}</button>
+          </Link>
+        )}
+        {navigation.next && (
+          <Link href={`/round/${navigation.next}`}>
+            <button>Round {navigation.next}</button>
+          </Link>
+        )}
+      </div>
     </div>
   );
+};
+
+const convertVoteBreakdownToBarchartFormat = (
+  voteBreakdown: VoteBreakdown[]
+) => {
+  const labels = voteBreakdown?.map(
+    ({ artist, title }) => `${title} by ${artist}`
+  );
+  const oneVoteDataset = {
+    label: "One Votes",
+    data: voteBreakdown.map((breakdown) => breakdown.oneCount),
+    backgroundColor: "rgb(120,100,100)",
+  };
+  const twoVoteDataset = {
+    label: "Two Votes",
+    data: voteBreakdown.map((breakdown) => breakdown.twoCount),
+    backgroundColor: "rgb(180, 160, 145)",
+  };
+
+  const threeVoteDataset = {
+    label: "Three Votes",
+    data: voteBreakdown.map((breakdown) => breakdown.threeCount),
+    backgroundColor: "rgb(200,190, 100)",
+  };
+  const fourVoteDataset = {
+    label: "Four Votes",
+    data: voteBreakdown.map((breakdown) => breakdown.fourCount),
+    backgroundColor: "rgb(100, 100, 240",
+  };
+  const fiveVoteDataset = {
+    label: "Five Votes",
+    data: voteBreakdown.map((breakdown) => breakdown.fiveCount),
+    backgroundColor: "rgb(75, 255, 75)",
+  };
+
+  return {
+    labels,
+    datasets: [
+      oneVoteDataset,
+      twoVoteDataset,
+      threeVoteDataset,
+      fourVoteDataset,
+      fiveVoteDataset,
+    ],
+  };
 };

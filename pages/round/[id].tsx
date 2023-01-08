@@ -1,6 +1,8 @@
 import {
+  Navigation,
   RoundMetadata,
   RoundSummary,
+  VoteBreakdown,
   VoteResults,
 } from "components/RoundSummary/RoundSummary";
 import { PageContainer } from "components/shared/PageContainer";
@@ -32,9 +34,16 @@ export async function getStaticProps({
   const id = parseInt(idString);
   const voteResults = await getVoteResults(id);
   const signupCount = await getSignupCount(id);
-  const { roundId, phase: currentPhase } = await PhaseMgmtService.build();
+  const { roundId: currentRoundId, phase: currentPhase } =
+    await PhaseMgmtService.build();
   const metadata = await getRoundMetadata(id);
   const submissionCount = await getSubmissionCount(id);
+  const voteBreakdown = await getVoteBreakdownBySong(id);
+
+  const navigation = {
+    previous: id !== 0 ? id - 1 : undefined,
+    next: id !== currentRoundId ? id + 1 : undefined,
+  };
 
   return {
     // Passed to the page component as props
@@ -42,9 +51,11 @@ export async function getStaticProps({
       id,
       voteResults,
       signupCount,
-      phase: roundId === id ? currentPhase : "Complete",
+      phase: currentRoundId === id ? currentPhase : "Complete",
       metadata,
       submissionCount,
+      voteBreakdown,
+      navigation,
     },
   };
 }
@@ -56,6 +67,8 @@ export default function Post({
   phase,
   metadata,
   submissionCount,
+  voteBreakdown,
+  navigation,
 }: {
   id: number;
   signupCount: number;
@@ -63,6 +76,8 @@ export default function Post({
   phase: Phase | "Complete";
   metadata: RoundMetadata;
   submissionCount: number;
+  voteBreakdown: VoteBreakdown[];
+  navigation: Navigation;
 }) {
   return (
     <PageContainer title={`Round ${id} Overview`}>
@@ -73,6 +88,8 @@ export default function Post({
         roundId={id}
         metadata={metadata}
         submissionCount={submissionCount}
+        voteBreakdown={voteBreakdown}
+        navigation={navigation}
       />
     </PageContainer>
   );
@@ -145,4 +162,41 @@ const getSubmissionCount = async (id: number) => {
     .select("*")
     .filter("round_id", "eq", id);
   return data?.length || 0;
+};
+
+const getVoteBreakdownBySong = async (id: number) => {
+  const { data } = (await dbClient
+    .from(Views.VoteBreakdownBySong)
+    .select()
+    .filter("round_id", "eq", id)) as {
+    data: {
+      title: string;
+      artist: string;
+      one_count: string;
+      two_count: string;
+      three_count: string;
+      four_count: string;
+      five_count: string;
+    }[];
+  };
+
+  return data?.map(
+    ({
+      title,
+      artist,
+      one_count,
+      two_count,
+      three_count,
+      four_count,
+      five_count,
+    }) => ({
+      title,
+      artist,
+      oneCount: one_count,
+      twoCount: two_count,
+      threeCount: three_count,
+      fourCount: four_count,
+      fiveCount: five_count,
+    })
+  );
 };

@@ -16,3 +16,14 @@ export const playlistWrapper = style({
   padding: "1rem",
   borderRadius: "1rem",
 });
+
+export const barChartWrapper = style({
+  width: "80vw",
+  overflow: "scroll",
+});
+
+export const navigationContainer = style({
+  display: "flex",
+  justifyContent: "space-between",
+  width: "90vw",
+});
