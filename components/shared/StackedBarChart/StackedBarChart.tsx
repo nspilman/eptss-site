@@ -19,6 +19,10 @@ ChartJS.register(
   Legend
 );
 
+ChartJS.defaults.font = {
+  family: "Segoe UI",
+};
+
 interface Props {
   data: {
     labels: string[];
