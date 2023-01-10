@@ -60,7 +60,6 @@ export function DataTable<T extends string>({
   }
 
   const { width, height } = classByVariant || {};
-
   return (
     <>
       <b>{title}</b>

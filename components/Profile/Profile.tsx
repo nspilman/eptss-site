@@ -47,7 +47,7 @@ const headers = [
     sortable: true,
   },
   { key: "title", display: "Title", sortable: true },
-  { key: "average", display: "Average Vote, sortable: true" },
+  { key: "average", display: "Average Vote", sortable: true },
   { key: "vote", display: "Your Vote", sortable: true },
   { key: "delta", display: "Delta", sortable: true },
   { key: "round_id", display: "Round", sortable: true },

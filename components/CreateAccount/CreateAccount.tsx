@@ -25,7 +25,6 @@ export const CreateAccount = () => {
   const fields = [yourEmail, password];
 
   const session = useSessionContext();
-  console.log({ session });
 
   if (session.isLoading) {
     return <h1>Loading</h1>;
