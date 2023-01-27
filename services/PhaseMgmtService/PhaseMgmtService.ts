@@ -10,6 +10,7 @@ interface Props {
   signupOpens: Date;
   listeningParty: Date;
   roundId: number;
+  song: { artist: string; title: string };
 }
 
 export type Phase = "signups" | "voting" | "covering" | "celebration";
@@ -18,6 +19,7 @@ export class PhaseMgmtService {
   phase: Phase;
   dateLabels: Record<Phase, Record<"opens" | "closes", string>>;
   roundId: number;
+  song: { artist: string; title: string };
 
   private constructor({
     votingOpens,
@@ -26,6 +28,7 @@ export class PhaseMgmtService {
     signupOpens,
     listeningParty,
     roundId,
+    song,
   }: Props) {
     const now = new Date();
     if (now < signupOpens) {
@@ -43,6 +46,7 @@ export class PhaseMgmtService {
     }
 
     this.roundId = roundId;
+    this.song = song;
 
     switch (true) {
       case now < votingOpens:
@@ -91,6 +95,10 @@ export class PhaseMgmtService {
     signupOpens: string;
     listeningParty: string;
     roundId: number;
+    song: {
+      artist: string;
+      title: string;
+    };
   }) {
     const {
       votingOpens,
@@ -99,6 +107,7 @@ export class PhaseMgmtService {
       signupOpens,
       listeningParty,
       roundId,
+      song,
     } = currentRound || (await getCurrentRound());
     const datify = (dateString: string) => {
       const date = new Date(dateString);
@@ -114,6 +123,7 @@ export class PhaseMgmtService {
       signupOpens: datify(signupOpens),
       listeningParty: datify(listeningParty),
       roundId,
+      song,
     });
   }
 }
@@ -126,6 +136,7 @@ interface Round {
   coversDue: string;
   listeningParty: string;
   status: number;
+  song: { artist: string; title: string };
 }
 
 export const getCurrentRound = async (): Promise<
@@ -139,7 +150,16 @@ export const getCurrentRound = async (): Promise<
   } = await supabase
     .from(Tables.RoundMetadata)
     .select(
-      "id, signup_opens, voting_opens, covering_begins, covers_due, listening_party"
+      `id, 
+      signup_opens, 
+      voting_opens, 
+      covering_begins, 
+      covers_due, 
+      listening_party, 
+      song:songs(
+        title, 
+        artist
+        )`
     )
     .order("id", { ascending: false })
     .limit(1);
@@ -152,7 +172,14 @@ export const getCurrentRound = async (): Promise<
       covering_begins: coveringBegins,
       covers_due: coversDue,
       listening_party: listeningParty,
+      song,
     } = roundData[0];
+
+    console.log({ song });
+    if (Array.isArray(song)) {
+      throw new Error("Only one song can be associated with a single round");
+    }
+    const songData = song || { artist: "", title: "" };
     if (typeof roundId === "number") {
       return {
         roundId,
@@ -163,6 +190,7 @@ export const getCurrentRound = async (): Promise<
         listeningParty,
         status,
         error,
+        song: songData,
       };
     }
   }
