@@ -44,6 +44,14 @@ export const linkWrapper = style([
     fontSize: ".75rem",
   },
 ]);
+export const required = {
+  "::before": {
+    content: " *",
+    color: "red",
+    fontSize: ".5rem",
+    paddingRight: ".25rem",
+  },
+};
 
 export const label = style([
   {
@@ -59,14 +67,15 @@ export const label = style([
   },
 ]);
 
-export const errorMessage = style({
-  fontSize: ".75rem",
-  color: colors.grayblue,
-  "::before": {
-    content: " *",
-    color: "red",
+export const requiredLabel = style([required, label]);
+
+export const errorMessage = style([
+  required,
+  {
+    fontSize: ".75rem",
+    color: colors.grayblue,
   },
-});
+]);
 
 export const errorContainer = style({
   height: "1rem",

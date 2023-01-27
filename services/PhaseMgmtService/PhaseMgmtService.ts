@@ -175,7 +175,6 @@ export const getCurrentRound = async (): Promise<
       song,
     } = roundData[0];
 
-    console.log({ song });
     if (Array.isArray(song)) {
       throw new Error("Only one song can be associated with a single round");
     }

@@ -28,7 +28,9 @@ export function InputField<T extends FieldValues>({
       data-testid={getFieldTestId(field.field, type)}
     >
       <div className={styles.labelWrapper}>
-        <label className={styles.label}>{`${label}`}</label>
+        <label
+          className={optional ? styles.label : styles.requiredLabel}
+        >{`${label}`}</label>
         {hasLink && (
           <div className={styles.linkWrapper}>
             <a target="_blank" rel="noopener noreferrer" href={field.link}>

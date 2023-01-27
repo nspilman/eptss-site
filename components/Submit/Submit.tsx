@@ -37,6 +37,7 @@ export const Submit = ({
       field: "coolThingsLearned",
       type: "text",
       size: "large",
+      optional: true,
     } as const,
     {
       label: "What tools did you use?",
@@ -44,6 +45,7 @@ export const Submit = ({
       field: "toolsUsed",
       type: "text",
       size: "large",
+      optional: true,
     } as const,
     {
       label: "Were there any happy accidents you'd like to report?",
@@ -51,6 +53,7 @@ export const Submit = ({
       field: "happyAccidents",
       type: "text",
       size: "small",
+      optional: true,
     } as const,
     {
       label: "Was there anything you tried to pull off that didn't work?",
@@ -58,6 +61,7 @@ export const Submit = ({
       field: "didntWork",
       type: "text",
       size: "small",
+      optional: true,
     } as const,
   ];
   const supabase = useSupabase();
