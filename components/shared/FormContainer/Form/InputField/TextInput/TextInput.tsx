@@ -25,7 +25,7 @@ export function TextInput<T extends FieldValues>({
       className={styles.input}
       type={type}
       placeholder={placeholder}
-      {...register(field, { required, maxLength: 300 })}
+      {...register(field, { required, maxLength: 1000 })}
     />
   );
 }

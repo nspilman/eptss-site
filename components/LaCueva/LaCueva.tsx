@@ -1,6 +1,5 @@
-import { useUser, useSessionContext } from "@supabase/auth-helpers-react";
 import { PageContainer } from "components/shared/PageContainer";
-import { SignInGate } from "components/SignInGate/SignInGate";
+import { SignInGate } from "components/shared/SignInGate";
 import { Phase } from "services/PhaseMgmtService";
 import { VotingReport } from "./Phases/Voting/VotingReport";
 

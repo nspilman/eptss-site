@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { PostgrestResponse } from "@supabase/supabase-js";
 import { Profile, VoteSummary } from "components/Profile";
 import { PageContainer } from "components/shared/PageContainer";
-import { SignInGate } from "components/SignInGate/SignInGate";
+import { SignInGate } from "components/shared/SignInGate/SignInGate";
 import { GetServerSidePropsContext } from "next";
 import { Tables, Views } from "queries";
 import { getSupabaseClient } from "utils/getSupabaseClient";

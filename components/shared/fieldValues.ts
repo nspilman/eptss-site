@@ -15,7 +15,7 @@ export const yourEmail = {
 
 export const password = {
   label: "password",
-  placeholder: "",
+  placeholder: "password",
   field: "password" as const,
   type: "password" as const,
   size: "small" as const,

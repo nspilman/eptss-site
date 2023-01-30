@@ -16,11 +16,27 @@ export const SignIn = () => {
       email,
       password,
     });
-    return error ? ("success" as const) : ("error" as const);
+    return error ? ("error" as const) : ("success" as const);
+  };
+
+  const resetMyEmail = async () => {
+    const { error } = await authClient.auth.resetPasswordForEmail(
+      "nate.spilman@gmail.com",
+      {
+        redirectTo: "https://everyoneplaysthesamesong.com",
+      }
+    );
+    console.log({ error });
   };
 
   const title = "Sign In";
   const error = "Could not sign in";
+  const description = (
+    <span>
+      Need to reset your password?
+      <span onClick={() => resetMyEmail()}>here</span>
+    </span>
+  );
   return (
     <FormContainer
       fields={fields}
@@ -28,6 +44,7 @@ export const SignIn = () => {
       title={title}
       errorMessage={error}
       successBlock={<></>}
+      description={description}
     />
   );
 };
