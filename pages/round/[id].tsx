@@ -16,8 +16,12 @@ export async function getStaticPaths() {
   const { data: roundIds } = await dbClient
     .from(Tables.RoundMetadata)
     .select("id");
+  const { roundId: currentRoundId, phase: currentPhase } =
+    await PhaseMgmtService.build();
   const payload = {
-    paths: roundIds?.map(({ id }) => ({
+    paths: roundIds?.filter(id => {
+      return (id === currentRoundId && phase === "signups")
+    }).map(({ id }) => ({
       params: { id: id.toString() },
     })),
     fallback: false, // can also be true or 'blocking'
