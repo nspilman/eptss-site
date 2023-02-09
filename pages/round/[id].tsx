@@ -19,8 +19,8 @@ export async function getStaticPaths() {
   const { roundId: currentRoundId, phase: currentPhase } =
     await PhaseMgmtService.build();
   const payload = {
-    paths: roundIds?.filter(id => {
-      return !(JSON.parse(id) === currentRoundId && phase === "signups")
+    paths: roundIds?.filter(({id}) => {
+      return !(id === currentRoundId && phase === "signups")
     }).map(({ id }) => ({
       params: { id: id.toString() },
     })),
