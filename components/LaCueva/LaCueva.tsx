@@ -2,6 +2,7 @@ import { PageContainer } from "components/shared/PageContainer";
 import { SignInGate } from "components/shared/SignInGate";
 import { Phase } from "services/PhaseMgmtService";
 import { VotingReport } from "./Phases/Voting/VotingReport";
+import { useLocalStorageAuthFromParams } from "./useLocalStorageAuthFromParams";
 
 export const LaCueva = ({
   roundId,
@@ -12,11 +13,14 @@ export const LaCueva = ({
   dateLabels: Record<Phase, Record<"opens" | "closes", string>>;
   phase: Phase;
 }) => {
+  const { isLoggedIn } = useLocalStorageAuthFromParams();
   return (
     <PageContainer title="la cueva">
-      <SignInGate>
+      {isLoggedIn ? (
         <VotingReport dateLabels={dateLabels.voting} />
-      </SignInGate>
+      ) : (
+        <div>Get outa here</div>
+      )}
     </PageContainer>
   );
 };

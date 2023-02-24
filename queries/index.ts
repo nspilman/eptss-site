@@ -7,13 +7,14 @@ export enum Tables {
   RoundMetadata = "round_metadata",
   MailingList = "mailing_list",
   Votes = "SongSelectionVotes",
+  Submissions = "submissions",
 }
 
 export enum Views {
   VoteResults = "vote_results",
   VotesDiffsWithAverage = "votes_diff_with_average",
   Submissions = "submissions_view",
-  VoteBreakdownBySong = "vote_breakdown_by_song"
+  VoteBreakdownBySong = "vote_breakdown_by_song",
 }
 
 export const getSignupsByRound = async (roundId: number) =>

@@ -10,6 +10,9 @@
     "test": "jest --watch"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.5.1",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@sentry/nextjs": "^7.23.0",
     "@supabase/auth-helpers-nextjs": "^0.5.2",
     "@supabase/auth-helpers-react": "^0.3.1",
@@ -20,6 +23,7 @@
     "chart.js": "^4.1.2",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
+    "framer-motion": "^9.1.6",
     "next": "12.3.1",
     "react": "18.2.0",
     "react-chartjs-2": "^5.1.0",

@@ -1,7 +1,6 @@
-import classnames from "classnames";
+import { Box, FormLabel, Link, Text } from "@chakra-ui/react";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
-import * as styles from "./InputField.css";
 import { getFieldErrorId, getFieldTestId } from "./testUtils";
 import { TextInput } from "./TextInput";
 import { VoteInput } from "./VoteInput";
@@ -20,25 +19,20 @@ export function InputField<T extends FieldValues>({
   const { size, type, label, field: fieldId, optional } = field;
   const hasLink = "link" in field;
   return (
-    <div
-      className={classnames(
-        styles.container,
-        size === "small" ? styles.small : styles.large
-      )}
+    <Box
+      width={size === "small" ? "400px" : "700px"}
       data-testid={getFieldTestId(field.field, type)}
     >
-      <div className={styles.labelWrapper}>
-        <label
-          className={optional ? styles.label : styles.requiredLabel}
-        >{`${label}`}</label>
+      <Box>
+        <FormLabel>{`${label}`}</FormLabel>
         {hasLink && (
-          <div className={styles.linkWrapper}>
-            <a target="_blank" rel="noopener noreferrer" href={field.link}>
+          <Box>
+            <Link target="_blank" rel="noopener noreferrer" href={field.link}>
               listen
-            </a>
-          </div>
+            </Link>
+          </Box>
         )}
-      </div>
+      </Box>
       {type === "vote" ? (
         <VoteInput register={register} field={fieldId} />
       ) : (
@@ -50,16 +44,13 @@ export function InputField<T extends FieldValues>({
           placeholder={field.placeholder}
         />
       )}
-      <div className={styles.errorContainer}>
+      <Box>
         {errors[fieldId] && (
-          <span
-            data-testid={getFieldErrorId(fieldId)}
-            className={styles.errorMessage}
-          >
+          <Text data-testid={getFieldErrorId(fieldId)}>
             This field is required
-          </span>
+          </Text>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

@@ -1,11 +1,9 @@
-import Link from "next/link";
 import React, { ReactElement } from "react";
 import { useNavOptions } from "../../hooks/useNavOptions";
 import { SignupButton } from "../../Homepage/SignupButton";
-import * as styles from "./Header.css";
 import { useSessionContext } from "@supabase/auth-helpers-react";
-import { Router } from "next/router";
 import { useRouter } from "next/router";
+import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
 
 export const Header = (): ReactElement => {
   const { howItWorks } = useNavOptions();
@@ -16,23 +14,26 @@ export const Header = (): ReactElement => {
     await supabaseClient.auth.signOut();
   };
   return (
-    <header id="header" className={styles.header}>
-      <Link href={"/"}>
-        <span className={styles.titleText}>Everyone Plays the Same Song</span>
-      </Link>
-      <div className={styles.navButtons}>
+    <Box as="header" id="header">
+      <Flex alignItems="center" justifyContent="center">
+        <Link href={"/"}>
+          <Heading size={{ base: "md" }}>Everyone Plays the Same Song</Heading>
+        </Link>
+      </Flex>
+
+      <Box display={{ base: "none" }}>
         <Link href={howItWorks}>
-          <button>The rules</button>
+          <Button>The rules</Button>
         </Link>
         <SignupButton />
         {process.env.NODE_ENV === "development" && (
-          <button
+          <Button
             onClick={session ? () => signOut() : () => router.push("/la-cueva")}
           >
             {session ? "Sign Out" : "Sign in"}
-          </button>
+          </Button>
         )}
-      </div>
-    </header>
+      </Box>
+    </Box>
   );
 };

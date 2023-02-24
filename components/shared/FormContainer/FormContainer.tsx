@@ -1,8 +1,8 @@
+import { Box } from "@chakra-ui/react";
 import { useSuccessState } from "components/hooks/useSuccessState";
 import { FieldValues } from "react-hook-form";
 import { Form } from "./Form";
 import { InputType } from "./Form/types";
-import * as styles from "./FormContainer.css";
 
 interface Props<T extends FieldValues> {
   successBlock: React.ReactNode;
@@ -24,7 +24,7 @@ export function FormContainer<T extends FieldValues>({
   const [successState, setSuccessState] = useSuccessState();
 
   return (
-    <div className={styles.formWrapper}>
+    <Box>
       <>
         {successState !== "success" ? (
           <Form
@@ -40,6 +40,6 @@ export function FormContainer<T extends FieldValues>({
         )}
         {successState === "error" && errorMessage}
       </>
-    </div>
+    </Box>
   );
 }

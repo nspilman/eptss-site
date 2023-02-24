@@ -1,7 +1,6 @@
 import React from "react";
 import { FieldValues, UseFormRegister, Path } from "react-hook-form";
-import * as styles from "./FormInput.css";
-import * as inputStyles from "../InputField.css";
+import { Input } from "@chakra-ui/react";
 
 interface Props<T extends FieldValues> {
   optional?: boolean;
@@ -21,8 +20,7 @@ export function TextInput<T extends FieldValues>({
   const required = !optional;
 
   return (
-    <input
-      className={styles.input}
+    <Input
       type={type}
       placeholder={placeholder}
       {...register(field, { required, maxLength: 1000 })}

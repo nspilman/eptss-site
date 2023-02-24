@@ -1,7 +1,14 @@
-import Link from "next/link";
+import {
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { ReactElement } from "react";
-import { RoundDetails } from "../../../../types";
-import { card } from "../Main.css";
+import { RoundDetails } from "types";
 
 export const RoundDisplay = ({
   round,
@@ -10,27 +17,21 @@ export const RoundDisplay = ({
 }): ReactElement => {
   const { playlist, title, artist, round: roundId } = round;
   return (
-    <div className={card}>
-      <h3>
+    <Card width="80vw" my="2">
+      <CardHeader>
         <Link href={`/round/${roundId}`}>
-          <p className="song-round">
-            <a>
-              Round {roundId} - {title} by {artist}
-            </a>
-          </p>
+          <Heading as="h3" size="md">
+            Round {roundId} - {title} by {artist}
+          </Heading>
         </Link>
-      </h3>
-      <div>
+      </CardHeader>
+      <CardBody>
         {playlist ? (
-          <div dangerouslySetInnerHTML={{ __html: playlist }} />
+          <Box dangerouslySetInnerHTML={{ __html: playlist }} />
         ) : (
-          <>
-            <span>The round is underway!</span>
-            <br></br>
-            <br></br>
-          </>
+          <Text>The round is underway!</Text>
         )}
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };

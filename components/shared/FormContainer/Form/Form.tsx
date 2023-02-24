@@ -1,8 +1,8 @@
 import { FieldValues, useForm } from "react-hook-form";
-import * as styles from "./Form.css";
 import React from "react";
 import { InputField } from "./InputField";
 import { InputType } from "./types";
+import { Box, Button, Container, FormControl, Heading } from "@chakra-ui/react";
 
 interface Props<T extends FieldValues> {
   onSubmit: (signupModel: T) => void;
@@ -24,11 +24,11 @@ export function Form<T extends FieldValues>({
   } = useForm<T>();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      {/* TODO - this should be outside the form */}
-      <h1 className={styles.title}>{title}</h1>
-      <div className={styles.descriptionWrapper}>{description}</div>
-      <div className={styles.formFieldWrapper}>
+    <Container>
+      <Heading>{title}</Heading>
+      <Box>{description}</Box>
+      <FormControl onSubmit={handleSubmit(onSubmit)}>
+        {/* TODO - this should be outside the form */}
         {fields.map((field, i) => {
           return (
             <InputField
@@ -39,10 +39,10 @@ export function Form<T extends FieldValues>({
             />
           );
         })}
-      </div>
-      <button type="submit" data-testid="form-submission">
-        Submit
-      </button>
-    </form>
+        <Button type="submit" data-testid="form-submission">
+          Submit
+        </Button>
+      </FormControl>
+    </Container>
   );
 }
