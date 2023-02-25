@@ -26,6 +26,8 @@ export const colors = {
   graybluehero: "rgba(183, 192, 209, 0.9)",
 };
 
+/*
+
 globalStyle("html", {
   fontSize: "16px",
 });
@@ -64,6 +66,8 @@ globalStyle("h1", {
     },
   },
 });
+
+*/
 
 export const roundedCorners = style({
   borderRadius: "1rem",

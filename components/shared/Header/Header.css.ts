@@ -1,9 +1,5 @@
 import { style } from "@vanilla-extract/css";
-import {
-  mobileBreakpoint,
-  tabletBreakpoint,
-  titleFont,
-} from "../../../styles/theme.css";
+import { mobileBreakpoint, tabletBreakpoint, titleFont } from "../../../styles/theme.css";
 
 export const header = style({
   display: "flex",
@@ -14,6 +10,7 @@ export const header = style({
   zIndex: 1,
   backgroundColor: "rgb(0, 100,100,.1)",
   borderRadius: "10px",
+  height: "60px",
   "@media": {
     [mobileBreakpoint]: {
       justifyContent: "center",
