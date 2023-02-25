@@ -48,12 +48,15 @@ export const EmailAuthModal = ({
           title: "Error",
           description: error?.message || "Something went wrong",
           status: "error",
+          isClosable: true,
         });
       } else {
         toast({
           title: "Email Sent",
           description: "We sent you a login link. Check your email!",
           status: "success",
+          duration: 8000,
+          isClosable: true,
         });
         onClose();
       }
@@ -75,7 +78,12 @@ export const EmailAuthModal = ({
         <ModalHeader>Join Us!</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form onSubmit={onSendLoginLink}>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              onSendLoginLink();
+            }}
+          >
             <FormControl>
               <FormLabel>Email</FormLabel>
               <Input
@@ -85,7 +93,7 @@ export const EmailAuthModal = ({
                 placeholder="ringostarr@gmail.com"
                 disabled={loading}
               />
-              <FormHelperText>We'll never share your email or spam you, I swear!</FormHelperText>
+              <FormHelperText>We'll never share your email or spam you, we swear!</FormHelperText>
             </FormControl>
           </form>
         </ModalBody>
