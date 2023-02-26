@@ -93,7 +93,7 @@ export const EmailAuthModal = ({
                 placeholder="ringostarr@gmail.com"
                 disabled={loading}
               />
-              <FormHelperText>We'll never share your email or spam you, we swear!</FormHelperText>
+              <FormHelperText>{`We'll never share your email or spam you, we swear!`}</FormHelperText>
             </FormControl>
           </form>
         </ModalBody>
