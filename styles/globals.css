@@ -1,29 +1,29 @@
-@import url("https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');
 
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
-:root {
-  --yellow: #fffe53;
-  --yellow-light: #ffff87;
-  --yellow-dark: #c9cb10;
-  --darkblue: #1c2026;
-  --grayblue: #43474e;
-  --lightgray: #ccc;
-  --darkbluehero: rgba(28, 32, 38, 0.9);
-  --graybluehero: rgba(183, 192, 209, 0.9);
-}
+:root{
+    --yellow:#fffe53;
+    --yellow-light:#FFFF87;
+    --yellow-dark:#C9CB10;
+    --darkblue:#1C2026;
+    --grayblue:#43474E;
+    --lightgray:#ccc;
+    --darkbluehero:rgba(28, 32, 38, 0.9);
+    --graybluehero:rgba(183, 192, 209, 0.9);
+}   
 
 /* BUTTON STYLES */
 
-/* button {
+button{
   margin: 5px;
-  padding: 20px 40px;
-  width: 170px;
+  padding:20px 40px;
+  width:170px;
   background-color: transparent;
   color: white;
   border: 1px solid white;
-  font-family: "IBM Plex Sans", sans-serif;
-  font-size: 0.85rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: .85rem;
   font-weight: 500;
   text-transform: uppercase;
   cursor: pointer;
@@ -31,18 +31,18 @@
   backdrop-filter: blur(5px);
 }
 
-button:hover {
+button:hover{
   color: var(--yellow-light);
   border: 1px solid var(--yellow-light);
 }
 
-button a {
-  color: white;
+button a{
+  color:white;
   text-decoration: none;
 }
 
-.button-primary:hover {
+.button-primary:hover{
   background-color: var(--yellow-light);
   color: var(--darkblue);
   border: 1px solid var(--yellow-light);
-} */
+}
