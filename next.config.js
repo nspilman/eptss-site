@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
 
-const { createVanillaExtractPlugin } = require("@vanilla-extract/next-plugin");
-const withVanillaExtract = createVanillaExtractPlugin();
 const { withSentryConfig } = require("@sentry/nextjs");
 
 const nextConfig = {
@@ -32,7 +30,4 @@ const sentryWebpackPluginOptions = {
 
 /** @type {import('next').NextConfig} */
 
-module.exports = withSentryConfig(
-  withVanillaExtract(nextConfig),
-  sentryWebpackPluginOptions
-);
+module.exports = withSentryConfig(sentryWebpackPluginOptions);

@@ -10,7 +10,7 @@ export const PageContainer = ({
   title: string;
 }) => {
   return (
-    <Box p="0">
+    <Box p="0" width="100vw">
       <Head>
         <title>{`${title} | Everyone Plays the Same Song`}</title>
       </Head>

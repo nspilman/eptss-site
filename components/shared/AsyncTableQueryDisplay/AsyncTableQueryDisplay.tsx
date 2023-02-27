@@ -1,8 +1,8 @@
+import { Box, Heading } from "@chakra-ui/react";
 import { PostgrestError } from "@supabase/supabase-js";
 import { DataTable } from "components/shared/DataTable";
 import { useEffect, useState } from "react";
 import { SummaryDisplay } from "./SummaryDisplay/SummaryDisplay";
-import * as styles from "./AsyncTableQueryDisplay.css";
 
 interface Props<T extends string> {
   headers: { key: T; display: string }[];
@@ -35,17 +35,17 @@ export function AsyncTableQueryDisplay<T extends string>({
   }, []);
 
   return (
-    <div>
+    <Box>
       {isLoading ? (
-        <h2>loading</h2>
+        <Heading>loading</Heading>
       ) : (
-        <div className={styles.container}>
+        <Box>
           {summaryFunction && (
             <SummaryDisplay {...summaryFunction} data={payload} />
           )}
           <DataTable headers={headers} rows={payload} />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

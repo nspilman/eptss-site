@@ -1,18 +1,20 @@
+import { Flex, Heading, Input } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
-import * as styles from "./SongsTable.css";
 import { SongDatum, useSongTable } from "./useSongsTable";
 
 export const SongsTable = ({ allSongsData }: { allSongsData: SongDatum[] }) => {
   const { headers, rows, setSearchString } = useSongTable(allSongsData);
   return (
-    <div className={styles.container}>
-      <h1>All previously submitted songs</h1>
-      <input
+    <Flex direction="column" alignItems="center">
+      <Heading as="h1" size="lg" pb="3">
+        All previously submitted songs
+      </Heading>
+      <Input
         placeholder="Search by title, artist or round number"
-        className={styles.searchBox}
         onChange={(e) => setSearchString(e.currentTarget.value)}
+        mb="8"
       />
       <DataTable headers={headers} rows={rows} />
-    </div>
+    </Flex>
   );
 };
