@@ -21,8 +21,12 @@ export function TextInput<T extends FieldValues>({
 
   return (
     <Input
+      bg="white"
+      borderRadius="xl"
+      color="blackAlpha.800"
       type={type}
       placeholder={placeholder}
+      isRequired={required}
       {...register(field, { required, maxLength: 1000 })}
     />
   );

@@ -17,7 +17,7 @@ export const RoundDisplay = ({
 }): ReactElement => {
   const { playlist, title, artist, round: roundId } = round;
   return (
-    <Card width="80vw" my="2">
+    <Card width="80vw" my="2" bg="hsla(0,0%,100%,.05)" color="white">
       <CardHeader>
         <Link href={`/round/${roundId}`}>
           <Heading as="h3" size="md">

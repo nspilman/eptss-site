@@ -16,17 +16,27 @@ export const Hero = () => {
     <Flex h="100vh" width="100vw" alignItems="center" justifyContent="center">
       <Card background="none">
         <CardHeader>
-          <Heading as="h1" size={{ base: "md" }}>
+          <Heading
+            as="h1"
+            size={{ base: "md" }}
+            color="white"
+            fontWeight="300"
+            textAlign="center"
+          >
             Everyone Plays the Same Song
           </Heading>
         </CardHeader>
         <CardBody>
-          <Flex direction={{ base: "column" }} alignItems="center">
-            <Link href={howItWorks}>
-              <Button mb="1">Learn</Button>
+          <Flex
+            direction={{ base: "column", lg: "row" }}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Link href={howItWorks} pr={{ base: "0", lg: "2" }}>
+              <Button mb={{ base: "1", lg: "0" }}>Learn</Button>
             </Link>
-            <Link href="/#listen">
-              <Button mb="1">Listen</Button>
+            <Link href="/#listen" pr={{ base: "0", lg: "2" }}>
+              <Button mb={{ base: "1", lg: "0" }}>Listen</Button>
             </Link>
             <SignupButton />
           </Flex>

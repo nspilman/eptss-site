@@ -14,11 +14,7 @@ export function VoteInput<T extends FieldValues>({
   optional,
 }: Props<T>) {
   return (
-    <Stack direction="row" width="100%">
-      <Text size="sm" fontWeight="100">
-        {" "}
-        Absolutely not!{" "}
-      </Text>
+    <Stack direction="column" width="100%">
       <RadioGroup>
         <Stack direction="row">
           {["1", "2", "3", "4", "5"].map((value, i) => (
@@ -30,12 +26,23 @@ export function VoteInput<T extends FieldValues>({
                 value={value}
                 id={field + i}
               />
-              <FormLabel htmlFor={field + i}>{value}</FormLabel>
+              <FormLabel
+                htmlFor={field + i}
+                fontFamily="'Rock Salt', sans-serif !important"
+                fontSize=".75rem"
+                color="blackAlpha.800"
+              >
+                {value}
+              </FormLabel>
             </>
           ))}
         </Stack>
       </RadioGroup>
-      <Text> yes please!! </Text>
+      <Stack direction="row">
+        <Text size="xs" fontWeight="100" color="blackAlpha.800">
+          Absolutely not! ---------- yes please!!{" "}
+        </Text>
+      </Stack>
     </Stack>
   );
 }

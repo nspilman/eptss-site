@@ -1,7 +1,7 @@
 import { DataTable } from "components/shared/DataTable";
 import { StackedBarChart } from "components/shared/StackedBarChart";
 import { Phase } from "services/PhaseMgmtService";
-import * as styles from "./RoundSummary.css";
+import * as styles from "./RoundSummary.css";   
 
 export interface VoteResults {
   title: string;
