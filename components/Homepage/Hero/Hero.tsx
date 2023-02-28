@@ -1,25 +1,47 @@
-import Link from "next/link";
 import { useNavOptions } from "../../hooks/useNavOptions";
-import { centered } from "../../../styles/theme.css";
 import { SignupButton } from "../SignupButton";
-import * as styles from "./Hero.css";
+import {
+  Button,
+  Link,
+  Card,
+  CardHeader,
+  CardBody,
+  Heading,
+  Flex,
+} from "@chakra-ui/react";
 
 export const Hero = () => {
   const { howItWorks } = useNavOptions();
   return (
-    <section className={styles.hero}>
-      <div className={styles.container}>
-        <h1>Everyone Plays the Same Song</h1>
-        <div className={centered}>
-          <Link href={howItWorks}>
-            <button>Learn</button>
-          </Link>
-          <Link href="/#listen">
-            <button>Listen</button>
-          </Link>
-          <SignupButton />
-        </div>
-      </div>
-    </section>
+    <Flex h="100vh" width="100vw" alignItems="center" justifyContent="center">
+      <Card background="none">
+        <CardHeader>
+          <Heading
+            as="h1"
+            size={{ base: "md" }}
+            color="white"
+            fontWeight="300"
+            textAlign="center"
+          >
+            Everyone Plays the Same Song
+          </Heading>
+        </CardHeader>
+        <CardBody>
+          <Flex
+            direction={{ base: "column", lg: "row" }}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Link href={howItWorks} pr={{ base: "0", lg: "2" }}>
+              <Button mb={{ base: "1", lg: "0" }}>Learn</Button>
+            </Link>
+            <Link href="/#listen" pr={{ base: "0", lg: "2" }}>
+              <Button mb={{ base: "1", lg: "0" }}>Listen</Button>
+            </Link>
+            <SignupButton />
+          </Flex>
+        </CardBody>
+      </Card>
+    </Flex>
   );
 };

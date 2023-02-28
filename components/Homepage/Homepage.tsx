@@ -1,9 +1,11 @@
 import { RoundDetails } from "types";
 import { Footer } from "./Footer";
 import { Hero } from "./Hero";
-import { Main } from "./Main";
+import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
+import { Flex } from "@chakra-ui/react";
+import { PastRounds } from "./PastRounds";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -16,13 +18,14 @@ export interface Props {
 
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   return (
-    <>
+    <Flex direction={"column"} alignItems="center" justifyContent="center">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
-      <Main roundContent={roundContent} phaseInfo={phaseInfo} />
+      <HowItWorks phaseInfo={phaseInfo} />
+      <PastRounds pastRounds={roundContent} />
       <Footer />
-    </>
+    </Flex>
   );
 };

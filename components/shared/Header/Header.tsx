@@ -1,11 +1,9 @@
-import Link from "next/link";
 import React, { ReactElement } from "react";
 import { useNavOptions } from "../../hooks/useNavOptions";
 import { SignupButton } from "../../Homepage/SignupButton";
-import * as styles from "./Header.css";
 import { useSessionContext } from "@supabase/auth-helpers-react";
-import { Router } from "next/router";
 import { useRouter } from "next/router";
+import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
 
 export const Header = (): ReactElement => {
   const { howItWorks } = useNavOptions();
@@ -16,23 +14,40 @@ export const Header = (): ReactElement => {
     await supabaseClient.auth.signOut();
   };
   return (
-    <header id="header" className={styles.header}>
-      <Link href={"/"}>
-        <span className={styles.titleText}>Everyone Plays the Same Song</span>
-      </Link>
-      <div className={styles.navButtons}>
-        <Link href={howItWorks}>
-          <button>The rules</button>
-        </Link>
-        <SignupButton />
-        {process.env.NODE_ENV === "development" && (
-          <button
-            onClick={session ? () => signOut() : () => router.push("/la-cueva")}
+    <Box as="header" id="header">
+      <Flex
+        alignItems="center"
+        justifyContent={{ base: "center", md: "space-between" }}
+        px="4"
+        py="2"
+      >
+        <Link href={"/"}>
+          <Heading
+            textStyle={"h1"}
+            as="h1"
+            size={{ base: "sm", lg: "lg" }}
+            fontWeight="300"
           >
-            {session ? "Sign Out" : "Sign in"}
-          </button>
-        )}
-      </div>
-    </header>
+            Everyone Plays the Same Song
+          </Heading>
+        </Link>
+
+        <Box display={{ base: "none", lg: "block" }}>
+          <Link href={howItWorks}>
+            <Button>The rules</Button>
+          </Link>
+          <SignupButton />
+          {process.env.NODE_ENV === "development" && (
+            <Button
+              onClick={
+                session ? () => signOut() : () => router.push("/la-cueva")
+              }
+            >
+              {session ? "Sign Out" : "Sign in"}
+            </Button>
+          )}
+        </Box>
+      </Flex>
+    </Box>
   );
 };

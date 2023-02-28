@@ -1,8 +1,8 @@
+import { Box, Center, Flex } from "@chakra-ui/react";
 import { useSuccessState } from "components/hooks/useSuccessState";
 import { FieldValues } from "react-hook-form";
 import { Form } from "./Form";
 import { InputType } from "./Form/types";
-import * as styles from "./FormContainer.css";
 
 interface Props<T extends FieldValues> {
   successBlock: React.ReactNode;
@@ -24,22 +24,31 @@ export function FormContainer<T extends FieldValues>({
   const [successState, setSuccessState] = useSuccessState();
 
   return (
-    <div className={styles.formWrapper}>
-      <>
-        {successState !== "success" ? (
-          <Form
-            title={title}
-            description={description}
-            fields={fields}
-            onSubmit={async (payload: T) =>
-              setSuccessState(await onSubmit(payload))
-            }
-          />
-        ) : (
-          successBlock
-        )}
-        {successState === "error" && errorMessage}
-      </>
-    </div>
+    <Center
+      bg="rgba(28,32,38,.9)"
+      py="8"
+      px="12"
+      borderRadius="3xl"
+      width={{
+        base: 350,
+        sm: 450,
+        md: 600,
+        lg: 800,
+      }}
+    >
+      {successState !== "success" ? (
+        <Form
+          title={title}
+          description={description}
+          fields={fields}
+          onSubmit={async (payload: T) =>
+            setSuccessState(await onSubmit(payload))
+          }
+        />
+      ) : (
+        successBlock
+      )}
+      {successState === "error" && errorMessage}
+    </Center>
   );
 }

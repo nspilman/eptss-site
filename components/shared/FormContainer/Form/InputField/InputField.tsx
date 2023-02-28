@@ -1,7 +1,15 @@
-import classnames from "classnames";
+import {
+  Box,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Link,
+  Text,
+} from "@chakra-ui/react";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
-import * as styles from "./InputField.css";
 import { getFieldErrorId, getFieldTestId } from "./testUtils";
 import { TextInput } from "./TextInput";
 import { VoteInput } from "./VoteInput";
@@ -19,47 +27,64 @@ export function InputField<T extends FieldValues>({
 }: Props<T>) {
   const { size, type, label, field: fieldId, optional } = field;
   const hasLink = "link" in field;
+  const isSmall = size === "small";
   return (
-    <div
-      className={classnames(
-        styles.container,
-        size === "small" ? styles.small : styles.large
-      )}
+    <Flex
+      bg="#ccc"
+      my="2"
+      mx="1"
+      p="4"
+      borderRadius="2xl"
+      flexGrow="1"
+      minWidth={isSmall ? "250px" : "350px"}
       data-testid={getFieldTestId(field.field, type)}
+      direction="column"
     >
-      <div className={styles.labelWrapper}>
-        <label
-          className={optional ? styles.label : styles.requiredLabel}
-        >{`${label}`}</label>
-        {hasLink && (
-          <div className={styles.linkWrapper}>
-            <a target="_blank" rel="noopener noreferrer" href={field.link}>
-              listen
-            </a>
-          </div>
+      <FormControl isRequired={!field.optional}>
+        <Box>
+          <FormLabel
+            fontFamily="'Rock Salt', sans-serif !important"
+            color="blackAlpha.700"
+            fontWeight="300"
+            fontSize="1rem"
+            pb="2"
+          >{`${label}`}</FormLabel>
+        </Box>
+        {type === "vote" ? (
+          <VoteInput register={register} field={fieldId} />
+        ) : (
+          <TextInput
+            register={register}
+            field={fieldId}
+            optional={optional}
+            type={type}
+            placeholder={field.placeholder}
+          />
         )}
-      </div>
-      {type === "vote" ? (
-        <VoteInput register={register} field={fieldId} />
-      ) : (
-        <TextInput
-          register={register}
-          field={fieldId}
-          optional={optional}
-          type={type}
-          placeholder={field.placeholder}
-        />
-      )}
-      <div className={styles.errorContainer}>
-        {errors[fieldId] && (
-          <span
-            data-testid={getFieldErrorId(fieldId)}
-            className={styles.errorMessage}
-          >
-            This field is required
-          </span>
-        )}
-      </div>
-    </div>
+        <Box>
+          {errors[fieldId] ? (
+            <FormErrorMessage data-testid={getFieldErrorId(fieldId)}>
+              This field is required
+            </FormErrorMessage>
+          ) : (
+            <FormHelperText>
+              {hasLink && (
+                <Link
+                  pt="4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={field.link}
+                  fontWeight="500"
+                  color="orange.600"
+                  shadow="2xl"
+                >
+                  Listen Here
+                </Link>
+              )}
+            </FormHelperText>
+          )}
+        </Box>
+      </FormControl>
+    </Flex>
   );
 }

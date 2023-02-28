@@ -1,5 +1,5 @@
+import { Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
-import * as styles from "./Profile.css";
 
 export interface VoteSummary {
   artist: string;
@@ -82,11 +82,11 @@ export const Profile = ({
   submissions,
 }: Props) => {
   return (
-    <div className={styles.container}>
+    <Stack direction="column">
       {profileSummary?.email}
       <DataTable rows={voteSummary} headers={headers} />
       <DataTable rows={signups} headers={signupHeaders} />
       <DataTable rows={submissions} headers={submissionHeaders} />
-    </div>
+    </Stack>
   );
 };

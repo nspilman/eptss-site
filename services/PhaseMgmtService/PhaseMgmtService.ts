@@ -1,4 +1,4 @@
-import { format, subDays } from "date-fns";
+import { format, subDays, startOfDay } from "date-fns";
 import { PostgrestError } from "@supabase/supabase-js";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 import { Tables } from "queries";
@@ -30,7 +30,7 @@ export class PhaseMgmtService {
     roundId,
     song,
   }: Props) {
-    const now = new Date();
+    const now = startOfDay(new Date());
     if (now < signupOpens) {
       throw new Error(
         "current date cannot be before signup date. Signup starts the current round"
