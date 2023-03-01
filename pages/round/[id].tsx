@@ -19,11 +19,13 @@ export async function getStaticPaths() {
   const { roundId: currentRoundId, phase: currentPhase } =
     await PhaseMgmtService.build();
   const payload = {
-    paths: roundIds?.filter(({id}) => {
-      return !(id === currentRoundId && currentPhase === "signups")
-    }).map(({ id }) => ({
-      params: { id: id.toString() },
-    })),
+    paths: roundIds
+      ?.filter(({ id }) => {
+        return !(id === currentRoundId && currentPhase === "signups");
+      })
+      .map(({ id }) => ({
+        params: { id: id.toString() },
+      })),
     fallback: false, // can also be true or 'blocking'
   };
   return payload;
@@ -154,9 +156,9 @@ const getRoundMetadata = async (id: number) => {
   };
   return {
     playlistUrl: roundInfo.playlist_url,
-    title: roundInfo.song?.title,
-    artist: roundInfo.song?.artist,
-    submitter: submitterInfo ? submitterInfo[0].name : undefined,
+    title: roundInfo.song?.title || "",
+    artist: roundInfo.song?.artist || "",
+    submitter: submitterInfo ? submitterInfo[0].name : "",
   };
 };
 
