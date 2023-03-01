@@ -6,7 +6,7 @@ export enum Tables {
   SignUps = "sign_ups",
   RoundMetadata = "round_metadata",
   MailingList = "mailing_list",
-  Votes = "SongSelectionVotes",
+  Votes = "song_selection_votes",
   Submissions = "submissions",
 }
 
