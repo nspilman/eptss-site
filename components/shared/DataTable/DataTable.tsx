@@ -9,6 +9,7 @@ import {
   TableContainer,
   Heading,
   Flex,
+  Box,
 } from "@chakra-ui/react";
 
 interface Header<T> {
@@ -52,23 +53,11 @@ export function DataTable<T extends string>({
   }
 
   return (
-    <TableContainer
-      width={{
-        base: "380px",
-        sm: "600px",
-        md: "800px",
-        lg: "1000px",
-      }}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      my="4"
-    >
+    <TableContainer my="4" width="90vw" overflowX="scroll">
       <Heading size="sm" pb="4">
         {title}
       </Heading>
-
-      <Table>
+      <Table size="sm">
         <Thead>
           <Tr>
             {headers.map(({ key, display, sortable }) => (
@@ -77,6 +66,7 @@ export function DataTable<T extends string>({
                 cursor={sortable ? "pointer" : "auto"}
                 onClick={() => sortable && onHeaderClick(key)}
                 color="yellow.300"
+                fontSize="xs"
               >
                 {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
               </Th>
