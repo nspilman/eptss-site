@@ -4,7 +4,7 @@ import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
-import { Flex, Stack } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
 import { PastRounds } from "./PastRounds";
 
 export interface Props {

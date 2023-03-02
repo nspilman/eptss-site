@@ -1,4 +1,4 @@
-import { Box, Center, Flex } from "@chakra-ui/react";
+import { Box, Center } from "@chakra-ui/react";
 import { useSuccessState } from "components/hooks/useSuccessState";
 import { FieldValues } from "react-hook-form";
 import { Form } from "./Form";
@@ -29,26 +29,30 @@ export function FormContainer<T extends FieldValues>({
       py="8"
       px="12"
       borderRadius="3xl"
-      width={{
-        base: 350,
-        sm: 450,
-        md: 600,
-        lg: 800,
-      }}
+      width="100%"
     >
-      {successState !== "success" ? (
-        <Form
-          title={title}
-          description={description}
-          fields={fields}
-          onSubmit={async (payload: T) =>
-            setSuccessState(await onSubmit(payload))
-          }
-        />
-      ) : (
-        successBlock
-      )}
-      {successState === "error" && errorMessage}
+      <Box
+        width={{
+          base: 350,
+          sm: 450,
+          md: 600,
+          lg: 800,
+        }}
+      >
+        {successState !== "success" ? (
+          <Form
+            title={title}
+            description={description}
+            fields={fields}
+            onSubmit={async (payload: T) =>
+              setSuccessState(await onSubmit(payload))
+            }
+          />
+        ) : (
+          successBlock
+        )}
+        {successState === "error" && errorMessage}
+      </Box>
     </Center>
   );
 }

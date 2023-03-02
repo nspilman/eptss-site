@@ -46,13 +46,7 @@ export const HowItWorks = ({ phaseInfo }: Props) => {
   const blurb = useBlurb(phaseInfo);
 
   return (
-    <Card
-      padding="8"
-      width="80vw"
-      bg="hsla(0,0%,100%,.05)"
-      color="white"
-      mx="8"
-    >
+    <Card padding="8" width="80vw" bg="hsla(0,0%,100%,.05)" mx="8">
       <Stack alignItems="center">
         <CardHeader>
           <Heading size="lg">How It Works</Heading>

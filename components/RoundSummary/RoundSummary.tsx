@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
