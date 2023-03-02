@@ -7,7 +7,7 @@ export const SignupButton = (): ReactElement => {
 
   return (
     <Link href={signUp}>
-      <Button>Sign Up</Button>
+      <Button variant="primary">Sign Up</Button>
     </Link>
   );
 };

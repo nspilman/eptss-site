@@ -8,23 +8,16 @@ import {
   CardBody,
   Heading,
   Flex,
+  Center,
 } from "@chakra-ui/react";
 
 export const Hero = () => {
   const { howItWorks } = useNavOptions();
   return (
-    <Flex h="100vh" width="100vw" alignItems="center" justifyContent="center">
+    <Center h="100vh" width="100vw">
       <Card background="none">
         <CardHeader>
-          <Heading
-            as="h1"
-            size={{ base: "md" }}
-            color="white"
-            fontWeight="300"
-            textAlign="center"
-          >
-            Everyone Plays the Same Song
-          </Heading>
+          <Heading size={{ base: "md" }}>Everyone Plays the Same Song</Heading>
         </CardHeader>
         <CardBody>
           <Flex
@@ -42,6 +35,6 @@ export const Hero = () => {
           </Flex>
         </CardBody>
       </Card>
-    </Flex>
+    </Center>
   );
 };
