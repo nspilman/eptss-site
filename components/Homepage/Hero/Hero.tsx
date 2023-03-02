@@ -13,6 +13,16 @@ import {
 
 export const Hero = () => {
   const { howItWorks } = useNavOptions();
+  const buttonStyles = {
+    mb: {
+      base: 1,
+      lg: 0,
+    },
+    pr: {
+      base: 0,
+      lg: 2,
+    },
+  };
   return (
     <Center h="100vh" width="100vw">
       <Card background="none">
@@ -27,11 +37,11 @@ export const Hero = () => {
             alignItems="center"
             justifyContent="center"
           >
-            <Link href={howItWorks} pr={{ base: "0", lg: "2" }}>
-              <Button mb={{ base: "1", lg: "0" }}>Learn</Button>
+            <Link href={howItWorks} {...buttonStyles}>
+              <Button>Learn</Button>
             </Link>
-            <Link href="/#listen" pr={{ base: "0", lg: "2" }}>
-              <Button mb={{ base: "1", lg: "0" }}>Listen</Button>
+            <Link href="/#listen" {...buttonStyles}>
+              <Button>Listen</Button>
             </Link>
             <SignupButton />
           </Flex>
