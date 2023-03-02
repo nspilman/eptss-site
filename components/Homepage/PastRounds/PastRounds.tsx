@@ -9,13 +9,7 @@ export const PastRounds = ({ pastRounds }: Props) => {
   return (
     <Stack direction="column" py="8">
       <Box>
-        <Heading
-          as="h1"
-          id="listen"
-          pb="8"
-          fontWeight="light"
-          size={{ base: "md", lg: "lg" }}
-        >
+        <Heading as="h1" id="listen" pb="8" size={{ base: "md", lg: "lg" }}>
           Past Rounds
         </Heading>
       </Box>
