@@ -1,51 +1,35 @@
-import { useNavOptions } from "../../hooks/useNavOptions";
-import { SignupButton } from "../SignupButton";
 import {
-  Button,
-  Link,
   Card,
   CardHeader,
   CardBody,
   Heading,
-  Flex,
   Center,
+  CardFooter,
 } from "@chakra-ui/react";
+import { ActionButtons } from "components/ActionButtons/ActionButtons";
 
 export const Hero = () => {
-  const { howItWorks } = useNavOptions();
-  const buttonStyles = {
-    mb: {
-      base: 1,
-      lg: 0,
-    },
-    pr: {
-      base: 0,
-      lg: 2,
-    },
-  };
   return (
     <Center h="100vh" width="100vw">
-      <Card background="none">
+      <Card
+        background="none"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
         <CardHeader>
           <Center>
             <Heading size="md">Everyone Plays the Same Song</Heading>
           </Center>
         </CardHeader>
-        <CardBody>
-          <Flex
-            direction={{ base: "column", lg: "row" }}
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Link href={howItWorks} {...buttonStyles}>
-              <Button>Learn</Button>
-            </Link>
-            <Link href="/#listen" {...buttonStyles}>
-              <Button>Listen</Button>
-            </Link>
-            <SignupButton />
-          </Flex>
-        </CardBody>
+        <CardFooter
+          width="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <ActionButtons />
+        </CardFooter>
       </Card>
     </Center>
   );

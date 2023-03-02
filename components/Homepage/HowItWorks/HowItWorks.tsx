@@ -15,6 +15,7 @@ import {
   Flex,
   Stack,
 } from "@chakra-ui/react";
+import { ActionButtons } from "components/ActionButtons/ActionButtons";
 
 const howItWorksContent = [
   {
@@ -42,7 +43,6 @@ interface Props {
 }
 
 export const HowItWorks = ({ phaseInfo }: Props) => {
-  const { howItWorks } = useNavOptions();
   const blurb = useBlurb(phaseInfo);
 
   return (
@@ -73,17 +73,7 @@ export const HowItWorks = ({ phaseInfo }: Props) => {
           </Stack>
         </CardBody>
         <CardFooter>
-          <Stack direction={{ base: "column", md: "row" }}>
-            <Link id="learn" href={howItWorks} variant="button">
-              <Button>Rules</Button>
-            </Link>
-            <Button>
-              <Link href="#listen" variant="button">
-                Listen
-              </Link>
-            </Button>
-            <SignupButton />
-          </Stack>
+          <ActionButtons />
         </CardFooter>
       </Stack>
     </Card>
