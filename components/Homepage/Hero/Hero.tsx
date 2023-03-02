@@ -17,7 +17,9 @@ export const Hero = () => {
     <Center h="100vh" width="100vw">
       <Card background="none">
         <CardHeader>
-          <Heading size={{ base: "md" }}>Everyone Plays the Same Song</Heading>
+          <Center>
+            <Heading size="md">Everyone Plays the Same Song</Heading>
+          </Center>
         </CardHeader>
         <CardBody>
           <Flex

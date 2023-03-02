@@ -19,7 +19,7 @@ export const ButtonStyles = defineStyleConfig({
     },
     md: {
       fontSize: "md",
-      px: 6,
+      px: 10,
       py: 4,
     },
   },
