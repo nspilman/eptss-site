@@ -12,11 +12,9 @@ export const ActionButtons = () => {
       <Link id="learn" href={Navigation.HowItWorks} variant="button">
         <Button>Rules</Button>
       </Link>
-      <Button>
-        <Link href="#listen" variant="button">
-          Listen
-        </Link>
-      </Button>
+      <Link href="#listen" variant="button">
+        <Button>Listen</Button>
+      </Link>
       <SignupButton />
     </Stack>
   );
