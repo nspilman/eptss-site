@@ -1,5 +1,3 @@
-import { useNavOptions } from "../../hooks/useNavOptions";
-import { SignupButton } from "../SignupButton";
 import { Phase } from "services/PhaseMgmtService";
 import { useBlurb } from "./useBlurb";
 import {
@@ -7,8 +5,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Link,
-  Button,
   CardFooter,
   Text,
   Heading,

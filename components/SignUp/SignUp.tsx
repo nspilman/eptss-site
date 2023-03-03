@@ -3,9 +3,8 @@ import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { useSignup } from "./useSignup";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import { useNavOptions } from "components/hooks/useNavOptions";
-import Link from "next/link";
-import { Center } from "@chakra-ui/react";
+import { Center, Link } from "@chakra-ui/react";
+import { Navigation } from "components/enum/navigation";
 
 interface Props {
   roundId: number;
@@ -14,8 +13,6 @@ interface Props {
 
 export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
   const { signUp, signupSuccess, fields } = useSignup(roundId);
-
-  const { howItWorks } = useNavOptions();
 
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
@@ -29,7 +26,9 @@ export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
             Sign up with your name, email and the song you want to cover!
             <br />
             Signups close Midnight of {signupsCloseDateLabel}.
-            <Link href={howItWorks}> Full rules here</Link>
+            <Link href={Navigation.HowItWorks} color="yellow.300">
+              Full rules here
+            </Link>
           </div>
         }
         successBlock={<ActionSuccessPanel {...signupSuccess} />}
