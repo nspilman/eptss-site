@@ -9,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { useTheme } from "@chakra-ui/react";
 
 ChartJS.register(
   CategoryScale,
@@ -18,6 +19,9 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+ChartJS.defaults.color = "white";
+ChartJS.defaults.plugins.title.color = "white";
 
 interface Props {
   data: {
@@ -32,11 +36,20 @@ interface Props {
 }
 
 export const StackedBarChart = ({ data, title }: Props) => {
+  const theme = useTheme() as {
+    colors: { yellow: { 300: string } };
+  };
+  console.log({ theme });
   const options = {
     plugins: {
       title: {
         display: !!title,
         text: title,
+        color: theme.colors.yellow[300],
+        font: {
+          weight: "bold",
+          size: 20,
+        },
       },
       legend: {
         position: "left" as const,

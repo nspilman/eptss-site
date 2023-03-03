@@ -1,12 +1,11 @@
 import React, { ReactElement } from "react";
-import { useNavOptions } from "../../hooks/useNavOptions";
 import { SignupButton } from "../../Homepage/SignupButton";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
+import { Navigation } from "components/enum/navigation";
 
 export const Header = (): ReactElement => {
-  const { howItWorks } = useNavOptions();
   const router = useRouter();
 
   const { session, supabaseClient } = useSessionContext();
@@ -33,7 +32,7 @@ export const Header = (): ReactElement => {
         </Link>
 
         <Box display={{ base: "none", lg: "block" }}>
-          <Link href={howItWorks}>
+          <Link href={Navigation.HowItWorks}>
             <Button>The rules</Button>
           </Link>
           <SignupButton />

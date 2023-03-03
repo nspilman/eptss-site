@@ -9,7 +9,9 @@ export const PastRounds = ({ pastRounds }: Props) => {
   return (
     <Stack direction="column" py="8">
       <Box>
-        <Heading id="listen">The Playlists!</Heading>
+        <Heading as="h1" id="listen" pb="8" size={{ base: "md", lg: "lg" }}>
+          Past Rounds
+        </Heading>
       </Box>
       {pastRounds
         .filter((round) => round.title)

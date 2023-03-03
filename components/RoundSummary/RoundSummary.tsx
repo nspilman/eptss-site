@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -115,24 +115,25 @@ export const RoundSummary = ({
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
         <DataTable
-          title={"Voting breakdown"}
+          title={"Voting Breakdown"}
           headers={voteResultsHeaders}
           rows={voteResults}
         />
         <Box width={elementWidthsByBreakpoint} overflow="scroll">
           <StackedBarChart
             data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
+            title="Vote Breakdown Bar Chart"
           />
         </Box>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack direction="row" justifyContent="space-between" width="100%">
           {navigation.previous && (
             <a href={`/round/${navigation.previous}`}>
-              <button>Round {navigation.previous}</button>
+              <Button size="sm">Round {navigation.previous}</Button>
             </a>
           )}
           {navigation.next && (
             <a href={`/round/${navigation.next}`}>
-              <button>Round {navigation.next}</button>
+              <Button size="sm">Round {navigation.next}</Button>
             </a>
           )}
         </Stack>

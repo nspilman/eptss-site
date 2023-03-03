@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Heading, Text } from "@chakra-ui/react";
+import { Button, Heading, Stack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,7 +19,7 @@ export const ActionSuccessPanel = ({
   image: { src, alt },
 }: Props) => {
   return (
-    <Flex flexDirection="column" alignItems="center">
+    <Stack alignItems="center">
       <Heading as="h1" size="md" textAlign="center" fontWeight="300">
         {header}
       </Heading>
@@ -33,6 +33,6 @@ export const ActionSuccessPanel = ({
       <Link href="/#listen">
         <Button>Home</Button>
       </Link>
-    </Flex>
+    </Stack>
   );
 };

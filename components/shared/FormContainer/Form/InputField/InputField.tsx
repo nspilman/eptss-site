@@ -6,7 +6,6 @@ import {
   FormHelperText,
   FormLabel,
   Link,
-  Text,
 } from "@chakra-ui/react";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
@@ -30,7 +29,7 @@ export function InputField<T extends FieldValues>({
   const isSmall = size === "small";
   return (
     <Flex
-      bg="#ccc"
+      bg="gray.50"
       my="2"
       mx="1"
       p="4"
