@@ -2,20 +2,12 @@ import { PageContainer } from "components/shared/PageContainer";
 import { GetServerSidePropsContext } from "next";
 
 import { BlogHome } from "components/Blog";
-import { getAllPosts } from "../../serverFunctions/getAllPosts";
+import { getAllPosts } from "serverFunctions/getAllPosts";
+import { BlogPost } from "types/BlogPost";
 
-function BlogPage({
-  posts,
-}: {
-  posts: {
-    frontmatter: {
-      title: string;
-    };
-    slug: string;
-  }[];
-}) {
+function BlogPage({ posts }: { posts: BlogPost[] }) {
   return (
-    <PageContainer title="Blog">
+    <PageContainer title="Blog Home">
       <BlogHome posts={posts} />
     </PageContainer>
   );

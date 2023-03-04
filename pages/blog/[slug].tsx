@@ -1,6 +1,7 @@
 import { Post } from "components/Blog/Post/Post";
 import { PageContainer } from "components/shared/PageContainer";
 import { getAllPosts } from "serverFunctions/getAllPosts";
+import { BlogPost } from "types/BlogPost";
 
 export async function getStaticPaths() {
   const posts = getAllPosts();
@@ -24,7 +25,7 @@ export async function getStaticProps({
   };
 }
 
-export default function PostPage({ post }: { post: string }) {
+export default function PostPage({ post }: { post: BlogPost }) {
   return (
     <PageContainer title={post.slug}>
       <Post post={post} />

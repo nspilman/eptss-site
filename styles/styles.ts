@@ -18,6 +18,7 @@ export const theme = extendTheme({
       darkBlueHero: "rgba(10, 10, 80, 0.7)",
       graybluehero: "rgba(10, 50, 120, 0.7)",
     },
+    bgTransparent: "hsla(0,0%,100%,.05)",
   },
   styles: {
     global: {
