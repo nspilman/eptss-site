@@ -18,8 +18,7 @@ export async function getStaticProps(ctx: GetServerSidePropsContext) {
   return {
     props: {
       posts,
-    }, // will be passed to the page component as props
-    notFound: process.env.NODE_ENV === "production",
+    },
   };
 }
 
