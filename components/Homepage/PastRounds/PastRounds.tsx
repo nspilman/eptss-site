@@ -6,6 +6,7 @@ interface Props {
   pastRounds: RoundDetails[];
 }
 export const PastRounds = ({ pastRounds }: Props) => {
+  console.log({ pastRounds });
   return (
     <Stack direction="column" py="8">
       <Box>

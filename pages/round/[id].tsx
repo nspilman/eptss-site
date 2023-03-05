@@ -2,9 +2,10 @@ import {
   Navigation,
   RoundMetadata,
   RoundSummary,
+  SignupData,
   VoteBreakdown,
   VoteResults,
-} from "components/RoundSummary/RoundSummary";
+} from "components/RoundSummary";
 import { PageContainer } from "components/shared/PageContainer";
 import { Tables, Views } from "queries";
 import { Phase, PhaseMgmtService } from "services/PhaseMgmtService";
@@ -37,27 +38,29 @@ export async function getStaticProps({
 }: {
   params: { id: string };
 }) {
-  const id = parseInt(idString);
-  const voteResults = await getVoteResults(id);
-  const signupCount = await getSignupCount(id);
+  const roundId = parseInt(idString);
+  const voteResults = await getVoteResults(roundId);
+  const signupData = await getSignupData(roundId);
+  const signupCount = signupData?.length || 0;
   const { roundId: currentRoundId, phase: currentPhase } =
     await PhaseMgmtService.build();
-  const metadata = await getRoundMetadata(id);
-  const submissionCount = await getSubmissionCount(id);
-  const voteBreakdown = await getVoteBreakdownBySong(id);
+  const metadata = await getRoundMetadata(roundId);
+  const submissionCount = await getSubmissionCount(roundId);
+  const voteBreakdown = await getVoteBreakdownBySong(roundId);
 
   const navigation = {
-    previous: id !== 0 ? id - 1 : null,
-    next: id !== currentRoundId ? id + 1 : null,
+    previous: roundId !== 0 ? roundId - 1 : null,
+    next: roundId !== currentRoundId ? roundId + 1 : null,
   };
 
   return {
     // Passed to the page component as props
     props: {
-      id,
+      roundId,
       voteResults,
       signupCount,
-      phase: currentRoundId === id ? currentPhase : "Complete",
+      signupData,
+      phase: currentRoundId === roundId ? currentPhase : "Complete",
       metadata,
       submissionCount,
       voteBreakdown,
@@ -66,19 +69,11 @@ export async function getStaticProps({
   };
 }
 
-export default function Post({
-  voteResults,
-  id,
-  signupCount,
-  phase,
-  metadata,
-  submissionCount,
-  voteBreakdown,
-  navigation,
-}: {
-  id: number;
+export default function Post(props: {
+  roundId: number;
   signupCount: number;
   voteResults: VoteResults[];
+  signupData: SignupData[];
   phase: Phase | "Complete";
   metadata: RoundMetadata;
   submissionCount: number;
@@ -86,17 +81,8 @@ export default function Post({
   navigation: Navigation;
 }) {
   return (
-    <PageContainer title={`Round ${id} Overview`}>
-      <RoundSummary
-        voteResults={voteResults}
-        signupCount={signupCount}
-        phase={phase}
-        roundId={id}
-        metadata={metadata}
-        submissionCount={submissionCount}
-        voteBreakdown={voteBreakdown}
-        navigation={navigation}
-      />
+    <PageContainer title={`Round ${props.roundId} Overview`}>
+      <RoundSummary {...props} />
     </PageContainer>
   );
 }
@@ -113,14 +99,18 @@ const getVoteResults = async (id: number) => {
   }));
 };
 
-const getSignupCount = async (id: number) => {
+const getSignupData = async (id: number) => {
   const { data } = await dbClient
     .from(Tables.SignUps)
-    .select("email")
+    .select(
+      `youtube_link,
+      song:songs (
+      title,
+      artist
+  )`
+    )
     .filter("round_id", "eq", id);
-  return data?.reduce((prev: string[], curr) => {
-    return prev.includes(curr.email) ? prev : [...prev, curr.email];
-  }, []).length;
+  return data;
 };
 
 const getRoundMetadata = async (id: number) => {
