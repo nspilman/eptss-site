@@ -158,12 +158,14 @@ export const RoundSummary = ({
           />
         )}
 
-        <Box width={elementWidthsByBreakpoint} overflow="scroll">
-          <StackedBarChart
-            data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
-            title="Vote Breakdown Bar Chart"
-          />
-        </Box>
+        {!isVotingPhase && (
+          <Box width={elementWidthsByBreakpoint} overflow="scroll">
+            <StackedBarChart
+              data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
+              title="Vote Breakdown Bar Chart"
+            />
+          </Box>
+        )}
         <Stack direction="row" justifyContent="space-between" width="100%">
           {navigation.previous && (
             <a href={`/round/${navigation.previous}`}>
