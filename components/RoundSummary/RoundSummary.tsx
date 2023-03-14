@@ -143,7 +143,6 @@ export const RoundSummary = ({
           width={elementWidthsByBreakpoint}
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
-        {JSON.stringify(signupData)}
         {isVotingPhase ? (
           <DataTable
             title={"Songs in play to Cover"}

@@ -5,7 +5,7 @@ import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
 import { Stack } from "@chakra-ui/react";
-import { RoundsDisplay } from "./RioundsDisplay";
+import { RoundsDisplay } from "./RoundsDisplay";
 
 export interface Props {
   roundContent: RoundDetails[];
