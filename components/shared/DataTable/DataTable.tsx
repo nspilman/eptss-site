@@ -8,8 +8,6 @@ import {
   Td,
   TableContainer,
   Heading,
-  Flex,
-  Box,
 } from "@chakra-ui/react";
 
 interface Header<T> {

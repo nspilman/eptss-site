@@ -5,7 +5,7 @@ import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
 import { Stack } from "@chakra-ui/react";
-import { PastRounds } from "./PastRounds";
+import { RoundsDisplay } from "./RoundsDisplay";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -17,6 +17,7 @@ export interface Props {
 }
 
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
+  const isVotingPhase = phaseInfo.phase === "voting";
   return (
     <Stack alignItems="center" justifyContent="center">
       <Head>
@@ -24,7 +25,11 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
       </Head>
       <Hero />
       <HowItWorks phaseInfo={phaseInfo} />
-      <PastRounds pastRounds={roundContent} />
+      <RoundsDisplay
+        rounds={roundContent}
+        currentRound={phaseInfo.roundId}
+        isVotingPhase={isVotingPhase}
+      />
       <Footer />
     </Stack>
   );

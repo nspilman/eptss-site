@@ -11,6 +11,14 @@ export interface VoteResults {
 }
 [];
 
+export interface SignupData {
+  youtube_link: string;
+  song: {
+    title: string;
+    artist: string;
+  };
+}
+
 export interface Navigation {
   next?: null;
   previous?: null;
@@ -35,6 +43,7 @@ export interface VoteBreakdown {
 interface Props {
   voteResults: VoteResults[];
   signupCount: number;
+  signupData: SignupData[];
   phase: Phase | "Complete";
   roundId: number;
   metadata: RoundMetadata;
@@ -52,9 +61,19 @@ const voteResultsHeaders = [
   { key: "average", display: "Average Vote" },
 ] as const;
 
+const signupsHeaders = [
+  {
+    key: "title",
+    display: "Title",
+  },
+  { key: "artist", display: "Artist" },
+  { key: "youtubeLink", display: "Youtube Link" },
+] as const;
+
 export const RoundSummary = ({
   voteResults,
   signupCount,
+  signupData,
   phase,
   roundId,
   metadata: { artist, title, playlistUrl, submitter },
@@ -101,30 +120,51 @@ export const RoundSummary = ({
     lg: "1000px",
   };
 
+  const signupDataDisplay = signupData.map((signup) => ({
+    youtubeLink: signup.youtube_link,
+    title: signup.song.title,
+    artist: signup.song.artist,
+  }));
+
+  const isVotingPhase = phase === "voting";
   return (
     <PageContainer title={`Round ${roundId} Info`}>
       <Stack alignItems="center">
         <Heading as="h1"> Round {roundId} Info</Heading>
-        <h2>
-          {title} by {artist}
-        </h2>
+        {!isVotingPhase && (
+          <Heading size="sm">
+            {title} by {artist}
+          </Heading>
+        )}
+
         {phase === "Complete" && <span>Submitted by: {submitter}</span>}
         <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
         <Box
           width={elementWidthsByBreakpoint}
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
-        <DataTable
-          title={"Voting Breakdown"}
-          headers={voteResultsHeaders}
-          rows={voteResults}
-        />
-        <Box width={elementWidthsByBreakpoint} overflow="scroll">
-          <StackedBarChart
-            data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
-            title="Vote Breakdown Bar Chart"
+        {isVotingPhase ? (
+          <DataTable
+            title={"Songs in play to Cover"}
+            headers={signupsHeaders}
+            rows={signupDataDisplay}
           />
-        </Box>
+        ) : (
+          <DataTable
+            title={"Voting Breakdown"}
+            headers={voteResultsHeaders}
+            rows={voteResults}
+          />
+        )}
+
+        {!isVotingPhase && (
+          <Box width={elementWidthsByBreakpoint} overflow="scroll">
+            <StackedBarChart
+              data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
+              title="Vote Breakdown Bar Chart"
+            />
+          </Box>
+        )}
         <Stack direction="row" justifyContent="space-between" width="100%">
           {navigation.previous && (
             <a href={`/round/${navigation.previous}`}>

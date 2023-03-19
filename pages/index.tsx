@@ -36,21 +36,23 @@ export const getStaticProps: GetStaticProps = async () => {
   if (error) {
     throw new Error(JSON.stringify(error));
   }
+  const phaseMgmtService = await PhaseMgmtService.build();
+  const { phase, dateLabels, roundId } = phaseMgmtService;
 
   const roundContent = (data as RoundEntity[])
-    ?.filter(({ song }) => !!song)
     .map(({ song, playlist_url, id }) => {
-      const { title, artist } = song || {};
+      const { title, artist } = song || { title: null, artist: null };
       return {
         title,
         artist,
-        round: id,
+        roundId: id,
         playlist: playlist_url,
       };
-    });
+    })
+    .filter(
+      (round) => !(round.roundId === roundId.toString() && phase === "signups")
+    );
 
-  const phaseMgmtService = await PhaseMgmtService.build();
-  const { phase, dateLabels, roundId } = phaseMgmtService;
   const phaseEndsDatelabel = dateLabels[phase].closes;
 
   return {
