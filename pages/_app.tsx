@@ -3,15 +3,20 @@ import type { AppProps } from "next/app";
 import { Header } from "../components/shared/Header";
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
+import { ChakraProvider } from "@chakra-ui/react";
 import { useState } from "react";
+import { theme } from "styles";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+
   return (
-    <SessionContextProvider supabaseClient={supabaseClient}>
-      <Header />
-      <Component {...pageProps} />
-    </SessionContextProvider>
+    <ChakraProvider theme={theme}>
+      <SessionContextProvider supabaseClient={supabaseClient}>
+        <Header />
+        <Component {...pageProps} />
+      </SessionContextProvider>
+    </ChakraProvider>
   );
 }
 

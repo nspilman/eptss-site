@@ -1,8 +1,8 @@
+import { Box, Center } from "@chakra-ui/react";
 import { useSuccessState } from "components/hooks/useSuccessState";
 import { FieldValues } from "react-hook-form";
 import { Form } from "./Form";
 import { InputType } from "./Form/types";
-import * as styles from "./FormContainer.css";
 
 interface Props<T extends FieldValues> {
   successBlock: React.ReactNode;
@@ -24,8 +24,21 @@ export function FormContainer<T extends FieldValues>({
   const [successState, setSuccessState] = useSuccessState();
 
   return (
-    <div className={styles.formWrapper}>
-      <>
+    <Center
+      bg="rgba(28,32,38,.9)"
+      py="8"
+      px="12"
+      borderRadius="3xl"
+      width="100%"
+    >
+      <Box
+        width={{
+          base: 350,
+          sm: 450,
+          md: 600,
+          lg: 800,
+        }}
+      >
         {successState !== "success" ? (
           <Form
             title={title}
@@ -39,7 +52,7 @@ export function FormContainer<T extends FieldValues>({
           successBlock
         )}
         {successState === "error" && errorMessage}
-      </>
-    </div>
+      </Box>
+    </Center>
   );
 }

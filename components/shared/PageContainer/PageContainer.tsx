@@ -1,6 +1,6 @@
+import { Box, Flex } from "@chakra-ui/react";
 import Head from "next/head";
 import React from "react";
-import * as styles from "./PageContainer.css";
 
 export const PageContainer = ({
   children,
@@ -10,11 +10,19 @@ export const PageContainer = ({
   title: string;
 }) => {
   return (
-    <div className={styles.container}>
+    <Box p="0" width="100vw">
       <Head>
         <title>{`${title} | Everyone Plays the Same Song`}</title>
       </Head>
-      <div className={styles.body}>{children}</div>
-    </div>
+      <Flex
+        py="16"
+        px="8"
+        flexWrap="wrap"
+        justifyContent="center"
+        sx={{ minHeight: "100vh" }}
+      >
+        {children}
+      </Flex>
+    </Box>
   );
 };

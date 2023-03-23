@@ -1,49 +1,54 @@
-import Link from "next/link";
 import React, { ReactElement } from "react";
-import { useNavOptions } from "../../hooks/useNavOptions";
 import { SignupButton } from "../../Homepage/SignupButton";
-import * as styles from "./Header.css";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
-import { Button, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Link } from "@chakra-ui/react";
+import { Navigation } from "components/enum/navigation";
 import { EmailAuthModal } from "components/EmailAuthModal";
 
 export const Header = (): ReactElement => {
-  const { howItWorks } = useNavOptions();
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { session, supabaseClient, isLoading } = useSessionContext();
   const signOut = async () => {
     await supabaseClient.auth.signOut();
   };
 
   return (
-    <header id="header" className={styles.header}>
-      <Link href={"/"}>
-        <span className={styles.titleText}>Everyone Plays the Same Song</span>
-      </Link>
-      <div className={styles.navButtons}>
-        <Button colorScheme="blue" variant="ghost" onClick={() => router.push("/how-it-works")}>
-          Rules
-        </Button>
+    <Box as="header" id="header">
+      <Flex
+        alignItems="center"
+        justifyContent={{ base: "center", md: "space-between" }}
+        px="4"
+        py="2"
+      >
+        <Link href={"/"}>
+          <Heading
+            textStyle={"h1"}
+            as="h1"
+            size={{ base: "sm", lg: "lg" }}
+            fontWeight="300"
+          >
+            Everyone Plays the Same Song
+          </Heading>
+        </Link>
 
-        {isLoading ? null : session ? (
-          <>
-            <Button colorScheme="blue" onClick={() => router.push("/profile")}>
-              Profile
+        <Box display={{ base: "none", lg: "block" }}>
+          <Link href={Navigation.HowItWorks}>
+            <Button>The rules</Button>
+          </Link>
+          <SignupButton />
+          {process.env.NODE_ENV === "development" && (
+            <Button
+              onClick={
+                session ? () => signOut() : () => router.push("/la-cueva")
+              }
+            >
+              {session ? "Sign Out" : "Sign in"}
             </Button>
-            <Button variant="ghost" onClick={signOut}>
-              Log Out
-            </Button>
-          </>
-        ) : (
-          <Button colorScheme="blue" variant="solid" onClick={onOpen}>
-            Join Us!
-          </Button>
-        )}
-      </div>
-      <EmailAuthModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
-    </header>
+          )}
+        </Box>
+      </Flex>
+    </Box>
   );
 };

@@ -1,9 +1,11 @@
 import { RoundDetails } from "types";
 import { Footer } from "./Footer";
 import { Hero } from "./Hero";
-import { Main } from "./Main";
+import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
+import { Stack } from "@chakra-ui/react";
+import { RoundsDisplay } from "./RoundsDisplay";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -15,14 +17,20 @@ export interface Props {
 }
 
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
+  const isVotingPhase = phaseInfo.phase === "voting";
   return (
-    <>
+    <Stack alignItems="center" justifyContent="center">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
-      <Main roundContent={roundContent} phaseInfo={phaseInfo} />
+      <HowItWorks phaseInfo={phaseInfo} />
+      <RoundsDisplay
+        rounds={roundContent}
+        currentRound={phaseInfo.roundId}
+        isVotingPhase={isVotingPhase}
+      />
       <Footer />
-    </>
+    </Stack>
   );
 };

@@ -1,8 +1,8 @@
 import { FieldValues, useForm } from "react-hook-form";
-import * as styles from "./Form.css";
 import React from "react";
 import { InputField } from "./InputField";
 import { InputType } from "./types";
+import { Box, Button, Center, Heading, Stack } from "@chakra-ui/react";
 
 interface Props<T extends FieldValues> {
   onSubmit: (signupModel: T) => void;
@@ -24,25 +24,30 @@ export function Form<T extends FieldValues>({
   } = useForm<T>();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      {/* TODO - this should be outside the form */}
-      <h1 className={styles.title}>{title}</h1>
-      <div className={styles.descriptionWrapper}>{description}</div>
-      <div className={styles.formFieldWrapper}>
-        {fields.map((field, i) => {
-          return (
-            <InputField
-              key={i}
-              field={field}
-              register={register}
-              errors={errors}
-            />
-          );
-        })}
-      </div>
-      <button type="submit" data-testid="form-submission">
-        Submit
-      </button>
-    </form>
+    <Stack alignItems="center" justifyContent="center">
+      <Heading as="h1" size="md" textAlign="center" py="8">
+        {title}
+      </Heading>
+      <Box>{description}</Box>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack direction="column" alignItems="center">
+          <Center flexWrap="wrap">
+            {fields.map((field, i) => {
+              return (
+                <InputField
+                  key={i}
+                  field={field}
+                  register={register}
+                  errors={errors}
+                />
+              );
+            })}
+          </Center>
+          <Button type="submit" data-testid="form-submission">
+            Submit
+          </Button>
+        </Stack>
+      </form>
+    </Stack>
   );
 }

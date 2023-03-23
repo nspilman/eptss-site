@@ -1,7 +1,6 @@
-import * as styles from "./ActionSuccessPanel.css";
+import { Button, Heading, Stack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
-import { roundedCorners } from "styles/theme.css";
 
 interface Props {
   text: {
@@ -20,20 +19,20 @@ export const ActionSuccessPanel = ({
   image: { src, alt },
 }: Props) => {
   return (
-    <div className={styles.body}>
-      <h2>{header}</h2>
-      <p>{body}</p>
-      <Image
-        className={roundedCorners}
-        src={src}
-        alt={alt}
-        width={500}
-        height={500}
-      />
-      <p>{thankyou}</p>
+    <Stack alignItems="center">
+      <Heading as="h1" size="md" textAlign="center" fontWeight="300">
+        {header}
+      </Heading>
+      <Text textAlign="center" fontWeight="200" my="4">
+        {body}
+      </Text>
+      <Image src={src} alt={alt} width={500} height={500} />
+      <Text fontWeight="200" my="4">
+        {thankyou}
+      </Text>
       <Link href="/#listen">
-        <button>Home</button>
+        <Button>Home</Button>
       </Link>
-    </div>
+    </Stack>
   );
 };

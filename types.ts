@@ -1,6 +1,6 @@
 export interface RoundDetails {
   playlist: string;
-  round: number;
+  roundId: number;
   title: string;
   artist: string;
 }

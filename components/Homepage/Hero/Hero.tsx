@@ -1,25 +1,38 @@
-import Link from "next/link";
-import { useNavOptions } from "../../hooks/useNavOptions";
-import { centered } from "../../../styles/theme.css";
-import { SignupButton } from "../SignupButton";
-import * as styles from "./Hero.css";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Heading,
+  Center,
+  CardFooter,
+} from "@chakra-ui/react";
+import { ActionButtons } from "components/ActionButtons/ActionButtons";
 
 export const Hero = () => {
-  const { howItWorks } = useNavOptions();
   return (
-    <section className={styles.hero}>
-      <div className={styles.container}>
-        <h1>Everyone Plays the Same Song</h1>
-        <div className={centered}>
-          <Link href={howItWorks}>
-            <button>Learn</button>
-          </Link>
-          <Link href="/#listen">
-            <button>Listen</button>
-          </Link>
-          <SignupButton />
-        </div>
-      </div>
-    </section>
+    <Center h="100vh" width="100vw">
+      <Card
+        background="none"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <CardHeader>
+          <Center>
+            <Heading size="md" textAlign="center">
+              Everyone Plays the Same Song
+            </Heading>
+          </Center>
+        </CardHeader>
+        <CardFooter
+          width="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <ActionButtons />
+        </CardFooter>
+      </Card>
+    </Center>
   );
 };

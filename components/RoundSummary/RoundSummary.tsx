@@ -1,7 +1,8 @@
+import { Box, Button, Heading, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
+import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
 import { Phase } from "services/PhaseMgmtService";
-import * as styles from "./RoundSummary.css";
 
 export interface VoteResults {
   title: string;
@@ -9,6 +10,14 @@ export interface VoteResults {
   average: number;
 }
 [];
+
+export interface SignupData {
+  youtube_link: string;
+  song: {
+    title: string;
+    artist: string;
+  };
+}
 
 export interface Navigation {
   next?: null;
@@ -34,6 +43,7 @@ export interface VoteBreakdown {
 interface Props {
   voteResults: VoteResults[];
   signupCount: number;
+  signupData: SignupData[];
   phase: Phase | "Complete";
   roundId: number;
   metadata: RoundMetadata;
@@ -51,9 +61,19 @@ const voteResultsHeaders = [
   { key: "average", display: "Average Vote" },
 ] as const;
 
+const signupsHeaders = [
+  {
+    key: "title",
+    display: "Title",
+  },
+  { key: "artist", display: "Artist" },
+  { key: "youtubeLink", display: "Youtube Link" },
+] as const;
+
 export const RoundSummary = ({
   voteResults,
   signupCount,
+  signupData,
   phase,
   roundId,
   metadata: { artist, title, playlistUrl, submitter },
@@ -93,41 +113,72 @@ export const RoundSummary = ({
     },
   ];
 
+  const elementWidthsByBreakpoint = {
+    base: "400px",
+    sm: "600px",
+    md: "800px",
+    lg: "1000px",
+  };
+
+  const signupDataDisplay = signupData.map((signup) => ({
+    youtubeLink: signup.youtube_link,
+    title: signup.song.title,
+    artist: signup.song.artist,
+  }));
+
+  const isVotingPhase = phase === "voting";
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}> Round {roundId} Info</h1>
-      <h2>
-        {title} by {artist}
-      </h2>
-      {phase === "Complete" && <span>Submitted by: {submitter}</span>}
-      <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
-      <div
-        className={styles.playlistWrapper}
-        dangerouslySetInnerHTML={{ __html: playlistUrl }}
-      ></div>
-      <DataTable
-        title={"Voting breakdown"}
-        headers={voteResultsHeaders}
-        rows={voteResults}
-      />
-      <div className={styles.barChartWrapper}>
-        <StackedBarChart
-          data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
+    <PageContainer title={`Round ${roundId} Info`}>
+      <Stack alignItems="center">
+        <Heading as="h1"> Round {roundId} Info</Heading>
+        {!isVotingPhase && (
+          <Heading size="sm">
+            {title} by {artist}
+          </Heading>
+        )}
+
+        {phase === "Complete" && <span>Submitted by: {submitter}</span>}
+        <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
+        <Box
+          width={elementWidthsByBreakpoint}
+          dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
-      </div>
-      <div className={styles.navigationContainer}>
-        {navigation.previous && (
-          <a href={`/round/${navigation.previous}`}>
-            <button>Round {navigation.previous}</button>
-          </a>
+        {isVotingPhase ? (
+          <DataTable
+            title={"Songs in play to Cover"}
+            headers={signupsHeaders}
+            rows={signupDataDisplay}
+          />
+        ) : (
+          <DataTable
+            title={"Voting Breakdown"}
+            headers={voteResultsHeaders}
+            rows={voteResults}
+          />
         )}
-        {navigation.next && (
-          <a href={`/round/${navigation.next}`}>
-            <button>Round {navigation.next}</button>
-          </a>
+
+        {!isVotingPhase && (
+          <Box width={elementWidthsByBreakpoint} overflow="scroll">
+            <StackedBarChart
+              data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
+              title="Vote Breakdown Bar Chart"
+            />
+          </Box>
         )}
-      </div>
-    </div>
+        <Stack direction="row" justifyContent="space-between" width="100%">
+          {navigation.previous && (
+            <a href={`/round/${navigation.previous}`}>
+              <Button size="sm">Round {navigation.previous}</Button>
+            </a>
+          )}
+          {navigation.next && (
+            <a href={`/round/${navigation.next}`}>
+              <Button size="sm">Round {navigation.next}</Button>
+            </a>
+          )}
+        </Stack>
+      </Stack>
+    </PageContainer>
   );
 };
 
