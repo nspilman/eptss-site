@@ -99,7 +99,7 @@ export const EmailAuthModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" onClick={onSendLoginLink} disabled={loading} isLoading={loading}>
+          <Button colorScheme="blue" variant="solid" onClick={onSendLoginLink} disabled={loading} isLoading={loading}>
             Send Login Link
           </Button>
         </ModalFooter>

@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Heading,
-} from "@chakra-ui/react";
+import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Heading } from "@chakra-ui/react";
 
 interface Header<T> {
   key: T;
@@ -24,11 +15,7 @@ interface Props<T extends string> {
   title?: string;
 }
 
-export function DataTable<T extends string>({
-  headers,
-  rows,
-  title,
-}: Props<T>) {
+export function DataTable<T extends string>({ headers, rows, title }: Props<T>) {
   const [sortKey, setSortKey] = useState<T>();
   const [descSort, setDescSort] = useState(true);
 
@@ -43,15 +30,13 @@ export function DataTable<T extends string>({
 
   if (sortKey) {
     rows.sort((rowA, rowB) => {
-      const evaluationByDirection = descSort
-        ? rowA[sortKey] > rowB[sortKey]
-        : rowB[sortKey] > rowA[sortKey];
+      const evaluationByDirection = descSort ? rowA[sortKey] > rowB[sortKey] : rowB[sortKey] > rowA[sortKey];
       return evaluationByDirection ? -1 : 1;
     });
   }
 
   return (
-    <TableContainer my="4" width="90vw" overflowX="scroll">
+    <TableContainer width="90vw" overflowX="scroll">
       <Heading size="sm" pb="4">
         {title}
       </Heading>
@@ -63,7 +48,6 @@ export function DataTable<T extends string>({
                 key={key}
                 cursor={sortable ? "pointer" : "auto"}
                 onClick={() => sortable && onHeaderClick(key)}
-                color="yellow.300"
                 fontSize="xs"
               >
                 {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
