@@ -23,20 +23,19 @@ export const SignupButton = (): ReactElement => {
 
   return (
     <>
-      {process.env.NODE_ENV === "development" &&
-        (session?.user ? (
-          isUserProfileRoute ? (
-            <Button variant={"outline"} onClick={signOut}>
-              {"Sign Out"}
-            </Button>
-          ) : (
-            <Button variant={"outline"} onClick={onProfile}>
-              {"My Profile"}
-            </Button>
-          )
+      {session?.user ? (
+        isUserProfileRoute ? (
+          <Button variant={"outline"} onClick={signOut}>
+            {"Sign Out"}
+          </Button>
         ) : (
-          <Button onClick={onOpen}>{"Join Us!"}</Button>
-        ))}
+          <Button variant={"outline"} onClick={onProfile}>
+            {"My Profile"}
+          </Button>
+        )
+      ) : (
+        <Button onClick={onOpen}>{"Join Us!"}</Button>
+      )}
       <EmailAuthModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
     </>
   );
