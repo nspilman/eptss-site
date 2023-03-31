@@ -2,6 +2,7 @@ import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
 import { Box, Button, Flex, Heading, HStack, Link } from "@chakra-ui/react";
 import { Navigation } from "components/enum/navigation";
+import { featureFlags } from "utils/featureFlags";
 
 export const Header = (): ReactElement => {
   return (
@@ -17,7 +18,7 @@ export const Header = (): ReactElement => {
           <Link href={Navigation.HowItWorks}>
             <Button>The rules</Button>
           </Link>
-          <SignupButton />
+          {featureFlags.auth && <SignupButton />}
         </HStack>
       </Flex>
     </Box>

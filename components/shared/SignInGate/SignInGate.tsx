@@ -6,16 +6,16 @@ export const SignInGate = ({ children }: { children: React.ReactElement }) => {
   const { isLoading, session } = useSessionContext();
   const router = useRouter();
 
-  if (isLoading) {
-    return <h1>Loading...</h1>;
-  }
-
   useEffect(() => {
     // redirect to homepage if user is not signed in
-    if (!session?.user) {
+    if (!isLoading && !session?.user) {
       router.push("/");
     }
   }, [session?.user]);
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
 
   return !!session?.user ? <>{children}</> : null;
 };
