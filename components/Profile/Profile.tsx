@@ -1,4 +1,4 @@
-import { Stack } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 
 export interface VoteSummary {
@@ -75,18 +75,21 @@ const submissionHeaders = [
   { key: "soundcloud_url", display: "Soundcloud Link", sortable: true },
 ] as const;
 
-export const Profile = ({
-  voteSummary,
-  profileSummary,
-  signups,
-  submissions,
-}: Props) => {
+export const Profile = ({ voteSummary, profileSummary, signups, submissions }: Props) => {
   return (
-    <Stack direction="column">
+    <Stack direction="column" spacing="6">
       {profileSummary?.email}
-      <DataTable rows={voteSummary} headers={headers} />
-      <DataTable rows={signups} headers={signupHeaders} />
-      <DataTable rows={submissions} headers={submissionHeaders} />
+
+      <Box bg="gray.100" borderRadius="md">
+        <DataTable rows={voteSummary} headers={headers} />
+      </Box>
+      <Box bg="gray.100" borderRadius="md">
+        <DataTable rows={signups} headers={signupHeaders} />
+      </Box>
+
+      <Box bg="gray.100" borderRadius="md">
+        <DataTable rows={submissions} headers={submissionHeaders} />
+      </Box>
     </Stack>
   );
 };
