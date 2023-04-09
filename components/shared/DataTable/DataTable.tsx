@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Table, Thead, Tbody, Tr, Th, Td, TableContainer, Heading } from "@chakra-ui/react";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
 
 interface Header<T> {
   key: T;
@@ -15,7 +25,11 @@ interface Props<T extends string> {
   title?: string;
 }
 
-export function DataTable<T extends string>({ headers, rows, title }: Props<T>) {
+export function DataTable<T extends string>({
+  headers,
+  rows,
+  title,
+}: Props<T>) {
   const [sortKey, setSortKey] = useState<T>();
   const [descSort, setDescSort] = useState(true);
 
@@ -30,7 +44,9 @@ export function DataTable<T extends string>({ headers, rows, title }: Props<T>) 
 
   if (sortKey) {
     rows.sort((rowA, rowB) => {
-      const evaluationByDirection = descSort ? rowA[sortKey] > rowB[sortKey] : rowB[sortKey] > rowA[sortKey];
+      const evaluationByDirection = descSort
+        ? rowA[sortKey] > rowB[sortKey]
+        : rowB[sortKey] > rowA[sortKey];
       return evaluationByDirection ? -1 : 1;
     });
   }
@@ -50,7 +66,9 @@ export function DataTable<T extends string>({ headers, rows, title }: Props<T>) 
                 onClick={() => sortable && onHeaderClick(key)}
                 fontSize="xs"
               >
-                {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
+                <Heading size="3xs">
+                  {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
+                </Heading>
               </Th>
             ))}
           </Tr>
@@ -60,7 +78,7 @@ export function DataTable<T extends string>({ headers, rows, title }: Props<T>) 
             <Tr key={JSON.stringify(row) + i}>
               {headers.map(({ key, className }) => (
                 <Td key={JSON.stringify(row) + row[key]} className={className}>
-                  {row[key]}
+                  <Text>{row[key]}</Text>
                 </Td>
               ))}
             </Tr>

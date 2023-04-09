@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -137,7 +137,7 @@ export const RoundSummary = ({
           </Heading>
         )}
 
-        {phase === "Complete" && <span>Submitted by: {submitter}</span>}
+        {phase === "Complete" && <Text>Submitted by: {submitter}</Text>}
         <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
         <Box
           width={elementWidthsByBreakpoint}

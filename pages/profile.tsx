@@ -22,7 +22,7 @@ function ProfilePage({
     soundcloud_url: string;
   }[];
   signups: {
-    roundId: number;
+    round_id: number;
     title: string;
     artist: string;
     isWinningSong: string;
@@ -50,10 +50,12 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     data: { session },
   } = await authClient.auth.getSession();
 
-  const { email } = session?.user || { email: null };
-  const signups = await getSignups(email || "");
-  const voteSummary = await getVotes(email || "");
-  const submissions = await getSubmissions(email || "");
+  console.log({ session });
+  const { id, email } = session?.user || { id: null, email: null };
+  const signups = await getSignups(id || "");
+  const voteSummary = await getVotes(id || "");
+  const submissions = await getSubmissions(id || "");
+  console.log({ signups });
   return {
     props: {
       voteSummary,
@@ -74,7 +76,7 @@ const getWinningSongs = async () => {
   return data;
 };
 
-const getSignups = async (email: string) => {
+const getSignups = async (id: string) => {
   const { data } = (await dbClient
     .from(Tables.SignUps)
     .select(
@@ -85,7 +87,7 @@ const getSignups = async (email: string) => {
                 artist
             )`
     )
-    .filter("email", "eq", email)) as PostgrestResponse<{
+    .filter("user_id", "eq", id)) as PostgrestResponse<{
     round_id: number;
     song_id: number;
     song: {
@@ -96,7 +98,7 @@ const getSignups = async (email: string) => {
 
   const winningSongs = await getWinningSongs();
   return data?.map(({ round_id, song_id, song: { title, artist } }) => ({
-    roundId: round_id,
+    round_id,
     title,
     artist,
     isWinningSong: winningSongs
@@ -106,13 +108,13 @@ const getSignups = async (email: string) => {
   }));
 };
 
-const getVotes = async (email: string) => {
+const getVotes = async (id: string) => {
   const { data } = await dbClient
     .from(Views.VotesDiffsWithAverage)
     .select("*")
-    .filter("email", "eq", email);
+    .filter("user_id", "eq", id);
 
-  return data?.map((vote) => {
+  return (data || []).map((vote) => {
     return {
       ...vote,
       average: vote.average.toPrecision(3),
@@ -121,10 +123,10 @@ const getVotes = async (email: string) => {
   });
 };
 
-const getSubmissions = async (email: string) => {
+const getSubmissions = async (id: string) => {
   const { data } = await dbClient
     .from(Views.Submissions)
     .select("*")
-    .filter("email", "eq", email);
-  return data;
+    .filter("user_id", "eq", id);
+  return data || [];
 };
