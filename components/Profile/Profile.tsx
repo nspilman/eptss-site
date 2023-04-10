@@ -30,6 +30,7 @@ interface Props {
     round_id: number;
     title: string;
     artist: string;
+    average: string;
     isWinningSong: string;
   }[];
   submissions: {
@@ -59,7 +60,8 @@ const headers = [
 
 const signupHeaders = [
   ...sharedHeaders,
-  { key: "isWinningSong", display: "isWinningSong", sortable: true },
+  { key: "average", display: "average", sortable: true },
+  { key: "isWinningSong", display: "covered?", sortable: true },
 ] as const;
 
 const submissionHeaders = [

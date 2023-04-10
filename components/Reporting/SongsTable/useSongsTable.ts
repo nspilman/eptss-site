@@ -29,7 +29,7 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
       songTitle: title,
       artist: capitalizeFirstLetter(artist),
       roundId: round_id,
-      average: average.toPrecision(3),
+      average,
       isWinningSong: isWinningSong.toString(),
     })
   );

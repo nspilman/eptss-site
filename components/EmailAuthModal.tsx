@@ -13,25 +13,32 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
+  Box,
 } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useRouter } from "next/router";
 
 export const EmailAuthModal = ({
   isOpen,
   onClose,
   onOpen,
+  redirectUrl,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onOpen: () => void;
+  redirectUrl: string;
 }) => {
   const [loading, setLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
   const toast = useToast();
 
   const { supabaseClient } = useSessionContext();
+  const router = useRouter();
 
   const initialRef = React.useRef(null);
+
+  console.log({ redirectUrl });
 
   const onSendLoginLink = async () => {
     try {
@@ -40,7 +47,7 @@ export const EmailAuthModal = ({
         email,
         options: {
           shouldCreateUser: true,
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: redirectUrl,
         },
       });
       if (error) {
@@ -72,38 +79,54 @@ export const EmailAuthModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered={true} initialFocusRef={initialRef}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Join Us!</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              onSendLoginLink();
-            }}
-          >
-            <FormControl>
-              <FormLabel>Email</FormLabel>
-              <Input
-                ref={initialRef}
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="ringostarr@gmail.com"
-                disabled={loading}
-              />
-              <FormHelperText>{`We'll never share your email or spam you, we swear!`}</FormHelperText>
-            </FormControl>
-          </form>
-        </ModalBody>
+    <Box zIndex={0}>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered={true}
+        initialFocusRef={initialRef}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Sign Up / Log In with Email</ModalHeader>
+          {/* <ModalCloseButton /> */}
+          <ModalBody>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                onSendLoginLink();
+              }}
+            >
+              <FormControl>
+                <FormLabel>Email</FormLabel>
+                <Input
+                  ref={initialRef}
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="ringostarr@gmail.com"
+                  disabled={loading}
+                />
+                <FormHelperText>{`You'll receive a link in your email to log you in`}</FormHelperText>
+              </FormControl>
+            </form>
+          </ModalBody>
 
-        <ModalFooter>
-          <Button colorScheme="blue" variant="solid" onClick={onSendLoginLink} disabled={loading} isLoading={loading}>
-            Send Login Link
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+          <ModalFooter>
+            <Button variant="secondary" onClick={() => router.push("/")}>
+              Go back Home
+            </Button>
+            <Button
+              colorScheme="blue"
+              variant="solid"
+              onClick={onSendLoginLink}
+              disabled={loading}
+              isLoading={loading}
+            >
+              Send Login Link
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 };

@@ -35,7 +35,7 @@ export function InputField<T extends FieldValues>({
       p="4"
       borderRadius="2xl"
       flexGrow="1"
-      minWidth={isSmall ? "250px" : "350px"}
+      minWidth={isSmall ? "250px" : "400px"}
       data-testid={getFieldTestId(field.field, type)}
       direction="column"
     >
