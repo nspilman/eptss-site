@@ -27,7 +27,7 @@ export const EmailAuthModal = ({
   isOpen: boolean;
   onClose?: () => void;
   onOpen?: () => void;
-  redirectUrl: string;
+  redirectUrl?: string;
 }) => {
   const [loading, setLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
