@@ -55,7 +55,7 @@ const headers = [
   ...sharedHeaders,
   { key: "average", display: "Average Vote", sortable: true },
   { key: "vote", display: "Your Vote", sortable: true },
-  { key: "delta", display: "Delta from Average", sortable: true },
+  { key: "delta", display: "Delta", sortable: true },
 ] as const;
 
 const signupHeaders = [
@@ -75,7 +75,6 @@ export const Profile = ({
   signups,
   submissions,
 }: Props) => {
-  console.log({ email });
   return (
     <Stack direction="column" spacing="6">
       <Heading>{email}</Heading>

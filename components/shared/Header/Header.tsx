@@ -6,7 +6,7 @@ import { featureFlags } from "utils/featureFlags";
 
 export const Header = (): ReactElement => {
   return (
-    <Box as="header" id="header" zIndex="1">
+    <Box as="header" id="header">
       <Flex
         alignItems="center"
         justifyContent={{ base: "center", md: "space-between" }}
