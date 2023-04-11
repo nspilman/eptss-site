@@ -38,8 +38,6 @@ export const EmailAuthModal = ({
 
   const initialRef = React.useRef(null);
 
-  console.log({ redirectUrl });
-
   const onSendLoginLink = async () => {
     try {
       setLoading(true);

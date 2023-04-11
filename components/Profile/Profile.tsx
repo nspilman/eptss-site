@@ -1,4 +1,4 @@
-import { Box, Stack } from "@chakra-ui/react";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 
 export interface VoteSummary {
@@ -55,12 +55,12 @@ const headers = [
   ...sharedHeaders,
   { key: "average", display: "Average Vote", sortable: true },
   { key: "vote", display: "Your Vote", sortable: true },
-  { key: "delta", display: "Delta", sortable: true },
+  { key: "delta", display: "Delta from Average", sortable: true },
 ] as const;
 
 const signupHeaders = [
   ...sharedHeaders,
-  { key: "average", display: "average", sortable: true },
+  { key: "average", display: "Average Vote", sortable: true },
   { key: "isWinningSong", display: "covered?", sortable: true },
 ] as const;
 
@@ -71,13 +71,14 @@ const submissionHeaders = [
 
 export const Profile = ({
   voteSummary,
-  profileSummary,
+  profileSummary: { email },
   signups,
   submissions,
 }: Props) => {
+  console.log({ email });
   return (
     <Stack direction="column" spacing="6">
-      {profileSummary?.email}
+      <Heading>{email}</Heading>
 
       <Box borderRadius="md">
         <DataTable
