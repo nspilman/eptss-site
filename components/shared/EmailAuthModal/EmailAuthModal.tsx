@@ -25,8 +25,8 @@ export const EmailAuthModal = ({
   redirectUrl,
 }: {
   isOpen: boolean;
-  onClose: () => void;
-  onOpen: () => void;
+  onClose?: () => void;
+  onOpen?: () => void;
   redirectUrl: string;
 }) => {
   const [loading, setLoading] = React.useState(false);
@@ -63,7 +63,7 @@ export const EmailAuthModal = ({
           duration: 8000,
           isClosable: true,
         });
-        onClose();
+        onClose?.();
       }
     } catch (error) {
       console.error(error);
@@ -77,17 +77,17 @@ export const EmailAuthModal = ({
   };
 
   return (
-    <Box zIndex={0}>
+    <Box>
       <Modal
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={onClose || (() => {})}
         isCentered={true}
         initialFocusRef={initialRef}
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Sign Up / Log In with Email</ModalHeader>
-          {/* <ModalCloseButton /> */}
+          {onClose && <ModalCloseButton />}
           <ModalBody>
             <form
               onSubmit={(event) => {
@@ -110,9 +110,11 @@ export const EmailAuthModal = ({
           </ModalBody>
 
           <ModalFooter>
-            <Button variant="secondary" onClick={() => router.push("/")}>
-              Go back Home
-            </Button>
+            {!onClose && (
+              <Button variant="secondary" onClick={() => router.push("/")}>
+                Go back Home
+              </Button>
+            )}
             <Button
               colorScheme="blue"
               variant="solid"

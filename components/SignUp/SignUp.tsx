@@ -1,47 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { useSignup } from "./useSignup";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import {
-  Box,
-  Center,
-  Link,
-  Stack,
-  Text,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Center, Link, Stack, Text } from "@chakra-ui/react";
 import { Navigation } from "components/enum/navigation";
-import { EmailAuthModal } from "components/EmailAuthModal";
-import { getSupabaseClient } from "utils/getSupabaseClient";
-import { Session, useSessionContext } from "@supabase/auth-helpers-react";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 interface Props {
   roundId: number;
   signupsCloseDateLabel: string;
-  rootDomain: string;
 }
 
-export const SignUp = ({
-  roundId,
-  signupsCloseDateLabel,
-  rootDomain,
-}: Props) => {
+export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
   const { session } = useSessionContext();
-  const { signUp, signupSuccess, fields } = useSignup(roundId, session?.user.id);
-
-  const { isOpen, onClose, onOpen } = useDisclosure({ isOpen: !session });
+  if (!session) {
+    throw new Error("Login required to access Signup page");
+  }
+  const { signUp, signupSuccess, fields } = useSignup(roundId, session.user.id);
 
   return (
     <Center>
-      <EmailAuthModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onOpen={onOpen}
-        redirectUrl={`${rootDomain}/sign-up`}
-      />
       <FormContainer
         fields={fields}
         title={title}
