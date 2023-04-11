@@ -1,9 +1,5 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import {
-  additionalComments,
-  yourEmail,
-  yourName,
-} from "components/shared/fieldValues";
+import { additionalComments } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
 import { SignupEntity, SignupModel } from "./types";
 
