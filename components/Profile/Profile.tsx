@@ -77,7 +77,8 @@ export const Profile = ({
   submissions,
 }: Props) => {
   const roundSignupsCount = [
-    //@ts-ignore
+    //@ts-ignore - it doesn't like me spreading the set for some reason
+    // this is done cuz early rounds allowed multiple signups, so I'm counting unique round IDs
     ...new Set(signups.map((signup) => signup.round_id)),
   ].length;
 
