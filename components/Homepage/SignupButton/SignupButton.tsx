@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { Button, useDisclosure } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
-import { EmailAuthModal } from "components/EmailAuthModal";
+import { EmailAuthModal } from "components/shared/EmailAuthModal";
 import { useRouter } from "next/router";
 
 export const SignupButton = (): ReactElement => {

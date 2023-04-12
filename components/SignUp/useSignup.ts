@@ -1,17 +1,13 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import {
-  additionalComments,
-  yourEmail,
-  yourName,
-} from "components/shared/fieldValues";
+import { additionalComments } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
 import { SignupEntity, SignupModel } from "./types";
 
-export const useSignup = (roundId: number) => {
+export const useSignup = (roundId: number, userId: string) => {
   const supabase = useSupabase();
 
   const signUp = async (signupModel: SignupModel) => {
-    const signupEntity = convertModelToEntity(signupModel, roundId);
+    const signupEntity = convertModelToEntity(signupModel, roundId, userId);
     const { status } = await supabase.rpc("signup", signupEntity);
     return getIsSuccess(status) ? "success" : "error";
   };
@@ -29,8 +25,6 @@ export const useSignup = (roundId: number) => {
   };
 
   const fields = [
-    yourName,
-    yourEmail,
     {
       label: "Song title",
       placeholder: "Song title",
@@ -65,23 +59,21 @@ export const useSignup = (roundId: number) => {
 const convertModelToEntity = (
   {
     createdAt,
-    email,
-    name,
     songTitle,
     artist,
     youtubeLink,
     additionalComments,
   }: SignupModel,
-  roundId: number
+  roundId: number,
+  userId: string
 ): SignupEntity => {
   return {
-    email,
-    name,
     artist_name: artist,
     song_title: songTitle,
     youtube_link: youtubeLink,
     additional_comments: additionalComments,
     round_id: roundId,
     created_at: createdAt,
+    user_id: userId,
   };
 };

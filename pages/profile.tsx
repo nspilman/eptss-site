@@ -25,6 +25,7 @@ function ProfilePage({
     round_id: number;
     title: string;
     artist: string;
+    average: string;
     isWinningSong: string;
   }[];
 }) {
@@ -52,10 +53,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
   console.log({ session });
   const { id, email } = session?.user || { id: null, email: null };
-  const signups = await getSignups(id || "");
-  const voteSummary = await getVotes(id || "");
-  const submissions = await getSubmissions(id || "");
-  console.log({ signups });
+  const signups = (await getSignups(id || "")) || null;
+  const voteSummary = (await getVotes(id || "")) || null;
+  const submissions = (await getSubmissions(id || "")) || null;
   return {
     props: {
       voteSummary,
@@ -81,10 +81,13 @@ const getSignups = async (id: string) => {
     .from(Tables.SignUps)
     .select(
       `song_id, 
-            round_id, 
-            song:songs(
-                title, 
-                artist
+        round_id, 
+         average:vote_results(
+           average
+         ),
+        song:songs(
+              title, 
+              artist
             )`
     )
     .filter("user_id", "eq", id)) as PostgrestResponse<{
@@ -94,18 +97,24 @@ const getSignups = async (id: string) => {
       title: string;
       artist: string;
     };
+    average: {
+      average: string;
+    };
   }>;
 
   const winningSongs = await getWinningSongs();
-  return data?.map(({ round_id, song_id, song: { title, artist } }) => ({
-    round_id,
-    title,
-    artist,
-    isWinningSong: winningSongs
-      ?.map((song) => song.song_id)
-      .includes(song_id)
-      .toString(),
-  }));
+  return data?.map(
+    ({ round_id, song_id, song: { title, artist }, average: { average } }) => ({
+      round_id,
+      title,
+      artist,
+      average,
+      isWinningSong: winningSongs
+        ?.map((song) => song.song_id)
+        .includes(song_id)
+        .toString(),
+    })
+  );
 };
 
 const getVotes = async (id: string) => {

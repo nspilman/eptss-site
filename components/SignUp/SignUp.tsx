@@ -3,8 +3,9 @@ import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { useSignup } from "./useSignup";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import { Center, Link } from "@chakra-ui/react";
+import { Center, Link, Stack, Text } from "@chakra-ui/react";
 import { Navigation } from "components/enum/navigation";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 interface Props {
   roundId: number;
@@ -12,9 +13,13 @@ interface Props {
 }
 
 export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
-  const { signUp, signupSuccess, fields } = useSignup(roundId);
-
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
+
+  const { session } = useSessionContext();
+  if (!session) {
+    throw new Error("Login required to access Signup page");
+  }
+  const { signUp, signupSuccess, fields } = useSignup(roundId, session.user.id);
 
   return (
     <Center>
@@ -22,14 +27,14 @@ export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
         fields={fields}
         title={title}
         description={
-          <div>
-            Sign up with your name, email and the song you want to cover!
-            <br />
-            Signups close Midnight of {signupsCloseDateLabel}.
+          <Stack alignItems="center">
+            <Text as="p">Signing up as {session?.user.email}</Text>
+            <Text as="p">Sign up with the song you want to cover!</Text>
+            <Text>Signups close Midnight of {signupsCloseDateLabel}.</Text>
             <Link href={Navigation.HowItWorks} color="yellow.300">
               Full rules here
             </Link>
-          </div>
+          </Stack>
         }
         successBlock={<ActionSuccessPanel {...signupSuccess} />}
         errorMessage={GENERIC_ERROR_MESSAGE}

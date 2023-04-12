@@ -1,30 +1,28 @@
-import { GetStaticProps, InferGetStaticPropsType } from "next";
+import { InferGetStaticPropsType } from "next";
 import React from "react";
 import { SignUp } from "components/SignUp/SignUp";
 import { PageContainer } from "components/shared/PageContainer";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
-import { JoinMailingList } from "components/JoinMailingList";
+import { SignInGate } from "components/shared/SignInGate";
 
 const SignupPage = ({
   roundId,
   areSignupsOpen,
   signupsCloseDateLabel,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+}: InferGetStaticPropsType<typeof getServerSideProps>) => {
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
-      {areSignupsOpen ? (
+      <SignInGate>
         <SignUp
           roundId={roundId}
           signupsCloseDateLabel={signupsCloseDateLabel}
         />
-      ) : (
-        <JoinMailingList />
-      )}
+      </SignInGate>
     </PageContainer>
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+export async function getServerSideProps() {
   const {
     phase,
     roundId,
@@ -41,6 +39,6 @@ export const getStaticProps: GetStaticProps = async () => {
       signupsCloseDateLabel,
     },
   };
-};
+}
 
 export default SignupPage;

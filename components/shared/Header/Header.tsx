@@ -7,9 +7,19 @@ import { featureFlags } from "utils/featureFlags";
 export const Header = (): ReactElement => {
   return (
     <Box as="header" id="header">
-      <Flex alignItems="center" justifyContent={{ base: "center", md: "space-between" }} px="4" py="2">
+      <Flex
+        alignItems="center"
+        justifyContent={{ base: "center", md: "space-between" }}
+        px="4"
+        py="2"
+      >
         <Link href={"/"}>
-          <Heading textStyle={"h1"} as="h1" size={{ base: "sm", lg: "lg" }} fontWeight="300">
+          <Heading
+            textStyle={"h1"}
+            as="h1"
+            size={{ base: "sm", lg: "lg" }}
+            fontWeight="300"
+          >
             Everyone Plays the Same Song
           </Heading>
         </Link>
