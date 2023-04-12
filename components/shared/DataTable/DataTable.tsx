@@ -9,6 +9,7 @@ import {
   TableContainer,
   Heading,
   Text,
+  Box,
 } from "@chakra-ui/react";
 
 interface Header<T> {
@@ -23,12 +24,16 @@ interface Props<T extends string> {
   rows: Record<T, string | number>[];
   variant?: "small" | "medium" | "large";
   title?: string;
+  subtitle?: string;
+  maxHeight?: number;
 }
 
 export function DataTable<T extends string>({
   headers,
   rows,
   title,
+  maxHeight,
+  subtitle,
 }: Props<T>) {
   const [sortKey, setSortKey] = useState<T>();
   const [descSort, setDescSort] = useState(true);
@@ -50,41 +55,63 @@ export function DataTable<T extends string>({
       return evaluationByDirection ? -1 : 1;
     });
   }
+  const isEmpty = !rows.length;
 
   return (
-    <TableContainer width="90vw" overflowX="scroll">
-      <Heading size="sm" pb="4">
-        {title}
-      </Heading>
-      <Table size="sm">
-        <Thead>
-          <Tr>
-            {headers.map(({ key, display, sortable }) => (
-              <Th
-                key={key}
-                cursor={sortable ? "pointer" : "auto"}
-                onClick={() => sortable && onHeaderClick(key)}
-                fontSize="xs"
-              >
-                <Heading size="3xs">
-                  {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
-                </Heading>
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {rows.map((row, i) => (
-            <Tr key={JSON.stringify(row) + i}>
-              {headers.map(({ key, className }) => (
-                <Td key={JSON.stringify(row) + row[key]} className={className}>
-                  <Text>{row[key]}</Text>
-                </Td>
+    <>
+      <Box pb="4">
+        <Heading size="sm" pb="1">
+          {title}
+        </Heading>
+        <Text size="xsm" fontWeight="light">
+          {subtitle}
+        </Text>
+      </Box>
+      <TableContainer
+        width="90vw"
+        overflowX="scroll"
+        maxHeight={maxHeight}
+        overflowY={"scroll"}
+      >
+        <Table size="sm" overflowY={"scroll"} maxHeight={maxHeight || "unset"}>
+          <Thead>
+            <Tr>
+              {headers.map(({ key, display, sortable }) => (
+                <Th
+                  key={key}
+                  cursor={sortable ? "pointer" : "auto"}
+                  onClick={() => sortable && onHeaderClick(key)}
+                  fontSize="xs"
+                >
+                  <Heading size="3xs">
+                    {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
+                  </Heading>
+                </Th>
               ))}
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </TableContainer>
+          </Thead>
+          {isEmpty ? (
+            <Box>
+              <Text fontWeight="bold">No records to display</Text>
+            </Box>
+          ) : (
+            <Tbody>
+              {rows.map((row, i) => (
+                <Tr key={JSON.stringify(row) + i}>
+                  {headers.map(({ key, className }) => (
+                    <Td
+                      key={JSON.stringify(row) + row[key]}
+                      className={className}
+                    >
+                      <Text>{row[key]}</Text>
+                    </Td>
+                  ))}
+                </Tr>
+              ))}
+            </Tbody>
+          )}
+        </Table>
+      </TableContainer>
+    </>
   );
 }

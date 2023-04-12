@@ -34,9 +34,9 @@ export const SignupButton = (): ReactElement => {
           </Button>
         )
       ) : (
-        <Button onClick={onOpen}>{"Join Us!"}</Button>
+        <Button onClick={onOpen}>{"Sign up / Log In!"}</Button>
       )}
-      <EmailAuthModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
+      <EmailAuthModal isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

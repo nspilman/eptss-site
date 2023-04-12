@@ -1,3 +1,1 @@
-export const featureFlags = {
-  auth: process.env.NODE_ENV === "development",
-};
+export const featureFlags = {};

@@ -14,6 +14,8 @@ import {
   ModalOverlay,
   useToast,
   Box,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
@@ -21,12 +23,10 @@ import { useRouter } from "next/router";
 export const EmailAuthModal = ({
   isOpen,
   onClose,
-  onOpen,
   redirectUrl,
 }: {
   isOpen: boolean;
   onClose?: () => void;
-  onOpen?: () => void;
   redirectUrl?: string;
 }) => {
   const [loading, setLoading] = React.useState(false);
@@ -57,11 +57,24 @@ export const EmailAuthModal = ({
         });
       } else {
         toast({
-          title: "Email Sent",
-          description: "We sent you a login link. Check your email!",
           status: "success",
           duration: 8000,
           isClosable: true,
+          render: () => (
+            <Box
+              background="white"
+              border="4px solid"
+              borderColor="yellow.500"
+              p="4"
+            >
+              <Heading size="xsm" color="black">
+                Email Sent
+              </Heading>
+              <Text color="black">
+                We sent you a login link. Check your email!
+              </Text>
+            </Box>
+          ),
         });
         onClose?.();
       }
@@ -104,7 +117,7 @@ export const EmailAuthModal = ({
                   placeholder="ringostarr@gmail.com"
                   disabled={loading}
                 />
-                <FormHelperText>{`You'll receive a link in your email to log you in`}</FormHelperText>
+                <FormHelperText>{`You'll receive a link in your email to log you in!`}</FormHelperText>
               </FormControl>
             </form>
           </ModalBody>
