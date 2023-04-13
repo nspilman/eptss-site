@@ -2,7 +2,6 @@ import { Box, Heading, ListItem, OrderedList, Text } from "@chakra-ui/react";
 import { SignupButton } from "components/Homepage/SignupButton";
 import React from "react";
 import { PageContainer } from "components/shared/PageContainer";
-import { featureFlags } from "utils/featureFlags";
 
 export const HowItWorks = () => {
   const contentSections = [
@@ -60,7 +59,7 @@ export const HowItWorks = () => {
             fontWeight="700"
           >{`Join us and share your musical talents! We can't wait to hear your unique take on the chosen song.`}</Text>
         </Box>
-        {featureFlags.auth && <SignupButton />}
+        <SignupButton />
       </>
     </PageContainer>
   );

@@ -1,7 +1,6 @@
 import { Button, Link, Stack, useDisclosure } from "@chakra-ui/react";
 import { Navigation } from "components/enum/navigation";
 import { SignupButton } from "components/Homepage/SignupButton";
-import { featureFlags } from "utils/featureFlags";
 
 export const ActionButtons = () => {
   return (
@@ -16,7 +15,7 @@ export const ActionButtons = () => {
       <Link href="#listen" variant="button">
         <Button>Listen</Button>
       </Link>
-      {featureFlags.auth && <SignupButton />}
+      <SignupButton />
     </Stack>
   );
 };

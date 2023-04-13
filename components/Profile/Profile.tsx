@@ -1,5 +1,6 @@
-import { Box, Heading, Stack } from "@chakra-ui/react";
+import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
+import { useRouter } from "next/router";
 
 export interface VoteSummary {
   artist: string;
@@ -75,32 +76,74 @@ export const Profile = ({
   signups,
   submissions,
 }: Props) => {
+  const roundSignupsCount = [
+    //@ts-ignore - it doesn't like me spreading the set for some reason
+    // this is done cuz early rounds allowed multiple signups, so I'm counting unique round IDs
+    ...new Set(signups.map((signup) => signup.round_id)),
+  ].length;
+
+  const maxHeight = 400;
+
+  const hasNoRecords = !signups.length;
+
+  const router = useRouter();
+
   return (
-    <Stack direction="column" spacing="6">
+    <Stack
+      direction="column"
+      spacing="6"
+      backgroundColor="bgTransparent"
+      p="4"
+      borderRadius="md"
+    >
       <Heading>{email}</Heading>
-
-      <Box borderRadius="md">
-        <DataTable
-          title="Your Past Signups"
-          rows={signups}
-          headers={signupHeaders}
-        />
-      </Box>
-
-      <Box borderRadius="md">
-        <DataTable
-          title="Your Past Submissions"
-          rows={submissions}
-          headers={submissionHeaders}
-        />
-      </Box>
-      <Box borderRadius="md">
-        <DataTable
-          title="Your Vote Summary"
-          rows={voteSummary}
-          headers={headers}
-        />
-      </Box>
+      {hasNoRecords ? (
+        <Stack p="20" borderRadius="md" alignItems="center">
+          <Heading size="md" py="4">
+            Welome to Everyone Plays the Same Song!
+          </Heading>
+          <Text textAlign="center">
+            {`We're excited that you're here, and can't wait to hear your music! You'll receive an email when sign ups for the next round are open. In the meantime, check out past rounds!`}
+          </Text>
+          <Text></Text>
+          <Button onClick={() => router.push("/#listen")}> Listen </Button>
+        </Stack>
+      ) : (
+        <>
+          <TableContainer>
+            <DataTable
+              title="Your Past Signups"
+              rows={signups}
+              headers={signupHeaders}
+              subtitle={`You signed up for ${roundSignupsCount} rounds`}
+              maxHeight={maxHeight}
+            />
+          </TableContainer>
+          <TableContainer>
+            <DataTable
+              title="Your Vote Summary"
+              subtitle={`You have voted on ${voteSummary.length} songs`}
+              rows={voteSummary}
+              headers={headers}
+              maxHeight={maxHeight}
+            />
+          </TableContainer>
+          <TableContainer>
+            <DataTable
+              title="Your Past Submissions"
+              subtitle={`You have submitted on ${submissions.length} covers`}
+              rows={submissions}
+              headers={submissionHeaders}
+              maxHeight={maxHeight}
+            />
+          </TableContainer>
+        </>
+      )}
     </Stack>
   );
 };
+const TableContainer = ({ children }: { children: React.ReactElement }) => (
+  <Box borderRadius="md" py="4">
+    {children}
+  </Box>
+);
