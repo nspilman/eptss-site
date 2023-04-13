@@ -10,23 +10,23 @@ export const Header = (): ReactElement => {
       <Flex
         alignItems="center"
         justifyContent={{ base: "center", md: "space-between" }}
-        px="4"
-        py="2"
+        h={"16"}
+        px="8"
       >
         <Link href={"/"}>
           <Heading
             textStyle={"h1"}
             as="h1"
-            size={{ base: "sm", lg: "lg" }}
-            fontWeight="300"
+            size={{ base: "sm", lg: "md" }}
+            _hover={{ color: "yellow.500" }}
           >
-            Everyone Plays the Same Song
+            everyone plays the same song
           </Heading>
         </Link>
 
         <HStack spacing="2" display={{ base: "none", lg: "block" }}>
           <Link href={Navigation.HowItWorks}>
-            <Button>The rules</Button>
+            <Button variant="ghost">rules</Button>
           </Link>
           {featureFlags.auth && <SignupButton />}
         </HStack>

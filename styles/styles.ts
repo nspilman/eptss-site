@@ -7,11 +7,13 @@ import { TextStyles as Text } from "./Text";
 export const theme = extendTheme({
   colors: {
     yellow: {
-      100: "#FFFF87",
-      300: "#fffe53",
-      500: "#C9CB10",
+      100: "#F3E8D2",
+      300: "#F8D38D",
+      500: "#F0BF61",
+      800: "#9F772A",
     },
     blue: {
+      500: "#2586AF",
       900: "#1C2026",
     },
     gradient: {
@@ -19,15 +21,12 @@ export const theme = extendTheme({
       graybluehero: "rgba(10, 50, 120, 0.7)",
     },
     bgTransparent: "hsla(0,0%,100%,.05)",
+    darkGrayHero: "#363B3E",
   },
   styles: {
     global: {
       body: {
-        background:
-          "linear-gradient(var(--chakra-colors-gradient-darkBlueHero), var(--chakra-colors-gradient-graybluehero)), url('https://images.unsplash.com/photo-1458560871784-56d23406c091?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80') fixed",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
+        background: "var(--chakra-colors-darkGrayHero)",
       },
     },
   },

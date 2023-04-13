@@ -2,13 +2,12 @@ import { defineStyleConfig } from "@chakra-ui/react";
 
 export const ButtonStyles = defineStyleConfig({
   baseStyle: {
+    fontFamily: "Fraunces, sans-serif",
     fontWeight: "bold",
-    textTransform: "uppercase",
-    borderRadius: "base",
+    textTransform: "lowercase",
+    borderRadius: "full",
     _hover: {
-      bg: "white",
-      transition: "100ms",
-      color: "blue.900",
+      bg: "yellow.300",
     },
   },
   sizes: {
@@ -29,18 +28,21 @@ export const ButtonStyles = defineStyleConfig({
       borderColor: "white",
       color: "white",
       _hover: {
-        textDecoration: "auto",
-        boxShadow: "0 0 3px 3px var(--chakra-colors-yellow-300)",
+        bg: "transparent",
+        borderColor: "yellow.500",
+        color: "yellow.500",
       },
     },
-    primary: {
-      border: "2px solid",
-      borderColor: "yellow.300",
-      color: "yellow.300",
+    solid: {
+      bg: "white",
       _hover: {
-        borderColor: "green.400",
-        boxShadow:
-          "0 0 1px 1px var(--chakra-colors-green-500), 0 0 2px 2px var(--chakra-colors-green-400), 0 0 3px 3px var(--chakra-colors-green-300)",
+        color: "yellow.800",
+      },
+    },
+    ghost: {
+      color: "white",
+      _hover: {
+        bg: "rgba(255, 255, 255, 0.1)",
       },
     },
   },
