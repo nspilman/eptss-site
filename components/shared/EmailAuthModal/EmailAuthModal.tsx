@@ -14,6 +14,7 @@ import {
   ModalOverlay,
   useToast,
   Box,
+  Heading,
 } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
@@ -86,7 +87,11 @@ export const EmailAuthModal = ({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Sign Up / Log In with Email</ModalHeader>
+          <ModalHeader>
+            <Heading size={"md"} color="blue.500">
+              sign up / log in with email
+            </Heading>
+          </ModalHeader>
           {onClose && <ModalCloseButton />}
           <ModalBody>
             <form
@@ -116,7 +121,8 @@ export const EmailAuthModal = ({
               </Button>
             )}
             <Button
-              colorScheme="blue"
+              bg="blue.500"
+              color="white"
               variant="solid"
               onClick={onSendLoginLink}
               disabled={loading}

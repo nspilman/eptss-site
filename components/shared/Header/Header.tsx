@@ -9,9 +9,9 @@ export const Header = (): ReactElement => {
     <Box as="header" id="header">
       <Flex
         alignItems="center"
-        justifyContent={{ base: "center", md: "space-between" }}
+        justifyContent="space-between"
         h={"16"}
-        px="8"
+        px={{ base: "4", lg: "16" }}
       >
         <Link href={"/"}>
           <Heading
@@ -24,11 +24,16 @@ export const Header = (): ReactElement => {
           </Heading>
         </Link>
 
-        <HStack spacing="2" display={{ base: "none", lg: "block" }}>
-          <Link href={Navigation.HowItWorks}>
+        <HStack spacing="2">
+          <Link
+            href={Navigation.HowItWorks}
+            display={{ base: "none", lg: "block" }}
+          >
             <Button variant="ghost">rules</Button>
           </Link>
-          {featureFlags.auth && <SignupButton />}
+          {featureFlags.auth && (
+            <SignupButton buttonProps={{ size: { base: "sm", lg: "md" } }} />
+          )}
         </HStack>
       </Flex>
     </Box>

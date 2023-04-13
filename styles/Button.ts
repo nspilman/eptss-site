@@ -36,7 +36,7 @@ export const ButtonStyles = defineStyleConfig({
     solid: {
       bg: "white",
       _hover: {
-        color: "yellow.800",
+        color: "gray.600",
       },
     },
     ghost: {

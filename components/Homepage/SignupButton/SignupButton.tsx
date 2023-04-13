@@ -1,10 +1,12 @@
 import React, { ReactElement } from "react";
-import { Button, useDisclosure } from "@chakra-ui/react";
+import { Button, ButtonProps, useDisclosure } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { EmailAuthModal } from "components/shared/EmailAuthModal";
 import { useRouter } from "next/router";
 
-export const SignupButton = (): ReactElement => {
+export const SignupButton: React.FC<{ buttonProps?: ButtonProps }> = ({
+  buttonProps,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { session, supabaseClient } = useSessionContext();
   const router = useRouter();
@@ -25,16 +27,18 @@ export const SignupButton = (): ReactElement => {
     <>
       {session?.user ? (
         isUserProfileRoute ? (
-          <Button variant={"outline"} onClick={signOut}>
+          <Button variant={"outline"} onClick={signOut} {...buttonProps}>
             {"Sign Out"}
           </Button>
         ) : (
-          <Button variant={"outline"} onClick={onProfile}>
-            {"My Profile"}
+          <Button variant={"outline"} onClick={onProfile} {...buttonProps}>
+            {"Profile"}
           </Button>
         )
       ) : (
-        <Button onClick={onOpen}>{"Join Us!"}</Button>
+        <Button onClick={onOpen} {...buttonProps}>
+          {"Join Us!"}
+        </Button>
       )}
       <EmailAuthModal isOpen={isOpen} onClose={onClose} onOpen={onOpen} />
     </>
