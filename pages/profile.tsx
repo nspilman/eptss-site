@@ -63,7 +63,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
       signups,
       submissions,
     }, // will be passed to the page component as props
-    notFound: process.env.NODE_ENV === "production",
   };
 }
 
