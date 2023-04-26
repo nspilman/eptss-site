@@ -50,8 +50,10 @@ export const getStaticProps: GetStaticProps = async () => {
       };
     })
     .filter(
-      (round) => !(round.roundId === roundId.toString() && phase === "signups")
+      (round) => !(JSON.parse(round.roundId) === roundId && phase === "signups")
     );
+
+  console.log({ roundContent, roundId, phase });
 
   const phaseEndsDatelabel = dateLabels[phase].closes;
 
