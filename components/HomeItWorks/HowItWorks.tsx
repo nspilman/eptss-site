@@ -59,7 +59,7 @@ export const HowItWorks = () => {
             fontWeight="700"
           >{`Join us and share your musical talents! We can't wait to hear your unique take on the chosen song.`}</Text>
         </Box>
-        <SignupButton />
+      <SignupButton />
       </>
     </PageContainer>
   );

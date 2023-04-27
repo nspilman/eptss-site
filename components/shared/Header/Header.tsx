@@ -23,7 +23,12 @@ export const Header = (): ReactElement => {
           </Heading>
         </Link>
 
-        <HStack spacing="2" display={{ base: "none", lg: "block" }}>
+        <HStack
+          spacing="2"
+          display={{ base: "none", lg: "flex" }}
+          alignItems="center"
+          justifyContent="center"
+        >
           <Link href={Navigation.HowItWorks}>
             <Button>The rules</Button>
           </Link>

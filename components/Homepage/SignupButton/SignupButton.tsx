@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Button, useDisclosure } from "@chakra-ui/react";
+import { Button, useDisclosure, Image } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { EmailAuthModal } from "components/shared/EmailAuthModal";
 import { useRouter } from "next/router";
@@ -29,9 +29,9 @@ export const SignupButton = (): ReactElement => {
             {"Sign Out"}
           </Button>
         ) : (
-          <Button variant={"outline"} onClick={onProfile}>
-            {"My Profile"}
-          </Button>
+          <button onClick={onProfile}>
+            <Image src="/profile-icon.png" height="50px" />
+          </button>
         )
       ) : (
         <Button onClick={onOpen}>{"Sign up / Log In!"}</Button>
