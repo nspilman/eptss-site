@@ -53,8 +53,6 @@ export const getStaticProps: GetStaticProps = async () => {
       (round) => !(JSON.parse(round.roundId) === roundId && phase === "signups")
     );
 
-  console.log({ roundContent, roundId, phase });
-
   const phaseEndsDatelabel = dateLabels[phase].closes;
 
   return {

@@ -51,7 +51,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     data: { session },
   } = await authClient.auth.getSession();
 
-  console.log({ session });
   const { id, email } = session?.user || { id: null, email: null };
   const signups = (await getSignups(id || "")) || null;
   const voteSummary = (await getVotes(id || "")) || null;

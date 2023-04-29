@@ -39,7 +39,6 @@ export const StackedBarChart = ({ data, title }: Props) => {
   const theme = useTheme() as {
     colors: { yellow: { 300: string } };
   };
-  console.log({ theme });
   const options = {
     plugins: {
       title: {
