@@ -5,6 +5,7 @@ import { PageContainer } from "components/shared/PageContainer";
 import { SignInGate } from "components/shared/SignInGate/SignInGate";
 import { GetServerSidePropsContext } from "next";
 import { Tables, Views } from "queries";
+import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
 function ProfilePage({
@@ -75,6 +76,7 @@ const getWinningSongs = async () => {
 };
 
 const getSignups = async (id: string) => {
+  const phaseMgmtService = await PhaseMgmtService.build();
   const { data } = (await dbClient
     .from(Tables.SignUps)
     .select(
@@ -88,7 +90,8 @@ const getSignups = async (id: string) => {
               artist
             )`
     )
-    .filter("user_id", "eq", id)) as PostgrestResponse<{
+    .filter("user_id", "eq", id)
+    .order("round_id", { ascending: false })) as PostgrestResponse<{
     round_id: number;
     song_id: number;
     song: {
@@ -101,18 +104,26 @@ const getSignups = async (id: string) => {
   }>;
 
   const winningSongs = await getWinningSongs();
-  return data?.map(
-    ({ round_id, song_id, song: { title, artist }, average: { average } }) => ({
+  return data
+    ?.filter((song) => {
+      if (
+        phaseMgmtService.phase == "signups" ||
+        phaseMgmtService.phase === "voting"
+      ) {
+        return song.round_id !== phaseMgmtService.roundId;
+      }
+      return true;
+    })
+    .map(({ round_id, song_id, song: { title, artist }, average }) => ({
       round_id,
       title,
       artist,
-      average,
+      average: average?.average || null,
       isWinningSong: winningSongs
         ?.map((song) => song.song_id)
         .includes(song_id)
         .toString(),
-    })
-  );
+    }));
 };
 
 const getVotes = async (id: string) => {
