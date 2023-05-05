@@ -42,7 +42,7 @@ export const EmailAuthModal = ({
     try {
       setLoading(true);
       const { error } = await supabaseClient.auth.signInWithOtp({
-        email,
+        email: email.trim(),
         options: {
           shouldCreateUser: true,
           emailRedirectTo: redirectUrl,
