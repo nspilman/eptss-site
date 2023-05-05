@@ -52,9 +52,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   } = await authClient.auth.getSession();
 
   const { id, email } = session?.user || { id: null, email: null };
-  const signups = (await getSignups(id || "")) || null;
-  const voteSummary = (await getVotes(id || "")) || null;
-  const submissions = (await getSubmissions(id || "")) || null;
+  const signups = (await getSignups(id || "")) || [];
+  const voteSummary = (await getVotes(id || "")) || [];
+  const submissions = (await getSubmissions(id || "")) || [];
   return {
     props: {
       voteSummary,
