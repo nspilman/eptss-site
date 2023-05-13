@@ -4,6 +4,7 @@ import { VoteOptionModel } from "./types";
 import { useVoting } from "./useVoting";
 import { PageContainer } from "components/shared/PageContainer";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 interface Props {
   voteOptions: VoteOptionModel[];
@@ -18,12 +19,21 @@ export const Voting = ({
 }: Props) => {
   const title = `Vote for the songs you want to cover in Round ${roundId}`;
 
-  const { submitVotes, getFields, successPanelProps } = useVoting(
+  const { session } = useSessionContext();
+  if (!session) {
+    throw new Error("Login required to access Signup page");
+  }
+
+  const { submitVotes, successPanelProps } = useVoting(
     roundId,
-    coveringStartsLabel
+    coveringStartsLabel,
+    session.user.id
   );
 
-  const fields = getFields(voteOptions);
+  const fields = voteOptions.map((option) => ({
+    ...option,
+    type: "vote" as const,
+  }));
 
   return (
     <PageContainer title={title}>

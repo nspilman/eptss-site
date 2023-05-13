@@ -4,6 +4,7 @@ import { VoteOptionEntity, VoteOptionModel } from "components/Voting/types";
 import { Voting } from "components/Voting";
 import { getSignupsByRound } from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
+import { SignInGate } from "components/shared/SignInGate";
 
 const VotingPage = ({
   voteOptions,
@@ -12,13 +13,15 @@ const VotingPage = ({
   coveringStartString,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
-    // isVotingOpen && (
-    <Voting
-      voteOptions={voteOptions}
-      roundId={roundId}
-      coveringStartsLabel={coveringStartString}
-    />
-    // )
+    isVotingOpen && (
+      <SignInGate>
+        <Voting
+          voteOptions={voteOptions}
+          roundId={roundId}
+          coveringStartsLabel={coveringStartString}
+        />
+      </SignInGate>
+    )
   );
 };
 

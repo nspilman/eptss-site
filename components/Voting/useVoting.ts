@@ -1,14 +1,15 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import { yourEmail, yourName } from "components/shared/fieldValues";
 import { Tables } from "queries";
 import { getIsSuccess } from "utils";
-import { VoteOptionModel } from "./types";
 
-export const useVoting = (roundId: number, coveringStartsLabel: string) => {
+export const useVoting = (
+  roundId: number,
+  coveringStartsLabel: string,
+  userId: string
+) => {
   const subapase = useSupabase();
 
   const submitVotes = async (formPayload: Record<string, string>) => {
-    const { email } = formPayload;
     const voteKeys = Object.keys(formPayload).filter(
       (key) => !["name", "email"].includes(key)
     );
@@ -16,22 +17,13 @@ export const useVoting = (roundId: number, coveringStartsLabel: string) => {
     const votes = voteKeys.map((key) => ({
       song_id: key,
       vote: formPayload[key],
-      submitter_email: email,
       round_id: roundId,
+      user_id: userId,
     }));
 
     const { status } = await subapase.from(Tables.Votes).insert(votes);
     const isSuccess = getIsSuccess(status);
     return isSuccess ? "success" : "error";
-  };
-
-  const getFields = (voteOptions: VoteOptionModel[]) => {
-    const votingFields = voteOptions.map((option) => ({
-      ...option,
-      type: "vote" as const,
-    }));
-
-    return [yourName, yourEmail, ...votingFields];
   };
 
   const successText = {
@@ -50,5 +42,5 @@ export const useVoting = (roundId: number, coveringStartsLabel: string) => {
     image: signupSuccessImage,
   };
 
-  return { submitVotes, getFields, successPanelProps };
+  return { submitVotes, successPanelProps };
 };
