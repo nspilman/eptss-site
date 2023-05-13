@@ -42,10 +42,9 @@ export function InputField<T extends FieldValues>({
       <FormControl isRequired={!field.optional}>
         <Box>
           <FormLabel
-            fontFamily="'Rock Salt', sans-serif !important"
             color="blackAlpha.700"
-            fontWeight="300"
-            fontSize="1rem"
+            fontWeight="500"
+            fontSize="1.5rem"
             pb="2"
           >{`${label}`}</FormLabel>
         </Box>

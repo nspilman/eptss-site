@@ -1,4 +1,4 @@
-import { Box, FormLabel, Input, Stack, Text } from "@chakra-ui/react";
+import { FormLabel, Stack, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@chakra-ui/react";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
