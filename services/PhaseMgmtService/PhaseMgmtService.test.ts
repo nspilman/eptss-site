@@ -23,13 +23,14 @@ describe("PhaseMgmtService tests", () => {
   };
 
   jest.mock("@supabase/supabase-js", () => ({
-    createClient: jest.fn(() => ({
-      // Here you can specify the methods and properties of the returned client.
-      // For example, if you are using the `from` method in your code:
-      from: jest.fn().mockReturnThis(),
-      select: jest.fn().mockResolvedValue({ data: "mockData" }),
-      // Continue with other methods you use in your Supabase client
-    })),
+    createClient: jest.fn((supabaseUrl, supabaseKey) => {
+      // Perform your checks on supabaseUrl and supabaseKey here, if needed
+      return {
+        from: jest.fn().mockReturnThis(),
+        select: jest.fn().mockResolvedValue({ data: "mockData" }),
+        // Continue with other methods you use in your Supabase client
+      };
+    }),
   }));
 
   test("returns phase signups when date is during signup phase", async () => {
