@@ -1,5 +1,4 @@
 import { RoundDetails } from "types";
-import { Footer } from "./Footer";
 import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
@@ -30,7 +29,6 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
         currentRound={phaseInfo.roundId}
         isVotingPhase={isVotingPhase}
       />
-      <Footer />
     </Stack>
   );
 };

@@ -31,8 +31,8 @@ export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
             <Text as="p">Signing up as {session?.user.email}</Text>
             <Text as="p">Sign up with the song you want to cover!</Text>
             <Text>Signups close Midnight of {signupsCloseDateLabel}.</Text>
-            <Link href={Navigation.HowItWorks} color="yellow.300">
-              Full rules here
+            <Link href={Navigation.FAQ} color="yellow.300">
+              FAQ Here
             </Link>
           </Stack>
         }

@@ -106,7 +106,7 @@ export const Profile = ({
             {`We're excited that you're here, and can't wait to hear your music! You'll receive an email when sign ups for the next round are open. In the meantime, check out past rounds!`}
           </Text>
           <Text></Text>
-          <Button onClick={() => router.push("/#listen")}> Listen </Button>
+          <Button onClick={() => router.push("/#rounds")}> Rounds </Button>
         </Stack>
       ) : (
         <>

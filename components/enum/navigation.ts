@@ -1,4 +1,5 @@
 export enum Navigation {
-  HowItWorks = "/how-it-works",
+  FAQ = "/faq",
+  HowItWorks = "/#how-it-works",
   SignUp = "/sign-up",
 }

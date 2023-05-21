@@ -36,12 +36,12 @@ export const RoundDisplay = ({
 
   return (
     <Card width="80vw" my="2" bg="bgTransparent">
-      <CardHeader>
+      <CardHeader py="3">
         <Heading as="h3" size="md">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
         </Heading>
       </CardHeader>
-      <CardBody>
+      <CardBody py="2">
         {playlist ? (
           <a href={getPlaylistUrl(playlist)} target="_blank" rel="noreferrer">
             <Text color="yellow">Listen</Text>

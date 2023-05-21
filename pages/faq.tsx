@@ -1,8 +1,8 @@
 import React from "react";
-import { HowItWorks } from "../components/HomeItWorks";
+import { FAQPage } from "../components/faq";
 
 const HowItWorksPage = () => {
-  return <HowItWorks />;
+  return <FAQPage />;
 };
 
 export default HowItWorksPage;

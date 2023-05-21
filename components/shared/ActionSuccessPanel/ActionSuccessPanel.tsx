@@ -30,7 +30,7 @@ export const ActionSuccessPanel = ({
       <Text fontWeight="200" my="4">
         {thankyou}
       </Text>
-      <Link href="/#listen">
+      <Link href="/#rounds">
         <Button>Home</Button>
       </Link>
     </Stack>
