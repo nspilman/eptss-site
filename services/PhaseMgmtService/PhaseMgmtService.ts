@@ -49,7 +49,6 @@ export class PhaseMgmtService {
 
     this.roundId = roundId;
     this.song = song;
-    console.log({ now, votingOpens });
     switch (true) {
       case isBeforeStartOfDay(votingOpens):
         this.phase = "signups";
