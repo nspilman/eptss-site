@@ -29,7 +29,7 @@ interface Round {
   song: { artist: string; title: string };
 }
 
-export const getCurrentRound = async (): Promise<
+const getCurrentRound = async (): Promise<
   Round & { error: PostgrestError | null }
 > => {
   const supabase = getSupabaseClient();
@@ -87,7 +87,7 @@ export const getCurrentRound = async (): Promise<
   throw new Error("Could not find round");
 };
 
-export const getSignupsByRound = async (roundId: number) =>
+const getSignupsByRound = async (roundId: number) =>
   supabase
     .from(Tables.SignUps)
     .select(
@@ -103,3 +103,10 @@ export const getSignupsByRound = async (roundId: number) =>
     )
     .eq("round_id", roundId)
     .order("created_at");
+
+const queries = {
+  getSignupsByRound,
+  getCurrentRound,
+};
+
+export default queries;

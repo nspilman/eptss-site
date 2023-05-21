@@ -1,5 +1,5 @@
 import { format, subDays, startOfDay } from "date-fns";
-import { getCurrentRound } from "queries";
+import queries from "queries";
 
 interface Props {
   votingOpens: Date;
@@ -107,7 +107,7 @@ export class PhaseMgmtService {
       listeningParty,
       roundId,
       song,
-    } = currentRound || (await getCurrentRound());
+    } = currentRound || (await queries.getCurrentRound());
     const datify = (dateString: string) => {
       const date = new Date(dateString);
       const isValidDate = date instanceof Date && !isNaN(date.getDate());

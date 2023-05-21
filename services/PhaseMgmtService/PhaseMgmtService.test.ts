@@ -1,4 +1,4 @@
-import * as queries from "queries";
+import queries from "queries";
 import { PhaseMgmtService } from "./PhaseMgmtService";
 
 describe("PhaseMgmtService tests", () => {
@@ -23,13 +23,14 @@ describe("PhaseMgmtService tests", () => {
     song,
   };
 
-  jest.mock("queries", () => ({
-    getCurrentRound: jest.fn(async () => ({
+  jest.mock("queries");
+  beforeEach(() => {
+    queries.getCurrentRound = jest.fn().mockResolvedValueOnce({
       ...mockRoundMetadata,
       error: null,
       status: 200,
-    })),
-  }));
+    });
+  });
 
   test("returns phase signups when date is during signup phase", async () => {
     jest.useFakeTimers();
@@ -39,7 +40,7 @@ describe("PhaseMgmtService tests", () => {
 
     const expected = "signups";
 
-    const phaseMgmtService = await PhaseMgmtService.build(mockRoundMetadata);
+    const phaseMgmtService = await PhaseMgmtService.build();
     expect((await phaseMgmtService).phase).toBe(expected);
   });
 
@@ -51,7 +52,7 @@ describe("PhaseMgmtService tests", () => {
 
     const expected = "voting";
 
-    const phaseMgmtService = await PhaseMgmtService.build(mockRoundMetadata);
+    const phaseMgmtService = await PhaseMgmtService.build();
     expect((await phaseMgmtService).phase).toBe(expected);
   });
 
@@ -63,7 +64,7 @@ describe("PhaseMgmtService tests", () => {
 
     const expected = "covering";
 
-    const phaseMgmtService = await PhaseMgmtService.build(mockRoundMetadata);
+    const phaseMgmtService = await PhaseMgmtService.build();
     expect((await phaseMgmtService).phase).toBe(expected);
   });
 
@@ -75,19 +76,19 @@ describe("PhaseMgmtService tests", () => {
 
     const expected = "celebration";
 
-    const phaseMgmtService = await PhaseMgmtService.build(mockRoundMetadata);
+    const phaseMgmtService = await PhaseMgmtService.build();
     expect((await phaseMgmtService).phase).toBe(expected);
   });
 
   test("returns roundId when passed in constructor", async () => {
-    const phaseMgmtService = await PhaseMgmtService.build(mockRoundMetadata);
+    const phaseMgmtService = await PhaseMgmtService.build();
     expect((await phaseMgmtService).roundId).toBe(mockRoundMetadata.roundId);
   });
 
   test("returns correct phase start and end date strings based on phase dates from constructor", async () => {
     const {
       dateLabels: { signups, voting, covering, celebration },
-    } = await PhaseMgmtService.build(mockRoundMetadata);
+    } = await PhaseMgmtService.build();
     const expectedSignupDates = {
       opens: "Thursday, Nov 17th",
       closes: "Monday, Dec 5th",
@@ -136,7 +137,7 @@ describe("PhaseMgmtService tests", () => {
     jest.setSystemTime(new Date(dateBeforeSignupPhase));
 
     try {
-      await PhaseMgmtService.build(mockRoundMetadata);
+      await PhaseMgmtService.build();
     } catch (e: unknown) {
       expect((e as { message: string }).message).toBe(
         "current date cannot be before signup date. Signup starts the current round"
@@ -151,7 +152,7 @@ describe("PhaseMgmtService tests", () => {
     jest.setSystemTime(new Date(dateAfterListeningParty));
 
     try {
-      await PhaseMgmtService.build(mockRoundMetadata);
+      await PhaseMgmtService.build();
     } catch (e: unknown) {
       expect((e as { message: string }).message).toBe(
         "current date cannot be after listening party. The Listening Party ends the round"
