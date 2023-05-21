@@ -7,6 +7,10 @@ describe("PhaseMgmtService tests", () => {
   const coversDue = "2023-01-31, 12:00";
   const listeningParty = "2023-02-08, 12:00";
   const roundId = 5;
+  const song = {
+    artist: "anyArtist",
+    title: "anyTitle",
+  };
 
   const mockRoundMetadata = {
     signupOpens,
@@ -15,6 +19,7 @@ describe("PhaseMgmtService tests", () => {
     coversDue,
     listeningParty,
     roundId,
+    song,
   };
 
   test("returns phase signups when date is during signup phase", async () => {

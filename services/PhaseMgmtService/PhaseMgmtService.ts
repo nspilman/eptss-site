@@ -45,17 +45,19 @@ export class PhaseMgmtService {
       throw new Error("dates are in incorrect order");
     }
 
+    const isBeforeStartOfDay = (date: Date) => now < startOfDay(date);
+
     this.roundId = roundId;
     this.song = song;
-
+    console.log({ now, votingOpens });
     switch (true) {
-      case now < votingOpens:
+      case isBeforeStartOfDay(votingOpens):
         this.phase = "signups";
         break;
-      case now < coveringBegins:
+      case isBeforeStartOfDay(coveringBegins):
         this.phase = "voting";
         break;
-      case now < coversDue:
+      case isBeforeStartOfDay(coversDue):
         this.phase = "covering";
         break;
       default:
