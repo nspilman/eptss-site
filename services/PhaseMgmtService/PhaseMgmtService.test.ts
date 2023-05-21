@@ -1,4 +1,4 @@
-import queries from "queries";
+import queries from "../../queries";
 import { PhaseMgmtService } from "./PhaseMgmtService";
 
 describe("PhaseMgmtService tests", () => {
@@ -23,7 +23,6 @@ describe("PhaseMgmtService tests", () => {
     song,
   };
 
-  jest.mock("queries");
   beforeEach(() => {
     queries.getCurrentRound = jest.fn().mockResolvedValueOnce({
       ...mockRoundMetadata,
