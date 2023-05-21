@@ -1,7 +1,5 @@
 import { format, subDays, startOfDay } from "date-fns";
-import { PostgrestError } from "@supabase/supabase-js";
-import { getSupabaseClient } from "utils/getSupabaseClient";
-import { Tables } from "queries";
+import { getCurrentRound } from "queries";
 
 interface Props {
   votingOpens: Date;
@@ -128,72 +126,3 @@ export class PhaseMgmtService {
     });
   }
 }
-
-interface Round {
-  roundId: number;
-  signupOpens: string;
-  votingOpens: string;
-  coveringBegins: string;
-  coversDue: string;
-  listeningParty: string;
-  status: number;
-  song: { artist: string; title: string };
-}
-
-export const getCurrentRound = async (): Promise<
-  Round & { error: PostgrestError | null }
-> => {
-  const supabase = getSupabaseClient();
-  const {
-    data: roundData,
-    error,
-    status,
-  } = await supabase
-    .from(Tables.RoundMetadata)
-    .select(
-      `id, 
-      signup_opens, 
-      voting_opens, 
-      covering_begins, 
-      covers_due, 
-      listening_party, 
-      song:songs(
-        title, 
-        artist
-        )`
-    )
-    .order("id", { ascending: false })
-    .limit(1);
-
-  if (roundData) {
-    const {
-      id: roundId,
-      signup_opens: signupOpens,
-      voting_opens: votingOpens,
-      covering_begins: coveringBegins,
-      covers_due: coversDue,
-      listening_party: listeningParty,
-      song,
-    } = roundData[0];
-
-    if (Array.isArray(song)) {
-      throw new Error("Only one song can be associated with a single round");
-    }
-    const songData = song || { artist: "", title: "" };
-    if (typeof roundId === "number") {
-      return {
-        roundId,
-        signupOpens,
-        votingOpens,
-        coveringBegins,
-        coversDue,
-        listeningParty,
-        status,
-        error,
-        song: songData,
-      };
-    }
-  }
-
-  throw new Error("Could not find round");
-};

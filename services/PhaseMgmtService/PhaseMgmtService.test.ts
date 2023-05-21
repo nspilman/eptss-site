@@ -1,5 +1,5 @@
+import * as queries from "queries";
 import { PhaseMgmtService } from "./PhaseMgmtService";
-import * as supabase from "@supabase/supabase-js";
 
 describe("PhaseMgmtService tests", () => {
   const signupOpens = "2022-11-17, 12:00";
@@ -23,7 +23,13 @@ describe("PhaseMgmtService tests", () => {
     song,
   };
 
-  jest.spyOn(supabase, "createClient").mockImplementation(jest.fn());
+  jest.mock("queries", () => ({
+    getCurrentRound: jest.fn(async () => ({
+      ...mockRoundMetadata,
+      error: null,
+      status: 200,
+    })),
+  }));
 
   test("returns phase signups when date is during signup phase", async () => {
     jest.useFakeTimers();
