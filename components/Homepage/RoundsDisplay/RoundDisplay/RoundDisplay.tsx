@@ -26,18 +26,26 @@ export const RoundDisplay = ({
   const headingText = `Round ${roundId} - ${
     showVotingUnderwayText ? "Voting Underway" : `${title} by ${artist}`
   }`;
+
+  function getPlaylistUrl(inputText: string) {
+    let regex =
+      /href="(https:\/\/soundcloud\.com\/nate-spilman\/sets\/[^"]*)"/g;
+    let match = regex.exec(inputText);
+    return match ? match[1] : "No URL found";
+  }
+
   return (
     <Card width="80vw" my="2" bg="bgTransparent">
       <CardHeader>
-        <Link href={`/round/${roundId}`}>
-          <Heading as="h3" size="md">
-            {headingText}
-          </Heading>
-        </Link>
+        <Heading as="h3" size="md">
+          <Link href={`/round/${roundId}`}>{headingText}</Link>
+        </Heading>
       </CardHeader>
       <CardBody>
         {playlist ? (
-          <Box dangerouslySetInnerHTML={{ __html: playlist }} />
+          <a href={getPlaylistUrl(playlist)} target="_blank" rel="noreferrer">
+            <Text color="yellow">Listen</Text>
+          </a>
         ) : (
           <Text>The round is underway!</Text>
         )}
