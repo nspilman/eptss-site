@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
-import { Box, Button, Flex, Heading, HStack, Link } from "@chakra-ui/react";
-import { Navigation } from "components/enum/navigation";
+import { Box, Flex, Heading, HStack, Link } from "@chakra-ui/react";
+import { FAQButton } from "components/NavButtons";
 
 export const Header = (): ReactElement => {
   return (
@@ -29,9 +29,7 @@ export const Header = (): ReactElement => {
           alignItems="center"
           justifyContent="center"
         >
-          <Link href={Navigation.HowItWorks}>
-            <Button>The rules</Button>
-          </Link>
+          <FAQButton />
           <SignupButton />
         </HStack>
       </Flex>

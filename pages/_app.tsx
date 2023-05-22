@@ -6,6 +6,7 @@ import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { useState } from "react";
 import { theme } from "styles";
+import { Footer } from "components/shared/Footer";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -15,6 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SessionContextProvider supabaseClient={supabaseClient}>
         <Header />
         <Component {...pageProps} />
+        <Footer />
       </SessionContextProvider>
     </ChakraProvider>
   );

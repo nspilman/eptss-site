@@ -5,8 +5,15 @@ import {
   Heading,
   Center,
   CardFooter,
+  Box,
 } from "@chakra-ui/react";
-import { ActionButtons } from "components/ActionButtons/ActionButtons";
+import { ButtonsContainer } from "components/ButtonsContainer";
+import {
+  HowItWorksButton,
+  JoinRoundButton,
+  RoundsButton,
+  SignupButton,
+} from "components/NavButtons";
 
 export const Hero = () => {
   return (
@@ -30,7 +37,14 @@ export const Hero = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <ActionButtons />
+          <ButtonsContainer>
+            <HowItWorksButton />
+            <RoundsButton />
+            <JoinRoundButton />
+            <Box display={{ base: "block", md: "none" }}>
+              <SignupButton />
+            </Box>
+          </ButtonsContainer>
         </CardFooter>
       </Card>
     </Center>

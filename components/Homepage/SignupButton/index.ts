@@ -1,1 +1,1 @@
-export * from "./SignupButton";
+export * from "../../NavButtons/Signup";

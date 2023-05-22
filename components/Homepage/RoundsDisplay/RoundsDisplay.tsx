@@ -16,7 +16,7 @@ export const RoundsDisplay = ({
   return (
     <Stack direction="column" py="8">
       <Box>
-        <Heading as="h1" id="listen" pb="8" size={{ base: "md", lg: "lg" }}>
+        <Heading as="h1" id="rounds" pb="8" size={{ base: "md", lg: "lg" }}>
           Rounds
         </Heading>
       </Box>
