@@ -2,7 +2,7 @@ import { GetStaticProps, InferGetStaticPropsType } from "next";
 import React from "react";
 import { VoteOptionEntity, VoteOptionModel } from "components/Voting/types";
 import { Voting } from "components/Voting";
-import { getSignupsByRound } from "queries";
+import queries from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { SignInGate } from "components/shared/SignInGate";
 
@@ -54,7 +54,9 @@ export default VotingPage;
 // private
 
 const getVoteOptions = async (roundId: number) => {
-  const { data: resultEntities, error } = await getSignupsByRound(roundId);
+  const { data: resultEntities, error } = await queries.getSignupsByRound(
+    roundId
+  );
 
   if (error) {
     throw new Error(JSON.stringify(error));
