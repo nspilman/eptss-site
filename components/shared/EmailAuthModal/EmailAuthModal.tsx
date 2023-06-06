@@ -90,7 +90,7 @@ export const EmailAuthModal = ({
   };
 
   return (
-    <Box>
+    <Box data-testid="email-auth-modal">
       <Modal
         isOpen={isOpen}
         onClose={onClose || (() => {})}

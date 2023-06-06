@@ -36,19 +36,22 @@ export const RoundDisplay = ({
 
   return (
     <Card width="80vw" my="2" bg="bgTransparent">
-      <CardHeader py="3">
+      <CardHeader py="3" display="flex" justifyContent={"space-between"}>
         <Heading as="h3" size="md">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
         </Heading>
+        {playlist && (
+          <Link
+            href={getPlaylistUrl(playlist)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Text color="yellow">Listen</Text>
+          </Link>
+        )}
       </CardHeader>
       <CardBody py="2">
-        {playlist ? (
-          <a href={getPlaylistUrl(playlist)} target="_blank" rel="noreferrer">
-            <Text color="yellow">Listen</Text>
-          </a>
-        ) : (
-          <Text>The round is underway!</Text>
-        )}
+        {!playlist && <Text>The round is underway!</Text>}
       </CardBody>
     </Card>
   );

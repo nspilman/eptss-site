@@ -11,7 +11,7 @@ export const LinkStyles = defineStyleConfig({
     button: {},
     primary: {
       _hover: {
-        color: "yellow.300",
+        color: "white",
       },
     },
   },
