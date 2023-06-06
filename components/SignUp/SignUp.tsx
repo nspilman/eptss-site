@@ -5,7 +5,7 @@ import { useSignup } from "./useSignup";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { Center, Link, Stack, Text } from "@chakra-ui/react";
 import { Navigation } from "components/enum/navigation";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useUserSession } from "components/context/UserSessionContext";
 
 interface Props {
   roundId: number;
@@ -15,11 +15,12 @@ interface Props {
 export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
-  const { session } = useSessionContext();
-  if (!session) {
+  const { user } = useUserSession();
+
+  if (!user) {
     throw new Error("Login required to access Signup page");
   }
-  const { signUp, signupSuccess, fields } = useSignup(roundId, session.user.id);
+  const { signUp, signupSuccess, fields } = useSignup(roundId, user.id);
 
   return (
     <Center>
@@ -28,7 +29,7 @@ export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
         title={title}
         description={
           <Stack alignItems="center">
-            <Text as="p">Signing up as {session?.user.email}</Text>
+            <Text as="p">Signing up as {user.email}</Text>
             <Text as="p">Sign up with the song you want to cover!</Text>
             <Text>Signups close Midnight of {signupsCloseDateLabel}.</Text>
             <Link href={Navigation.FAQ} color="yellow.300">

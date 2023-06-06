@@ -1,25 +1,16 @@
 import { Button } from "@chakra-ui/react";
-import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useRound } from "components/context/RoundContext";
+import { useUserSession } from "components/context/UserSessionContext";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { PhaseMgmtService } from "services/PhaseMgmtService";
 
 export const JoinRoundButton = () => {
-  const session = useSessionContext();
+  const { user } = useUserSession();
+  const { phase, roundId } = useRound();
   const router = useRouter();
 
-  const [phaseMgmtService, setPhaseMgmtService] = useState<PhaseMgmtService>();
-
-  useEffect(() => {
-    const getPhase = async () => {
-      const phaseMgmtService = await PhaseMgmtService.build();
-      setPhaseMgmtService(await phaseMgmtService);
-    };
-    getPhase();
-  }, []);
-  return session.session?.user && phaseMgmtService?.phase === "signups" ? (
+  return user && phase === "signups" ? (
     <Button onClick={() => router.push("/sign-up")}>
-      Sign up for Round {phaseMgmtService.roundId}
+      Sign up for Round {roundId}
     </Button>
   ) : (
     <></>

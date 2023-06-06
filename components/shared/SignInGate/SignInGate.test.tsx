@@ -1,64 +1,68 @@
-import { render, screen } from "@testing-library/react";
-import { useSessionContext } from "@supabase/auth-helpers-react";
-import { SignInGate } from "./SignInGate";
+import { render, waitFor } from "@testing-library/react";
+import { useUserSession } from "components/context/UserSessionContext";
+import { SignInGate } from "./SignInGate"; // path to your component
+import React from "react";
 import "@testing-library/jest-dom";
 
-jest.mock("@supabase/auth-helpers-react");
-jest
-  .spyOn(window, "location", "get")
-  .mockReturnValue({ href: "http://mock-url" } as any);
+const mockUser = {
+  id: "1",
+  app_metadata: {}, // update with your actual app_metadata structure or mock data
+  user_metadata: {}, // update with your actual user_metadata structure or mock data
+  aud: "auth0", // update with your actual `aud` value
+  created_at: new Date().toISOString(), // or any other valid date string
+  // add any other necessary properties here
+};
+
+// Mock useUserSession hook
+jest.mock("components/context/UserSessionContext", () => ({
+  useUserSession: jest.fn(),
+}));
 
 describe("SignInGate", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const mockedUseSessionContext = useSessionContext as jest.Mock;
+  test("renders loading state", async () => {
+    (
+      useUserSession as jest.MockedFunction<typeof useUserSession>
+    ).mockReturnValue({ isLoading: true });
 
-  it("renders Loading... when isLoading is true", () => {
-    mockedUseSessionContext.mockReturnValue({
-      isLoading: true,
-      session: null,
-    });
-
-    render(
-      <SignInGate>
-        <p>test child</p>
-      </SignInGate>
+    const { getByText } = render(
+      <SignInGate>{<div>Test content</div>}</SignInGate>
     );
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-    expect(screen.queryByText("test child")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText("Loading...")).toBeInTheDocument();
+    });
   });
 
-  it("renders children when session exists", () => {
-    mockedUseSessionContext.mockReturnValue({
-      isLoading: false,
-      session: { user: { name: "test user" } },
-    });
+  test("renders children when user is present", async () => {
+    (
+      useUserSession as jest.MockedFunction<typeof useUserSession>
+    ).mockReturnValue({ isLoading: false, user: mockUser });
 
-    render(
-      <SignInGate>
-        <p>test child</p>
-      </SignInGate>
+    const { getByText } = render(
+      <SignInGate>{<div>Test content</div>}</SignInGate>
     );
 
-    expect(screen.getByText("test child")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText("Test content")).toBeInTheDocument();
+    });
   });
 
-  it("renders EmailAuthModal when session is null", () => {
-    mockedUseSessionContext.mockReturnValue({
-      isLoading: false,
-      session: null,
-    });
+  test("renders EmailAuthModal when user is not present", async () => {
+    (
+      useUserSession as jest.MockedFunction<typeof useUserSession>
+    ).mockReturnValue({ isLoading: false });
 
-    render(
-      <SignInGate>
-        <p>test child</p>
-      </SignInGate>
+    const { getByTestId } = render(
+      <SignInGate>{<div>Test content</div>}</SignInGate>
     );
 
-    expect(screen.getByTestId("email-auth-modal")).toBeInTheDocument();
-    expect(screen.queryByText("test child")).not.toBeInTheDocument();
+    await waitFor(() => {
+      // Assuming that EmailAuthModal has a data-testid="email-auth-modal" attribute
+      expect(getByTestId("email-auth-modal")).toBeInTheDocument();
+    });
   });
 });

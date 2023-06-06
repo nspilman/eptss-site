@@ -7,6 +7,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { useState } from "react";
 import { theme } from "styles";
 import { Footer } from "components/shared/Footer";
+import { UserSessionProvider } from "components/context/UserSessionContext";
+import { RoundProvider } from "components/context/RoundContext";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -14,9 +16,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <SessionContextProvider supabaseClient={supabaseClient}>
-        <Header />
-        <Component {...pageProps} />
-        <Footer />
+        <RoundProvider>
+          <UserSessionProvider>
+            <Header />
+            <Component {...pageProps} />
+            <Footer />
+          </UserSessionProvider>
+        </RoundProvider>
       </SessionContextProvider>
     </ChakraProvider>
   );
