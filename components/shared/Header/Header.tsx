@@ -16,10 +16,11 @@ export const Header = (): ReactElement => {
           <Heading
             textStyle={"h1"}
             as="h1"
+            fontFamily={"Fraunces"}
             size={{ base: "sm", lg: "lg" }}
-            fontWeight="300"
+            fontWeight="700"
           >
-            Everyone Plays the Same Song
+            everyone plays the same song
           </Heading>
         </Link>
 
