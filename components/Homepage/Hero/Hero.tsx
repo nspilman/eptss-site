@@ -48,6 +48,7 @@ export const Hero = () => {
           </Heading>
           <Image
             src="/pencil-underline.png"
+            alt="pencilunderline"
             layout="responsive"
             height={"10px"}
             width={"100%"}

@@ -39,7 +39,7 @@ export const RoundActionCard = ({ phase, roundId }: Props) => {
     if (isAuthed) {
       switch (phase) {
         case "signups":
-          return <Button>I'm in!</Button>;
+          return <Button>I&apos;m in!</Button>;
         case "celebration":
           return <Button>Profile</Button>;
         case "voting":
@@ -59,7 +59,7 @@ export const RoundActionCard = ({ phase, roundId }: Props) => {
       }
     } else {
       if (phase === "signups") {
-        return <Button>I'm in!</Button>;
+        return <Button>I&apos;m in!</Button>;
       } else {
         return <Button>Sign Up</Button>;
       }
