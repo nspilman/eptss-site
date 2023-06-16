@@ -3,8 +3,9 @@ import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
-import { Stack } from "@chakra-ui/react";
+import { Box, Center, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
+import { RoundActionCard } from "./RoundActionCard";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -23,6 +24,10 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
+      <Center mt={-16} mb={12}>
+        <RoundActionCard phase={phaseInfo.phase} roundId={phaseInfo.roundId} />
+      </Center>
+
       <HowItWorks phaseInfo={phaseInfo} />
       <RoundsDisplay
         rounds={roundContent}
