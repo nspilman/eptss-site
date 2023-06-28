@@ -39,7 +39,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const phaseMgmtService = await PhaseMgmtService.build();
   const { phase, dateLabels, roundId } = phaseMgmtService;
 
-  const roundContent = (data as RoundEntity[])
+  const roundContent = (data as unknown as RoundEntity[])
     .map(({ song, playlist_url, id }) => {
       const { title, artist } = song || { title: null, artist: null };
       return {
