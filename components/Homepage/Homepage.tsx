@@ -3,12 +3,12 @@ import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
-import { Box, Center, Stack } from "@chakra-ui/react";
+import { Center, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
 import { RoundActionCard } from "./RoundActionCard";
 import { useSessionContext } from "@supabase/auth-helpers-react";
-import { useSupabase } from "components/hooks/useSupabaseClient";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { getRoundDataForUser } from "queries/getRoundDataForUser";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -24,23 +24,25 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
 
   const { session } = useSessionContext();
   const isAuthed = !!session?.user;
-  const supabase = useSupabase();
 
   console.log("session user", session);
 
-  const getUserRoundDetails = async (userId: string) => {
-    if (!userId) return;
-    try {
-      const data = await getRoundDataForUser(roundId, userId);
-      console.log({ data });
-    } catch (error) {}
-    // const { data, error } = await supabase.functions.invoke(
-  };
+  const getUserRoundDetails = useCallback(
+    async (userId: string) => {
+      if (!userId) return;
+      try {
+        const data = await getRoundDataForUser(phaseInfo.roundId, userId);
+        console.log({ data });
+      } catch (error) {}
+      // const { data, error } = await supabase.functions.invoke(
+    },
+    [phaseInfo.roundId]
+  );
 
   useEffect(() => {
     if (!session?.user?.id) return;
     getUserRoundDetails(session?.user?.id);
-  }, [session?.user?.id]);
+  }, [getUserRoundDetails, session?.user?.id]);
 
   return (
     <Stack alignItems="center" justifyContent="center">
