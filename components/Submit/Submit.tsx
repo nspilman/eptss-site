@@ -1,9 +1,9 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import { yourEmail } from "components/shared/fieldValues";
 import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { getIsSuccess } from "utils";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
+import { useUserSession } from "components/context/UserSessionContext";
 
 interface Props {
   roundId: number;
@@ -21,8 +21,13 @@ export const Submit = ({
   listeningPartyLabel,
   song,
 }: Props) => {
+  const { user } = useUserSession();
+
+  if (!user) {
+    throw new Error("Login required to access Signup page");
+  }
+
   const fields = [
-    yourEmail,
     {
       label: "Soundcloud Link",
       placeholder: "Soundcloud Link",
@@ -67,33 +72,33 @@ export const Submit = ({
   const supabase = useSupabase();
 
   interface SubmitModel {
-    email: string;
     soundcloudUrl: string;
     coolThingsLearned?: string;
     toolsUsed?: string;
     happyAccidents?: string;
     didntWork?: string;
+    userId: string;
   }
 
   interface SubmitEntity {
     round_id: number;
     soundcloud_url: string;
-    email: string;
     additional_comments?: string;
+    user_id: string;
   }
 
   const convertModelToEntity = ({
     soundcloudUrl,
-    email,
     coolThingsLearned,
     toolsUsed,
     happyAccidents,
     didntWork,
+    userId,
   }: SubmitModel): SubmitEntity => {
     return {
       round_id: roundId,
       soundcloud_url: soundcloudUrl,
-      email,
+      user_id: userId,
       additional_comments: JSON.stringify({
         coolThingsLearned,
         toolsUsed,
@@ -104,7 +109,10 @@ export const Submit = ({
   };
 
   const onSubmit = async (submitModal: SubmitModel) => {
-    const signupEntity = convertModelToEntity(submitModal);
+    const signupEntity = convertModelToEntity({
+      ...submitModal,
+      userId: user.id,
+    });
     const { status } = await supabase.from("submissions").insert(signupEntity);
     return getIsSuccess(status) ? "success" : "error";
   };

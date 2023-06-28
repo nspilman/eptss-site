@@ -4,6 +4,7 @@ import { Submit } from "components/Submit";
 import { PageContainer } from "components/shared/PageContainer";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { JoinMailingList } from "components/JoinMailingList";
+import { SignInGate } from "components/shared/SignInGate";
 
 const SubmitPage = ({
   roundId,
@@ -14,16 +15,18 @@ const SubmitPage = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <PageContainer title={`Submit your cover for round ${roundId}`}>
-      {areSubmissionsOpen ? (
-        <Submit
-          roundId={roundId}
-          coverClosesLabel={coverClosesLabel}
-          listeningPartyLabel={listeningPartyLabel}
-          song={song}
-        />
-      ) : (
-        <JoinMailingList />
-      )}
+      <SignInGate>
+        {areSubmissionsOpen ? (
+          <Submit
+            roundId={roundId}
+            coverClosesLabel={coverClosesLabel}
+            listeningPartyLabel={listeningPartyLabel}
+            song={song}
+          />
+        ) : (
+          <JoinMailingList />
+        )}
+      </SignInGate>
     </PageContainer>
   );
 };
