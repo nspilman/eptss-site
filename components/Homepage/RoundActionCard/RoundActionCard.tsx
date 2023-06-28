@@ -1,19 +1,35 @@
-import { Box, Button, Card, CardBody, Heading, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Heading,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSupabase } from "components/hooks/useSupabaseClient";
+import { getRoundDataForUser } from "queries/getRoundDataForUser";
+import { useEffect } from "react";
 import { Phase } from "services/PhaseMgmtService";
 
 interface Props {
   phase: Phase;
   roundId: number;
+  isAuthed?: boolean;
+  hasSignedUp?: boolean;
+  hasVoted?: boolean;
+  hasSubmitted?: boolean;
 }
 
-export const RoundActionCard = ({ phase, roundId }: Props) => {
-  const { session } = useSessionContext();
-  const isAuthed = !!session?.user;
-
-  // TODO: get user's current round activity
-  // if they've already joined, voted, or submitted
-
+export const RoundActionCard = ({
+  phase,
+  roundId,
+  isAuthed,
+  hasSignedUp,
+  hasSubmitted,
+  hasVoted,
+}: Props) => {
   const renderLabelContent = () => {
     if (isAuthed) {
       switch (phase) {
@@ -36,33 +52,61 @@ export const RoundActionCard = ({ phase, roundId }: Props) => {
   };
 
   const renderCTAContent = () => {
-    if (isAuthed) {
-      switch (phase) {
-        case "signups":
+    if (!isAuthed) {
+      if (phase === "signups") {
+        return <Button>I&apos;m in!</Button>;
+      } else {
+        return <Button>Sign Up</Button>;
+      }
+    }
+    switch (phase) {
+      case "signups":
+        if (hasSignedUp) {
+          return (
+            <>
+              <Button>Round X</Button>
+              <Text>You voted!</Text>
+            </>
+          );
+        } else {
           return <Button>I&apos;m in!</Button>;
-        case "celebration":
-          return <Button>Profile</Button>;
-        case "voting":
+        }
+
+      case "celebration":
+        return <Button>Profile</Button>;
+      case "voting":
+        if (hasVoted) {
+          return (
+            <>
+              <Button>Round X</Button>
+              <Text>You voted!</Text>
+            </>
+          );
+        } else {
           return (
             <>
               <Button>Round X</Button>
               <Button>Vote Now!</Button>
             </>
           );
-        case "covering":
+        }
+
+      case "covering":
+        if (hasSubmitted) {
+          return (
+            <>
+              <Button>Round X</Button>
+              <Text>You submitted!</Text>
+            </>
+          );
+        } else {
           return (
             <>
               <Button>Round X</Button>
               <Button>Submit My Cover!</Button>
             </>
           );
-      }
-    } else {
-      if (phase === "signups") {
-        return <Button>I&apos;m in!</Button>;
-      } else {
-        return <Button>Sign Up</Button>;
-      }
+        }
     }
   };
   return (

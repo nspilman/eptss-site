@@ -30,7 +30,7 @@ export const Hero = () => {
     >
       <VStack alignItems="flex-start" px={{ base: "8", md: "16", lg: "24" }}>
         <Text fontFamily="Fraunces" fontSize={"14"}>
-          every 2 months
+          every quarter
         </Text>
         <Heading as="h1" fontSize={{ base: "lg", md: "2xl", lg: "4xl" }}>
           we all choose a song

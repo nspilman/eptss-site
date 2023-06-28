@@ -6,6 +6,9 @@ import { Phase } from "services/PhaseMgmtService";
 import { Box, Center, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
 import { RoundActionCard } from "./RoundActionCard";
+import { useSessionContext } from "@supabase/auth-helpers-react";
+import { useSupabase } from "components/hooks/useSupabaseClient";
+import { useEffect } from "react";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -18,6 +21,27 @@ export interface Props {
 
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   const isVotingPhase = phaseInfo.phase === "voting";
+
+  const { session } = useSessionContext();
+  const isAuthed = !!session?.user;
+  const supabase = useSupabase();
+
+  console.log("session user", session);
+
+  const getUserRoundDetails = async (userId: string) => {
+    if (!userId) return;
+    try {
+      const data = await getRoundDataForUser(roundId, userId);
+      console.log({ data });
+    } catch (error) {}
+    // const { data, error } = await supabase.functions.invoke(
+  };
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    getUserRoundDetails(session?.user?.id);
+  }, [session?.user?.id]);
+
   return (
     <Stack alignItems="center" justifyContent="center">
       <Head>
@@ -25,7 +49,14 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
       </Head>
       <Hero />
       <Center mt={-16} mb={12}>
-        <RoundActionCard phase={phaseInfo.phase} roundId={phaseInfo.roundId} />
+        <RoundActionCard
+          phase={phaseInfo.phase}
+          roundId={phaseInfo.roundId}
+          isAuthed={isAuthed}
+          hasSignedUp={false}
+          hasSubmitted={false}
+          hasVoted={false}
+        />
       </Center>
 
       <HowItWorks phaseInfo={phaseInfo} />
