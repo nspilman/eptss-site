@@ -2,6 +2,9 @@ import type { Preview } from "@storybook/react";
 import React from "react";
 import { UserSessionProvider } from "../components/context/UserSessionContext";
 import { RoundProvider } from "../components/context/RoundContext";
+import { ChakraProvider } from "@chakra-ui/react";
+import { theme } from "../styles";
+import "../styles/globals.css";
 
 const preview: Preview = {
   parameters: {
@@ -18,11 +21,13 @@ const preview: Preview = {
 export const decorators = [
   (Story) => {
     return (
-      <RoundProvider>
-        <UserSessionProvider>
-          <Story />
-        </UserSessionProvider>
-      </RoundProvider>
+      <ChakraProvider theme={theme}>
+        <RoundProvider>
+          <UserSessionProvider>
+            <Story />
+          </UserSessionProvider>
+        </RoundProvider>
+      </ChakraProvider>
     );
   },
 ];

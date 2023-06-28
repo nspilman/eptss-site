@@ -13,7 +13,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@chakra-ui/react": "^2.7.0",
+    "@babel/runtime": "^7.22.5",
+    "@chakra-ui/react": "^2.5.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@sentry/nextjs": "^7.23.0",

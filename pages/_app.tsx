@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
 
   return (
-    <ChakraProvider theme={theme}>
+  <ChakraProvider theme={theme}>
       <SessionContextProvider supabaseClient={supabaseClient}>
         <RoundProvider>
           <UserSessionProvider>
