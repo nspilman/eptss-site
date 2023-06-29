@@ -80,7 +80,7 @@ export const RoundActionCard = ({
           return (
             <>
               <Button onClick={onRoundDetails}>{`Round ${roundId}`}</Button>
-              <Text>You're in!</Text>
+              <Text>You&apos;re in!</Text>
             </>
           );
         } else {
