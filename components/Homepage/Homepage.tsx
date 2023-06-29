@@ -7,7 +7,7 @@ import { Center, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
 import { RoundActionCard } from "./RoundActionCard";
 import { useSessionContext } from "@supabase/auth-helpers-react";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getRoundDataForUser } from "queries/getRoundDataForUser";
 
 export interface Props {
@@ -22,19 +22,22 @@ export interface Props {
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   const isVotingPhase = phaseInfo.phase === "voting";
 
-  const { session } = useSessionContext();
-  const isAuthed = !!session?.user;
+  const [loadingUserRoundDetails, setLoadingUserRoundDetails] = useState(false);
+  const [userRoundDetails, setUserRoundDetails] = useState<any>(null);
 
-  console.log("session user", session);
+  const { isLoading, session } = useSessionContext();
+  const isAuthed = !!session?.user;
 
   const getUserRoundDetails = useCallback(
     async (userId: string) => {
       if (!userId) return;
       try {
+        setLoadingUserRoundDetails(true);
         const data = await getRoundDataForUser(phaseInfo.roundId, userId);
-        console.log({ data });
-      } catch (error) {}
-      // const { data, error } = await supabase.functions.invoke(
+        setUserRoundDetails(data);
+      } finally {
+        setLoadingUserRoundDetails(false);
+      }
     },
     [phaseInfo.roundId]
   );
@@ -42,7 +45,14 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   useEffect(() => {
     if (!session?.user?.id) return;
     getUserRoundDetails(session?.user?.id);
-  }, [getUserRoundDetails, session?.user?.id]);
+  }, [getUserRoundDetails, session?.user?.id, phaseInfo.phase]);
+
+  console.log("Homepage", {
+    userRoundDetails,
+    loadingUserRoundDetails,
+    isAuthed,
+    phaseInfo,
+  });
 
   return (
     <Stack alignItems="center" justifyContent="center">
@@ -50,14 +60,22 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
-      <Center mt={-16} mb={12}>
+      <Center mt={-20} mb={12}>
         <RoundActionCard
+          loading={isLoading || loadingUserRoundDetails}
           phase={phaseInfo.phase}
           roundId={phaseInfo.roundId}
           isAuthed={isAuthed}
-          hasSignedUp={false}
-          hasSubmitted={false}
-          hasVoted={false}
+          hasSignedUp={userRoundDetails?.hasSignedUp}
+          hasSubmitted={userRoundDetails?.hasSubmitted}
+          hasVoted={userRoundDetails?.hasVoted}
+          onProfile={() => {}}
+          onSignup={() => {}}
+          onSignupAndJoinRound={() => {}}
+          onJoinRound={() => {}}
+          onVote={() => {}}
+          onSubmit={() => {}}
+          onRoundDetails={() => {}}
         />
       </Center>
 

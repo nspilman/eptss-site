@@ -3,14 +3,13 @@ import {
   Button,
   Card,
   CardBody,
+  Center,
+  HStack,
   Heading,
+  Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useSessionContext } from "@supabase/auth-helpers-react";
-import { useSupabase } from "components/hooks/useSupabaseClient";
-import { getRoundDataForUser } from "queries/getRoundDataForUser";
-import { useEffect } from "react";
 import { Phase } from "services/PhaseMgmtService";
 
 interface Props {
@@ -20,6 +19,14 @@ interface Props {
   hasSignedUp?: boolean;
   hasVoted?: boolean;
   hasSubmitted?: boolean;
+  onProfile: () => void;
+  onSignup: () => void;
+  onSignupAndJoinRound: () => void;
+  onJoinRound: () => void;
+  onVote: () => void;
+  onSubmit: () => void;
+  onRoundDetails: () => void;
+  loading?: boolean;
 }
 
 export const RoundActionCard = ({
@@ -29,6 +36,14 @@ export const RoundActionCard = ({
   hasSignedUp,
   hasSubmitted,
   hasVoted,
+  onProfile,
+  onSignup,
+  onSignupAndJoinRound,
+  onJoinRound,
+  onVote,
+  onSubmit,
+  onRoundDetails,
+  loading,
 }: Props) => {
   const renderLabelContent = () => {
     if (isAuthed) {
@@ -54,9 +69,9 @@ export const RoundActionCard = ({
   const renderCTAContent = () => {
     if (!isAuthed) {
       if (phase === "signups") {
-        return <Button>I&apos;m in!</Button>;
+        return <Button onClick={onSignupAndJoinRound}>I&apos;m in!</Button>;
       } else {
-        return <Button>Sign Up</Button>;
+        return <Button onClick={onSignup}>Sign Up</Button>;
       }
     }
     switch (phase) {
@@ -64,29 +79,29 @@ export const RoundActionCard = ({
         if (hasSignedUp) {
           return (
             <>
-              <Button>Round X</Button>
-              <Text>You voted!</Text>
+              <Button onClick={onRoundDetails}>{`Round ${roundId}`}</Button>
+              <Text>You're in!</Text>
             </>
           );
         } else {
-          return <Button>I&apos;m in!</Button>;
+          return <Button onClick={onJoinRound}>I&apos;m in!</Button>;
         }
 
       case "celebration":
-        return <Button>Profile</Button>;
+        return <Button onClick={onProfile}>Profile</Button>;
       case "voting":
         if (hasVoted) {
           return (
             <>
-              <Button>Round X</Button>
+              <Button onClick={onRoundDetails}>{`Round ${roundId}`}</Button>
               <Text>You voted!</Text>
             </>
           );
         } else {
           return (
             <>
-              <Button>Round X</Button>
-              <Button>Vote Now!</Button>
+              <Button onClick={onRoundDetails}>{`Round ${roundId}`}</Button>
+              <Button onClick={onVote}>Vote Now</Button>
             </>
           );
         }
@@ -95,28 +110,43 @@ export const RoundActionCard = ({
         if (hasSubmitted) {
           return (
             <>
-              <Button>Round X</Button>
+              <Button onClick={onRoundDetails}>{`Round ${roundId}`}</Button>
               <Text>You submitted!</Text>
             </>
           );
         } else {
           return (
             <>
-              <Button>Round X</Button>
-              <Button>Submit My Cover!</Button>
+              <Button onClick={onRoundDetails}>{`Round ${roundId}`}</Button>
+              <Button onClick={onSubmit}>Submit My Cover</Button>
             </>
           );
         }
     }
   };
   return (
-    <Card bgGradient="linear(to-b, gray.700, blue.900)" p={4}>
+    <Card
+      bgGradient="linear(to-b, gray.700, blue.900)"
+      w={{ base: "80vw", md: "600px" }}
+      p={4}
+      py={8}
+    >
       <CardBody>
-        <VStack px={{ base: 6, lg: 12 }} py={4}>
-          <Heading fontSize={{ base: "md", md: "xl" }}>
-            {renderLabelContent()}
-          </Heading>
-          <Box mt={6}>{renderCTAContent()}</Box>
+        <VStack>
+          {loading ? (
+            <Center h={"100px"}>
+              <Spinner color="white" />
+            </Center>
+          ) : (
+            <>
+              <Heading fontSize={{ base: "md", md: "xl" }} textAlign="center">
+                {renderLabelContent()}
+              </Heading>
+              <HStack mt={6} gap={"4"}>
+                {renderCTAContent()}
+              </HStack>
+            </>
+          )}
         </VStack>
       </CardBody>
     </Card>
