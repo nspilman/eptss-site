@@ -1,4 +1,3 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { RoundActionCard } from "./RoundActionCard";
@@ -11,103 +10,133 @@ const meta: Meta<typeof RoundActionCard> = {
 export default meta;
 type Story = StoryObj<typeof RoundActionCard>;
 
-export const UnauthWaiting: Story = {
+const anyBooleanValue = false;
+const anyRoundId = 2;
+
+const roundActionFunctions = {
+  onProfile: () => {},
+  onSignup: () => {},
+  onSignupAndJoinRound: () => {},
+  onJoinRound: () => {},
+  onVote: () => {},
+  onSubmit: () => {},
+  onRoundDetails: () => {},
+};
+
+export const SignupsClosedUserUnauthed: Story = {
+  name: "UnAuthed user and Signups are closed",
   args: {
     phase: "celebration",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: false,
+    hasCompletedPhase: anyBooleanValue,
+    roundActionFunctions,
   },
 };
 
-export const UnauthSignups: Story = {
+export const SignupPhaseUserUnauthed: Story = {
+  name: "UnAuthed user and Signups are open",
   args: {
     phase: "signups",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: false,
+    hasCompletedPhase: anyBooleanValue,
+    roundActionFunctions,
   },
 };
 
-export const AuthSignupNo: Story = {
+export const SignupPhaseUserAuthed: Story = {
+  name: "Authed user and Signups are open - user has not signed up for round",
   args: {
     phase: "signups",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: false,
-    hasVoted: false,
-    hasSubmitted: false,
+    hasCompletedPhase: false,
+    roundActionFunctions,
   },
 };
 
-export const AuthSignupYes: Story = {
+export const SignupPhaseUserAuthedAndSignedUp: Story = {
+  name: "Authed user and Signups are open - user has signed up for round",
   args: {
     phase: "signups",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: true,
-    hasVoted: false,
-    hasSubmitted: false,
+    hasCompletedPhase: true,
+    roundActionFunctions,
   },
 };
 
-export const AuthVotingNo: Story = {
+export const VotingPhaseUserNotVoted: Story = {
+  name: "Authed user and voting is open - user has not voted",
   args: {
     phase: "voting",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: true,
-    hasVoted: false,
-    hasSubmitted: false,
+    hasCompletedPhase: false,
+    roundActionFunctions,
   },
 };
 
-export const AuthVotingYes: Story = {
+export const VotingPhaseAuthUserVoted: Story = {
+  name: "Authed user and voting is open - user has voted",
   args: {
     phase: "voting",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: true,
-    hasVoted: true,
-    hasSubmitted: false,
+    hasCompletedPhase: true,
+    roundActionFunctions,
   },
 };
 
-export const AuthSubmitNo: Story = {
+export const CoveringPhaseAuthUserHasNotSubmitted: Story = {
+  name: "Authed user and covering phase - user has not submitted",
   args: {
     phase: "covering",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: true,
-    hasVoted: true,
-    hasSubmitted: false,
+    hasCompletedPhase: false,
+    roundActionFunctions,
   },
 };
 
-export const AuthSubmitYes: Story = {
+export const CoveringPhaseAuthUserHasSubmitted: Story = {
   args: {
     phase: "covering",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: true,
-    hasVoted: true,
-    hasSubmitted: true,
+    hasCompletedPhase: true,
+    roundActionFunctions,
   },
 };
 
 export const AuthWaiting: Story = {
   args: {
     phase: "celebration",
-    roundId: 0,
+    roundId: anyRoundId,
     isAuthed: true,
-    hasSignedUp: true,
-    hasVoted: true,
-    hasSubmitted: true,
+    hasCompletedPhase: true,
+    roundActionFunctions,
+  },
+};
+
+export const CelebrationStartedUserNotYetSubmitted: Story = {
+  args: {
+    phase: "celebration",
+    roundId: anyRoundId,
+    isAuthed: true,
+    hasCompletedPhase: false,
+    roundActionFunctions,
   },
 };
 
 export const Loading: Story = {
   args: {
-    phase: "celebration",
-    roundId: 0,
+    phase: "covering",
+    roundId: anyRoundId,
+    isAuthed: anyBooleanValue,
+    hasCompletedPhase: anyBooleanValue,
     loading: true,
+    roundActionFunctions,
   },
 };
