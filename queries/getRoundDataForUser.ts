@@ -24,13 +24,15 @@ export const getRoundDataForUser = async (roundId: number, userId: string) => {
     return;
   }
 
-  const user = data[0];
-  const { song_selection_votes, submissions, sign_ups } = user;
+  const [user] = data;
+  const { song_selection_votes: votes, submissions, sign_ups } = user;
+  const isUserAttributeTruthy = (
+    val: typeof votes | typeof submissions | typeof sign_ups
+  ) => Array.isArray(val) && val.length;
   return {
     user,
-    hasVoted:
-      Array.isArray(song_selection_votes) && song_selection_votes.length > 0,
-    hasSubmitted: Array.isArray(submissions) && submissions.length > 0,
-    hasSignedUp: Array.isArray(sign_ups) && sign_ups.length > 0,
+    hasVoted: isUserAttributeTruthy(votes),
+    hasSubmitted: isUserAttributeTruthy(submissions),
+    hasSignedUp: isUserAttributeTruthy(sign_ups),
   };
 };
