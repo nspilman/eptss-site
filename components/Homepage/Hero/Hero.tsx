@@ -27,7 +27,7 @@ export const Hero = () => {
         <CardHeader>
           <Center>
             <Heading size="md" textAlign="center">
-              Everyone Plays the Same Song
+              everyone Plays the Same Song
             </Heading>
           </Center>
         </CardHeader>
