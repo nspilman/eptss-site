@@ -1,6 +1,9 @@
 import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { withSentry } from "@sentry/nextjs";
 import { DataTable } from "components/shared/DataTable";
+import { Loading } from "components/shared/Loading";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export interface VoteSummary {
   artist: string;
@@ -22,11 +25,14 @@ export interface SignUp {
   averageVote: number;
 }
 
-interface Props {
+export interface ApiResponse {
   voteSummary: VoteSummary[];
-  profileSummary: {
-    email: string;
-  };
+  submissions: {
+    round_id: number;
+    title: string;
+    artist: string;
+    soundcloud_url: string;
+  }[];
   signups: {
     round_id: number;
     title: string;
@@ -34,12 +40,12 @@ interface Props {
     average: string;
     isWinningSong: string;
   }[];
-  submissions: {
-    round_id: number;
-    title: string;
-    artist: string;
-    soundcloud_url: string;
-  }[];
+}
+
+interface Props {
+  profileSummary: {
+    email: string;
+  };
 }
 
 const sharedHeaders = [
@@ -70,23 +76,34 @@ const submissionHeaders = [
   { key: "soundcloud_url", display: "Soundcloud Link", sortable: true },
 ] as const;
 
-export const Profile = ({
-  voteSummary,
-  profileSummary: { email },
-  signups,
-  submissions,
-}: Props) => {
+export const Profile = ({ profileSummary: { email } }: Props) => {
+  const [profileData, setProfileData] = useState<ApiResponse>();
+  useEffect(() => {
+    const getProfileData = async () => {
+      const data = await fetch("/api/profile");
+      if (data.ok) {
+        setProfileData((await data.json()) as ApiResponse);
+      } else {
+        new Error("Error occurred fetching Profile");
+      }
+    };
+    getProfileData();
+  });
+  const router = useRouter();
+
+  const maxHeight = 400;
+  if (!profileData) {
+    return <Loading />;
+  }
+
+  const { signups, voteSummary, submissions } = profileData;
+
+  const hasNoRecords = !signups.length;
   const roundSignupsCount = [
     //@ts-ignore - it doesn't like me spreading the set for some reason
     // this is done cuz early rounds allowed multiple signups, so I'm counting unique round IDs
     ...new Set(signups.map((signup) => signup.round_id)),
   ].length;
-
-  const maxHeight = 400;
-
-  const hasNoRecords = !signups.length;
-
-  const router = useRouter();
 
   return (
     <Stack
