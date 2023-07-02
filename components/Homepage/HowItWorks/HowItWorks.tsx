@@ -10,6 +10,8 @@ import {
   Heading,
   Flex,
   Stack,
+  List,
+  ListItem,
 } from "@chakra-ui/react";
 import { ButtonsContainer } from "components/ButtonsContainer";
 import { FAQButton, RoundsButton } from "components/NavButtons";
@@ -49,6 +51,12 @@ export const HowItWorks = ({ phaseInfo }: Props) => {
                 textAlign="center"
                 fontWeight="light"
               >
+                <List color="white" fontWeight="bold" pb="8">
+                  <ListItem>Sign up with the song you want to cover</ListItem>
+                  <ListItem>Vote on your favorite cover options</ListItem>
+                  <ListItem>Cover the song that wins</ListItem>
+                  <ListItem>Celebrate with your peers</ListItem>
+                </List>
                 <Text py="1">
                   {`Everyone Plays the Same Song is a community project open to musicians of all skill levels, inviting participants to cover the same song each round.`}
                 </Text>
