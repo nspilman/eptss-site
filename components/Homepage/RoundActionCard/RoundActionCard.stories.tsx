@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { add } from "date-fns";
 
 import { RoundActionCard } from "./RoundActionCard";
 
@@ -12,6 +13,8 @@ type Story = StoryObj<typeof RoundActionCard>;
 
 const anyBooleanValue = false;
 const anyRoundId = 2;
+const twoDaysFromNow = add(new Date(), { days: 2 }).toString();
+console.log({ twoDaysFromNow });
 
 const roundActionFunctions = {
   onProfile: () => {},
@@ -42,6 +45,7 @@ export const SignupPhaseUserUnauthed: Story = {
     isAuthed: false,
     hasCompletedPhase: anyBooleanValue,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
@@ -53,6 +57,7 @@ export const SignupPhaseUserAuthed: Story = {
     isAuthed: true,
     hasCompletedPhase: false,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
@@ -64,6 +69,7 @@ export const SignupPhaseUserAuthedAndSignedUp: Story = {
     isAuthed: true,
     hasCompletedPhase: true,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
@@ -75,6 +81,7 @@ export const VotingPhaseUserNotVoted: Story = {
     isAuthed: true,
     hasCompletedPhase: false,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
@@ -86,6 +93,7 @@ export const VotingPhaseAuthUserVoted: Story = {
     isAuthed: true,
     hasCompletedPhase: true,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
@@ -97,6 +105,7 @@ export const CoveringPhaseAuthUserHasNotSubmitted: Story = {
     isAuthed: true,
     hasCompletedPhase: false,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
@@ -107,6 +116,7 @@ export const CoveringPhaseAuthUserHasSubmitted: Story = {
     isAuthed: true,
     hasCompletedPhase: true,
     roundActionFunctions,
+    phaseEndsDate: twoDaysFromNow,
   },
 };
 
