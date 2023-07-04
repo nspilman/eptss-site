@@ -1,4 +1,4 @@
-import { PostgrestError } from "@supabase/supabase-js";
+import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
 const supabase = getSupabaseClient();
@@ -29,11 +29,17 @@ interface Round {
   song: { artist: string; title: string };
 }
 
+const getCurrentRoundId = async (supabase?: SupabaseClient) => {
+  const { data: currentRound } = await (supabase || getSupabaseClient()).rpc(
+    "get_current_round"
+  );
+  return currentRound as unknown as number;
+};
+
 const getCurrentRound = async (): Promise<
   Round & { error: PostgrestError | null }
 > => {
   const supabase = getSupabaseClient();
-  const { data: currentRound } = await supabase.rpc("get_current_round");
 
   const {
     data: roundData,
@@ -53,7 +59,7 @@ const getCurrentRound = async (): Promise<
         artist
         )`
     )
-    .filter("id", "eq", currentRound)
+    .filter("id", "eq", await getCurrentRoundId(supabase))
     .limit(1);
 
   if (roundData) {
@@ -109,6 +115,7 @@ const getSignupsByRound = async (roundId: number) =>
 const queries = {
   getSignupsByRound,
   getCurrentRound,
+  getCurrentRoundId,
 };
 
 export default queries;

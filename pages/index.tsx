@@ -1,5 +1,5 @@
 import type { GetStaticProps } from "next";
-import { Tables } from "queries";
+import queries, { Tables } from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { Homepage, Props } from "../components/Homepage";
 
@@ -20,7 +20,6 @@ export const getStaticProps: GetStaticProps = async () => {
   }
 
   const supabase = getSupabaseClient();
-  const { data: currentRound } = await supabase.rpc("get_current_round");
 
   const { data, error } = await supabase
     .from(Tables.RoundMetadata)
@@ -33,7 +32,7 @@ export const getStaticProps: GetStaticProps = async () => {
       artist
     )`
     )
-    .filter("id", "lte", currentRound)
+    .filter("id", "lte", await queries.getCurrentRoundId(supabase))
     .order("id", { ascending: false });
   if (error) {
     throw new Error(JSON.stringify(error));
