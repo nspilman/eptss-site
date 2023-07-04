@@ -33,6 +33,8 @@ const getCurrentRound = async (): Promise<
   Round & { error: PostgrestError | null }
 > => {
   const supabase = getSupabaseClient();
+  const { data: currentRound } = await supabase.rpc("get_current_round");
+
   const {
     data: roundData,
     error,
@@ -51,7 +53,7 @@ const getCurrentRound = async (): Promise<
         artist
         )`
     )
-    .order("id", { ascending: false })
+    .filter("id", "eq", currentRound)
     .limit(1);
 
   if (roundData) {
