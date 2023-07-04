@@ -9,6 +9,9 @@ import { RoundActionCard } from "./RoundActionCard";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useCallback, useEffect, useState } from "react";
 import { getRoundDataForUser } from "queries/getRoundDataForUser";
+import { useRouter } from "next/router";
+import { EmailAuthModal } from "components/shared/EmailAuthModal";
+import { useAuthModal } from "components/context/EmailAuthModal";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -22,6 +25,8 @@ export interface Props {
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   const { phase, roundId, phaseEndsDatelabel } = phaseInfo;
   const isVotingPhase = phase === "voting";
+
+  const router = useRouter();
 
   const [loadingUserRoundDetails, setLoadingUserRoundDetails] = useState(false);
   const [userRoundDetails, setUserRoundDetails] = useState({
@@ -58,18 +63,23 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
     getUserRoundDetails(session?.user?.id);
   }, [getUserRoundDetails, session?.user?.id, phase]);
 
-  console.log("Homepage", {
-    userRoundDetails,
-    loadingUserRoundDetails,
-    isAuthed,
-    phaseInfo,
-  });
-
   const completedCheckByPhase: { [key in Phase]: boolean } = {
     signups: userRoundDetails.hasSignedUp,
     covering: userRoundDetails.hasSubmitted,
     voting: userRoundDetails.hasVoted,
     celebration: userRoundDetails.hasSubmitted,
+  };
+
+  const { setIsOpen: openAuthModal } = useAuthModal();
+
+  const roundActionFunctions = {
+    onProfile: () => router.push("/profile"),
+    onSignup: () => openAuthModal(),
+    onSignupAndJoinRound: () => router.push("/sign-up"),
+    onJoinRound: () => router.push("/sign-up"),
+    onVote: () => router.push("/voting"),
+    onSubmit: () => router.push("/voting"),
+    onRoundDetails: () => router.push(`/round/${roundId}`),
   };
 
   return (
@@ -85,15 +95,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
           roundId={roundId}
           isAuthed={isAuthed}
           hasCompletedPhase={completedCheckByPhase[phase]}
-          roundActionFunctions={{
-            onProfile: () => {},
-            onSignup: () => {},
-            onSignupAndJoinRound: () => {},
-            onJoinRound: () => {},
-            onVote: () => {},
-            onSubmit: () => {},
-            onRoundDetails: () => {},
-          }}
+          roundActionFunctions={roundActionFunctions}
         />
       </Box>
 
