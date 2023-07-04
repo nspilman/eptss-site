@@ -20,6 +20,7 @@ export const getStaticProps: GetStaticProps = async () => {
   }
 
   const supabase = getSupabaseClient();
+  const { data: currentRound } = await supabase.rpc("get_current_round");
 
   const { data, error } = await supabase
     .from(Tables.RoundMetadata)
@@ -32,6 +33,7 @@ export const getStaticProps: GetStaticProps = async () => {
       artist
     )`
     )
+    .filter("id", "lte", currentRound)
     .order("id", { ascending: false });
   if (error) {
     throw new Error(JSON.stringify(error));
