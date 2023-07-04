@@ -10,7 +10,6 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useCallback, useEffect, useState } from "react";
 import { getRoundDataForUser } from "queries/getRoundDataForUser";
 import { useRouter } from "next/router";
-import { EmailAuthModal } from "components/shared/EmailAuthModal";
 import { useAuthModal } from "components/context/EmailAuthModal";
 
 export interface Props {
