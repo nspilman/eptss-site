@@ -24,7 +24,7 @@ describe("PhaseMgmtService tests", () => {
   };
 
   beforeEach(() => {
-    queries.getCurrentRound = jest.fn().mockResolvedValueOnce({
+    queries.round.getCurrentRound = jest.fn().mockResolvedValueOnce({
       ...mockRoundMetadata,
       error: null,
       status: 200,

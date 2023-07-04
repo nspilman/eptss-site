@@ -54,9 +54,8 @@ export default VotingPage;
 // private
 
 const getVoteOptions = async (roundId: number) => {
-  const { data: resultEntities, error } = await queries.getSignupsByRound(
-    roundId
-  );
+  const { data: resultEntities, error } =
+    await queries.signups.getSignupsByRound(roundId);
 
   if (error) {
     throw new Error(JSON.stringify(error));

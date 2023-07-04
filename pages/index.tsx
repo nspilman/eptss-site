@@ -33,7 +33,7 @@ export const getStaticProps: GetStaticProps = async () => {
       artist
     )`
     )
-    .filter("id", "lte", await queries.getCurrentRoundId(supabase))
+    .filter("id", "lte", await queries.round.getCurrentRoundId(supabase))
     .order("id", { ascending: false });
   if (error) {
     throw new Error(JSON.stringify(error));

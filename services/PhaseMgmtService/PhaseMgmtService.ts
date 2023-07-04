@@ -130,7 +130,7 @@ export class PhaseMgmtService {
       listeningParty,
       roundId,
       song,
-    } = currentRound || (await queries.getCurrentRound());
+    } = currentRound || (await queries.round.getCurrentRound());
     const datify = (dateString: string) => {
       const date = new Date(dateString);
       const isValidDate = date instanceof Date && !isNaN(date.getDate());
