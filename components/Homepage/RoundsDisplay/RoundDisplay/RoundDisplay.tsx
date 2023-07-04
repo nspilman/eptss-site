@@ -35,7 +35,7 @@ export const RoundDisplay = ({
   }
 
   return (
-    <Card width="80vw" my="2" bg="blue.800">
+    <Card width="80vw" my="2" bg="blue.700">
       <CardHeader py="3" display="flex" justifyContent={"space-between"}>
         <Heading as="h3" size="md">
           <Link href={`/round/${roundId}`}>{headingText}</Link>

@@ -23,12 +23,7 @@ export const theme = extendTheme({
   styles: {
     global: {
       body: {
-        backgroundColor: "blue.900",
-        // background:
-        //   "linear-gradient(var(--chakra-colors-gradient-darkBlueHero), var(--chakra-colors-gradient-graybluehero)), url('https://images.unsplash.com/photo-1458560871784-56d23406c091?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80') fixed",
-        // backgroundSize: "cover",
-        // backgroundRepeat: "no-repeat",
-        // backgroundPosition: "center",
+        backgroundColor: "blue.800",
       },
     },
   },

@@ -31,7 +31,7 @@ export const HowItWorks = ({ phaseInfo }: Props) => {
     <Card
       padding={{ base: 0, md: 2 }}
       width="80vw"
-      bg="blue.800"
+      bg="blue.700"
       mx="8"
       id="how-it-works"
     >
