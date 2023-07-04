@@ -16,6 +16,7 @@ export type Phase = "signups" | "voting" | "covering" | "celebration";
 export class PhaseMgmtService {
   phase: Phase;
   dateLabels: Record<Phase, Record<"opens" | "closes", string>>;
+  dates: Record<Phase, Record<"opens" | "closes", Date>>;
   roundId: number;
   song: { artist: string; title: string };
 
@@ -62,23 +63,45 @@ export class PhaseMgmtService {
         break;
     }
 
+    this.dates = {
+      signups: {
+        opens: signupOpens,
+        closes: subDays(votingOpens, 1),
+      },
+      voting: {
+        opens: votingOpens,
+        closes: subDays(coveringBegins, 1),
+      },
+      covering: {
+        opens: coveringBegins,
+        closes: subDays(coversDue, 1),
+      },
+      celebration: {
+        opens: coversDue,
+        closes: listeningParty,
+      },
+    };
+
+    // use this.dates ^ as our source of truth
+    // and keeping this.dateLabels to to make sure its backwards compatible
+    // but ideally, components should use this.date values, and then format as needed
     const formatLabel = (date: Date) => format(date, "iiii, MMM do");
     this.dateLabels = {
       signups: {
-        opens: formatLabel(signupOpens),
-        closes: formatLabel(subDays(votingOpens, 1)),
+        opens: formatLabel(this.dates.signups.opens),
+        closes: formatLabel(this.dates.signups.closes),
       },
       voting: {
-        opens: formatLabel(votingOpens),
-        closes: formatLabel(subDays(coveringBegins, 1)),
+        opens: formatLabel(this.dates.voting.opens),
+        closes: formatLabel(this.dates.voting.closes),
       },
       covering: {
-        opens: formatLabel(coveringBegins),
-        closes: formatLabel(subDays(coversDue, 1)),
+        opens: formatLabel(this.dates.covering.opens),
+        closes: formatLabel(this.dates.covering.closes),
       },
       celebration: {
-        opens: formatLabel(coversDue),
-        closes: formatLabel(listeningParty),
+        opens: formatLabel(this.dates.celebration.opens),
+        closes: formatLabel(this.dates.celebration.closes),
       },
     };
   }

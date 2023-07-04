@@ -4,6 +4,7 @@ import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { Homepage, Props } from "../components/Homepage";
 
 import { getSupabaseClient } from "../utils/getSupabaseClient";
+import { format } from "date-fns";
 
 const Home = (props: Props) => {
   return <Homepage {...props} />;
@@ -40,7 +41,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const phaseMgmtService = await PhaseMgmtService.build();
   const { phase, dateLabels, roundId } = phaseMgmtService;
 
-  const roundContent = (data as RoundEntity[])
+  const roundContent = (data as unknown as RoundEntity[])
     .map(({ song, playlist_url, id }) => {
       const { title, artist } = song || { title: null, artist: null };
       return {
@@ -54,6 +55,10 @@ export const getStaticProps: GetStaticProps = async () => {
       (round) => !(JSON.parse(round.roundId) === roundId && phase === "signups")
     );
 
+  const phaseEndsDate = format(
+    phaseMgmtService.dates[phase].closes,
+    "yyyy-MM-dd"
+  );
   const phaseEndsDatelabel = dateLabels[phase].closes;
 
   return {
@@ -61,6 +66,7 @@ export const getStaticProps: GetStaticProps = async () => {
       roundContent,
       phaseInfo: {
         phase,
+        phaseEndsDate,
         phaseEndsDatelabel,
         roundId,
       },

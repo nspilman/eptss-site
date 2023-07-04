@@ -9,6 +9,7 @@ import { theme } from "styles";
 import { Footer } from "components/shared/Footer";
 import { UserSessionProvider } from "components/context/UserSessionContext";
 import { RoundProvider } from "components/context/RoundContext";
+import { EmailAuthModalContextProvider } from "components/context/EmailAuthModal";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
@@ -18,9 +19,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       <SessionContextProvider supabaseClient={supabaseClient}>
         <RoundProvider>
           <UserSessionProvider>
-            <Header />
-            <Component {...pageProps} />
-            <Footer />
+            <EmailAuthModalContextProvider>
+              <Header />
+              <Component {...pageProps} />
+              <Footer />
+            </EmailAuthModalContextProvider>
           </UserSessionProvider>
         </RoundProvider>
       </SessionContextProvider>

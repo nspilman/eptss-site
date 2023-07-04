@@ -13,6 +13,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@babel/core": "^7.22.5",
     "@chakra-ui/react": "^2.5.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -25,6 +26,7 @@
     "chakra-ui-markdown-renderer": "^4.1.0",
     "chart.js": "^4.1.2",
     "classnames": "^2.3.2",
+    "data-uri-to-buffer": "^5.0.1",
     "date-fns": "^2.29.3",
     "framer-motion": "^9.1.6",
     "gray-matter": "^4.0.3",
