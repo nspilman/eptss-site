@@ -16,13 +16,14 @@ export interface Props {
   roundContent: RoundDetails[];
   phaseInfo: {
     phase: Phase;
+    phaseEndsDate: string;
     phaseEndsDatelabel: string;
     roundId: number;
   };
 }
 
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
-  const { phase, roundId, phaseEndsDatelabel } = phaseInfo;
+  const { phase, roundId, phaseEndsDate } = phaseInfo;
   const isVotingPhase = phase === "voting";
 
   const router = useRouter();
@@ -63,10 +64,10 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   }, [getUserRoundDetails, session?.user?.id, phase]);
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {
-    signups: userRoundDetails.hasSignedUp,
-    covering: userRoundDetails.hasSubmitted,
-    voting: userRoundDetails.hasVoted,
-    celebration: userRoundDetails.hasSubmitted,
+    signups: userRoundDetails?.hasSignedUp,
+    covering: userRoundDetails?.hasSubmitted,
+    voting: userRoundDetails?.hasVoted,
+    celebration: userRoundDetails?.hasSubmitted,
   };
 
   const { setIsOpen: openAuthModal } = useAuthModal();
@@ -95,6 +96,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
           isAuthed={isAuthed}
           hasCompletedPhase={completedCheckByPhase[phase]}
           roundActionFunctions={roundActionFunctions}
+          phaseEndsDate={phaseEndsDate}
         />
       </Box>
 
