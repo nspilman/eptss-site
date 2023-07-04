@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Phase } from "services/PhaseMgmtService";
 import { CTA, RoundActionFunctions } from "./CTA";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, differenceInMilliseconds } from "date-fns";
 
 interface Props {
   phase: Phase;
@@ -30,10 +30,12 @@ export const RoundActionCard = ({
   roundId,
   phaseEndsDate,
 }: Props) => {
-  const phaseEndsDaysFromToday = differenceInDays(
-    new Date(),
-    new Date(phaseEndsDate)
-  );
+  const phaseEndsDaysFromToday =
+    // calculates the difference in milliseconds and then rounds up
+    Math.ceil(
+      differenceInMilliseconds(new Date(phaseEndsDate), new Date()) /
+        (1000 * 60 * 60 * 24)
+    );
 
   const labelContent = (() => {
     const authedLabels: { [key in Phase]: string } = {
