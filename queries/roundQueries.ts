@@ -2,7 +2,7 @@ import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { Tables } from "queries";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
-interface Round {
+export interface Round {
   roundId: number;
   signupOpens: string;
   votingOpens: string;
@@ -81,7 +81,72 @@ const getCurrentRound = async (
   throw new Error("Could not find round");
 };
 
+const getCurrentAndFutureRounds = async (
+  supabase?: SupabaseClient
+): Promise<{ data: Round[]; error: PostgrestError | null }> => {
+  const {
+    data: roundData,
+    error,
+    status,
+  } = await (supabase || (await getSupabaseClient()))
+    .from(Tables.RoundMetadata)
+    .select(
+      `id, 
+          signup_opens, 
+          voting_opens, 
+          covering_begins, 
+          covers_due, 
+          listening_party, 
+          song:songs(
+            title, 
+            artist
+            )`
+    )
+    .filter(
+      "id",
+      "gte",
+      await getCurrentRoundId(supabase || (await getSupabaseClient()))
+    );
+
+  const formattedRoundData = await roundData?.map(
+    ({
+      id,
+      signup_opens,
+      voting_opens,
+      covering_begins,
+      covers_due,
+      listening_party,
+      song,
+    }) => ({
+      roundId: id,
+      signupOpens: signup_opens,
+      votingOpens: voting_opens,
+      coveringBegins: covering_begins,
+      coversDue: covers_due,
+      listeningParty: listening_party,
+      song,
+    })
+  );
+  if (formattedRoundData) {
+    return { data: formattedRoundData as Round[], error };
+  }
+  //   if (formattedRoundData) {
+  //     if (
+  //       formattedRoundData.some((round) => {
+  //         if (Array.isArray(round.song)) {
+  //           throw new Error(
+  //             "Only one song can be associated with a single round"
+  //           );
+  //       }
+  //       })
+  //     )
+  //   }
+
+  throw new Error("Could not find round");
+};
+
 export const round = {
   getCurrentRound,
   getCurrentRoundId,
+  getCurrentAndFutureRounds,
 };
