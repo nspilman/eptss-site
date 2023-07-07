@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Phase } from "services/PhaseMgmtService";
 import { CTA, RoundActionFunctions } from "./CTA";
-import { differenceInDays, differenceInMilliseconds } from "date-fns";
+import { differenceInMilliseconds } from "date-fns";
 
 interface Props {
   phase: Phase;

@@ -1,9 +1,12 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
 import { Box, Flex, Heading, HStack, Link } from "@chakra-ui/react";
 import { FAQButton } from "components/NavButtons";
+import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
+import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 
 export const Header = (): ReactElement => {
+  const [current, next] = useGetRoundsDates();
   return (
     <Box
       as="header"
@@ -37,6 +40,7 @@ export const Header = (): ReactElement => {
         >
           <FAQButton />
           <SignupButton />
+          {current && next && <RoundDatesDisplayPopup {...{ current, next }} />}
         </HStack>
       </Flex>
     </Box>
