@@ -101,7 +101,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
         />
       </Box>
 
-      <HowItWorks phaseInfo={phaseInfo} />
+      <HowItWorks />
       <RoundsDisplay
         rounds={roundContent}
         currentRound={phaseInfo.roundId}
