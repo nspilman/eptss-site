@@ -6,10 +6,12 @@ import {
   Heading,
   Spinner,
   VStack,
+  Text,
 } from "@chakra-ui/react";
 import { Phase } from "services/PhaseMgmtService";
 import { CTA, RoundActionFunctions } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
+import { useBlurb } from "../HowItWorks/useBlurb";
 
 interface Props {
   phase: Phase;
@@ -19,6 +21,7 @@ interface Props {
   roundActionFunctions: RoundActionFunctions;
   loading?: boolean;
   phaseEndsDate: string;
+  phaseEndsDatelabel: string;
 }
 
 export const RoundActionCard = ({
@@ -29,6 +32,7 @@ export const RoundActionCard = ({
   phase,
   roundId,
   phaseEndsDate,
+  phaseEndsDatelabel,
 }: Props) => {
   const phaseEndsDaysFromToday =
     // calculates the difference in milliseconds and then rounds up
@@ -55,10 +59,11 @@ export const RoundActionCard = ({
       );
     }
   })();
+  const blurb = useBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
     <Card
-      bgGradient="linear(to-b, blue.800, gray.800)"
+      bgGradient="linear(to-b, gray.700, blue.900)"
       w={{ base: "80vw", md: "600px" }}
       p={4}
       py={8}
@@ -74,7 +79,7 @@ export const RoundActionCard = ({
               <Heading fontSize={{ base: "md", md: "xl" }} textAlign="center">
                 {labelContent}
               </Heading>
-              <HStack pt={"6"} gap={"4"}>
+              <VStack pt={"6"} gap={"4"}>
                 <CTA
                   {...{
                     roundActionFunctions,
@@ -84,7 +89,15 @@ export const RoundActionCard = ({
                     phase,
                   }}
                 />
-              </HStack>
+                <Text
+                  color="yellow.300"
+                  fontWeight="300"
+                  pt="4"
+                  textAlign="center"
+                >
+                  {blurb}
+                </Text>
+              </VStack>
             </>
           )}
         </VStack>

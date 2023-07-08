@@ -23,7 +23,7 @@ export interface Props {
 }
 
 export const Homepage = ({ roundContent, phaseInfo }: Props) => {
-  const { phase, roundId, phaseEndsDate } = phaseInfo;
+  const { phase, roundId, phaseEndsDate, phaseEndsDatelabel } = phaseInfo;
   const isVotingPhase = phase === "voting";
 
   const router = useRouter();
@@ -97,6 +97,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
           hasCompletedPhase={completedCheckByPhase[phase]}
           roundActionFunctions={roundActionFunctions}
           phaseEndsDate={phaseEndsDate}
+          phaseEndsDatelabel={phaseEndsDatelabel}
         />
       </Box>
 

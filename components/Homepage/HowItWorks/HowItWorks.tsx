@@ -1,5 +1,3 @@
-import { Phase } from "services/PhaseMgmtService";
-import { useBlurb } from "./useBlurb";
 import {
   Box,
   Card,
@@ -16,22 +14,12 @@ import {
 import { ButtonsContainer } from "components/ButtonsContainer";
 import { FAQButton, RoundsButton } from "components/NavButtons";
 
-interface Props {
-  phaseInfo: {
-    phase: Phase;
-    phaseEndsDatelabel: string;
-    roundId: number;
-  };
-}
-
-export const HowItWorks = ({ phaseInfo }: Props) => {
-  const blurb = useBlurb(phaseInfo);
-
+export const HowItWorks = () => {
   return (
     <Card
       padding={{ base: 0, md: 2 }}
       width="80vw"
-      bg="blue.800"
+      bg="transparent"
       mx="8"
       id="how-it-works"
     >
@@ -66,9 +54,6 @@ export const HowItWorks = ({ phaseInfo }: Props) => {
                 <Text py="1">{`No special equipment or software is required - just your passion for music. You choose which rounds to participate in, allowing you to be part of the song selection and music-making process as per your interest and convenience. Join us for a celebration of music and community! We can't wait to hear your interpretation of... the same song!`}</Text>
               </Box>
             </Flex>
-            <Text color="yellow.300" fontWeight="600" pt="4">
-              {blurb}
-            </Text>
           </Stack>
         </CardBody>
         <CardFooter>
