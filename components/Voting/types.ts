@@ -1,7 +1,4 @@
 export interface VoteOptionModel {
-  songTitle: string;
-  artist: string;
-  roundId: string;
   label: string;
   field: string;
   link: string;

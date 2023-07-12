@@ -14,7 +14,6 @@ type Story = StoryObj<typeof RoundActionCard>;
 const anyBooleanValue = false;
 const anyRoundId = 2;
 const twoDaysFromNow = add(new Date(), { days: 2 }).toString();
-console.log({ twoDaysFromNow });
 
 const roundActionFunctions = {
   onProfile: () => {},

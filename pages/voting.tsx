@@ -29,7 +29,6 @@ export const getStaticProps: GetStaticProps = async () => {
   const { roundId } = await PhaseMgmtService.build();
 
   const {
-    phase,
     dateLabels: {
       covering: { opens: coveringStartString },
     },
@@ -73,7 +72,6 @@ const getVoteOptions = async (roundId: number) => {
 const entityToModel = ({
   song,
   song_id,
-  round_id,
   youtube_link,
 }: VoteOptionEntity): VoteOptionModel => {
   const { artist, title } = song;
@@ -81,9 +79,6 @@ const entityToModel = ({
     throw new Error("artist or title is null");
   }
   return {
-    artist,
-    songTitle: title,
-    roundId: round_id,
     label: `${title} by ${artist}`,
     field: song_id.toString(),
     link: youtube_link,

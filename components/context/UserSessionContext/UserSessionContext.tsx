@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRound } from "../RoundContext";
 
 // Create a Context object
-const UserSessionContext = createContext<
+export const UserSessionContext = createContext<
   | {
       user?: User;
       isLoading: boolean;

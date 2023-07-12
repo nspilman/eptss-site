@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { Phase, PhaseMgmtService } from "services/PhaseMgmtService";
 
 // Create a Context object
-const RoundContext = createContext<
+export const RoundContext = createContext<
   | {
       isLoading: boolean;
       roundId?: number;
