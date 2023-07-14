@@ -1,46 +1,37 @@
 import React from "react";
-import { FormContainer } from "components/shared/FormContainer";
-import { GENERIC_ERROR_MESSAGE } from "../../constants";
-import { useSignup } from "./useSignup";
-import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import { Center, Link, Stack, Text } from "@chakra-ui/react";
-import { Navigation } from "components/enum/navigation";
-import { useUserSession } from "components/context/UserSessionContext";
 
-interface Props {
+import { Box, Heading, Text } from "@chakra-ui/react";
+import { PageContainer } from "components/shared/PageContainer";
+import { SignInGate } from "components/shared/SignInGate";
+import { SignupForm } from "./SignupForm";
+
+export interface Props {
   roundId: number;
   signupsCloseDateLabel: string;
+  areSignupsOpen: boolean;
 }
 
-export const SignUp = ({ roundId, signupsCloseDateLabel }: Props) => {
+export const SignUp = ({
+  roundId,
+  signupsCloseDateLabel,
+  areSignupsOpen,
+}: Props) => {
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
-  const { user } = useUserSession();
-
-  if (!user) {
-    throw new Error("Login required to access Signup page");
+  if (!areSignupsOpen) {
+    return (
+      <Box>
+        <Heading>Signups are closed!</Heading>
+        <Text>You will receive an email when the next round opens!</Text>
+      </Box>
+    );
   }
-  const { signUp, signupSuccess, fields } = useSignup(roundId, user.id);
 
   return (
-    <Center>
-      <FormContainer
-        fields={fields}
-        title={title}
-        description={
-          <Stack alignItems="center">
-            <Text as="p">Signing up as {user.email}</Text>
-            <Text as="p">Sign up with the song you want to cover!</Text>
-            <Text>Signups close Midnight of {signupsCloseDateLabel}.</Text>
-            <Link href={Navigation.FAQ} color="yellow.300">
-              FAQ Here
-            </Link>
-          </Stack>
-        }
-        successBlock={<ActionSuccessPanel {...signupSuccess} />}
-        errorMessage={GENERIC_ERROR_MESSAGE}
-        onSubmit={signUp}
-      />
-    </Center>
+    <PageContainer title={`Sign up for round ${roundId}`}>
+      <SignInGate>
+        <SignupForm {...{ roundId, signupsCloseDateLabel, title }} />
+      </SignInGate>
+    </PageContainer>
   );
 };
