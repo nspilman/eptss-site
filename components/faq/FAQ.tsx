@@ -7,6 +7,7 @@ import {
   CardBody,
   Heading,
 } from "@chakra-ui/react";
+import { PageContainer } from "components/shared/PageContainer";
 
 type FAQItem = {
   question: string;
@@ -72,12 +73,14 @@ export const FAQPage: React.FC = () => {
   ];
 
   return (
-    <Box pt="8" px="4">
-      <Heading size="md" textDecor="underline">
-        Frequently Asked Questions
-      </Heading>
-      <FAQList items={faqItems} />
-    </Box>
+    <PageContainer title={"Frequently Asked Questions"}>
+      <Box pt="8" px="4">
+        <Heading size="md" textDecor="underline">
+          Frequently Asked Questions
+        </Heading>
+        <FAQList items={faqItems} />
+      </Box>
+    </PageContainer>
   );
 };
 

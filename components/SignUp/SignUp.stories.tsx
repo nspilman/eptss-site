@@ -6,7 +6,7 @@ import { UserSessionContext } from "components/context/UserSessionContext";
 
 // Define your Storybook configuration
 export default {
-  title: "Components/SignUp",
+  title: "Pages/SignUp",
   component: SignUp,
 } as Meta;
 

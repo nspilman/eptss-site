@@ -8,7 +8,6 @@ import { SignInGate } from "components/shared/SignInGate";
 import { PageContainer } from "components/shared/PageContainer";
 import { useRouter } from "next/router";
 import { Phase } from "services/PhaseMgmtService";
-import { useEffect } from "react";
 import { Box, Heading } from "@chakra-ui/react";
 
 export interface Props {
@@ -31,7 +30,6 @@ export const Submit = ({
 }: Props) => {
   const { user } = useUserSession();
   const supabase = useSupabase();
-  const router = useRouter();
 
   const isSubmissionOpen = ["celebration", "covering"].includes(phase);
   if (user && !isSubmissionOpen) {
