@@ -4,9 +4,16 @@ import { GENERIC_ERROR_MESSAGE } from "../../constants";
 import { getIsSuccess } from "utils";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { useUserSession } from "components/context/UserSessionContext";
+import { SignInGate } from "components/shared/SignInGate";
+import { PageContainer } from "components/shared/PageContainer";
+import { useRouter } from "next/router";
+import { Phase } from "services/PhaseMgmtService";
+import { useEffect } from "react";
+import { Box, Heading } from "@chakra-ui/react";
 
-interface Props {
+export interface Props {
   roundId: number;
+  phase: Phase;
   coverClosesLabel: string;
   listeningPartyLabel: string;
   song: {
@@ -17,14 +24,25 @@ interface Props {
 
 export const Submit = ({
   roundId,
+  phase,
   coverClosesLabel,
   listeningPartyLabel,
   song,
 }: Props) => {
   const { user } = useUserSession();
+  const supabase = useSupabase();
+  const router = useRouter();
 
-  if (!user) {
-    throw new Error("Login required to access Signup page");
+  const isSubmissionOpen = ["celebration", "covering"].includes(phase);
+  if (user && !isSubmissionOpen) {
+    return (
+      <Box>
+        <Heading>
+          Submissions are closed. Check the calendar for when submissions will
+          be open again
+        </Heading>
+      </Box>
+    );
   }
 
   const fields = [
@@ -69,7 +87,6 @@ export const Submit = ({
       optional: true,
     } as const,
   ];
-  const supabase = useSupabase();
 
   interface SubmitModel {
     soundcloudUrl: string;
@@ -109,6 +126,9 @@ export const Submit = ({
   };
 
   const onSubmit = async (submitModal: SubmitModel) => {
+    if (!user) {
+      throw new Error("Cannot submit cover without user");
+    }
     const signupEntity = convertModelToEntity({
       ...submitModal,
       userId: user.id,
@@ -137,18 +157,22 @@ export const Submit = ({
   };
 
   return (
-    <FormContainer
-      fields={fields}
-      description={description}
-      onSubmit={onSubmit}
-      title={title}
-      errorMessage={GENERIC_ERROR_MESSAGE}
-      successBlock={
-        <ActionSuccessPanel
-          text={submitSuccessText}
-          image={submitSuccessImage}
+    <PageContainer title={`Submit your cover for round ${roundId}`}>
+      <SignInGate>
+        <FormContainer
+          fields={fields}
+          description={description}
+          onSubmit={onSubmit}
+          title={title}
+          errorMessage={GENERIC_ERROR_MESSAGE}
+          successBlock={
+            <ActionSuccessPanel
+              text={submitSuccessText}
+              image={submitSuccessImage}
+            />
+          }
         />
-      }
-    />
+      </SignInGate>
+    </PageContainer>
   );
 };
