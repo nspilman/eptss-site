@@ -14,13 +14,11 @@ const VotingPage = ({
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     isVotingOpen && (
-      <SignInGate>
-        <Voting
-          voteOptions={voteOptions}
-          roundId={roundId}
-          coveringStartsLabel={coveringStartString}
-        />
-      </SignInGate>
+      <Voting
+        voteOptions={voteOptions}
+        roundId={roundId}
+        coveringStartsLabel={coveringStartString}
+      />
     )
   );
 };

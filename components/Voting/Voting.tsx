@@ -5,6 +5,8 @@ import { useVoting } from "./useVoting";
 import { PageContainer } from "components/shared/PageContainer";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { useUserSession } from "components/context/UserSessionContext";
+import { SignInGate } from "components/shared/SignInGate";
+import { VotingForm } from "./VotingForm";
 
 export interface Props {
   voteOptions: VoteOptionModel[];
@@ -19,18 +21,6 @@ export const Voting = ({
 }: Props) => {
   const title = `Vote for the songs you want to cover in Round ${roundId}`;
 
-  const { user } = useUserSession();
-
-  if (!user) {
-    throw new Error("Login required to access Signup page");
-  }
-
-  const { submitVotes, successPanelProps } = useVoting(
-    roundId,
-    coveringStartsLabel,
-    user.id
-  );
-
   const fields = voteOptions.map((option) => ({
     ...option,
     type: "vote" as const,
@@ -38,14 +28,14 @@ export const Voting = ({
 
   return (
     <PageContainer title={title}>
-      <FormContainer
-        onSubmit={submitVotes}
-        title={title}
-        description={<></>}
-        fields={fields}
-        successBlock={<ActionSuccessPanel {...successPanelProps} />}
-        errorMessage={GENERIC_ERROR_MESSAGE}
-      />
+      <SignInGate>
+        <VotingForm
+          fields={fields}
+          coveringStartsLabel={coveringStartsLabel}
+          title={title}
+          roundId={roundId}
+        />
+      </SignInGate>
     </PageContainer>
   );
 };

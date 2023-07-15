@@ -52,5 +52,3 @@ Default.args = {
   roundId: 1,
   coveringStartsLabel: "Covering Starts on 15th July, 2023",
 };
-
-// Additional variants of the Voting component can be added here
