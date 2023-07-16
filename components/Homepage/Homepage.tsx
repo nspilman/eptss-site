@@ -6,11 +6,11 @@ import { Phase } from "services/PhaseMgmtService";
 import { Box, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
 import { RoundActionCard } from "./RoundActionCard";
-import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useCallback, useEffect, useState } from "react";
 import { getRoundDataForUser } from "queries/getRoundDataForUser";
 import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
+import { useUserSession } from "components/context/UserSessionContext";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -35,8 +35,8 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
     hasVoted: false,
   });
 
-  const { isLoading, session } = useSessionContext();
-  const isAuthed = !!session?.user;
+  const { user, isLoading } = useUserSession();
+  const isAuthed = !!user;
 
   const getUserRoundDetails = useCallback(
     async (userId: string) => {
@@ -59,9 +59,9 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   );
 
   useEffect(() => {
-    if (!session?.user?.id) return;
-    getUserRoundDetails(session?.user?.id);
-  }, [getUserRoundDetails, session?.user?.id, phase]);
+    if (!user?.id) return;
+    getUserRoundDetails(user?.id);
+  }, [getUserRoundDetails, user?.id, phase]);
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {
     signups: userRoundDetails?.hasSignedUp,

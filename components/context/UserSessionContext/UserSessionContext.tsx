@@ -1,4 +1,5 @@
 import { useSessionContext, User } from "@supabase/auth-helpers-react";
+import { AuthError } from "@supabase/supabase-js";
 import { Tables } from "queries";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRound } from "../RoundContext";
@@ -9,6 +10,9 @@ export const UserSessionContext = createContext<
       user?: User;
       isLoading: boolean;
       isUserInRound?: boolean;
+      signOut: () => Promise<{
+        error: AuthError | null;
+      }>;
     }
   | undefined
 >(undefined);
@@ -56,10 +60,13 @@ export const UserSessionProvider = ({
     }
   }, [roundId, session?.user, supabaseClient]);
 
+  const signOut = () => supabaseClient.auth.signOut();
+
   const value = {
     user: session?.user,
     isLoading: isLoadingUser || isLoadingUserRound,
     isUserInRound,
+    signOut,
   };
 
   return (

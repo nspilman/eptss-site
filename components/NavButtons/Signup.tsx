@@ -1,16 +1,12 @@
 import React, { ReactElement } from "react";
 import { Button, Image } from "@chakra-ui/react";
-import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
+import { useUserSession } from "components/context/UserSessionContext";
 
 export const SignupButton = (): ReactElement => {
-  const { session, supabaseClient } = useSessionContext();
+  const { user, signOut } = useUserSession();
   const router = useRouter();
-
-  const signOut = async () => {
-    await supabaseClient.auth.signOut();
-  };
 
   const { setIsOpen } = useAuthModal();
 
@@ -24,7 +20,7 @@ export const SignupButton = (): ReactElement => {
 
   return (
     <>
-      {session?.user ? (
+      {user ? (
         isUserProfileRoute ? (
           <Button variant={"outline"} onClick={signOut}>
             {"Sign Out"}
