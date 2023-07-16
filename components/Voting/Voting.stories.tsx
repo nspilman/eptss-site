@@ -41,6 +41,7 @@ const Template: StoryFn<Props> = (args) => (
     value={{
       isLoading: false,
       user,
+      signOut: () => Promise.resolve({ error: null }),
     }}
   >
     <Voting {...args} />

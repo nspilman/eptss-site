@@ -26,7 +26,10 @@ describe("SignInGate", () => {
   test("renders loading state", async () => {
     (
       useUserSession as jest.MockedFunction<typeof useUserSession>
-    ).mockReturnValue({ isLoading: true });
+    ).mockReturnValue({
+      isLoading: true,
+      signOut: () => Promise.resolve({ error: null }),
+    });
 
     const { getByText } = render(
       <SignInGate>{<div>Test content</div>}</SignInGate>
@@ -40,7 +43,11 @@ describe("SignInGate", () => {
   test("renders children when user is present", async () => {
     (
       useUserSession as jest.MockedFunction<typeof useUserSession>
-    ).mockReturnValue({ isLoading: false, user: mockUser });
+    ).mockReturnValue({
+      isLoading: false,
+      user: mockUser,
+      signOut: () => Promise.resolve({ error: null }),
+    });
 
     const { getByText } = render(
       <SignInGate>{<div>Test content</div>}</SignInGate>
@@ -54,7 +61,10 @@ describe("SignInGate", () => {
   test("renders EmailAuthModal when user is not present", async () => {
     (
       useUserSession as jest.MockedFunction<typeof useUserSession>
-    ).mockReturnValue({ isLoading: false });
+    ).mockReturnValue({
+      isLoading: false,
+      signOut: () => Promise.resolve({ error: null }),
+    });
 
     const { getByTestId } = render(
       <SignInGate>{<div>Test content</div>}</SignInGate>

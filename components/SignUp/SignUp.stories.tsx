@@ -3,6 +3,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import { SignUp, Props } from "./SignUp";
 import { User } from "@supabase/auth-helpers-react";
 import { UserSessionContext } from "components/context/UserSessionContext";
+import { AuthError } from "@supabase/supabase-js";
 
 // Define your Storybook configuration
 export default {
@@ -13,7 +14,11 @@ export default {
 // Define the template for your component
 const Template: StoryFn<{
   props: Props;
-  user: { user?: User; isLoading: boolean };
+  user: {
+    user?: User;
+    isLoading: boolean;
+    signOut: () => Promise<{ error: AuthError | null }>;
+  };
 }> = (args) => (
   <UserSessionContext.Provider value={args.user}>
     <SignUp {...args.props} />
@@ -36,6 +41,7 @@ SignupsOpenUserSignedIn.args = {
       created_at: "anyDate",
     },
     isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
   },
 };
 
@@ -64,6 +70,7 @@ SignupsOpenUserLoading.args = {
       created_at: "anyDate",
     },
     isLoading: true,
+    signOut: () => Promise.resolve({ error: null }),
   },
 };
 
@@ -76,5 +83,6 @@ SignupsOpenNoAuthUser.args = {
   },
   user: {
     isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
   },
 };

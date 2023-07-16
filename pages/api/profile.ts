@@ -1,10 +1,10 @@
 import { PostgrestResponse } from "@supabase/supabase-js";
-import { ApiResponse } from "components/Profile";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Tables, Views } from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { ApiResponse } from "components/Profile/ProfileDisplay";
 
 export default async function handler(
   req: NextApiRequest,

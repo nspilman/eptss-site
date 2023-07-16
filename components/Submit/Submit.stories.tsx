@@ -3,6 +3,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import { Submit, Props } from "./Submit";
 import { UserSessionContext } from "components/context/UserSessionContext";
 import { User } from "@supabase/auth-helpers-react";
+import { AuthError } from "@supabase/supabase-js";
 
 // Define your Storybook configuration
 export default {
@@ -21,7 +22,11 @@ const user = {
 // Define the template for your component
 const Template: StoryFn<{
   props: Props;
-  user: { user?: User; isLoading: boolean };
+  user: {
+    user?: User;
+    isLoading: boolean;
+    signOut: () => Promise<{ error: AuthError | null }>;
+  };
 }> = (args) => (
   <UserSessionContext.Provider value={args.user}>
     <Submit {...args.props} />;
@@ -33,6 +38,7 @@ SubmissionOpenUserAuthed.args = {
   user: {
     user,
     isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
   },
   props: {
     roundId: 1,
@@ -51,6 +57,7 @@ SubmissionClosedUserAuthed.args = {
   user: {
     user,
     isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
   },
   props: {
     roundId: 1,
@@ -68,6 +75,7 @@ export const UserNotAuthed = Template.bind({});
 UserNotAuthed.args = {
   user: {
     isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
   },
   props: {
     roundId: 1,
@@ -85,6 +93,7 @@ export const AuthLoading = Template.bind({});
 AuthLoading.args = {
   user: {
     isLoading: true,
+    signOut: () => Promise.resolve({ error: null }),
   },
   props: {
     roundId: 1,
