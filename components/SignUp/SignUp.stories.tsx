@@ -1,9 +1,11 @@
 import React from "react";
 import { Meta, StoryFn } from "@storybook/react";
-import { SignUp, Props } from "./SignUp";
+import { SignUp } from "./SignUp";
 import { User } from "@supabase/auth-helpers-react";
 import { UserSessionContext } from "components/context/UserSessionContext";
 import { AuthError } from "@supabase/supabase-js";
+import { RoundContext } from "components/context/RoundContext";
+import { Phase } from "services/PhaseMgmtService";
 
 // Define your Storybook configuration
 export default {
@@ -11,26 +13,53 @@ export default {
   component: SignUp,
 } as Meta;
 
+const dateLabels = {
+  signups: {
+    opens: "Signups Open: July 1, 2023",
+    closes: "Signups Close: July 7, 2023",
+  },
+  voting: {
+    opens: "Voting Opens: July 8, 2023",
+    closes: "Voting Closes: July 15, 2023",
+  },
+  covering: {
+    opens: "Covering Phase Begins: July 16, 2023",
+    closes: "Covering Phase Ends: July 23, 2023",
+  },
+  celebration: {
+    opens: "Celebration Starts: July 24, 2023",
+    closes: "Celebration Ends: July 31, 2023",
+  },
+};
+
 // Define the template for your component
 const Template: StoryFn<{
-  props: Props;
+  round: {
+    isLoading: boolean;
+    roundId?: number | undefined;
+    phase?: Phase | undefined;
+    dateLabels?: Record<Phase, Record<"opens" | "closes", string>>;
+  };
   user: {
     user?: User;
     isLoading: boolean;
     signOut: () => Promise<{ error: AuthError | null }>;
   };
 }> = (args) => (
-  <UserSessionContext.Provider value={args.user}>
-    <SignUp {...args.props} />
-  </UserSessionContext.Provider>
+  <RoundContext.Provider value={args.round}>
+    <UserSessionContext.Provider value={args.user}>
+      <SignUp />
+    </UserSessionContext.Provider>
+  </RoundContext.Provider>
 );
 
 export const SignupsOpenUserSignedIn = Template.bind({});
 SignupsOpenUserSignedIn.args = {
-  props: {
+  round: {
     roundId: 1,
-    signupsCloseDateLabel: "July 27, 2023",
-    areSignupsOpen: true,
+    dateLabels,
+    phase: "signups",
+    isLoading: false,
   },
   user: {
     user: {
@@ -47,19 +76,32 @@ SignupsOpenUserSignedIn.args = {
 
 export const SignupsClosed = Template.bind({});
 SignupsClosed.args = {
-  props: {
+  round: {
     roundId: 1,
-    signupsCloseDateLabel: "July 27, 2023",
-    areSignupsOpen: false,
+    dateLabels,
+    phase: "voting",
+    isLoading: false,
+  },
+  user: {
+    user: {
+      id: "anyId",
+      app_metadata: {},
+      user_metadata: {},
+      aud: "anyString",
+      created_at: "anyDate",
+    },
+    isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
   },
 };
 
 export const SignupsOpenUserLoading = Template.bind({});
 SignupsOpenUserLoading.args = {
-  props: {
+  round: {
     roundId: 1,
-    signupsCloseDateLabel: "July 27, 2023",
-    areSignupsOpen: true,
+    dateLabels,
+    phase: "signups",
+    isLoading: false,
   },
   user: {
     user: {
@@ -76,10 +118,11 @@ SignupsOpenUserLoading.args = {
 
 export const SignupsOpenNoAuthUser = Template.bind({});
 SignupsOpenNoAuthUser.args = {
-  props: {
+  round: {
     roundId: 1,
-    signupsCloseDateLabel: "July 27, 2023",
-    areSignupsOpen: true,
+    dateLabels,
+    phase: "signups",
+    isLoading: false,
   },
   user: {
     isLoading: false,

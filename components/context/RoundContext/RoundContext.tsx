@@ -7,6 +7,7 @@ export const RoundContext = createContext<
       isLoading: boolean;
       roundId?: number;
       phase?: Phase;
+      dateLabels?: Record<Phase, Record<"opens" | "closes", string>>;
     }
   | undefined
 >(undefined);
@@ -36,6 +37,7 @@ export const RoundProvider = ({ children }: { children: React.ReactNode }) => {
     isLoading: !phaseMgmtService,
     roundId: phaseMgmtService?.roundId,
     phase: phaseMgmtService?.phase,
+    dateLabels: phaseMgmtService?.dateLabels,
   };
 
   return (
