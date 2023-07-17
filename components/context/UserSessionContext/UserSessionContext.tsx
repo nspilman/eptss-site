@@ -42,6 +42,8 @@ export const UserSessionProvider = ({
   const [isUserInRound, setIsUserInRound] = useState(false);
   const [isLoadingUserRound, setIsLoadingUserRound] = useState(false);
 
+  const userId = session?.user.id;
+
   useEffect(() => {
     const getIsUserInRound = async (roundId: number, userId: string) => {
       setIsLoadingUserRound(true);
@@ -49,16 +51,16 @@ export const UserSessionProvider = ({
         .from(Tables.SignUps)
         .select("*")
         .filter("round_id", "eq", roundId)
-        .filter("user_id", "eq", session?.user.id);
+        .filter("user_id", "eq", userId);
       if (data) {
         setIsUserInRound(true);
       }
       setIsLoadingUserRound(false);
     };
-    if (roundId && session?.user) {
-      getIsUserInRound(roundId, session.user.id);
+    if (roundId && userId) {
+      getIsUserInRound(roundId, userId);
     }
-  }, [roundId, session?.user, supabaseClient]);
+  }, [roundId, supabaseClient]);
 
   const signOut = () => supabaseClient.auth.signOut();
 
