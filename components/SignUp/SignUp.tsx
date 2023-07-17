@@ -15,7 +15,7 @@ export const SignUp = () => {
   const signupsCloseDateLabel = dateLabels?.signups.closes;
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
-  const shouldRenderSignupForm = !!(
+  const shouldRenderForm = !!(
     areSignupsOpen &&
     roundId &&
     signupsCloseDateLabel
@@ -37,7 +37,7 @@ export const SignUp = () => {
         FormClosed={<SignupsAreClosed />}
         hasUserCompletedTask={userRoundDetails.hasSignedUp}
         isLoading={isLoading}
-        shouldRenderSignupForm={shouldRenderSignupForm}
+        shouldRenderForm={shouldRenderForm}
       />
     </PageContainer>
   );

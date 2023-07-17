@@ -8,7 +8,7 @@ interface Props {
   AlreadyCompleted: React.ReactElement;
   FormClosed: React.ReactElement;
   isLoading: boolean;
-  shouldRenderSignupForm: boolean;
+  shouldRenderForm: boolean;
   hasUserCompletedTask: boolean;
 }
 
@@ -17,7 +17,7 @@ export const FormScaffolding = ({
   AlreadyCompleted,
   FormClosed,
   isLoading,
-  shouldRenderSignupForm,
+  shouldRenderForm,
   hasUserCompletedTask,
 }: Props) => {
   return (
@@ -26,7 +26,7 @@ export const FormScaffolding = ({
         <Loading />
       ) : (
         <>
-          {shouldRenderSignupForm ? (
+          {shouldRenderForm ? (
             <>{hasUserCompletedTask ? AlreadyCompleted : Form}</>
           ) : (
             FormClosed
