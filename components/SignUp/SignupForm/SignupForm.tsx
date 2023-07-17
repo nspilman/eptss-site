@@ -7,9 +7,9 @@ import { GENERIC_ERROR_MESSAGE } from "../../../constants";
 import { useSignup } from "../useSignup";
 
 interface Props {
-  roundId: number;
+  roundId?: number;
   title: string;
-  signupsCloseDateLabel: string;
+  signupsCloseDateLabel?: string;
 }
 
 export const SignupForm = ({
@@ -22,6 +22,13 @@ export const SignupForm = ({
   if (!user) {
     throw new Error("Login required to access Signup page");
   }
+
+  console.log({ roundId, signupsCloseDateLabel });
+
+  if (!roundId || !signupsCloseDateLabel) {
+    throw new Error("roundId and signupCloseDateLabel must be defined");
+  }
+
   const { signUp, signupSuccess, fields } = useSignup(roundId, user.id);
   return (
     <Center>
