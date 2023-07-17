@@ -60,7 +60,7 @@ export const UserSessionProvider = ({
     if (roundId && userId) {
       getIsUserInRound(roundId, userId);
     }
-  }, [roundId, supabaseClient]);
+  }, [roundId, supabaseClient, userId]);
 
   const signOut = () => supabaseClient.auth.signOut();
 

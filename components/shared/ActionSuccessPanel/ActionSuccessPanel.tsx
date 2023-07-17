@@ -11,12 +11,13 @@ interface Props {
   image: {
     src: string;
     alt: string;
+    blurSrc?: string;
   };
 }
 
 export const ActionSuccessPanel = ({
   text: { header, body, thankyou },
-  image: { src, alt },
+  image: { src, alt, blurSrc },
 }: Props) => {
   return (
     <Stack alignItems="center">
@@ -26,7 +27,14 @@ export const ActionSuccessPanel = ({
       <Text textAlign="center" fontWeight="200" my="4">
         {body}
       </Text>
-      <Image src={src} alt={alt} width={500} height={500} />
+      <Image
+        src={src}
+        alt={alt}
+        width={500}
+        height={500}
+        placeholder={"blur"}
+        blurDataURL={blurSrc}
+      />
       <Text fontWeight="200" my="4">
         {thankyou}
       </Text>
