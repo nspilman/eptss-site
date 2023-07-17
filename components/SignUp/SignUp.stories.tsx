@@ -44,6 +44,11 @@ const Template: StoryFn<{
     user?: User;
     isLoading: boolean;
     signOut: () => Promise<{ error: AuthError | null }>;
+    userRoundDetails: {
+      hasSignedUp: boolean;
+      hasSubmitted: boolean;
+      hasVoted: boolean;
+    };
   };
 }> = (args) => (
   <RoundContext.Provider value={args.round}>
@@ -71,6 +76,11 @@ SignupsOpenUserSignedIn.args = {
     },
     isLoading: false,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
 };
 
@@ -92,6 +102,11 @@ SignupsClosed.args = {
     },
     isLoading: false,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
 };
 
@@ -113,6 +128,11 @@ SignupsOpenUserLoading.args = {
     },
     isLoading: true,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
 };
 
@@ -127,5 +147,36 @@ SignupsOpenNoAuthUser.args = {
   user: {
     isLoading: false,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
+  },
+};
+
+export const SignupsAuthUserIsSignedUp = Template.bind({});
+SignupsAuthUserIsSignedUp.args = {
+  round: {
+    roundId: 1,
+    dateLabels,
+    phase: "signups",
+    isLoading: false,
+  },
+  user: {
+    user: {
+      id: "anyId",
+      app_metadata: {},
+      user_metadata: {},
+      aud: "anyString",
+      created_at: "anyDate",
+    },
+    isLoading: false,
+    signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: true,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
 };

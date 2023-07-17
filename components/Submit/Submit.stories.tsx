@@ -26,6 +26,11 @@ const Template: StoryFn<{
     user?: User;
     isLoading: boolean;
     signOut: () => Promise<{ error: AuthError | null }>;
+    userRoundDetails: {
+      hasSignedUp: boolean;
+      hasSubmitted: boolean;
+      hasVoted: boolean;
+    };
   };
 }> = (args) => (
   <UserSessionContext.Provider value={args.user}>
@@ -39,6 +44,11 @@ SubmissionOpenUserAuthed.args = {
     user,
     isLoading: false,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
   props: {
     roundId: 1,
@@ -58,6 +68,11 @@ SubmissionClosedUserAuthed.args = {
     user,
     isLoading: false,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
   props: {
     roundId: 1,
@@ -76,6 +91,11 @@ UserNotAuthed.args = {
   user: {
     isLoading: false,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
   props: {
     roundId: 1,
@@ -94,6 +114,11 @@ AuthLoading.args = {
   user: {
     isLoading: true,
     signOut: () => Promise.resolve({ error: null }),
+    userRoundDetails: {
+      hasSignedUp: false,
+      hasSubmitted: false,
+      hasVoted: false,
+    },
   },
   props: {
     roundId: 1,

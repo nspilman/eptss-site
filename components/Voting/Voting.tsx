@@ -1,10 +1,5 @@
-import { GENERIC_ERROR_MESSAGE } from "../../constants";
-import { FormContainer } from "../shared/FormContainer";
 import { VoteOptionModel } from "./types";
-import { useVoting } from "./useVoting";
 import { PageContainer } from "components/shared/PageContainer";
-import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import { useUserSession } from "components/context/UserSessionContext";
 import { SignInGate } from "components/shared/SignInGate";
 import { VotingForm } from "./VotingForm";
 

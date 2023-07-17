@@ -6,8 +6,6 @@ import { Phase } from "services/PhaseMgmtService";
 import { Box, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
 import { RoundActionCard } from "./RoundActionCard";
-import { useCallback, useEffect, useState } from "react";
-import { getRoundDataForUser } from "queries/getRoundDataForUser";
 import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
 import { useUserSession } from "components/context/UserSessionContext";
@@ -28,40 +26,8 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
 
   const router = useRouter();
 
-  const [loadingUserRoundDetails, setLoadingUserRoundDetails] = useState(false);
-  const [userRoundDetails, setUserRoundDetails] = useState({
-    hasSignedUp: false,
-    hasSubmitted: false,
-    hasVoted: false,
-  });
-
-  const { user, isLoading } = useUserSession();
+  const { user, isLoading, userRoundDetails } = useUserSession();
   const isAuthed = !!user;
-
-  const getUserRoundDetails = useCallback(
-    async (userId: string) => {
-      if (!userId) return;
-      try {
-        setLoadingUserRoundDetails(true);
-        const data = await getRoundDataForUser(roundId, userId);
-        setUserRoundDetails(
-          data as {
-            hasSubmitted: boolean;
-            hasVoted: boolean;
-            hasSignedUp: boolean;
-          }
-        );
-      } finally {
-        setLoadingUserRoundDetails(false);
-      }
-    },
-    [roundId]
-  );
-
-  useEffect(() => {
-    if (!user?.id) return;
-    getUserRoundDetails(user?.id);
-  }, [getUserRoundDetails, user?.id, phase]);
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {
     signups: userRoundDetails?.hasSignedUp,
@@ -90,7 +56,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
       <Hero />
       <Box mt={-20} mb={12}>
         <RoundActionCard
-          loading={isLoading || loadingUserRoundDetails}
+          loading={isLoading}
           phase={phase}
           roundId={roundId}
           isAuthed={isAuthed}

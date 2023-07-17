@@ -42,6 +42,11 @@ const Template: StoryFn<Props> = (args) => (
       isLoading: false,
       user,
       signOut: () => Promise.resolve({ error: null }),
+      userRoundDetails: {
+        hasSignedUp: false,
+        hasSubmitted: false,
+        hasVoted: false,
+      },
     }}
   >
     <Voting {...args} />

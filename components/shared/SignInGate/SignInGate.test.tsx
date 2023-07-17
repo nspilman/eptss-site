@@ -29,6 +29,11 @@ describe("SignInGate", () => {
     ).mockReturnValue({
       isLoading: true,
       signOut: () => Promise.resolve({ error: null }),
+      userRoundDetails: {
+        hasSignedUp: false,
+        hasSubmitted: false,
+        hasVoted: false,
+      },
     });
 
     const { getByText } = render(
@@ -47,6 +52,11 @@ describe("SignInGate", () => {
       isLoading: false,
       user: mockUser,
       signOut: () => Promise.resolve({ error: null }),
+      userRoundDetails: {
+        hasSignedUp: false,
+        hasSubmitted: false,
+        hasVoted: false,
+      },
     });
 
     const { getByText } = render(
@@ -64,6 +74,11 @@ describe("SignInGate", () => {
     ).mockReturnValue({
       isLoading: false,
       signOut: () => Promise.resolve({ error: null }),
+      userRoundDetails: {
+        hasSignedUp: false,
+        hasSubmitted: false,
+        hasVoted: false,
+      },
     });
 
     const { getByTestId } = render(

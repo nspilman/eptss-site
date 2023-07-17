@@ -6,7 +6,6 @@ import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { useUserSession } from "components/context/UserSessionContext";
 import { SignInGate } from "components/shared/SignInGate";
 import { PageContainer } from "components/shared/PageContainer";
-import { useRouter } from "next/router";
 import { Phase } from "services/PhaseMgmtService";
 import { Box, Heading } from "@chakra-ui/react";
 
@@ -30,18 +29,6 @@ export const Submit = ({
 }: Props) => {
   const { user } = useUserSession();
   const supabase = useSupabase();
-
-  const isSubmissionOpen = ["celebration", "covering"].includes(phase);
-  if (user && !isSubmissionOpen) {
-    return (
-      <Box>
-        <Heading>
-          Submissions are closed. Check the calendar for when submissions will
-          be open again
-        </Heading>
-      </Box>
-    );
-  }
 
   const fields = [
     {
@@ -154,22 +141,33 @@ export const Submit = ({
     alt: "Thank you for submitting your cover!",
   };
 
+  const isSubmissionOpen = ["celebration", "covering"].includes(phase);
+
   return (
     <PageContainer title={`Submit your cover for round ${roundId}`}>
       <SignInGate>
-        <FormContainer
-          fields={fields}
-          description={description}
-          onSubmit={onSubmit}
-          title={title}
-          errorMessage={GENERIC_ERROR_MESSAGE}
-          successBlock={
-            <ActionSuccessPanel
-              text={submitSuccessText}
-              image={submitSuccessImage}
+        <>
+          {isSubmissionOpen ? (
+            <FormContainer
+              fields={fields}
+              description={description}
+              onSubmit={onSubmit}
+              title={title}
+              errorMessage={GENERIC_ERROR_MESSAGE}
+              successBlock={
+                <ActionSuccessPanel
+                  text={submitSuccessText}
+                  image={submitSuccessImage}
+                />
+              }
             />
-          }
-        />
+          ) : (
+            <Heading>
+              Submissions are closed. Check the calendar for when submissions
+              will be open again!
+            </Heading>
+          )}
+        </>
       </SignInGate>
     </PageContainer>
   );

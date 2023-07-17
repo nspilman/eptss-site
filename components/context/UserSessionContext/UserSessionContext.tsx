@@ -1,7 +1,13 @@
 import { useSessionContext, User } from "@supabase/auth-helpers-react";
 import { AuthError } from "@supabase/supabase-js";
-import { Tables } from "queries";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { getRoundDataForUser } from "queries/getRoundDataForUser";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useRound } from "../RoundContext";
 
 // Create a Context object
@@ -9,7 +15,11 @@ export const UserSessionContext = createContext<
   | {
       user?: User;
       isLoading: boolean;
-      isUserInRound?: boolean;
+      userRoundDetails: {
+        hasSignedUp: boolean;
+        hasSubmitted: boolean;
+        hasVoted: boolean;
+      };
       signOut: () => Promise<{
         error: AuthError | null;
       }>;
@@ -39,35 +49,46 @@ export const UserSessionProvider = ({
   } = useSessionContext();
   const { roundId } = useRound();
 
-  const [isUserInRound, setIsUserInRound] = useState(false);
-  const [isLoadingUserRound, setIsLoadingUserRound] = useState(false);
-
   const userId = session?.user.id;
-
-  useEffect(() => {
-    const getIsUserInRound = async (roundId: number, userId: string) => {
-      setIsLoadingUserRound(true);
-      const { data } = await supabaseClient
-        .from(Tables.SignUps)
-        .select("*")
-        .filter("round_id", "eq", roundId)
-        .filter("user_id", "eq", userId);
-      if (data) {
-        setIsUserInRound(true);
-      }
-      setIsLoadingUserRound(false);
-    };
-    if (roundId && userId) {
-      getIsUserInRound(roundId, userId);
-    }
-  }, [roundId, supabaseClient, userId]);
 
   const signOut = () => supabaseClient.auth.signOut();
 
+  const [loadingUserRoundDetails, setLoadingUserRoundDetails] = useState(true);
+  const [userRoundDetails, setUserRoundDetails] = useState({
+    hasSignedUp: false,
+    hasSubmitted: false,
+    hasVoted: false,
+  });
+
+  const getUserRoundDetails = useCallback(
+    async (userId: string) => {
+      if (!userId || !roundId) return;
+      try {
+        setLoadingUserRoundDetails(true);
+        const data = await getRoundDataForUser(roundId, userId);
+        setUserRoundDetails(
+          data as {
+            hasSubmitted: boolean;
+            hasVoted: boolean;
+            hasSignedUp: boolean;
+          }
+        );
+      } finally {
+        setLoadingUserRoundDetails(false);
+      }
+    },
+    [roundId]
+  );
+
+  useEffect(() => {
+    if (!userId) return;
+    getUserRoundDetails(userId);
+  }, [getUserRoundDetails, userId]);
+
   const value = {
     user: session?.user,
-    isLoading: isLoadingUser || isLoadingUserRound,
-    isUserInRound,
+    isLoading: isLoadingUser || loadingUserRoundDetails,
+    userRoundDetails,
     signOut,
   };
 
