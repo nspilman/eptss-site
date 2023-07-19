@@ -60,11 +60,14 @@ export const UserSessionProvider = ({
     hasVoted: false,
   });
 
+  console.log({ isLoadingUser, loadingUserRoundDetails });
+
   const getUserRoundDetails = useCallback(
     async (userId: string) => {
-      if (!userId || !roundId) return;
+      if (!roundId) {
+        return;
+      }
       try {
-        setLoadingUserRoundDetails(true);
         const data = await getRoundDataForUser(roundId, userId);
         setUserRoundDetails(
           data as {
@@ -81,7 +84,10 @@ export const UserSessionProvider = ({
   );
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setLoadingUserRoundDetails(false);
+      return;
+    }
     getUserRoundDetails(userId);
   }, [getUserRoundDetails, userId]);
 
