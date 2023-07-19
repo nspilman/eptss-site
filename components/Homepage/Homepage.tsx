@@ -28,7 +28,6 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
 
   const { user, isLoading, userRoundDetails } = useUserSession();
 
-  console.log({ isLoading });
   const isAuthed = !!user;
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {

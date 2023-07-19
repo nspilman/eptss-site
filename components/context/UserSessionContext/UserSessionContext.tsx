@@ -60,8 +60,6 @@ export const UserSessionProvider = ({
     hasVoted: false,
   });
 
-  console.log({ isLoadingUser, loadingUserRoundDetails });
-
   const getUserRoundDetails = useCallback(
     async (userId: string) => {
       if (!roundId) {

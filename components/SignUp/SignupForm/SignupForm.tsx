@@ -23,8 +23,6 @@ export const SignupForm = ({
     throw new Error("Login required to access Signup page");
   }
 
-  console.log({ roundId, signupsCloseDateLabel });
-
   if (!roundId || !signupsCloseDateLabel) {
     throw new Error("roundId and signupCloseDateLabel must be defined");
   }
