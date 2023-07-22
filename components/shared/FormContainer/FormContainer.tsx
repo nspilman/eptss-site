@@ -33,7 +33,7 @@ export function FormContainer<T extends FieldValues>({
     >
       <Box
         width={{
-          base: 350,
+          base: 300,
           sm: 450,
           md: 600,
           lg: 800,
