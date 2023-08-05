@@ -41,12 +41,19 @@ export const RoundActionCard = ({
         (1000 * 60 * 60 * 24)
     );
 
+  const specificDaysOrSoonLabel =
+    phaseEndsDaysFromToday < 0
+      ? "soon"
+      : `in ${phaseEndsDaysFromToday} day${
+          phaseEndsDaysFromToday !== 1 ? "s" : ""
+        }`;
+
   const labelContent = (() => {
     const authedLabels: { [key in Phase]: string } = {
-      signups: `Next round starts in ${phaseEndsDaysFromToday} days`,
+      signups: `Next round starts ${specificDaysOrSoonLabel}`,
       celebration: `Stay tuned for next round details!`,
-      voting: `Voting ends in ${phaseEndsDaysFromToday} days`,
-      covering: `Round ends in ${phaseEndsDaysFromToday} days`,
+      voting: `Voting ends ${specificDaysOrSoonLabel}`,
+      covering: `Round ends ${specificDaysOrSoonLabel}`,
     };
 
     if (isAuthed) {
@@ -59,6 +66,7 @@ export const RoundActionCard = ({
       );
     }
   })();
+
   const blurb = useBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
