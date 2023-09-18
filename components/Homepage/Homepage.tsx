@@ -45,7 +45,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
     onSignupAndJoinRound: () => router.push("/sign-up"),
     onJoinRound: () => router.push("/sign-up"),
     onVote: () => router.push("/voting"),
-    onSubmit: () => router.push("/voting"),
+    onSubmit: () => router.push("/submit"),
     onRoundDetails: () => router.push(`/round/${roundId}`),
   };
 
