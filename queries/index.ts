@@ -15,6 +15,8 @@ export enum Views {
   VotesDiffsWithAverage = "votes_diff_with_average",
   Submissions = "submissions_view",
   VoteBreakdownBySong = "vote_breakdown_by_song",
+  PublicSignups = "public_signups",
+  PublicSubmissions = "public_submissions",
 }
 
 const queries = {
