@@ -1,6 +1,6 @@
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
-import { Box, Flex, Heading, HStack, Link } from "@chakra-ui/react";
+import { Box, Heading, HStack, Link } from "@chakra-ui/react";
 import { FAQButton } from "components/NavButtons";
 import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
