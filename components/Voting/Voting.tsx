@@ -6,6 +6,7 @@ import { FormScaffolding } from "components/shared/FormScaffolding";
 import { useRound } from "components/context/RoundContext";
 import { useUserSession } from "components/context/UserSessionContext";
 import { Box, Heading } from "@chakra-ui/react";
+import seedrandom from "seedrandom";
 
 export interface Props {
   voteOptions: VoteOptionModel[];
