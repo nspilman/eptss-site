@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       boxShadow: {
-        NavShadow: " 0px 0px 3px 3px rgba(	246,	224,	94, .8)",
+        NavShadow: " 0px 0px 3px 3px #F6E05E",
       },
     },
   },
