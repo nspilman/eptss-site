@@ -35,11 +35,12 @@ export const getStaticProps: GetStaticProps = async () => {
 
   // const isVotingOpen = phase === "voting";
   const isVotingOpen = true;
+  const unsortedVoteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
+
   const voteOptions = seededShuffle(
-    isVotingOpen ? await getVoteOptions(roundId) : [],
-    "EveryonePlaysTheSameSong"
+    unsortedVoteOptions,
+    JSON.stringify(unsortedVoteOptions)
   );
-  // voteOptions = voteOptions
 
   return {
     props: {
