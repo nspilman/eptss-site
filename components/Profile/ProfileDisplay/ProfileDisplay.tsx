@@ -33,17 +33,17 @@ export interface ApiResponse {
   }[];
 }
 
-export const ProfileDisplay = () => {
-  const sharedHeaders = [
-    { key: "round_id", display: "Round", sortable: true },
-    { key: "title", display: "Title", sortable: true },
-    {
-      key: "artist",
-      display: "Artist",
-      sortable: true,
-    },
-  ] as const;
+export const sharedHeaders = [
+  { key: "round_id", display: "Round", sortable: true },
+  { key: "title", display: "Title", sortable: true },
+  {
+    key: "artist",
+    display: "Artist",
+    sortable: true,
+  },
+] as const;
 
+export const ProfileDisplay = () => {
   const headers = [
     ...sharedHeaders,
     { key: "average", display: "Average Vote", sortable: true },

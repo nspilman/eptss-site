@@ -1,4 +1,6 @@
+import { Heading } from "@chakra-ui/react";
 import { TableContainer } from "@chakra-ui/table";
+import { sharedHeaders } from "components/Profile/ProfileDisplay";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { Views } from "queries";
@@ -39,16 +41,6 @@ export async function getStaticProps({
 }
 
 export default function Profile(props: { username: string; data: any }) {
-  const sharedHeaders = [
-    { key: "round_id", display: "Round", sortable: true },
-    { key: "title", display: "Title", sortable: true },
-    {
-      key: "artist",
-      display: "Artist",
-      sortable: true,
-    },
-  ] as const;
-
   const submissionHeaders = [
     ...sharedHeaders,
     { key: "soundcloud_url", display: "Soundcloud Link", sortable: true },
@@ -56,15 +48,18 @@ export default function Profile(props: { username: string; data: any }) {
 
   return (
     <PageContainer title={`${props.username}'s Profile`}>
-      <TableContainer>
-        <DataTable
-          title="Your Past Submissions"
-          subtitle={`You have submitted on ${props.data.length} covers`}
-          rows={props.data}
-          headers={submissionHeaders}
-          //   maxHeight={maxHeight}
-        />
-      </TableContainer>
+      {props.data.length ? (
+        <TableContainer>
+          <DataTable
+            title="Your Past Submissions"
+            subtitle={`You have submitted on ${props.data.length} covers`}
+            rows={props.data}
+            headers={submissionHeaders}
+          />
+        </TableContainer>
+      ) : (
+        <Heading>This participant has yet to submit. Maybe next round!</Heading>
+      )}
     </PageContainer>
   );
 }
