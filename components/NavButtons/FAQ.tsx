@@ -9,3 +9,4 @@ export const FAQButton = () => (
       </button>
     </Link>
 );
+// Delete this 
