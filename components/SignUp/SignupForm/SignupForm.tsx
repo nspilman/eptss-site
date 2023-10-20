@@ -3,7 +3,7 @@ import { useUserSession } from "components/context/UserSessionContext";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";
-import { GENERIC_ERROR_MESSAGE } from "../../../consts";
+import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useSignup } from "../useSignup";
 
 interface Props {

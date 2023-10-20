@@ -1,7 +1,7 @@
 import { useUserSession } from "components/context/UserSessionContext";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";
-import { GENERIC_ERROR_MESSAGE } from "../../../consts";
+import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useVoting } from "../useVoting";
 
 interface Props {
