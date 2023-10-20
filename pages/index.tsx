@@ -5,6 +5,7 @@ import { Homepage, Props } from "../components/Homepage";
 
 import { getSupabaseClient } from "../utils/getSupabaseClient";
 import { format } from "date-fns";
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 
 const Home = (props: Props) => {
   return <Homepage {...props} />;
@@ -71,6 +72,7 @@ export const getStaticProps: GetStaticProps = async () => {
         roundId,
       },
     },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 };
 

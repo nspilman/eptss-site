@@ -2,6 +2,7 @@ import { GetStaticProps, InferGetStaticPropsType } from "next";
 import React from "react";
 import { Submit } from "components/Submit";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 
 const SubmitPage = ({
   roundId,
@@ -40,6 +41,7 @@ export const getStaticProps: GetStaticProps = async () => {
       song,
       phase,
     },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 };
 
