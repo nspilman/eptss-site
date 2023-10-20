@@ -3,6 +3,7 @@ import { TableContainer } from "@chakra-ui/table";
 import { sharedHeaders } from "components/Profile/ProfileDisplay";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 import { Views } from "queries";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
@@ -37,6 +38,7 @@ export async function getStaticProps({
       username,
       data,
     },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 }
 

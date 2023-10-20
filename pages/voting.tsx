@@ -6,6 +6,7 @@ import queries from "queries";
 import { PhaseMgmtService } from "services/PhaseMgmtService";
 import { SignInGate } from "components/shared/SignInGate";
 import seedrandom from "seedrandom";
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 
 const VotingPage = ({
   voteOptions,
@@ -49,6 +50,7 @@ export const getStaticProps: GetStaticProps = async () => {
       isVotingOpen,
       coveringStartString,
     },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 };
 

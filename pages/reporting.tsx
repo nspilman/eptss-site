@@ -1,3 +1,4 @@
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 import { GetStaticProps, InferGetStaticPropsType } from "next";
 import { Views } from "queries";
 import React from "react";
@@ -27,6 +28,7 @@ export const getStaticProps: GetStaticProps = async () => {
         isWinningSong: !!((song.round_metadata as []) || []).length,
       })),
     },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 };
 

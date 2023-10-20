@@ -7,6 +7,7 @@ import {
   VoteResults,
 } from "components/RoundSummary";
 import { PageContainer } from "components/shared/PageContainer";
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 import { Tables, Views } from "queries";
 import { Phase, PhaseMgmtService } from "services/PhaseMgmtService";
 import { getSupabaseClient } from "utils/getSupabaseClient";
@@ -66,6 +67,7 @@ export async function getStaticProps({
       voteBreakdown,
       navigation,
     },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 }
 

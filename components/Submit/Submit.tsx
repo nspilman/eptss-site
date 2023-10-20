@@ -1,6 +1,6 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { FormContainer } from "components/shared/FormContainer";
-import { GENERIC_ERROR_MESSAGE } from "../../constants";
+import { GENERIC_ERROR_MESSAGE } from "../../consts";
 import { getIsSuccess } from "utils";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { useUserSession } from "components/context/UserSessionContext";

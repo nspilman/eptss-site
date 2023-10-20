@@ -1,5 +1,6 @@
 import { Post } from "components/Blog/Post/Post";
 import { PageContainer } from "components/shared/PageContainer";
+import { STATIC_REGEN_INTERVAL_SECONDS } from "consts";
 import { getAllPosts } from "serverFunctions/getAllPosts";
 import { BlogPost } from "types/BlogPost";
 
@@ -22,6 +23,7 @@ export async function getStaticProps({
   return {
     // Passed to the page component as props
     props: { post },
+    revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
 }
 
