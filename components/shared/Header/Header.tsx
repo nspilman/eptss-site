@@ -5,7 +5,6 @@ import { FAQButton } from "components/NavButtons";
 import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 
-
 export const Header = (): ReactElement => {
   const [current, next] = useGetRoundsDates();
   return (

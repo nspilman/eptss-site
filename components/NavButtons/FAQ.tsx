@@ -2,6 +2,4 @@ import Link from "next/link";
 import { Navigation } from "components/enum/navigation";
 import Button from "components/shared/Tailwind_Btn/Button";
 
-export const FAQButton = () => (
-<Button href={Navigation.FAQ} title="FAQ" />
-);
+export const FAQButton = () => (<Button href={Navigation.FAQ} title="FAQ" />);
