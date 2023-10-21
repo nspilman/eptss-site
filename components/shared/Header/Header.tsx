@@ -1,10 +1,10 @@
 import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
 import { Box, Heading, HStack, Link } from "@chakra-ui/react";
+import { FAQButton } from "components/NavButtons";
 import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
-import { Navigation } from "components/enum/navigation";
-import TwButton from "../Tailwind_Btn/TwButton";
+
 
 export const Header = (): ReactElement => {
   const [current, next] = useGetRoundsDates();
@@ -31,10 +31,10 @@ export const Header = (): ReactElement => {
         <HStack
           spacing="2"
           display={{ base: "none", lg: "flex" }}
-          // alignItems="center"
+          alignItems="center"
           justifyContent="center"
         >
-          <TwButton href={Navigation.FAQ} title="FAQ" />
+          <FAQButton />
           <SignupButton />
           {current && next && <RoundDatesDisplayPopup {...{ current, next }} />}
         </HStack>
