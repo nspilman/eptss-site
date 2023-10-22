@@ -2,10 +2,10 @@ import React from 'react'
 import Link from 'next/link'
 import { Navigation } from 'components/enum/navigation'
 
-
-interface Props {
-    href: Navigation;
-    title: string;
+interface ButtonProps {
+  href?: Navigation;
+  onClick?: () => void;
+  title: string;
 }
 const Button = ({ href, title }: Props): React.ReactElement => {
   return (
