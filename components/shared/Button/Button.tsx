@@ -4,7 +4,6 @@ import { Navigation } from 'components/enum/navigation'
 
 interface ButtonProps {
   href: Navigation;
-  onClick?: () => void;
   title: string;
 }
 const Button = ({ href, title }: ButtonProps): React.ReactElement => {
