@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { Navigation } from 'components/enum/navigation'
 
 interface ButtonProps {
-  href?: Navigation;
+  href: Navigation;
   onClick?: () => void;
   title: string;
 }
-const Button = ({ href, title }: Props): React.ReactElement => {
+const Button = ({ href, title }: ButtonProps): React.ReactElement => {
   return (
     <Link href={href}>
       <button className=" h-10 py-2 px-4 border-2 font-bold text-white border-white bg-transparent flex items-center rounded-md
