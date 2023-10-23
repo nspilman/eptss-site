@@ -106,7 +106,8 @@ const getCurrentAndFutureRounds = async (
       "id",
       "gte",
       await getCurrentRoundId(supabase || (await getSupabaseClient()))
-    );
+    )
+    .order("id");
 
   const formattedRoundData = await roundData?.map(
     ({
