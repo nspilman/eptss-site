@@ -6,7 +6,7 @@ interface ButtonProps {
   href: Navigation;
   title: string;
 }
-const Button = ({ href, title }: ButtonProps): React.ReactElement => {
+ export const Button = ({ href, title }: ButtonProps): React.ReactElement => {
   return (
     <Link href={href}>
       <button className=" h-10 py-2 px-4 border-2 font-bold text-white border-white bg-transparent flex items-center rounded-md
@@ -16,4 +16,3 @@ const Button = ({ href, title }: ButtonProps): React.ReactElement => {
     </Link>  )
 }
 
-export default Button
