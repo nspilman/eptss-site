@@ -19,7 +19,7 @@ import {
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Round } from "queries/roundQueries";
-import { format } from "date-fns";
+import { format, subMilliseconds } from "date-fns";
 
 type RoundDates = Pick<
   Round,
@@ -96,7 +96,10 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
                   </Td>
                   <Td>
                     <Text fontSize="sm">
-                      {format(new Date(date), "EEEE, MMMM do, yyyy")}
+                      {format(
+                        subMilliseconds(new Date(date), 1),
+                        "EEEE, MMMM do, yyyy"
+                      )}
                     </Text>
                   </Td>
                 </Tr>
