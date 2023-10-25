@@ -70,7 +70,7 @@ describe("PhaseMgmtService tests", () => {
   test("returns phase celebration when date is after covering due", async () => {
     jest.useFakeTimers();
 
-    const dateDuringCoveringPhase = "2023-01-31, 12:00";
+    const dateDuringCoveringPhase = "2023-01-31, 12:00AM PDT";
     jest.setSystemTime(new Date(dateDuringCoveringPhase));
 
     const expected = "celebration";

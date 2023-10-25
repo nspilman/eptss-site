@@ -81,7 +81,7 @@ export class PhaseMgmtService {
         closes: listeningParty,
       },
     };
-
+    console.log({ opens: this.dates.signups.opens.toUTCString() });
     // use this.dates ^ as our source of truth
     // and keeping this.dateLabels to to make sure its backwards compatible
     // but ideally, components should use this.date values, and then format as needed

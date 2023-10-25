@@ -5,6 +5,7 @@ import { Phase, PhaseMgmtService } from "services/PhaseMgmtService";
 
 const TimePage = ({
   coverOpen,
+  now,
 }: InferGetStaticPropsType<
   Record<Phase, Record<"opens" | "closes", Date>>
 >) => {
@@ -16,7 +17,7 @@ const TimePage = ({
       </div>
       <div>
         <b>built at:</b>
-        {new Date().toTimeString()}
+        {now}
       </div>
     </div>
   );
@@ -26,10 +27,12 @@ export const getStaticProps: GetStaticProps = async () => {
   const phaseMgmtService = await PhaseMgmtService.build();
   const { dates } = await phaseMgmtService;
   const coverOpen = await dates.covering.opens.toTimeString();
+  const now = new Date().toTimeString();
 
   return {
     props: {
       coverOpen,
+      now,
     },
     revalidate: STATIC_REGEN_INTERVAL_SECONDS,
   };
