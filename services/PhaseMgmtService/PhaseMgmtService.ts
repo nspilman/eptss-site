@@ -1,4 +1,4 @@
-import { format, subDays, startOfDay } from "date-fns";
+import { format, subDays } from "date-fns";
 import queries from "queries";
 
 interface Props {
@@ -29,7 +29,7 @@ export class PhaseMgmtService {
     roundId,
     song,
   }: Props) {
-    const now = startOfDay(new Date());
+    const now = new Date();
     if (now < signupOpens) {
       throw new Error(
         "current date cannot be before signup date. Signup starts the current round"
@@ -44,18 +44,18 @@ export class PhaseMgmtService {
       throw new Error("dates are in incorrect order");
     }
 
-    const isBeforeStartOfDay = (date: Date) => now < startOfDay(date);
+    const isBefore = (date: Date) => now < date;
 
     this.roundId = roundId;
     this.song = song;
     switch (true) {
-      case isBeforeStartOfDay(votingOpens):
+      case isBefore(votingOpens):
         this.phase = "signups";
         break;
-      case isBeforeStartOfDay(coveringBegins):
+      case isBefore(coveringBegins):
         this.phase = "voting";
         break;
-      case isBeforeStartOfDay(coversDue):
+      case isBefore(coversDue):
         this.phase = "covering";
         break;
       default:
@@ -81,7 +81,6 @@ export class PhaseMgmtService {
         closes: listeningParty,
       },
     };
-    console.log({ opens: this.dates.signups.opens.toUTCString() });
     // use this.dates ^ as our source of truth
     // and keeping this.dateLabels to to make sure its backwards compatible
     // but ideally, components should use this.date values, and then format as needed
