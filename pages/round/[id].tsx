@@ -78,7 +78,7 @@ export default function Post(props: {
   signupData: SignupData[];
   phase: Phase | "Complete";
   metadata: RoundMetadata;
-  submissions: { username: string; soundcloud_url: string }[];
+  submissions?: { username: string; soundcloud_url: string }[];
   voteBreakdown: VoteBreakdown[];
   navigation: Navigation;
 }) {

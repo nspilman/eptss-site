@@ -45,7 +45,7 @@ interface Props {
   phase: Phase | "Complete";
   roundId: number;
   metadata: RoundMetadata;
-  submissions: { username: string; soundcloud_url: string }[];
+  submissions?: { username: string; soundcloud_url: string }[];
   voteBreakdown: VoteBreakdown[];
   navigation: Navigation;
 }
@@ -121,7 +121,7 @@ export const RoundSummary = ({
     {
       signupCount: `${signupCount} signups`,
       phase: `Current phase: ${phase}`,
-      submissionCount: `${submissions.length} submissions`,
+      submissionCount: `${submissions?.length || 0} submissions`,
     },
   ];
 
@@ -154,21 +154,27 @@ export const RoundSummary = ({
         />
 
         {phase === "Complete" && (
-          <Text>
-            Submitted by:{" "}
-            <Link href={`/profile/${submitter}`}>{submitter}</Link>
-          </Text>
+          <>
+            <Text>
+              Submitted by:{" "}
+              <Link href={`/profile/${submitter}`}>{submitter}</Link>
+            </Text>
+            <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
+            <Box px="10">
+              <DataTable
+                headers={submissionsDisplayHeaders}
+                rows={(submissions || []).map(
+                  ({ username, soundcloud_url }) => ({
+                    username: (
+                      <Link href={`/profile/${username}`}>{username}</Link>
+                    ),
+                    soundcloud_url: <Link href={soundcloud_url}>Link</Link>,
+                  })
+                )}
+              />
+            </Box>
+          </>
         )}
-        <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
-        <Box px="10">
-          <DataTable
-            headers={submissionsDisplayHeaders}
-            rows={submissions.map(({ username, soundcloud_url }) => ({
-              username: <Link href={`/profile/${username}`}>{username}</Link>,
-              soundcloud_url: <Link href={soundcloud_url}>Link</Link>,
-            }))}
-          />
-        </Box>
 
         {isVotingPhase ? (
           <DataTable
