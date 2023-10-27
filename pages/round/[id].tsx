@@ -46,7 +46,7 @@ export async function getStaticProps({
   const { roundId: currentRoundId, phase: currentPhase } =
     await PhaseMgmtService.build();
   const metadata = await getRoundMetadata(roundId);
-  const submissionCount = await getSubmissionCount(roundId);
+  const submissions = await getSubmissions(roundId);
   const voteBreakdown = await getVoteBreakdownBySong(roundId);
 
   const navigation = {
@@ -63,7 +63,7 @@ export async function getStaticProps({
       signupData,
       phase: currentRoundId === roundId ? currentPhase : "Complete",
       metadata,
-      submissionCount,
+      submissions,
       voteBreakdown,
       navigation,
     },
@@ -78,7 +78,7 @@ export default function Post(props: {
   signupData: SignupData[];
   phase: Phase | "Complete";
   metadata: RoundMetadata;
-  submissionCount: number;
+  submissions: { username: string; soundcloud_url: string }[];
   voteBreakdown: VoteBreakdown[];
   navigation: Navigation;
 }) {
@@ -103,13 +103,11 @@ const getVoteResults = async (id: number) => {
 
 const getSignupData = async (id: number) => {
   const { data } = await dbClient
-    .from(Tables.SignUps)
+    .from(Views.Signups)
     .select(
       `youtube_link,
-      song:songs (
       title,
-      artist
-  )`
+      artist`
     )
     .filter("round_id", "eq", id);
   return data;
@@ -138,28 +136,30 @@ const getRoundMetadata = async (id: number) => {
 
   const roundInfo = data[0];
   const { data: submitterInfo } = (await dbClient
-    .from(Tables.SignUps)
-    .select("name")
-    .filter("song_id", "eq", roundInfo.song_id)
+    .from(Views.Signups)
+    .select("username")
+    .filter("title", "eq", roundInfo.song.title)
+    .filter("artist", "eq", roundInfo.song.artist)
     .filter("round_id", "eq", roundInfo.id)) as {
     data: {
-      name: string;
+      username: string;
     }[];
   };
+
   return {
     playlistUrl: roundInfo.playlist_url,
     title: roundInfo.song?.title || "",
     artist: roundInfo.song?.artist || "",
-    submitter: submitterInfo ? submitterInfo[0].name : "",
+    submitter: submitterInfo ? submitterInfo[0].username : "",
   };
 };
 
-const getSubmissionCount = async (id: number) => {
+const getSubmissions = async (id: number) => {
   const { data } = await dbClient
-    .from(Views.Submissions)
+    .from(Views.PublicSubmissions)
     .select("*")
     .filter("round_id", "eq", id);
-  return data?.length || 0;
+  return data;
 };
 
 const getVoteBreakdownBySong = async (id: number) => {

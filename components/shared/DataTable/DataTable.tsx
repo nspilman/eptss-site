@@ -21,7 +21,7 @@ interface Header<T> {
 
 interface Props<T extends string> {
   headers: Readonly<Header<T>[]>;
-  rows: Record<T, string | number>[];
+  rows: Record<T, string | number | React.ReactElement>[];
   variant?: "small" | "medium" | "large";
   title?: string;
   subtitle?: string;
@@ -97,12 +97,9 @@ export function DataTable<T extends string>({
           ) : (
             <Tbody>
               {rows.map((row, i) => (
-                <Tr key={JSON.stringify(row) + i}>
+                <Tr key={i}>
                   {headers.map(({ key, className }) => (
-                    <Td
-                      key={JSON.stringify(row) + row[key]}
-                      className={className}
-                    >
+                    <Td key={key} className={className}>
                       <Text>{row[key]}</Text>
                     </Td>
                   ))}
