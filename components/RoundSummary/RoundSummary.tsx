@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Link, Stack, Text } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -13,10 +13,8 @@ export interface VoteResults {
 
 export interface SignupData {
   youtube_link: string;
-  song: {
-    title: string;
-    artist: string;
-  };
+  title: string;
+  artist: string;
 }
 
 export interface Navigation {
@@ -47,7 +45,7 @@ interface Props {
   phase: Phase | "Complete";
   roundId: number;
   metadata: RoundMetadata;
-  submissionCount: number;
+  submissions?: { username: string; soundcloud_url: string }[];
   voteBreakdown: VoteBreakdown[];
   navigation: Navigation;
 }
@@ -77,7 +75,7 @@ export const RoundSummary = ({
   phase,
   roundId,
   metadata: { artist, title, playlistUrl, submitter },
-  submissionCount,
+  submissions,
   voteBreakdown,
   navigation,
 }: Props) => {
@@ -95,6 +93,20 @@ export const RoundSummary = ({
     },
   ];
 
+  const submissionsDisplayHeaders: {
+    display: string;
+    key: "soundcloud_url" | "username";
+  }[] = [
+    {
+      display: "Username",
+      key: "username",
+    },
+    {
+      display: "Submission",
+      key: "soundcloud_url",
+    },
+  ];
+
   const submissionCountHeader = {
     display: "Submission Count",
     key: "submissionCount" as const,
@@ -109,7 +121,7 @@ export const RoundSummary = ({
     {
       signupCount: `${signupCount} signups`,
       phase: `Current phase: ${phase}`,
-      submissionCount: `${submissionCount} submissions`,
+      submissionCount: `${submissions?.length || 0} submissions`,
     },
   ];
 
@@ -122,8 +134,8 @@ export const RoundSummary = ({
 
   const signupDataDisplay = signupData.map((signup) => ({
     youtubeLink: signup.youtube_link,
-    title: signup.song.title,
-    artist: signup.song.artist,
+    title: signup.title,
+    artist: signup.artist,
   }));
 
   const isVotingPhase = phase === "voting";
@@ -136,13 +148,34 @@ export const RoundSummary = ({
             {title} by {artist}
           </Heading>
         )}
-
-        {phase === "Complete" && <Text>Submitted by: {submitter}</Text>}
-        <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
         <Box
           width={elementWidthsByBreakpoint}
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
+
+        {phase === "Complete" && (
+          <>
+            <Text>
+              Submitted by:{" "}
+              <Link href={`/profile/${submitter}`}>{submitter}</Link>
+            </Text>
+            <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
+            <Box px="10">
+              <DataTable
+                headers={submissionsDisplayHeaders}
+                rows={(submissions || []).map(
+                  ({ username, soundcloud_url }) => ({
+                    username: (
+                      <Link href={`/profile/${username}`}>{username}</Link>
+                    ),
+                    soundcloud_url: <Link href={soundcloud_url}>Link</Link>,
+                  })
+                )}
+              />
+            </Box>
+          </>
+        )}
+
         {isVotingPhase ? (
           <DataTable
             title={"Songs in play to Cover"}

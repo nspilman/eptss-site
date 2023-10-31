@@ -16,6 +16,7 @@ export enum Views {
   Submissions = "submissions_view",
   VoteBreakdownBySong = "vote_breakdown_by_song",
   PublicSignups = "public_signups",
+  Signups = "signups",
   PublicSubmissions = "public_submissions",
 }
 
