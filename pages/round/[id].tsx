@@ -19,8 +19,6 @@ export async function getStaticPaths() {
     .from(Tables.RoundMetadata)
     .select("id")
     .lt("voting_opens", new Date().toDateString());
-  // .filter("voting_open", "lt", new Date().toDateString());
-  console.log({ roundIds });
   const { roundId: currentRoundId, phase: currentPhase } =
     await PhaseMgmtService.build();
   const payload = {
