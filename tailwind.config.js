@@ -6,8 +6,35 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        themeYellow: "#fffe53",
+        bgGradientLighterBLue: "#2c5282",
+        bgGradientDarkerBLue: "#1C2026",
+      },
       boxShadow: {
         NavShadow: " 0px 0px 3px 3px #F6E05E",
+      },
+      fontFamily: {
+        fraunces: ["Fraunces", "serif"],
+      },
+      animation: {
+        blob: "blob 7s infinite",
+      },
+      keyframes: {
+        blob: {
+          "0%": {
+            transform: "translate(0px, 0px) scale(1)",
+          },
+          "33%": {
+            transform: "translate(-10px, 0px) scale(1.1)",
+          },
+          "66%": {
+            transform: "translate(10px, 0px) scale(1.1)",
+          },
+          "100%": {
+            transform: "tranlate(0px, 0px) scale(1)",
+          },
+        },
       },
     },
   },

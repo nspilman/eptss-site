@@ -35,8 +35,8 @@ export const RoundDisplay = ({
   }
 
   return (
-    <Card width="80vw" my="2" bgGradient="linear(to-b, blue.800, blue.900)">
-      <CardHeader py="3" display="flex" justifyContent={"space-between"}>
+    <div className="relative">
+      <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientDarkerBLue bg-opacity-10 flex justify-between">
         <Heading as="h3" size="md">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
         </Heading>
@@ -49,10 +49,8 @@ export const RoundDisplay = ({
             <Text color="yellow">Listen</Text>
           </Link>
         )}
-      </CardHeader>
-      <CardBody py="2">
         {!playlist && <Text>The round is underway!</Text>}
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 };

@@ -11,7 +11,6 @@ export const Header = (): ReactElement => {
     <Box
       as="header"
       id="header"
-      background="rgba(0,0,0,0.4)"
       backdropBlur={"xl"}
       backdropFilter={"blur(6px)"}
       position="fixed"
@@ -22,9 +21,9 @@ export const Header = (): ReactElement => {
     >
       <div className="py-4 px-4 md:px-8 flex items-center justify-center md:justify-between">
         <Link href={"/"}>
-          <Heading size={{ base: "xs", lg: "md" }}>
+          <span className="text-3xl font-fraunces font-semibold text-white">
             everyone plays the same song
-          </Heading>
+          </span>
         </Link>
 
         <HStack
