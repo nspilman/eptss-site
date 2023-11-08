@@ -2,6 +2,7 @@ import { VStack } from "@chakra-ui/react";
 import { Navigation } from "components/enum/navigation";
 import { Button } from "components/shared/Button";
 import Image from "next/image";
+import Link from "next/link";
 
 export const Hero = () => {
   return (
@@ -32,11 +33,11 @@ export const Hero = () => {
               height={"10px"}
               width={"100%"}
             />
-            <Button
-              href={Navigation.SignUp}
-              title="Join the Creative Community"
-            />
           </div>
+          <Button
+            href={Navigation.SignUp}
+            title="Join the Creative Community"
+          />
         </VStack>
       </div>
       <div className="flex w-[80vw] md:w-[50vw] bg-cover bg-no-repeat bg-center mt-4">
@@ -48,7 +49,12 @@ export const Hero = () => {
             Mr. Brightside by The Killers
           </span>
           <span className="text-sm md:text-md lg:text-lg text-white font-fraunces">
-            due december 4th
+            due december 4th -{" "}
+            <Link href={Navigation.Submit}>
+              <a className="text-themeYellow font-fraunces text-sm">
+                Submit your cover
+              </a>
+            </Link>
           </span>
         </VStack>
       </div>
