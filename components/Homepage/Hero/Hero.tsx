@@ -30,6 +30,7 @@ export const Hero = () => {
               src="/pencil-underline.png"
               alt="pencilunderline"
               layout="responsive"
+              className="blur-sm"
               height={"10px"}
               width={"100%"}
             />
