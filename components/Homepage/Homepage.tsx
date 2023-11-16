@@ -7,9 +7,7 @@ import { RoundsDisplay } from "./RoundsDisplay";
 import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
 import { useUserSession } from "components/context/UserSessionContext";
-import Image from "next/image";
 import { RoundActionCard } from "./RoundActionCard";
-import { Box } from "@chakra-ui/react";
 
 export interface Props {
   roundContent: RoundDetails[];

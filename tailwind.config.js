@@ -16,7 +16,7 @@ module.exports = {
       },
       colors: {
         themeYellow: "#fffe53",
-        bgGradientLighterBLue: "#2c5282",
+        bgGradientLighterBLue: "#05397a",
         bgGradientDarkerBLue: "#1C2026",
       },
       boxShadow: {
