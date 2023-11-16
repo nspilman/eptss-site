@@ -1,6 +1,6 @@
 import { Text } from "@chakra-ui/react";
 import { ButtonsContainer } from "components/ButtonsContainer";
-import { FAQButton, RoundsButton } from "components/NavButtons";
+import { FAQButton, RoundsButton, SignupButton } from "components/NavButtons";
 
 export const HowItWorks = () => {
   return (
@@ -33,10 +33,11 @@ export const HowItWorks = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="pt-12">
           <ButtonsContainer>
             <FAQButton />
             <RoundsButton />
+            <SignupButton />
           </ButtonsContainer>
         </div>
       </div>
