@@ -30,9 +30,12 @@ export const RoundsDisplay = ({
         <div className="fixed top-28 md:left-60  right-6 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
       </div>
       <Box>
-        <Heading as="h1" id="rounds" pb="8" size={{ base: "md", lg: "lg" }}>
+        <h2
+          id="rounds"
+          className="text-white font-fraunces text-xl pb-8 font-bold"
+        >
           Rounds
-        </Heading>
+        </h2>
       </Box>
       {rounds.map((round) => {
         return (
