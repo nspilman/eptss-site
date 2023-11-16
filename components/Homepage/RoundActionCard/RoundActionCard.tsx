@@ -1,13 +1,4 @@
-import {
-  Card,
-  CardBody,
-  Center,
-  HStack,
-  Heading,
-  Spinner,
-  VStack,
-  Text,
-} from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 import { Phase } from "services/PhaseMgmtService";
 import { CTA, RoundActionFunctions } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
@@ -70,24 +61,17 @@ export const RoundActionCard = ({
   const blurb = useBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
-    <Card
-      bgGradient="linear(to-b, gray.700, blue.900)"
-      w={{ base: "80vw", md: "600px" }}
-      p={4}
-      py={8}
-    >
-      <CardBody>
-        <VStack>
+    <div className="py-8 px-4 flex flex-col relative">
+      <div>
+        <div className="flex flex-col">
           {loading ? (
-            <Center h={"100px"}>
+            <div className="h-[100px]">
               <Spinner color="white" />
-            </Center>
+            </div>
           ) : (
-            <>
-              <Heading fontSize={{ base: "md", md: "xl" }} textAlign="center">
-                {labelContent}
-              </Heading>
-              <VStack pt={"6"} gap={"4"}>
+            <div className="flex flex-col">
+              <div className="text-white">{labelContent}</div>
+              <div className="pt-6 gap-4 flex flex-col">
                 <CTA
                   {...{
                     roundActionFunctions,
@@ -97,19 +81,20 @@ export const RoundActionCard = ({
                     phase,
                   }}
                 />
-                <Text
-                  color="yellow.300"
-                  fontWeight="300"
-                  pt="4"
-                  textAlign="center"
+                <span
+                  // color="yellow.300"
+                  // fontWeight="300"
+                  // pt="4"
+                  // textAlign="center"
+                  className="text-themeYellow"
                 >
                   {blurb}
-                </Text>
-              </VStack>
-            </>
+                </span>
+              </div>
+            </div>
           )}
-        </VStack>
-      </CardBody>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 };

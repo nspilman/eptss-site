@@ -8,6 +8,8 @@ import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
 import { useUserSession } from "components/context/UserSessionContext";
 import Image from "next/image";
+import { RoundActionCard } from "./RoundActionCard";
+import { Box } from "@chakra-ui/react";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -54,19 +56,13 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
-      <div className="relative">
-        <img
-          src="/pencil-underline.png"
-          alt="pencilunderline"
-          className="w-[80vw] h-20 blur-md"
-        />
-      </div>
+
       <div className="pointer-events-none">
         <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
         <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
         <div className="absolute top-28 left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
       </div>
-      {/* <Box mt={-20} mb={12}>
+      <div className="mt-8 md:-mt-20 mb-12">
         <RoundActionCard
           loading={isLoading}
           phase={phase}
@@ -77,7 +73,7 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
           phaseEndsDate={phaseEndsDate}
           phaseEndsDatelabel={phaseEndsDatelabel}
         />
-      </Box> */}
+      </div>
       <RoundsDisplay
         rounds={roundContent}
         currentRound={phaseInfo.roundId}

@@ -6,6 +6,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        sm: ["14px", "1.25rem"],
+        base: ["16px", "1.25rem"],
+        lg: ["20px", "1.25rem"],
+        xl: ["24px", "1.25rem"],
+        "3xl": ["1.875rem", "1.75rem"],
+        header: ["36px", "1.25rem"],
+      },
       colors: {
         themeYellow: "#fffe53",
         bgGradientLighterBLue: "#2c5282",
