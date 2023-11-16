@@ -36,7 +36,7 @@ export const Hero = () => {
           <span className="font-fraunces text-md text-white">
             currently covering
           </span>
-          <span className="text-md md:text-lg lg:text-2xl font-semibold text-white font-fraunces pb-8">
+          <span className="text-md md:text-lg lg:text-2xl font-semibold text-white font-fraunces">
             Mr. Brightside by The Killers
           </span>
           <span className="text-sm md:text-md  text-white font-fraunces">

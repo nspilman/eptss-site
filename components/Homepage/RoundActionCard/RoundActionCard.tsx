@@ -81,15 +81,7 @@ export const RoundActionCard = ({
                     phase,
                   }}
                 />
-                <span
-                  // color="yellow.300"
-                  // fontWeight="300"
-                  // pt="4"
-                  // textAlign="center"
-                  className="text-themeYellow"
-                >
-                  {blurb}
-                </span>
+                <span className="text-themeYellow font-fraunces">{blurb}</span>
               </div>
             </div>
           )}
