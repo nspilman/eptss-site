@@ -31,9 +31,8 @@ export const Hero = () => {
           />
         </div>
       </div>
-      <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 md:mt-0 relative h-full">
-        <div className="md:mx-16 flex-col flex content-center">
-          <div className="absolute -inset-12 bg-gradient-to-r from-bgGradientLighterBLue to-themeYellow rounded-lg blur opacity-5 pointer-events-none group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+      <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 md:mt-16 relative h-full md:text-right md:justify-end">
+        <div className="flex-col flex md:mx-16">
           <span className="font-fraunces text-md text-white">
             currently covering
           </span>
