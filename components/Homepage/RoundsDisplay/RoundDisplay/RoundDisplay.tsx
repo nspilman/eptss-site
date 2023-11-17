@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Heading,
-  Link,
-  Text,
-} from "@chakra-ui/react";
+import { Heading, Link, Text } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { RoundDetails } from "types";
 
@@ -23,7 +15,7 @@ export const RoundDisplay = ({
   const showVotingUnderwayText =
     round.roundId === currentRound && isVotingPhase;
 
-  const headingText = `Round ${roundId} - ${
+  const headingText = `${roundId}. ${
     showVotingUnderwayText ? "Voting Underway" : `${title} by ${artist}`
   }`;
 
@@ -35,11 +27,11 @@ export const RoundDisplay = ({
   }
 
   return (
-    <Card width="80vw" my="2" bgGradient="linear(to-b, blue.800, blue.900)">
-      <CardHeader py="3" display="flex" justifyContent={"space-between"}>
-        <Heading as="h3" size="md">
+    <div className="relative">
+      <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientDarkerBLue bg-opacity-10 flex justify-between">
+        <span className="text-md md:text-lg text-white font-fraunces font-semibold">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
-        </Heading>
+        </span>
         {playlist && (
           <Link
             href={getPlaylistUrl(playlist)}
@@ -49,10 +41,8 @@ export const RoundDisplay = ({
             <Text color="yellow">Listen</Text>
           </Link>
         )}
-      </CardHeader>
-      <CardBody py="2">
         {!playlist && <Text>The round is underway!</Text>}
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 };

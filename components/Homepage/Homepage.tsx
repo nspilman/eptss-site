@@ -3,12 +3,11 @@ import { Hero } from "./Hero";
 import { HowItWorks } from "./HowItWorks";
 import Head from "next/head";
 import { Phase } from "services/PhaseMgmtService";
-import { Box, Stack } from "@chakra-ui/react";
 import { RoundsDisplay } from "./RoundsDisplay";
-import { RoundActionCard } from "./RoundActionCard";
 import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
 import { useUserSession } from "components/context/UserSessionContext";
+import { RoundActionCard } from "./RoundActionCard";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -50,12 +49,18 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   };
 
   return (
-    <Stack alignItems="center" justifyContent="center">
+    <div className="flex flex-col items-center">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <Hero />
-      <Box mt={-20} mb={12}>
+
+      <div className="pointer-events-none">
+        <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
+        <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
+        <div className="absolute top-28 left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
+      </div>
+      <div className="mt-8 md:-mt-20 mb-12">
         <RoundActionCard
           loading={isLoading}
           phase={phase}
@@ -66,14 +71,13 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
           phaseEndsDate={phaseEndsDate}
           phaseEndsDatelabel={phaseEndsDatelabel}
         />
-      </Box>
-
-      <HowItWorks />
+      </div>
       <RoundsDisplay
         rounds={roundContent}
         currentRound={phaseInfo.roundId}
         isVotingPhase={isVotingPhase}
       />
-    </Stack>
+      <HowItWorks />
+    </div>
   );
 };

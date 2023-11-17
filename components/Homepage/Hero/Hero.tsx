@@ -1,43 +1,54 @@
-import { Heading, Center, Box, VStack, Text } from "@chakra-ui/react";
-import Image from "next/image";
+import { Navigation } from "components/enum/navigation";
+import { Button } from "components/shared/Button";
+import Link from "next/link";
 
 export const Hero = () => {
   return (
-    <Center
-      h={{ base: "60vh", md: "80vh" }}
-      w="100%"
-      background="linear-gradient(var(--chakra-colors-blue-700), var(--chakra-colors-blue-900)), url('https://images.unsplash.com/photo-1458560871784-56d23406c091?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80') fixed"
-      backgroundSize="cover"
-      backgroundRepeat="no-repeat"
-      backgroundPosition="center"
-    >
-      <VStack alignItems="flex-start" px={{ base: "8", md: "16", lg: "24" }}>
-        <Text fontFamily="Fraunces" fontSize={"14"}>
-          every quarter
-        </Text>
-        <Heading as="h1" fontSize={{ base: "lg", md: "2xl", lg: "4xl" }}>
-          we all choose a song
-        </Heading>
-        <Heading as="h1" fontSize={{ base: "lg", md: "2xl", lg: "4xl" }}>
-          we all cover it
-        </Heading>
-        <Box>
-          <Heading
-            as="h1"
-            mt={"16"}
-            fontSize={{ base: "lg", md: "2xl", lg: "4xl" }}
-          >
-            everyone plays the same song
-          </Heading>
-          <Image
-            src="/pencil-underline.png"
-            alt="pencilunderline"
-            layout="responsive"
-            height={"10px"}
-            width={"100%"}
+    <div className="w-full flex flex-col md:flex-row pt-32 pb-8 md:py-52 bg-gradient-to-b items-center md:items-start">
+      <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center">
+        <div className="md:px-16">
+          <div className="flex flex-col">
+            <span className="text-themeYellow text-lg md:text-xl lg:text-3xl font-bold font-fraunces">
+              creative fulfillment
+            </span>
+            <span className=" text-themeYellow text-md md:text-lg lg:text-2xl font-semibold font-fraunces">
+              with fewer decisions
+            </span>
+          </div>
+          <div className="py-8">
+            <span className="font-fraunces text-sm md:text-md text-white animation-delay-2000">
+              Sign up with a song you want to cover.
+              <b> Everyone</b> votes, and the most popular is the song that{" "}
+              <b>everyone plays</b>. You{`'`}ve got a creative assignment, a
+              deadline and a community of musicians doing the same thing. Want
+              in? Sign up with your email. It{`'`}s free, and we do this every
+              quarter.
+            </span>
+          </div>
+          <Button
+            href={Navigation.SignUp}
+            title="Join the Creative Community"
           />
-        </Box>
-      </VStack>
-    </Center>
+        </div>
+      </div>
+      <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 md:mt-16 relative h-full md:text-right md:justify-end">
+        <div className="flex-col flex md:mx-16">
+          <span className="font-fraunces text-md text-white">
+            currently covering
+          </span>
+          <span className="text-md md:text-lg lg:text-2xl font-semibold text-white font-fraunces">
+            Mr. Brightside by The Killers
+          </span>
+          <span className="text-md  text-white font-fraunces">
+            due december 4th -{" "}
+            <Link href={Navigation.Submit}>
+              <a className="text-themeYellow font-fraunces text-md">
+                submit your cover
+              </a>
+            </Link>
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
