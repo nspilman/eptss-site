@@ -16,8 +16,8 @@ export default async function handler(
     data: { session },
   } = await supabase.auth.getSession();
   const id = session?.user?.id;
-  const email = session?.user.email;
-  if (!id || !email) {
+  const username = session?.user.user_metadata["username"];
+  if (!id || !username) {
     res.status(401);
     return;
   }
@@ -29,7 +29,7 @@ export default async function handler(
       voteSummary,
       signups,
       submissions,
-      email,
+      username,
     });
   } catch (e) {
     res.status(500).json({ errorMessage: (e as Error).message });

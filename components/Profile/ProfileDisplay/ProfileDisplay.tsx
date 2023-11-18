@@ -3,6 +3,7 @@ import { DataTable } from "components/shared/DataTable";
 import { Loading } from "components/shared/Loading";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { getSupabaseClient } from "utils/getSupabaseClient";
 
 export interface VoteSummary {
   artist: string;
@@ -17,7 +18,7 @@ export interface VoteSummary {
 
 export interface ApiResponse {
   voteSummary: VoteSummary[];
-  email: string;
+  username: string;
   submissions: {
     round_id: number;
     title: string;
@@ -81,7 +82,7 @@ export const ProfileDisplay = () => {
     return <Loading />;
   }
 
-  const { signups, voteSummary, submissions, email } = profileData;
+  const { signups, voteSummary, submissions, username } = profileData;
 
   const hasNoRecords = !signups.length;
   const roundSignupsCount = [
@@ -98,7 +99,7 @@ export const ProfileDisplay = () => {
       p="4"
       borderRadius="md"
     >
-      <Heading>{email}</Heading>
+      <h1 className="text-white font-fraunces text-xl">{username}</h1>
       {hasNoRecords ? (
         <Stack p="20" borderRadius="md" alignItems="center">
           <Heading size="md" py="4">
