@@ -3,7 +3,6 @@ import { DataTable } from "components/shared/DataTable";
 import { Loading } from "components/shared/Loading";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getSupabaseClient } from "utils/getSupabaseClient";
 
 export interface VoteSummary {
   artist: string;
@@ -99,11 +98,11 @@ export const ProfileDisplay = () => {
       p="4"
       borderRadius="md"
     >
-      <h1 className="text-white font-fraunces text-xl">{username}</h1>
+      <h1 className="text-white font-fraunces text-xl font-bold">{username}</h1>
       {hasNoRecords ? (
         <Stack p="20" borderRadius="md" alignItems="center">
           <Heading size="md" py="4">
-            Welome to Everyone Plays the Same Song!
+            Welcome to Everyone Plays the Same Song!
           </Heading>
           <Text textAlign="center">
             {`We're excited that you're here, and can't wait to hear your music! You'll receive an email when sign ups for the next round are open. In the meantime, check out past rounds!`}
