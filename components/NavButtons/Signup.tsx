@@ -42,8 +42,7 @@ export const SignupButton = (): ReactElement => {
         )
       ) : (
         <button
-          className=" h-10 py-2 px-4 border-2 font-bold text-white border-white bg-transparent flex items-center rounded-md
-        hover:bg-white hover:text-black hover:shadow-NavShadow hover:cursor-pointer"
+          className="btn-main"
           onClick={setIsOpen}
         >
           Sign up / Log In!
