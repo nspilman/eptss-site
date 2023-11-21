@@ -1,7 +1,3 @@
-import { Button, Link } from "@chakra-ui/react";
-
-export const RoundsButton = () => (
-  <Link href="#rounds" variant="button">
-    <Button>Rounds</Button>
-  </Link>
-);
+import { Button } from "components/shared/Button";
+import { Navigation } from "components/enum/navigation";
+export const RoundsButton = () => <Button href={Navigation.Rounds} title="Rounds" />;
