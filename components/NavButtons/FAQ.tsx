@@ -1,4 +1,7 @@
 import { Navigation } from "components/enum/navigation";
-import { Button } from "components/shared/Button";
 
-export const FAQButton = () => <Button href={Navigation.FAQ} title="FAQ" />;
+export const FAQButton = () => (
+  <button className="btn-main">
+    <a href={Navigation.FAQ}>FAQ</a>
+  </button>
+);

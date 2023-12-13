@@ -1,4 +1,4 @@
-import { Button, Heading, Stack, TableContainer, Text } from "@chakra-ui/react";
+import { Heading, Stack, TableContainer, Text } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { Loading } from "components/shared/Loading";
 import { useRouter } from "next/router";
@@ -107,7 +107,9 @@ export const ProfileDisplay = () => {
           <Text textAlign="center">
             {`We're excited that you're here, and can't wait to hear your music! You'll receive an email when sign ups for the next round are open. In the meantime, check out past rounds!`}
           </Text>
-          <Button onClick={() => router.push("/#rounds")}> Rounds </Button>
+          <button className="btn-main" onClick={() => router.push("/#rounds")}>
+            Rounds
+          </button>
         </Stack>
       ) : (
         <>

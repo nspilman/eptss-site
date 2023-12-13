@@ -1,4 +1,3 @@
-import { Button, Text } from "@chakra-ui/react";
 import { Phase } from "services/PhaseMgmtService";
 
 export interface RoundActionFunctions {
@@ -28,7 +27,6 @@ export const CTA = ({
 }: Props) => {
   const {
     onProfile,
-    onSignup,
     onSignupAndJoinRound,
     onJoinRound,
     onVote,
@@ -37,31 +35,43 @@ export const CTA = ({
   } = roundActionFunctions;
 
   const RoundDetailsButton = () => (
-    <Button onClick={onRoundDetails}>{`Round ${roundId} Details`}</Button>
+    <button onClick={onRoundDetails}>{`Round ${roundId} Details`}</button>
   );
 
   if (!isAuthed) {
     if (phase === "signups") {
-      return <Button onClick={onSignupAndJoinRound}>I&apos;m in!</Button>;
+      return (
+        <button className="btn-main" onClick={onSignupAndJoinRound}>
+          I&apos;m in!
+        </button>
+      );
     } else {
-      return <Button onClick={onSignup}>Sign Up</Button>;
+      return <button className="btn-main">Sign Up</button>;
     }
   }
   switch (phase) {
     case "signups":
       return (
-        <Button isDisabled={hasCompletedPhase} onClick={onJoinRound}>
+        <button
+          className="btn-main"
+          disabled={hasCompletedPhase}
+          onClick={onJoinRound}
+        >
           {hasCompletedPhase ? `You're in!` : `I'm in!`}
-        </Button>
+        </button>
       );
 
     case "voting":
       return (
         <>
           <RoundDetailsButton />
-          <Button onClick={onVote} isDisabled={hasCompletedPhase}>
+          <button
+            className="btn-main"
+            onClick={onVote}
+            disabled={hasCompletedPhase}
+          >
             {hasCompletedPhase ? "You've Voted" : "Vote Now"}
-          </Button>
+          </button>
         </>
       );
 
@@ -69,9 +79,13 @@ export const CTA = ({
       return (
         <>
           <RoundDetailsButton />
-          <Button isDisabled={hasCompletedPhase} onClick={onSubmit}>
+          <button
+            className="btn-main"
+            disabled={hasCompletedPhase}
+            onClick={onSubmit}
+          >
             {hasCompletedPhase ? `You've Submitted!` : "Submit My Cover"}
-          </Button>
+          </button>
         </>
       );
     case "celebration":
@@ -79,9 +93,13 @@ export const CTA = ({
         <>
           <RoundDetailsButton />
           {hasCompletedPhase ? (
-            <Button onClick={onProfile}>Profile</Button>
+            <button className="btn-main" onClick={onProfile}>
+              Profile
+            </button>
           ) : (
-            <Button onClick={onSubmit}>Submit My Cover</Button>
+            <button className="btn-main" onClick={onSubmit}>
+              Submit My Cover
+            </button>
           )}
         </>
       );

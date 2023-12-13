@@ -1,5 +1,4 @@
 import { Navigation } from "components/enum/navigation";
-import { Button } from "components/shared/Button";
 import Link from "next/link";
 
 export const Hero = () => {
@@ -25,10 +24,9 @@ export const Hero = () => {
               quarter.
             </span>
           </div>
-          <Button
-            href={Navigation.SignUp}
-            title="Join the Creative Community"
-          />
+          <button className="btn-main">
+            <a href={Navigation.SignUp}>Join the Creative Community</a>
+          </button>
         </div>
       </div>
       <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 md:mt-16 relative h-full md:text-right md:justify-end">

@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-  Button,
   FormControl,
   FormHelperText,
   FormLabel,
@@ -19,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
+import { Loading } from "../Loading";
 
 export const EmailAuthModal = ({
   isOpen,
@@ -124,19 +124,42 @@ export const EmailAuthModal = ({
 
           <ModalFooter>
             {!onClose && (
-              <Button variant="secondary" onClick={() => router.push("/")}>
+              // outline: {
+              //   border: "2px solid",
+              //   borderColor: "white",
+              //   color: "white",
+              //   _hover: {
+              //     textDecoration: "auto",
+              //     boxShadow: "0 0 3px 3px var(--chakra-colors-yellow-300)",
+              //   },
+              // },
+              // {
+              //   fontWeight: "bold",
+              //   borderRadius: "base",
+              //   _hover: {
+              //     bg: "white",
+              //     transition: "100ms",
+              //     color: "blue.900",
+              //   },
+              // },
+              <button
+                className="border-2 uppercase font-bold border-white shadow-md mx-4 p-2 shadow-themeYellow hover:border-themeYellow rounded"
+                onClick={() => router.push("/")}
+              >
                 Go back Home
-              </Button>
+              </button>
             )}
-            <Button
-              colorScheme="blue"
-              variant="solid"
-              onClick={onSendLoginLink}
-              disabled={loading}
-              isLoading={loading}
-            >
-              Send Login Link
-            </Button>
+            {loading ? (
+              <Loading />
+            ) : (
+              <button
+                className="btn-main bg-blue-500 uppercase hover:shadow-white hover:bg-blue-500"
+                onClick={onSendLoginLink}
+                disabled={loading}
+              >
+                Send Login Link
+              </button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

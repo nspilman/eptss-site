@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Link, Stack, Text } from "@chakra-ui/react";
+import { Box, Heading, Link, Stack, Text } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -201,12 +201,12 @@ export const RoundSummary = ({
         <Stack direction="row" justifyContent="space-between" width="100%">
           {navigation.previous && (
             <a href={`/round/${navigation.previous}`}>
-              <Button size="sm">Round {navigation.previous}</Button>
+              <button className="btn-main">Round {navigation.previous}</button>
             </a>
           )}
           {navigation.next && (
             <a href={`/round/${navigation.next}`}>
-              <Button size="sm">Round {navigation.next}</Button>
+              <button className="btn-main">Round {navigation.next}</button>
             </a>
           )}
         </Stack>

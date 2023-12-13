@@ -2,7 +2,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import React from "react";
 import { InputField } from "./InputField";
 import { InputType } from "./types";
-import { Box, Button, Center, Heading, Stack } from "@chakra-ui/react";
+import { Box, Center, Heading, Stack } from "@chakra-ui/react";
 
 interface Props<T extends FieldValues> {
   onSubmit: (signupModel: T) => void;
@@ -43,9 +43,13 @@ export function Form<T extends FieldValues>({
               );
             })}
           </Center>
-          <Button type="submit" data-testid="form-submission">
+          <button
+            className="btn-main"
+            type="submit"
+            data-testid="form-submission"
+          >
             Submit
-          </Button>
+          </button>
         </Stack>
       </form>
     </Stack>

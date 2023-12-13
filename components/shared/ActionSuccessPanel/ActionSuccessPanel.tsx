@@ -1,4 +1,4 @@
-import { Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { Heading, Stack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -39,7 +39,7 @@ export const ActionSuccessPanel = ({
         {thankyou}
       </Text>
       <Link href="/#rounds">
-        <Button>Home</Button>
+        <button className="btn-main">Home</button>
       </Link>
     </Stack>
   );

@@ -69,18 +69,20 @@ export const RoundActionCard = ({
               <Spinner color="white" />
             </div>
           ) : (
-            <div className="flex flex-col">
+            <div className="flex flex-col items-center">
               <div className="text-white">{labelContent}</div>
-              <div className="pt-6 gap-4 flex flex-col">
-                <CTA
-                  {...{
-                    roundActionFunctions,
-                    roundId,
-                    hasCompletedPhase,
-                    isAuthed,
-                    phase,
-                  }}
-                />
+              <div className="pt-4 gap-4 flex flex-col items-center">
+                <div>
+                  <CTA
+                    {...{
+                      roundActionFunctions,
+                      roundId,
+                      hasCompletedPhase,
+                      isAuthed,
+                      phase,
+                    }}
+                  />
+                </div>
                 <span className="text-themeYellow font-fraunces">{blurb}</span>
               </div>
             </div>

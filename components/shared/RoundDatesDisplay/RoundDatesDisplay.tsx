@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Heading,
   Popover,
   PopoverArrow,
@@ -61,9 +60,9 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Button>
+        <button className="btn-main">
           <CalendarIcon />
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent background="blue.900">
         <PopoverArrow />
@@ -73,9 +72,9 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
             <Box width="50%">
               <Heading size="md">{displayedRoundName} round</Heading>
             </Box>
-            <Button size="xs" onClick={handleButtonClick}>
+            <button className="btn-main" onClick={handleButtonClick}>
               <Text size="xs">show {ctaName} round</Text>
-            </Button>
+            </button>
           </Stack>
         </PopoverHeader>
         <PopoverBody>
