@@ -24,6 +24,7 @@ module.exports = {
       },
       fontFamily: {
         fraunces: ["Fraunces", "serif"],
+        roboto: ["Roboto", "serif"],
       },
       animation: {
         blob: "blob 7s infinite",

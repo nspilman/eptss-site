@@ -1,4 +1,4 @@
-import { Heading, Link, Stack, Text } from "@chakra-ui/react";
+import { Heading, Link, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -155,10 +155,10 @@ export const RoundSummary = ({
 
         {phase === "Complete" && (
           <>
-            <Text>
+            <span className="text-md font-light font-roboto text-white">
               Submitted by:{" "}
               <Link href={`/profile/${submitter}`}>{submitter}</Link>
-            </Text>
+            </span>
             <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
             <div className="p-10">
               <DataTable

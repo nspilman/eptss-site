@@ -1,4 +1,3 @@
-import { Text } from "@chakra-ui/react";
 import { ButtonsContainer } from "components/ButtonsContainer";
 import { FAQButton, RoundsButton, SignupButton } from "components/NavButtons";
 
@@ -22,13 +21,15 @@ export const HowItWorks = () => {
                   <span>Cover the song that wins</span>
                   <span>Celebrate with your peers</span>
                 </div>
-                <Text py="1">
+                <span className="text-md font-light font-roboto text-white py-1">
                   {`Everyone Plays the Same Song is a community project open to musicians of all skill levels, inviting participants to cover the same song each round.`}
-                </Text>
-                <Text py="1">
+                </span>
+                <span className="text-md font-light font-roboto text-white py-1">
                   {`Sign up by creating an account and submit the song you'd like to cover for the upcoming round. Songs are chosen based on participant voting, using a scale from 1 (not interested in covering) to 5 (very interested in covering). Once the song is selected, you will have just over a month to submit your SoundCloud cover link.  The fun doesn't stop there - after submission, we compile all covers into a playlist for a communal listening party. `}
-                </Text>
-                <Text py="1">{`No special equipment or software is required - just your passion for music. You choose which rounds to participate in, allowing you to be part of the song selection and music-making process as per your interest and convenience. Join us for a celebration of music and community! We can't wait to hear your interpretation of... the same song!`}</Text>
+                </span>
+                <span className="text-md font-light font-roboto text-white py-1">
+                  {`No special equipment or software is required - just your passion for music. You choose which rounds to participate in, allowing you to be part of the song selection and music-making process as per your interest and convenience. Join us for a celebration of music and community! We can't wait to hear your interpretation of... the same song!`}
+                </span>
               </div>
             </div>
           </div>

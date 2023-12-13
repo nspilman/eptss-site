@@ -8,7 +8,6 @@ import {
   Td,
   TableContainer,
   Heading,
-  Text,
 } from "@chakra-ui/react";
 
 interface Header<T> {
@@ -62,9 +61,9 @@ export function DataTable<T extends string>({
         <Heading size="sm" pb="1">
           {title}
         </Heading>
-        <Text size="xsm" fontWeight="light">
+        <span className="text-sm font-light font-roboto text-white text-center my-4">
           {subtitle}
-        </Text>
+        </span>
       </div>
       <TableContainer
         width="90vw"
@@ -91,7 +90,9 @@ export function DataTable<T extends string>({
           </Thead>
           {isEmpty ? (
             <div>
-              <Text fontWeight="bold">No records to display</Text>
+              <span className="text-md font-bold font-roboto text-white text-center my-4">
+                No records to display
+              </span>
             </div>
           ) : (
             <Tbody>
@@ -99,7 +100,9 @@ export function DataTable<T extends string>({
                 <Tr key={i}>
                   {headers.map(({ key, className }) => (
                     <Td key={key} className={className}>
-                      <Text>{row[key]}</Text>
+                      <span className="text-md font-light font-roboto text-white text-center my-4">
+                        {row[key]}
+                      </span>
                     </Td>
                   ))}
                 </Tr>

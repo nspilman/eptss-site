@@ -38,10 +38,16 @@ export const RoundDisplay = ({
             target="_blank"
             rel="noreferrer"
           >
-            <Text color="yellow">Listen</Text>
+            <span className="text-md font-bold font-roboto text-themeYellow hover:text-white py-1">
+              Listen
+            </span>
           </Link>
         )}
-        {!playlist && <Text>The round is underway!</Text>}
+        {!playlist && (
+          <span className="text-md font-light font-roboto text-white">
+            The round is underway!
+          </span>
+        )}
       </div>
     </div>
   );

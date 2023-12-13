@@ -1,4 +1,4 @@
-import { Heading, Stack, Text, UnorderedList } from "@chakra-ui/react";
+import { Heading, Stack, Text } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import { BlogPost } from "types/BlogPost";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
@@ -20,14 +20,18 @@ const newTheme = {
   p: (props: { children: ReactNode }) => {
     const { children } = props;
     return (
-      <Text p={2} fontSize="16">
+      <p className="text-md font-light font-roboto text-white p-2">
         {children}
-      </Text>
+      </p>
     );
   },
   hr: (props: { children: ReactNode }) => {
     const { children } = props;
-    return <Text p="4">{children}</Text>;
+    return (
+      <span className="text-md font-light font-roboto text-white p-4">
+        {children}
+      </span>
+    );
   },
 };
 

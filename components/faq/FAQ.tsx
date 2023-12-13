@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, Card, CardHeader, CardBody, Heading } from "@chakra-ui/react";
+import { Card, CardHeader, CardBody, Heading } from "@chakra-ui/react";
 import { PageContainer } from "components/shared/PageContainer";
 
 type FAQItem = {
@@ -88,7 +88,9 @@ const FAQList: React.FC<FAQListProps> = ({ items }) => {
             </CardHeader>
           </h2>
           <CardBody py="2">
-            <Text>{item.answer}</Text>
+            <span className="text-md font-light font-roboto text-white">
+              {item.answer}
+            </span>
           </CardBody>
         </Card>
       ))}

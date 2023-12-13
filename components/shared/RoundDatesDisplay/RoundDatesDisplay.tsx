@@ -10,7 +10,6 @@ import {
   Stack,
   Table,
   Td,
-  Text,
   Th,
   Tr,
 } from "@chakra-ui/react";
@@ -72,7 +71,9 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
               <Heading size="md">{displayedRoundName} round</Heading>
             </div>
             <button className="btn-main" onClick={handleButtonClick}>
-              <Text size="xs">show {ctaName} round</Text>
+              <span className="text-sm font-light font-roboto text-white">
+                show {ctaName} round
+              </span>
             </button>
           </Stack>
         </PopoverHeader>
@@ -81,24 +82,30 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
             <Table>
               <Tr>
                 <Th>
-                  <Text>Milestone</Text>
+                  <span className="text-md font-light font-roboto text-white">
+                    Milestone
+                  </span>
                 </Th>
                 <Th>
-                  <Text>Date</Text>
+                  <span className="text-md font-light font-roboto text-white">
+                    Date
+                  </span>
                 </Th>
               </Tr>
               {milestones.map(({ name, date }) => (
                 <Tr key={name}>
                   <Td>
-                    <Text fontSize="sm">{name}</Text>
+                    <span className="text-sm font-light font-roboto text-white">
+                      {name}
+                    </span>
                   </Td>
                   <Td>
-                    <Text fontSize="sm">
+                    <span className="text-sm font-light font-roboto text-white">
                       {format(
                         subMilliseconds(new Date(date), 1),
                         "EEEE, MMMM do, yyyy"
                       )}
-                    </Text>
+                    </span>
                   </Td>
                 </Tr>
               ))}

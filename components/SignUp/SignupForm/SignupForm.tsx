@@ -1,4 +1,4 @@
-import { Center, Link, Stack, Text } from "@chakra-ui/react";
+import { Center, Link, Stack } from "@chakra-ui/react";
 import { useUserSession } from "components/context/UserSessionContext";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
@@ -35,9 +35,15 @@ export const SignupForm = ({
         title={title}
         description={
           <Stack alignItems="center">
-            <Text as="p">Signing up as {user.email}</Text>
-            <Text as="p">Sign up with the song you want to cover!</Text>
-            <Text>Signups close Midnight of {signupsCloseDateLabel}.</Text>
+            <p className="text-md font-light font-roboto text-white">
+              Signing up as {user.email}
+            </p>
+            <p className="text-md font-light font-roboto text-white">
+              Sign up with the song you want to cover!
+            </p>
+            <p className="text-md font-light font-roboto text-white">
+              Signups close Midnight of {signupsCloseDateLabel}.
+            </p>
             <Link href={Navigation.FAQ} color="yellow.300">
               FAQ Here
             </Link>

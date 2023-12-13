@@ -1,4 +1,4 @@
-import { Heading, Stack, Text } from "@chakra-ui/react";
+import { Heading, Stack } from "@chakra-ui/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -24,9 +24,9 @@ export const ActionSuccessPanel = ({
       <Heading as="h1" size="md" textAlign="center" fontWeight="300">
         {header}
       </Heading>
-      <Text textAlign="center" fontWeight="200" my="4">
+      <span className="text-md font-light font-roboto text-white text-center my-4">
         {body}
-      </Text>
+      </span>
       <Image
         src={src}
         alt={alt}
@@ -35,9 +35,9 @@ export const ActionSuccessPanel = ({
         placeholder={"blur"}
         blurDataURL={blurSrc}
       />
-      <Text fontWeight="200" my="4">
+      <span className="text-md font-light font-roboto text-white text-center my-4">
         {thankyou}
-      </Text>
+      </span>
       <Link href="/#rounds">
         <button className="btn-main">Home</button>
       </Link>

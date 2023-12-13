@@ -13,7 +13,6 @@ import {
   ModalOverlay,
   useToast,
   Heading,
-  Text,
 } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
@@ -64,9 +63,9 @@ export const EmailAuthModal = ({
               <Heading size="xsm" color="black">
                 Email Sent
               </Heading>
-              <Text color="black">
+              <span className="text-md font-light font-roboto text-black text-center my-4">
                 We sent you a login link. Check your email!
-              </Text>
+              </span>
             </div>
           ),
         });

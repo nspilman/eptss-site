@@ -1,4 +1,4 @@
-import { Card, CardHeader, Text, Heading, Link, Stack } from "@chakra-ui/react";
+import { Card, CardHeader, Heading, Link, Stack } from "@chakra-ui/react";
 import { BlogPost } from "types/BlogPost";
 
 export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
@@ -9,12 +9,12 @@ export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
         <Card bg="bgTransparent" key={slug} mx="8" width="100%">
           <CardHeader>
             <Link href={`blog/${slug}`}>
-              <Heading size="sm" pb="4">
+              <h2 className="text-white pb-4 text-lg font-bold font-fraunces">
                 {title}
-              </Heading>
-              <Text size="sm" fontWeight={300}>
+              </h2>
+              <span className="text-md font-light font-roboto text-white">
                 {subtitle}
-              </Text>
+              </span>
             </Link>
           </CardHeader>
         </Card>

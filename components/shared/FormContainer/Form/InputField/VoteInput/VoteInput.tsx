@@ -39,9 +39,9 @@ export function VoteInput<T extends FieldValues>({
         </Stack>
       </RadioGroup>
       <Stack direction="row">
-        <Text size="xs" fontWeight="100" color="blackAlpha.800">
+        <span className="text-md font-light font-roboto text-black-800 text-center my-4">
           Absolutely not! ---------- yes please!!{" "}
-        </Text>
+        </span>
       </Stack>
     </Stack>
   );
