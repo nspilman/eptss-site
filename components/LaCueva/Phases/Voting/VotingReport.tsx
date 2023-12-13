@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { Celebration } from "../Celebration/Celebration";
 import { AggregateVoteTable } from "./AggregateVoteTable";
 import { OutstandingVotes } from "./OutstandingVotes/OutstandingVotes";
@@ -13,11 +12,11 @@ export const VotingReport = ({
   return (
     <div>
       Voting: {opens} - {closes}
-      <Box>
+      <div>
         {/* <OutstandingVotes /> */}
         <Celebration />
         {/* <AggregateVoteTable /> */}
-      </Box>
+      </div>
     </div>
   );
 };

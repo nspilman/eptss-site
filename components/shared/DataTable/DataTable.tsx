@@ -9,7 +9,6 @@ import {
   TableContainer,
   Heading,
   Text,
-  Box,
 } from "@chakra-ui/react";
 
 interface Header<T> {
@@ -59,14 +58,14 @@ export function DataTable<T extends string>({
 
   return (
     <>
-      <Box pb="4">
+      <div className="pb-4">
         <Heading size="sm" pb="1">
           {title}
         </Heading>
         <Text size="xsm" fontWeight="light">
           {subtitle}
         </Text>
-      </Box>
+      </div>
       <TableContainer
         width="90vw"
         overflowX="scroll"
@@ -91,9 +90,9 @@ export function DataTable<T extends string>({
             </Tr>
           </Thead>
           {isEmpty ? (
-            <Box>
+            <div>
               <Text fontWeight="bold">No records to display</Text>
-            </Box>
+            </div>
           ) : (
             <Tbody>
               {rows.map((row, i) => (

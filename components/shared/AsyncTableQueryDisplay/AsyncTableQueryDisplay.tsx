@@ -1,4 +1,4 @@
-import { Box, Heading } from "@chakra-ui/react";
+import { Heading } from "@chakra-ui/react";
 import { PostgrestError } from "@supabase/supabase-js";
 import { DataTable } from "components/shared/DataTable";
 import { useEffect, useState } from "react";
@@ -35,17 +35,17 @@ export function AsyncTableQueryDisplay<T extends string>({
   }, []);
 
   return (
-    <Box>
+    <div>
       {isLoading ? (
         <Heading>loading</Heading>
       ) : (
-        <Box>
+        <div>
           {summaryFunction && (
             <SummaryDisplay {...summaryFunction} data={payload} />
           )}
           <DataTable headers={headers} rows={payload} />
-        </Box>
+        </div>
       )}
-    </Box>
+    </div>
   );
 }

@@ -12,7 +12,6 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
-  Box,
   Heading,
   Text,
 } from "@chakra-ui/react";
@@ -61,19 +60,14 @@ export const EmailAuthModal = ({
           duration: 8000,
           isClosable: true,
           render: () => (
-            <Box
-              background="white"
-              border="4px solid"
-              borderColor="yellow.500"
-              p="4"
-            >
+            <div className="bg-white p-4 border-themeYellow">
               <Heading size="xsm" color="black">
                 Email Sent
               </Heading>
               <Text color="black">
                 We sent you a login link. Check your email!
               </Text>
-            </Box>
+            </div>
           ),
         });
         onClose?.();
@@ -90,7 +84,7 @@ export const EmailAuthModal = ({
   };
 
   return (
-    <Box data-testid="email-auth-modal">
+    <div data-testid="email-auth-modal">
       <Modal
         isOpen={isOpen}
         onClose={onClose || (() => {})}
@@ -163,6 +157,6 @@ export const EmailAuthModal = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Box>
+    </div>
   );
 };

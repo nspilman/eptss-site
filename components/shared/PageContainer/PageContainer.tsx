@@ -1,4 +1,4 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import Head from "next/head";
 import React from "react";
 
@@ -10,7 +10,7 @@ export const PageContainer = ({
   title: string;
 }) => {
   return (
-    <Box p="0" width="100%">
+    <div className="p-0 w-100">
       <Head>
         <title>{`${title} | Everyone Plays the Same Song`}</title>
       </Head>
@@ -23,6 +23,6 @@ export const PageContainer = ({
       >
         {children}
       </Flex>
-    </Box>
+    </div>
   );
 };

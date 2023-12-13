@@ -1,17 +1,11 @@
-import { Stack } from "@chakra-ui/react";
-
 export const ButtonsContainer = ({
   children,
 }: {
   children: React.ReactElement[];
 }) => {
   return (
-    <Stack
-      direction={{ base: "column", md: "row" }}
-      justifyContent="center"
-      alignItems="center"
-    >
+    <div className="flex flex-col md:flex-row justify-center items-center">
       {children}
-    </Stack>
+    </div>
   );
 };

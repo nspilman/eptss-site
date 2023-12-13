@@ -7,7 +7,7 @@ import { useUserSession } from "components/context/UserSessionContext";
 import { SignInGate } from "components/shared/SignInGate";
 import { PageContainer } from "components/shared/PageContainer";
 import { Phase } from "services/PhaseMgmtService";
-import { Box, Heading } from "@chakra-ui/react";
+import { Heading } from "@chakra-ui/react";
 
 export interface Props {
   roundId: number;

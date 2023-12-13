@@ -1,5 +1,3 @@
-import { Box } from "@chakra-ui/react";
-
 export const Footer = () => (
-  <Box as="footer" display="flex" justifyContent="center" py="2"></Box>
+  <div id="footer" className="flex py-2 justify-center" />
 );

@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Heading, Text } from "@chakra-ui/react";
 
 interface Props {
   signupsCloseDateLabel?: string;
@@ -9,11 +9,11 @@ export const AlreadySignedUp = ({ signupsCloseDateLabel }: Props) => {
     throw new Error("signupsCloseDateLabel must be defined");
   }
   return (
-    <Box>
+    <div>
       <Heading size="lg">{`You're signed up!`}</Heading>
       <Text>
         {signupsCloseDateLabel} and the round will begin promptly after that!
       </Text>
-    </Box>
+    </div>
   );
 };

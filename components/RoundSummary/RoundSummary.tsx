@@ -1,4 +1,4 @@
-import { Box, Heading, Link, Stack, Text } from "@chakra-ui/react";
+import { Heading, Link, Stack, Text } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -148,8 +148,8 @@ export const RoundSummary = ({
             {title} by {artist}
           </Heading>
         )}
-        <Box
-          width={elementWidthsByBreakpoint}
+        <div
+          className={`w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]`}
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
 
@@ -160,7 +160,7 @@ export const RoundSummary = ({
               <Link href={`/profile/${submitter}`}>{submitter}</Link>
             </Text>
             <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
-            <Box px="10">
+            <div className="p-10">
               <DataTable
                 headers={submissionsDisplayHeaders}
                 rows={(submissions || []).map(
@@ -172,7 +172,7 @@ export const RoundSummary = ({
                   })
                 )}
               />
-            </Box>
+            </div>
           </>
         )}
 
@@ -191,12 +191,14 @@ export const RoundSummary = ({
         )}
 
         {!isVotingPhase && (
-          <Box width={elementWidthsByBreakpoint} overflow="scroll">
+          <div
+            className={`w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px] overflow-scroll`}
+          >
             <StackedBarChart
               data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
               title="Vote Breakdown Bar Chart"
             />
-          </Box>
+          </div>
         )}
         <Stack direction="row" justifyContent="space-between" width="100%">
           {navigation.previous && (

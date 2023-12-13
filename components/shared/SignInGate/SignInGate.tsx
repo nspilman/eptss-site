@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { useUserSession } from "components/context/UserSessionContext";
 import React from "react";
 import { EmailAuthModal } from "../EmailAuthModal";
@@ -14,8 +13,8 @@ export const SignInGate = ({ children }: { children: React.ReactElement }) => {
   return !!user ? (
     <>{children}</>
   ) : (
-    <Box>
+    <div>
       <EmailAuthModal redirectUrl={window.location.href} isOpen={true} />
-    </Box>
+    </div>
   );
 };

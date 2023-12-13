@@ -1,5 +1,4 @@
 import {
-  Box,
   Heading,
   Popover,
   PopoverArrow,
@@ -69,16 +68,16 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
         <PopoverCloseButton />
         <PopoverHeader>
           <Stack direction="row">
-            <Box width="50%">
+            <div className="v-[50%]">
               <Heading size="md">{displayedRoundName} round</Heading>
-            </Box>
+            </div>
             <button className="btn-main" onClick={handleButtonClick}>
               <Text size="xs">show {ctaName} round</Text>
             </button>
           </Stack>
         </PopoverHeader>
         <PopoverBody>
-          <Box>
+          <div>
             <Table>
               <Tr>
                 <Th>
@@ -104,7 +103,7 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
                 </Tr>
               ))}
             </Table>
-          </Box>
+          </div>
         </PopoverBody>
       </PopoverContent>
     </Popover>

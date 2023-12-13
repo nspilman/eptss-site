@@ -1,5 +1,4 @@
 import {
-  Box,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -44,14 +43,14 @@ export function InputField<T extends FieldValues>({
       direction="column"
     >
       <FormControl isRequired={!field.optional}>
-        <Box>
+        <div>
           <FormLabel
             color="blackAlpha.700"
             fontWeight="500"
             fontSize="1.5rem"
             pb="2"
           >{`${label}`}</FormLabel>
-        </Box>
+        </div>
         {type === "vote" ? (
           <VoteInput register={register} field={fieldId} />
         ) : (
@@ -63,7 +62,7 @@ export function InputField<T extends FieldValues>({
             placeholder={field.placeholder}
           />
         )}
-        <Box>
+        <div>
           {errors[fieldId] ? (
             <FormErrorMessage data-testid={getFieldErrorId(fieldId)}>
               This field is required
@@ -85,7 +84,7 @@ export function InputField<T extends FieldValues>({
               )}
             </FormHelperText>
           )}
-        </Box>
+        </div>
       </FormControl>
     </Flex>
   );
