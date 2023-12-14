@@ -1,3 +1,4 @@
+import { useRound } from "components/context/RoundContext";
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { additionalComments } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
@@ -45,7 +46,13 @@ export const useSignup = (roundId: number, userId: string) => {
       size: "large" as const,
     },
     additionalComments,
-  ];
+  ].filter((field) => {
+    roundId === 21
+      ? ["songTitle", "artist", "youtubeLink"].includes(field.field)
+      : true;
+  });
+
+  // const if
 
   return {
     signUp,
