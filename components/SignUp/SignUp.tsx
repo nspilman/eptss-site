@@ -16,7 +16,8 @@ export const SignUp = () => {
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
   const shouldRenderForm = !!(
-    (areSignupsOpen && roundId && signupsCloseDateLabel && false) //temporarily shut down signups
+    (areSignupsOpen && roundId && signupsCloseDateLabel)
+    //  && false) //temporarily shut down signups
   );
 
   return (
