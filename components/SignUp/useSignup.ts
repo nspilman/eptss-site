@@ -1,4 +1,3 @@
-import { useRound } from "components/context/RoundContext";
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { additionalComments } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
@@ -7,8 +6,24 @@ import { SignupEntity, SignupModel } from "./types";
 export const useSignup = (roundId: number, userId: string) => {
   const supabase = useSupabase();
 
-  const signUp = async (signupModel: SignupModel) => {
-    const signupEntity = convertModelToEntity(signupModel, roundId, userId);
+  const signUp = async (
+    signupModel: Pick<SignupModel, "additionalComments" | "createdAt"> &
+      Partial<Exclude<SignupModel, "additionalComments" | "createdAt">>
+  ) => {
+    if (
+      !signupModel.artist ||
+      !signupModel.songTitle ||
+      !signupModel.youtubeLink
+    ) {
+      signupModel.artist = "No Artist Submitted";
+      signupModel.songTitle = "No Song Submitted";
+      signupModel.youtubeLink = "";
+    }
+    const signupEntity = convertModelToEntity(
+      signupModel as SignupModel,
+      roundId,
+      userId
+    );
     const { status } = await supabase.rpc("signup", signupEntity);
     return getIsSuccess(status) ? "success" : "error";
   };
