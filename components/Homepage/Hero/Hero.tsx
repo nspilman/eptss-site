@@ -1,7 +1,12 @@
+import { useRound } from "components/context/RoundContext";
 import { Navigation } from "components/enum/navigation";
 import Link from "next/link";
 
 export const Hero = () => {
+  const { roundId, phase } = useRound();
+  const statusHeadline = phase === "signups" ? "" : "currently covering";
+  const statusBody =
+    phase === "signups" ? "Signups are open for round " + roundId : "";
   return (
     <div className="w-full flex flex-col md:flex-row pt-32 pb-8 md:py-52 bg-gradient-to-b items-center md:items-start">
       <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center">
@@ -32,16 +37,18 @@ export const Hero = () => {
       <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 md:mt-16 relative h-full md:text-right md:justify-end">
         <div className="flex-col flex md:mx-16">
           <span className="font-fraunces text-md text-white">
-            currently covering
+            {statusHeadline}
           </span>
           <span className="text-md md:text-lg lg:text-2xl font-semibold text-white font-fraunces">
-            Mr. Brightside by The Killers
+            {statusBody}
           </span>
           <span className="text-md  text-white font-fraunces">
-            due december 4th -{" "}
-            <Link href={Navigation.Submit}>
+            closing december 31st -{" "}
+            <Link
+              href={phase === "signups" ? Navigation.SignUp : Navigation.Submit}
+            >
               <a className="text-themeYellow font-fraunces text-md">
-                submit your cover
+                {phase === "signups" ? "sign up now" : "submit your cover"}
               </a>
             </Link>
           </span>
