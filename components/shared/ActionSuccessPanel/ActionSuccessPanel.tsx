@@ -35,7 +35,7 @@ export const ActionSuccessPanel = ({
       <Image
         src={src}
         alt={alt}
-        width={500}
+        width={875}
         height={500}
         placeholder={"blur"}
         blurDataURL={blurSrc}
