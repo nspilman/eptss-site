@@ -99,6 +99,7 @@ const getCurrentAndFutureRounds = async (
           covering_begins, 
           covers_due, 
           listening_party, 
+          round_type_override,
           song:songs(
             title, 
             artist
@@ -133,7 +134,7 @@ const getCurrentAndFutureRounds = async (
     })
   );
   if (formattedRoundData) {
-    return { data: formattedRoundData as Round[], error };
+    return { data: formattedRoundData as unknown as Round[], error };
   }
   //   if (formattedRoundData) {
   //     if (

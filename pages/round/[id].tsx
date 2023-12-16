@@ -123,7 +123,7 @@ const getRoundMetadata = async (id: number) => {
         song_id, 
         song:songs(artist, title)`
     )
-    .filter("id", "eq", id)) as {
+    .filter("id", "eq", id)) as unknown as {
     data: {
       playlist_url: string;
       song_id: number;

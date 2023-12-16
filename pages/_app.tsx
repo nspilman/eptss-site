@@ -14,7 +14,7 @@ import { EmailAuthModalContextProvider } from "components/context/EmailAuthModal
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
-
+  const AnyComponent = Component as any;
   return (
     <>
       <Head>
@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <UserSessionProvider>
               <EmailAuthModalContextProvider>
                 <Header />
-                <Component {...pageProps} />
+                <AnyComponent {...pageProps} />
                 <Footer />
               </EmailAuthModalContextProvider>
             </UserSessionProvider>
