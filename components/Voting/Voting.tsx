@@ -29,7 +29,8 @@ export const Voting = ({
   const { userRoundDetails, isLoading: isUserSessionLoading } =
     useUserSession();
 
-  const shouldRenderForm = phase === "voting";
+  const shouldRenderForm =
+    phase === "voting" || roundId === 21 || phase === "signups";
 
   return (
     <PageContainer title={title}>

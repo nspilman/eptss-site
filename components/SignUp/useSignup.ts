@@ -1,3 +1,4 @@
+import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { additionalComments } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";
@@ -5,6 +6,7 @@ import { SignupEntity, SignupModel } from "./types";
 
 export const useSignup = (roundId: number, userId: string) => {
   const supabase = useSupabase();
+  const { session } = useSessionContext();
 
   const signUp = async (
     signupModel: Pick<SignupModel, "additionalComments" | "createdAt"> &
@@ -25,7 +27,25 @@ export const useSignup = (roundId: number, userId: string) => {
       userId
     );
     const { status } = await supabase.rpc("signup", signupEntity);
-    return getIsSuccess(status) ? "success" : "error";
+    const isSuccess = getIsSuccess(status);
+
+    if (isSuccess) {
+      const sendEmail = await fetch("/api/send-email", {
+        method: "POST",
+        body: JSON.stringify({
+          to: session?.user.email, // list of receivers from the request body
+          subject: "Welcome to the party", // Subject line from the request body
+          text: "You did it", // plain text body from the request body
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`, // Include the access token here
+          // Add other headers as needed
+        },
+      });
+    }
+
+    return isSuccess ? "success" : "error";
   };
 
   const signupSuccessText = {
@@ -60,18 +80,15 @@ export const useSignup = (roundId: number, userId: string) => {
       field: "youtubeLink" as const,
       size: "large" as const,
     },
-    additionalComments,
   ].filter((field) => {
     roundId === 21
-      ? ["songTitle", "artist", "youtubeLink"].includes(field.field)
+      ? !["songTitle", "artist", "youtubeLink"].includes(field.field)
       : true;
   });
 
-  // const if
-
   return {
     signUp,
-    fields,
+    fields: [...fields, additionalComments],
     signupSuccess: {
       text: signupSuccessText,
       image: signupSuccessImage,

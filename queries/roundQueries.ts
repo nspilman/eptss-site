@@ -9,7 +9,7 @@ export interface Round {
   coveringBegins: string;
   coversDue: string;
   listeningParty: string;
-  status: number;
+  typeOverride?: string;
   song: { artist: string; title: string };
 }
 
@@ -36,6 +36,7 @@ const getCurrentRound = async (
         covering_begins, 
         covers_due, 
         listening_party, 
+        round_type_override,
         song:songs(
           title, 
           artist
@@ -56,6 +57,7 @@ const getCurrentRound = async (
       covering_begins: coveringBegins,
       covers_due: coversDue,
       listening_party: listeningParty,
+      round_type_override: typeOverride,
       song,
     } = roundData[0];
 
@@ -71,9 +73,9 @@ const getCurrentRound = async (
         coveringBegins,
         coversDue,
         listeningParty,
-        status,
         error,
         song: songData,
+        typeOverride,
       };
     }
   }
@@ -118,6 +120,7 @@ const getCurrentAndFutureRounds = async (
       covers_due,
       listening_party,
       song,
+      round_type_override,
     }) => ({
       roundId: id,
       signupOpens: signup_opens,
@@ -126,6 +129,7 @@ const getCurrentAndFutureRounds = async (
       coversDue: covers_due,
       listeningParty: listening_party,
       song,
+      typeOverride: round_type_override,
     })
   );
   if (formattedRoundData) {

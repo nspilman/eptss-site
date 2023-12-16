@@ -26,22 +26,23 @@ const VotingPage = ({
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { roundId } = await PhaseMgmtService.build();
-
   const {
+    roundId,
     dateLabels: {
       covering: { opens: coveringStartString },
     },
   } = await PhaseMgmtService.build();
+  const { typeOverride } = await queries.round.getCurrentRound();
 
-  // const isVotingOpen = phase === "voting";
   const isVotingOpen = true;
-  const unsortedVoteOptions = isVotingOpen ? await getVoteOptions(roundId) : [];
+  const unsortedVoteOptions = isVotingOpen
+    ? await getVoteOptions(roundId, typeOverride as "runner_up" | undefined)
+    : [];
 
-  const voteOptions = seededShuffle(
-    unsortedVoteOptions,
-    JSON.stringify(unsortedVoteOptions)
-  );
+  const voteOptions =
+    typeOverride === "runner_up"
+      ? unsortedVoteOptions
+      : seededShuffle(unsortedVoteOptions, JSON.stringify(unsortedVoteOptions));
 
   return {
     props: {
@@ -58,19 +59,37 @@ export default VotingPage;
 
 // private
 
-const getVoteOptions = async (roundId: number) => {
-  const { data: resultEntities, error } =
-    await queries.signups.getSignupsByRound(roundId);
-
-  if (error) {
-    throw new Error(JSON.stringify(error));
+const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
+  const resultEntities:
+    | {
+        round_id: any;
+        original_round_id?: any;
+        song_id: any;
+        song: {
+          title: any;
+          artist: any;
+        }[];
+      }[]
+    | null = [];
+  if (typeOverride === "runner_up") {
+    const { data, error } = await queries.voting.getRoundOverrideVotes(roundId);
+    data?.forEach((record) => resultEntities.push(record));
+    if (error) {
+      throw new Error(JSON.stringify(error));
+    }
+  } else {
+    const { data, error } = await queries.signups.getSignupsByRound(roundId);
+    data?.forEach((record) => resultEntities.push(record));
+    if (error) {
+      throw new Error(JSON.stringify(error));
+    }
   }
 
   return (
     resultEntities
       ?.filter((result) => result.song_id)
       .map((result) => {
-        return result && entityToModel(result as VoteOptionEntity);
+        return result && entityToModel(result as unknown as VoteOptionEntity);
       }) || []
   );
 };
@@ -87,7 +106,7 @@ const entityToModel = ({
   return {
     label: `${title} by ${artist}`,
     field: song_id.toString(),
-    link: youtube_link,
+    link: youtube_link || "",
   };
 };
 

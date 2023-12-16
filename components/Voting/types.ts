@@ -11,5 +11,5 @@ export interface VoteOptionEntity {
   };
   song_id: number;
   round_id: string;
-  youtube_link: string;
+  youtube_link?: string;
 }

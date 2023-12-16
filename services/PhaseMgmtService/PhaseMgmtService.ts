@@ -9,6 +9,7 @@ interface Props {
   listeningParty: Date;
   roundId: number;
   song: { artist: string; title: string };
+  typeOverride?: "runner_up";
 }
 
 export type Phase = "signups" | "voting" | "covering" | "celebration";
@@ -19,6 +20,7 @@ export class PhaseMgmtService {
   dates: Record<Phase, Record<"opens" | "closes", Date>>;
   roundId: number;
   song: { artist: string; title: string };
+  typeOverride?: "runner_up";
 
   private constructor({
     votingOpens,
@@ -28,6 +30,7 @@ export class PhaseMgmtService {
     listeningParty,
     roundId,
     song,
+    typeOverride,
   }: Props) {
     const now = new Date();
     if (now < signupOpens) {
@@ -116,6 +119,7 @@ export class PhaseMgmtService {
     signupOpens: string;
     listeningParty: string;
     roundId: number;
+    typeOverride?: string;
     song: {
       artist: string;
       title: string;
@@ -129,6 +133,7 @@ export class PhaseMgmtService {
       listeningParty,
       roundId,
       song,
+      typeOverride,
     } = currentRound || (await queries.round.getCurrentRound());
     const datify = (dateString: string) => {
       const date = new Date(dateString);
@@ -137,6 +142,7 @@ export class PhaseMgmtService {
         throw new Error(`${dateString} is an invalid date string`);
       return date;
     };
+
     return new PhaseMgmtService({
       votingOpens: datify(votingOpens),
       coveringBegins: datify(coveringBegins),
@@ -145,6 +151,7 @@ export class PhaseMgmtService {
       listeningParty: datify(listeningParty),
       roundId,
       song,
+      typeOverride: typeOverride as "runner_up" | undefined,
     });
   }
 }

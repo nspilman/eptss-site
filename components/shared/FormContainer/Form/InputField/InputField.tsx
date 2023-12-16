@@ -24,7 +24,7 @@ export function InputField<T extends FieldValues>({
   register,
 }: Props<T>) {
   const { size, type, label, field: fieldId, optional } = field;
-  const hasLink = "link" in field;
+  const hasLink = "link" in field && field.link;
   const isSmall = size === "small";
   return (
     <Flex

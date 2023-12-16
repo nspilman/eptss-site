@@ -1,6 +1,7 @@
 import { getSupabaseClient } from "utils/getSupabaseClient";
 import { round } from "./roundQueries";
 import { signups } from "./signups";
+import { voting } from "./votingQueries";
 
 export enum Tables {
   SignUps = "sign_ups",
@@ -8,6 +9,7 @@ export enum Tables {
   MailingList = "mailing_list",
   Votes = "song_selection_votes",
   Submissions = "submissions",
+  VotingCandidateOverrides = "round_voting_candidate_overrides",
 }
 
 export enum Views {
@@ -23,6 +25,7 @@ export enum Views {
 const queries = {
   signups,
   round,
+  voting,
 };
 
 export default queries;
