@@ -80,6 +80,7 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
     }
   } else {
     const { data, error } = await queries.signups.getSignupsByRound(roundId);
+    //@ts-ignore
     data?.forEach((record) => resultEntities.push(record));
     if (error) {
       throw new Error(JSON.stringify(error));
