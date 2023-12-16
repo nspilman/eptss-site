@@ -1,4 +1,6 @@
 import { Heading, Stack } from "@chakra-ui/react";
+import { useRound } from "components/context/RoundContext";
+import { Navigation } from "components/enum/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,12 +15,15 @@ interface Props {
     alt: string;
     blurSrc?: string;
   };
+  action?: "signups";
 }
 
 export const ActionSuccessPanel = ({
   text: { header, body, thankyou },
   image: { src, alt, blurSrc },
+  action,
 }: Props) => {
+  const { roundId } = useRound();
   return (
     <Stack alignItems="center">
       <Heading as="h1" size="md" textAlign="center" fontWeight="300">
@@ -38,8 +43,10 @@ export const ActionSuccessPanel = ({
       <span className="text-md font-light font-roboto text-white text-center my-4">
         {thankyou}
       </span>
-      <Link href="/#rounds">
-        <button className="btn-main">Home</button>
+      <Link href={action === "signups" ? Navigation.Voting : "/#rounds"}>
+        <button className="btn-main">
+          {action === "signups" && roundId === 21 ? "Voting" : "Home"}
+        </button>
       </Link>
     </Stack>
   );

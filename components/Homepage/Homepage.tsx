@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { useAuthModal } from "components/context/EmailAuthModal";
 import { useUserSession } from "components/context/UserSessionContext";
 import { RoundActionCard } from "./RoundActionCard";
+import { Navigation } from "components/enum/navigation";
 
 export interface Props {
   roundContent: RoundDetails[];
@@ -39,12 +40,12 @@ export const Homepage = ({ roundContent, phaseInfo }: Props) => {
   const { setIsOpen: openAuthModal } = useAuthModal();
 
   const roundActionFunctions = {
-    onProfile: () => router.push("/profile"),
+    onProfile: () => router.push(Navigation.Profile),
     onSignup: () => openAuthModal(),
-    onSignupAndJoinRound: () => router.push("/sign-up"),
-    onJoinRound: () => router.push("/sign-up"),
-    onVote: () => router.push("/voting"),
-    onSubmit: () => router.push("/submit"),
+    onSignupAndJoinRound: () => router.push(Navigation.SignUp),
+    onJoinRound: () => router.push(Navigation.SignUp),
+    onVote: () => router.push(Navigation.Voting),
+    onSubmit: () => router.push(Navigation.Submit),
     onRoundDetails: () => router.push(`/round/${roundId}`),
   };
 
