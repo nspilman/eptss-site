@@ -41,7 +41,10 @@ export const useSignup = (roundId: number, userId: string) => {
   const signupSuccessImage = {
     src: roundId === 21 ? "welcome-to-round-21.jpg" : "/welcomeimage.png",
     alt: "Welcome to Everyone Plays the Same Song!",
-    blurSrc: "welcome-image-blur.png",
+    blurSrc:
+      roundId === 21
+        ? "welcome-to-round-21-blur.jpg"
+        : "welcome-image-blur.png",
   };
 
   const fields = [
