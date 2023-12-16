@@ -30,7 +30,7 @@ export const Voting = ({
     useUserSession();
 
   const shouldRenderForm =
-    phase === "voting" || roundId === 21 || phase === "signups";
+    phase === "voting" || (roundId === 21 && phase === "signups");
 
   return (
     <PageContainer title={title}>
