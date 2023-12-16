@@ -6,7 +6,6 @@ import { SignupEntity, SignupModel } from "./types";
 
 export const useSignup = (roundId: number, userId: string) => {
   const supabase = useSupabase();
-  const { session } = useSessionContext();
 
   const signUp = async (
     signupModel: Pick<SignupModel, "additionalComments" | "createdAt"> &
@@ -29,22 +28,6 @@ export const useSignup = (roundId: number, userId: string) => {
     const { status } = await supabase.rpc("signup", signupEntity);
     const isSuccess = getIsSuccess(status);
 
-    if (isSuccess) {
-      const sendEmail = await fetch("/api/send-email", {
-        method: "POST",
-        body: JSON.stringify({
-          to: session?.user.email, // list of receivers from the request body
-          subject: "Welcome to the party", // Subject line from the request body
-          text: "You did it", // plain text body from the request body
-        }),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.access_token}`, // Include the access token here
-          // Add other headers as needed
-        },
-      });
-    }
-
     return isSuccess ? "success" : "error";
   };
 
@@ -56,7 +39,7 @@ export const useSignup = (roundId: number, userId: string) => {
   };
 
   const signupSuccessImage = {
-    src: "/welcomeimage.png",
+    src: roundId === 21 ? "welcome-to-round-21.jpg" : "/welcomeimage.png",
     alt: "Welcome to Everyone Plays the Same Song!",
     blurSrc: "welcome-image-blur.png",
   };

@@ -49,7 +49,9 @@ export const SignupForm = ({
             </Link>
           </Stack>
         }
-        successBlock={<ActionSuccessPanel {...signupSuccess} />}
+        successBlock={
+          <ActionSuccessPanel {...signupSuccess} action="signups" />
+        }
         errorMessage={GENERIC_ERROR_MESSAGE}
         onSubmit={signUp}
       />
