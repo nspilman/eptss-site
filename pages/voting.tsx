@@ -73,6 +73,7 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
     | null = [];
   if (typeOverride === "runner_up") {
     const { data, error } = await queries.voting.getRoundOverrideVotes(roundId);
+    //@ts-ignore
     data?.forEach((record) => record.song && resultEntities.push(record));
     if (error) {
       throw new Error(JSON.stringify(error));
