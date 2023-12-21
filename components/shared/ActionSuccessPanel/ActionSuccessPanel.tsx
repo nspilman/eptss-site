@@ -1,4 +1,3 @@
-import { Stack } from "@chakra-ui/react";
 import { useRound } from "components/context/RoundContext";
 import { Navigation } from "components/enum/navigation";
 import Image from "next/image";
@@ -25,7 +24,7 @@ export const ActionSuccessPanel = ({
 }: Props) => {
   const { roundId } = useRound();
   return (
-    <Stack alignItems="center">
+    <div className="flex flex-col items-center">
       <h1 className="font-fraunces text-white font-bold text-center">
         {header}
       </h1>
@@ -48,6 +47,6 @@ export const ActionSuccessPanel = ({
           {action === "signups" && roundId === 21 ? "Voting" : "Home"}
         </button>
       </Link>
-    </Stack>
+    </div>
   );
 };

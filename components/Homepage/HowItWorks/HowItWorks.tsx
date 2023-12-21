@@ -15,7 +15,7 @@ export const HowItWorks = () => {
           <div>
             <div>
               <div>
-                <div className="leadin-3 flex flex-col text-themeYellow font-fraunces py-4">
+                <div className="leadin-3 flex flex-col text-white font-fraunces py-4">
                   <span>Sign up with the song you want to cover</span>
                   <span>Vote on your favorite cover options</span>
                   <span>Cover the song that wins</span>

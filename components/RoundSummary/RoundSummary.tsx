@@ -1,4 +1,4 @@
-import { Link } from "@chakra-ui/react";
+import Link from "next/link";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";

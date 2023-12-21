@@ -1,10 +1,11 @@
-import { Center, Link, Stack } from "@chakra-ui/react";
+import { Center, Stack } from "@chakra-ui/react";
 import { useUserSession } from "components/context/UserSessionContext";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useSignup } from "../useSignup";
+import Link from "next/link";
 
 interface Props {
   roundId?: number;

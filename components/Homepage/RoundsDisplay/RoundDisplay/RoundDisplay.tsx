@@ -1,6 +1,6 @@
-import { Link } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { RoundDetails } from "types";
+import Link from "next/link";
 
 export const RoundDisplay = ({
   round,

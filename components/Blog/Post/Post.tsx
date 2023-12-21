@@ -1,7 +1,5 @@
-import { Stack } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import { BlogPost } from "types/BlogPost";
-import ChakraUIRenderer from "chakra-ui-markdown-renderer";
 import { ReactNode } from "react";
 
 interface Props {
@@ -35,13 +33,11 @@ const newTheme = {
 
 export const Post = ({ post: { content, frontmatter } }: Props) => {
   return (
-    <Stack>
+    <div className="flex flex-col">
       <h2 className="font-fraunces text-white font-bold pb-4">
         {frontmatter.title}
       </h2>
-      <ReactMarkdown components={ChakraUIRenderer(newTheme)}>
-        {content}
-      </ReactMarkdown>
-    </Stack>
+      <ReactMarkdown components={newTheme}>{content}</ReactMarkdown>
+    </div>
   );
 };

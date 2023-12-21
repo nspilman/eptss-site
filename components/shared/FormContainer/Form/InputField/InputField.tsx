@@ -4,13 +4,13 @@ import {
   FormErrorMessage,
   FormHelperText,
   FormLabel,
-  Link,
 } from "@chakra-ui/react";
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { InputType } from "../types";
 import { getFieldErrorId, getFieldTestId } from "./testUtils";
 import { TextInput } from "./TextInput";
 import { VoteInput } from "./VoteInput";
+import Link from "next/link";
 
 interface Props<T extends FieldValues> {
   field: InputType<T>;
@@ -71,13 +71,10 @@ export function InputField<T extends FieldValues>({
             <FormHelperText>
               {hasLink && (
                 <Link
-                  pt="4"
+                  className="pt-4 font-semibold text-orange-600 shadow-lg"
                   target="_blank"
                   rel="noopener noreferrer"
                   href={field.link}
-                  fontWeight="500"
-                  color="orange.600"
-                  shadow="2xl"
                 >
                   Listen Here
                 </Link>

@@ -1,4 +1,3 @@
-import { FormLabel, Stack, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@chakra-ui/react";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
@@ -14,35 +13,32 @@ export function VoteInput<T extends FieldValues>({
   optional,
 }: Props<T>) {
   return (
-    <Stack direction="column" width="100%">
-      <RadioGroup>
-        <Stack direction="row">
+    <div className="flex flex-col w-full">
+      <div>
+        <div className="flex flex-row">
           {["1", "2", "3", "4", "5"].map((value, i) => (
-            <>
-              <Radio
-                key={i}
+            <div key={i} className="px-2 flex items-center">
+              <label
+                htmlFor={field + i}
+                className="font-fraunces text-md font-medium text-black"
+              >
+                {value}
+              </label>
+              <input
                 {...register(field, { required: !optional })}
                 type="radio"
                 value={value}
                 id={field + i}
               />
-              <FormLabel
-                htmlFor={field + i}
-                fontFamily="'Rock Salt', sans-serif !important"
-                fontSize=".75rem"
-                color="blackAlpha.800"
-              >
-                {value}
-              </FormLabel>
-            </>
+            </div>
           ))}
-        </Stack>
-      </RadioGroup>
-      <Stack direction="row">
+        </div>
+      </div>
+      <div className="flex flex-row">
         <span className="text-md font-light font-roboto text-black-800 text-center my-4">
           Absolutely not! ---------- yes please!!{" "}
         </span>
-      </Stack>
-    </Stack>
+      </div>
+    </div>
   );
 }
