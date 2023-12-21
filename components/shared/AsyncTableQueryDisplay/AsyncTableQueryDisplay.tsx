@@ -1,4 +1,3 @@
-import { Heading } from "@chakra-ui/react";
 import { PostgrestError } from "@supabase/supabase-js";
 import { DataTable } from "components/shared/DataTable";
 import { useEffect, useState } from "react";
@@ -37,7 +36,7 @@ export function AsyncTableQueryDisplay<T extends string>({
   return (
     <div>
       {isLoading ? (
-        <Heading>loading</Heading>
+        <h2 className="font-fraunces text-white font-bold">loading</h2>
       ) : (
         <div>
           {summaryFunction && (

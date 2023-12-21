@@ -1,5 +1,4 @@
 import {
-  Heading,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -68,7 +67,9 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
         <PopoverHeader>
           <Stack direction="row">
             <div className="v-[50%]">
-              <Heading size="md">{displayedRoundName} round</Heading>
+              <h2 className="font-fraunces text-white font-bold">
+                {displayedRoundName} round
+              </h2>
             </div>
             <button className="btn-main" onClick={handleButtonClick}>
               <span className="text-sm font-light font-roboto text-white">

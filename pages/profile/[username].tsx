@@ -1,4 +1,3 @@
-import { Heading } from "@chakra-ui/react";
 import { TableContainer } from "@chakra-ui/table";
 import { sharedHeaders } from "components/Profile/ProfileDisplay";
 import { DataTable } from "components/shared/DataTable";
@@ -60,7 +59,9 @@ export default function Profile(props: { username: string; data: any }) {
           />
         </TableContainer>
       ) : (
-        <Heading>This participant has yet to submit. Maybe next round!</Heading>
+        <h2 className="font-fraunces text-white font-bold">
+          This participant has yet to submit. Maybe next round!
+        </h2>
       )}
     </PageContainer>
   );

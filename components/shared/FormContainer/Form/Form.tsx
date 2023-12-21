@@ -2,7 +2,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import React from "react";
 import { InputField } from "./InputField";
 import { InputType } from "./types";
-import { Center, Heading, Stack } from "@chakra-ui/react";
+import { Center } from "@chakra-ui/react";
 
 interface Props<T extends FieldValues> {
   onSubmit: (signupModel: T) => void;
@@ -24,14 +24,16 @@ export function Form<T extends FieldValues>({
   } = useForm<T>();
 
   return (
-    <Stack alignItems="center" justifyContent="center">
-      <Heading as="h1" size="md" textAlign="center" py="8">
-        {title}
-      </Heading>
-      <div>{description}</div>
+    <div className="flex items-center justify-center flex-col">
+      <div className="flex flex-col text-center font-fraunces">
+        <h1 className="py-4 text-center font-bold text-white text-lg">
+          {title}
+        </h1>
+        <div className="text-white">{description}</div>
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="column" alignItems="center">
-          <Center flexWrap="wrap">
+        <div className="flex flex-col items-center">
+          <div className="flex flex-wrap">
             {fields.map((field, i) => {
               return (
                 <InputField
@@ -42,7 +44,7 @@ export function Form<T extends FieldValues>({
                 />
               );
             })}
-          </Center>
+          </div>
           <button
             className="btn-main"
             type="submit"
@@ -50,8 +52,8 @@ export function Form<T extends FieldValues>({
           >
             Submit
           </button>
-        </Stack>
+        </div>
       </form>
-    </Stack>
+    </div>
   );
 }

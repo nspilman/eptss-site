@@ -1,4 +1,4 @@
-import { Heading, Link, Stack } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
 import { StackedBarChart } from "components/shared/StackedBarChart";
@@ -125,13 +125,6 @@ export const RoundSummary = ({
     },
   ];
 
-  const elementWidthsByBreakpoint = {
-    base: "400px",
-    sm: "600px",
-    md: "800px",
-    lg: "1000px",
-  };
-
   const signupDataDisplay = signupData.map((signup) => ({
     youtubeLink: signup.youtube_link,
     title: signup.title,
@@ -141,13 +134,17 @@ export const RoundSummary = ({
   const isVotingPhase = phase === "voting";
   return (
     <PageContainer title={`Round ${roundId} Info`}>
-      <Stack alignItems="center">
-        <Heading as="h1"> Round {roundId} Info</Heading>
-        {!isVotingPhase && (
-          <Heading size="sm">
-            {title} by {artist}
-          </Heading>
-        )}
+      <div className="flex flex-col items-center">
+        <div className="pb-4 text-center">
+          <h1 className="font-fraunces text-white font-semibold text-lg pb-1">
+            Round {roundId} Info
+          </h1>
+          {!isVotingPhase && (
+            <h2 className="font-fraunces text-white font-bold text-xl">
+              {title} by {artist}
+            </h2>
+          )}
+        </div>
         <div
           className={`w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]`}
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
@@ -200,7 +197,7 @@ export const RoundSummary = ({
             />
           </div>
         )}
-        <Stack direction="row" justifyContent="space-between" width="100%">
+        <div className="flex justify-between w-full">
           {navigation.previous && (
             <a href={`/round/${navigation.previous}`}>
               <button className="btn-main">Round {navigation.previous}</button>
@@ -211,8 +208,8 @@ export const RoundSummary = ({
               <button className="btn-main">Round {navigation.next}</button>
             </a>
           )}
-        </Stack>
-      </Stack>
+        </div>
+      </div>
     </PageContainer>
   );
 };

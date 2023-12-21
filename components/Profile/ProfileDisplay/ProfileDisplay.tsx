@@ -1,4 +1,4 @@
-import { Heading, Stack, TableContainer } from "@chakra-ui/react";
+import { Stack, TableContainer } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { Loading } from "components/shared/Loading";
 import { useRouter } from "next/router";
@@ -98,12 +98,12 @@ export const ProfileDisplay = () => {
       p="4"
       borderRadius="md"
     >
-      <Heading>{email}</Heading>
+      <h2 className="font-fraunces text-white font-bold">{email}</h2>
       {hasNoRecords ? (
         <Stack p="20" borderRadius="md" alignItems="center">
-          <Heading size="md" py="4">
+          <h2 className="font-fraunces text-white font-bold py-4">
             Welome to Everyone Plays the Same Song!
-          </Heading>
+          </h2>
           <span className="text-md font-light font-roboto text-white text-center">
             {`We're excited that you're here, and can't wait to hear your music! You'll receive an email when sign ups for the next round are open. In the meantime, check out past rounds!`}
           </span>

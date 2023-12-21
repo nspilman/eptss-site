@@ -1,4 +1,3 @@
-import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { additionalComments } from "components/shared/fieldValues";
 import { getIsSuccess } from "utils";

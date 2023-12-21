@@ -9,10 +9,8 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalFooter,
-  ModalHeader,
   ModalOverlay,
   useToast,
-  Heading,
 } from "@chakra-ui/react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
@@ -60,9 +58,9 @@ export const EmailAuthModal = ({
           isClosable: true,
           render: () => (
             <div className="bg-white p-4 border-themeYellow">
-              <Heading size="xsm" color="black">
+              <span className="font-fraunces text-black font-bold">
                 Email Sent
-              </Heading>
+              </span>
               <span className="text-md font-light font-roboto text-black text-center my-4">
                 We sent you a login link. Check your email!
               </span>
@@ -92,68 +90,52 @@ export const EmailAuthModal = ({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Sign Up / Log In with Email</ModalHeader>
-          {onClose && <ModalCloseButton />}
-          <ModalBody>
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                onSendLoginLink();
-              }}
-            >
-              <FormControl>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  ref={initialRef}
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="ringostarr@gmail.com"
-                  disabled={loading}
-                />
-                <FormHelperText>{`You'll receive a link in your email to log you in!`}</FormHelperText>
-              </FormControl>
-            </form>
-          </ModalBody>
+          <div className="p-4">
+            <h1 className="font-bold uppercase">Sign Up / Log In with Email</h1>
+            {onClose && <ModalCloseButton />}
+            <ModalBody>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  onSendLoginLink();
+                }}
+              >
+                <FormControl>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    ref={initialRef}
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder="ringostarr@gmail.com"
+                    disabled={loading}
+                  />
+                  <FormHelperText>{`You'll receive a link in your email to log you in!`}</FormHelperText>
+                </FormControl>
+              </form>
+            </ModalBody>
 
-          <ModalFooter>
-            {!onClose && (
-              // outline: {
-              //   border: "2px solid",
-              //   borderColor: "white",
-              //   color: "white",
-              //   _hover: {
-              //     textDecoration: "auto",
-              //     boxShadow: "0 0 3px 3px var(--chakra-colors-yellow-300)",
-              //   },
-              // },
-              // {
-              //   fontWeight: "bold",
-              //   borderRadius: "base",
-              //   _hover: {
-              //     bg: "white",
-              //     transition: "100ms",
-              //     color: "blue.900",
-              //   },
-              // },
-              <button
-                className="border-2 uppercase font-bold border-white shadow-md mx-4 p-2 shadow-themeYellow hover:border-themeYellow rounded"
-                onClick={() => router.push("/")}
-              >
-                Go back Home
-              </button>
-            )}
-            {loading ? (
-              <Loading />
-            ) : (
-              <button
-                className="btn-main bg-blue-500 uppercase hover:shadow-white hover:bg-blue-500"
-                onClick={onSendLoginLink}
-                disabled={loading}
-              >
-                Send Login Link
-              </button>
-            )}
-          </ModalFooter>
+            <ModalFooter>
+              {!onClose && (
+                <button
+                  className="border-2 uppercase font-bold border-white shadow-md mx-4 p-2 shadow-themeYellow hover:border-themeYellow rounded"
+                  onClick={() => router.push("/")}
+                >
+                  Go back Home
+                </button>
+              )}
+              {loading ? (
+                <Loading />
+              ) : (
+                <button
+                  className="btn-main bg-blue-500 uppercase hover:shadow-white hover:bg-blue-500"
+                  onClick={onSendLoginLink}
+                  disabled={loading}
+                >
+                  Send Login Link
+                </button>
+              )}
+            </ModalFooter>
+          </div>
         </ModalContent>
       </Modal>
     </div>

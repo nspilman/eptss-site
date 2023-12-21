@@ -5,7 +5,6 @@ import { VotingForm } from "./VotingForm";
 import { FormScaffolding } from "components/shared/FormScaffolding";
 import { useRound } from "components/context/RoundContext";
 import { useUserSession } from "components/context/UserSessionContext";
-import { Heading } from "@chakra-ui/react";
 
 export interface Props {
   voteOptions: VoteOptionModel[];
@@ -44,9 +43,15 @@ export const Voting = ({
           />
         }
         isLoading={isRoundInfoLoading || isUserSessionLoading}
-        AlreadyCompleted={<Heading>Thanks for Voting!</Heading>}
+        AlreadyCompleted={
+          <h2 className="font-fraunces text-white font-bold text-xl">
+            Thanks for Voting!
+          </h2>
+        }
         FormClosed={
-          <Heading>Voting is not open at this time! Check back later</Heading>
+          <h2 className="font-fraunces text-white font-bold text-xl">
+            Voting is not open at this time! Check back later
+          </h2>
         }
         hasUserCompletedTask={userRoundDetails.hasVoted}
         shouldRenderForm={shouldRenderForm}

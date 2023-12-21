@@ -1,4 +1,4 @@
-import { Heading, Stack } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
 import { useRound } from "components/context/RoundContext";
 import { Navigation } from "components/enum/navigation";
 import Image from "next/image";
@@ -26,9 +26,9 @@ export const ActionSuccessPanel = ({
   const { roundId } = useRound();
   return (
     <Stack alignItems="center">
-      <Heading as="h1" size="md" textAlign="center" fontWeight="300">
+      <h1 className="font-fraunces text-white font-bold text-center">
         {header}
-      </Heading>
+      </h1>
       <span className="text-md font-light font-roboto text-white text-center my-4">
         {body}
       </span>

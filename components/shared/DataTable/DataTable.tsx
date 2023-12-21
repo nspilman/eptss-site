@@ -7,7 +7,6 @@ import {
   Th,
   Td,
   TableContainer,
-  Heading,
 } from "@chakra-ui/react";
 
 interface Header<T> {
@@ -58,9 +57,9 @@ export function DataTable<T extends string>({
   return (
     <>
       <div className="pb-4">
-        <Heading size="sm" pb="1">
+        <h2 className="font-fraunces text-white font-bold pb-1 text-xl">
           {title}
-        </Heading>
+        </h2>
         <span className="text-sm font-light font-roboto text-white text-center my-4">
           {subtitle}
         </span>
@@ -81,9 +80,9 @@ export function DataTable<T extends string>({
                   onClick={() => sortable && onHeaderClick(key)}
                   fontSize="xs"
                 >
-                  <Heading size="3xs">
+                  <h4 className="font-fraunces text-white font-bold">
                     {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
-                  </Heading>
+                  </h4>
                 </Th>
               ))}
             </Tr>

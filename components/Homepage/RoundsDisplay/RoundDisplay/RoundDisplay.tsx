@@ -1,4 +1,4 @@
-import { Heading, Link, Text } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { RoundDetails } from "types";
 

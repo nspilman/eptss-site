@@ -1,4 +1,4 @@
-import { Heading, Input, Stack } from "@chakra-ui/react";
+import { Input, Stack } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { SongDatum, useSongTable } from "./useSongsTable";
 
@@ -6,9 +6,9 @@ export const SongsTable = ({ allSongsData }: { allSongsData: SongDatum[] }) => {
   const { headers, rows, setSearchString } = useSongTable(allSongsData);
   return (
     <Stack alignItems="center">
-      <Heading as="h1" size="lg" pb="3">
+      <h1 className="font-fraunces text-white font-bold pb-3">
         All previously submitted songs
-      </Heading>
+      </h1>
       <Input
         placeholder="Search by title, artist or round number"
         onChange={(e) => setSearchString(e.currentTarget.value)}

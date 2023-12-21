@@ -7,7 +7,6 @@ import { useUserSession } from "components/context/UserSessionContext";
 import { SignInGate } from "components/shared/SignInGate";
 import { PageContainer } from "components/shared/PageContainer";
 import { Phase } from "services/PhaseMgmtService";
-import { Heading } from "@chakra-ui/react";
 
 export interface Props {
   roundId: number;
@@ -162,10 +161,10 @@ export const Submit = ({
               }
             />
           ) : (
-            <Heading>
+            <h2 className="font-fraunces text-white font-bold text-lg">
               Submissions are closed. Check the calendar for when submissions
               will be open again!
-            </Heading>
+            </h2>
           )}
         </>
       </SignInGate>

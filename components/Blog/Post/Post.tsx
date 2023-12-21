@@ -1,4 +1,4 @@
-import { Heading, Stack, Text } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
 import { BlogPost } from "types/BlogPost";
 import ChakraUIRenderer from "chakra-ui-markdown-renderer";
@@ -12,9 +12,7 @@ const newTheme = {
   h3: (props: { children: ReactNode }) => {
     const { children } = props;
     return (
-      <Heading my={8} size="md">
-        {children}
-      </Heading>
+      <h2 className="font-fraunces text-white font-bold my-8">{children}</h2>
     );
   },
   p: (props: { children: ReactNode }) => {
@@ -38,9 +36,9 @@ const newTheme = {
 export const Post = ({ post: { content, frontmatter } }: Props) => {
   return (
     <Stack>
-      <Heading size="lg" pb="4">
+      <h2 className="font-fraunces text-white font-bold pb-4">
         {frontmatter.title}
-      </Heading>
+      </h2>
       <ReactMarkdown components={ChakraUIRenderer(newTheme)}>
         {content}
       </ReactMarkdown>
