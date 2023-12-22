@@ -159,6 +159,7 @@ export const RoundSummary = ({
             <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
             <div className="p-10">
               <DataTable
+                title="Cover Submissions"
                 headers={submissionsDisplayHeaders}
                 rows={(submissions || []).map(
                   ({ username, soundcloud_url }) => ({

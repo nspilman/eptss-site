@@ -10,7 +10,7 @@ const TimePage = ({
   Record<Phase, Record<"opens" | "closes", Date>>
 >) => {
   return (
-    <div className="flex col h-screen w-screen content-center items-center justify-center text-white">
+    <div className="flex col h-screen w-screen justify-center items-center justify-center text-white">
       <div>
         <b>cover opens:</b>
         {coverOpen}

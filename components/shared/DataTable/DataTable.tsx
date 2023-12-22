@@ -1,13 +1,4 @@
 import React, { useState } from "react";
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-} from "@chakra-ui/react";
 
 interface Header<T> {
   key: T;
@@ -55,7 +46,7 @@ export function DataTable<T extends string>({
   const isEmpty = !rows.length;
 
   return (
-    <>
+    <div className="flex flex-col items-center">
       <div className="pb-4">
         <h2 className="font-fraunces text-white font-bold pb-1 text-xl">
           {title}
@@ -64,29 +55,32 @@ export function DataTable<T extends string>({
           {subtitle}
         </span>
       </div>
-      <TableContainer
-        width="90vw"
-        overflowX="scroll"
-        maxHeight={maxHeight}
-        overflowY={"scroll"}
+      <div
+        className="w-[90vw] overflow-scroll flex items-center justify-center"
+        style={{ maxHeight }}
       >
-        <Table size="sm" overflowY={"scroll"} maxHeight={maxHeight || "unset"}>
-          <Thead>
-            <Tr>
+        <table
+          className="overflow-y-scroll"
+          style={{ maxHeight: maxHeight || "unset" }}
+        >
+          <thead className="window-border font-fraunces cursor-pointer">
+            <tr>
               {headers.map(({ key, display, sortable }) => (
-                <Th
+                <th
                   key={key}
-                  cursor={sortable ? "pointer" : "auto"}
+                  className={`text-sm ${sortable ? "pointer" : "auto"}`}
                   onClick={() => sortable && onHeaderClick(key)}
-                  fontSize="xs"
                 >
                   <h4 className="font-fraunces text-white font-bold">
-                    {display} {sortKey === key && <>{descSort ? "^" : "v"}</>}
+                    {display}{" "}
+                    {sortKey === key && (
+                      <span className="text-xs">{descSort ? "^" : "v"}</span>
+                    )}
                   </h4>
-                </Th>
+                </th>
               ))}
-            </Tr>
-          </Thead>
+            </tr>
+          </thead>
           {isEmpty ? (
             <div>
               <span className="text-md font-bold font-roboto text-white text-center my-4">
@@ -94,22 +88,25 @@ export function DataTable<T extends string>({
               </span>
             </div>
           ) : (
-            <Tbody>
+            <tbody>
               {rows.map((row, i) => (
-                <Tr key={i}>
+                <tr key={i}>
                   {headers.map(({ key, className }) => (
-                    <Td key={key} className={className}>
-                      <span className="text-md font-light font-roboto text-white text-center my-4">
+                    <td
+                      key={key}
+                      className={`${className} window-border bg-black`}
+                    >
+                      <span className="text-md font-light text-white text-center my-4 window-border p-1 font-mono shadow-sm shadow-themeYellow">
                         {row[key]}
                       </span>
-                    </Td>
+                    </td>
                   ))}
-                </Tr>
+                </tr>
               ))}
-            </Tbody>
+            </tbody>
           )}
-        </Table>
-      </TableContainer>
-    </>
+        </table>
+      </div>
+    </div>
   );
 }

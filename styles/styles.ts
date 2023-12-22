@@ -1,5 +1,4 @@
 import { extendTheme } from "@chakra-ui/react";
-import { LinkStyles as Link } from "./Link";
 
 export const theme = extendTheme({
   colors: {
@@ -17,8 +16,5 @@ export const theme = extendTheme({
         backgroundColor: "black",
       },
     },
-  },
-  components: {
-    Link,
   },
 });

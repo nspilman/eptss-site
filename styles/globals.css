@@ -28,3 +28,8 @@ html  {
     hover:bg-white hover:text-black hover:shadow-NavShadow hover:cursor-pointer
   }
 }
+
+  
+.window-border {
+  @apply border-t-white border-2 border-r-black border-b-black border-l-white;
+}

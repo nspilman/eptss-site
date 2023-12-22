@@ -1,7 +1,7 @@
-import { Center, Spinner } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 
 export const Loading = () => (
-  <Center h={"100px"}>
+  <div className="flex items-center justify-center h-[100px]">
     <Spinner color="white" />
-  </Center>
+  </div>
 );

@@ -1,8 +1,8 @@
-import { Spinner } from "@chakra-ui/react";
 import { Phase } from "services/PhaseMgmtService";
 import { CTA, RoundActionFunctions } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
 import { useBlurb } from "../HowItWorks/useBlurb";
+import { Loading } from "components/shared/Loading";
 
 interface Props {
   phase: Phase;
@@ -65,9 +65,7 @@ export const RoundActionCard = ({
       <div>
         <div className="flex flex-col">
           {loading ? (
-            <div className="h-[100px]">
-              <Spinner color="white" />
-            </div>
+            <Loading />
           ) : (
             <div className="flex flex-col items-center">
               <div className="text-white">{labelContent}</div>

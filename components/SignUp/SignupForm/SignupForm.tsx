@@ -1,4 +1,3 @@
-import { Center, Stack } from "@chakra-ui/react";
 import { useUserSession } from "components/context/UserSessionContext";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
@@ -30,12 +29,12 @@ export const SignupForm = ({
 
   const { signUp, signupSuccess, fields } = useSignup(roundId, user.id);
   return (
-    <Center>
+    <div className="flex items-center justify-center">
       <FormContainer
         fields={fields}
         title={title}
         description={
-          <Stack alignItems="center">
+          <div className="flex items-center">
             <p className="text-md font-light font-roboto text-white">
               Signing up as {user.email}
             </p>
@@ -48,7 +47,7 @@ export const SignupForm = ({
             <Link href={Navigation.FAQ} color="yellow.300">
               FAQ Here
             </Link>
-          </Stack>
+          </div>
         }
         successBlock={
           <ActionSuccessPanel {...signupSuccess} action="signups" />
@@ -56,6 +55,6 @@ export const SignupForm = ({
         errorMessage={GENERIC_ERROR_MESSAGE}
         onSubmit={signUp}
       />
-    </Center>
+    </div>
   );
 };

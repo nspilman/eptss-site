@@ -1,4 +1,3 @@
-import { Center } from "@chakra-ui/react";
 import { useSuccessState } from "components/hooks/useSuccessState";
 import { FieldValues } from "react-hook-form";
 import { Form } from "./Form";
@@ -24,13 +23,7 @@ export function FormContainer<T extends FieldValues>({
   const [successState, setSuccessState] = useSuccessState();
 
   return (
-    <Center
-      bg="rgba(28,32,38,.9)"
-      py="8"
-      px="12"
-      borderRadius="3xl"
-      width="100%"
-    >
+    <div className="flex items-center justify-center bg-[rgba(28,32,38,.9)] py-8 px-12 rounded-3xl w-full">
       <div className="w-[300px] sm:w-[450px] md:w-[600px] lg:w-[800px]">
         {successState !== "success" ? (
           <Form
@@ -46,6 +39,6 @@ export function FormContainer<T extends FieldValues>({
         )}
         {successState === "error" && errorMessage}
       </div>
-    </Center>
+    </div>
   );
 }

@@ -2,7 +2,6 @@ import { FieldValues, useForm } from "react-hook-form";
 import React from "react";
 import { InputField } from "./InputField";
 import { InputType } from "./types";
-import { Center } from "@chakra-ui/react";
 
 interface Props<T extends FieldValues> {
   onSubmit: (signupModel: T) => void;
