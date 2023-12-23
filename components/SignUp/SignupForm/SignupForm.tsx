@@ -34,7 +34,7 @@ export const SignupForm = ({
         fields={fields}
         title={title}
         description={
-          <div className="flex items-center">
+          <div className="flex flex-col items-center justify-center">
             <p className="text-md font-light font-roboto text-white">
               Signing up as {user.email}
             </p>

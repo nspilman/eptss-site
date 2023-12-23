@@ -24,7 +24,7 @@ export function FormContainer<T extends FieldValues>({
 
   return (
     <div className="flex items-center justify-center bg-[rgba(28,32,38,.9)] py-8 px-12 rounded-3xl w-full">
-      <div className="w-[300px] sm:w-[450px] md:w-[600px] lg:w-[800px]">
+      <div className="w-[300px] sm:w-[450px] md:w-[600px] lg:w-[800px] flex items-center">
         {successState !== "success" ? (
           <Form
             title={title}

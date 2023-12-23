@@ -23,35 +23,36 @@ export function Form<T extends FieldValues>({
   } = useForm<T>();
 
   return (
-    <div className="flex items-center justify-center flex-col">
+    <div className=" w-full flex-col items-center justify-center">
       <div className="flex flex-col text-center font-fraunces">
         <h1 className="py-4 text-center font-bold text-white text-lg">
           {title}
         </h1>
         <div className="text-white">{description}</div>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="flex flex-col items-center">
-          <div className="flex flex-wrap">
-            {fields.map((field, i) => {
-              return (
-                <InputField
-                  key={i}
-                  field={field}
-                  register={register}
-                  errors={errors}
-                />
-              );
-            })}
-          </div>
-          <button
-            className="btn-main"
-            type="submit"
-            data-testid="form-submission"
-          >
-            Submit
-          </button>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col justify-center items-center"
+      >
+        <div className="flex flex-wrap flex-col ">
+          {fields.map((field, i) => {
+            return (
+              <InputField
+                key={i}
+                field={field}
+                register={register}
+                errors={errors}
+              />
+            );
+          })}
         </div>
+        <button
+          className="btn-main w-24"
+          type="submit"
+          data-testid="form-submission"
+        >
+          Submit
+        </button>
       </form>
     </div>
   );

@@ -1,4 +1,3 @@
-import { TableContainer } from "@chakra-ui/table";
 import { sharedHeaders } from "components/Profile/ProfileDisplay";
 import { DataTable } from "components/shared/DataTable";
 import { PageContainer } from "components/shared/PageContainer";
@@ -50,14 +49,14 @@ export default function Profile(props: { username: string; data: any }) {
   return (
     <PageContainer title={`${props.username}'s Profile`}>
       {props.data.length ? (
-        <TableContainer>
+        <div>
           <DataTable
             title="Your Past Submissions"
             subtitle={`You have submitted on ${props.data.length} covers`}
             rows={props.data}
             headers={submissionHeaders}
           />
-        </TableContainer>
+        </div>
       ) : (
         <h2 className="font-fraunces text-white font-bold">
           This participant has yet to submit. Maybe next round!

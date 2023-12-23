@@ -1,6 +1,5 @@
 import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
-import { HStack } from "@chakra-ui/react";
 import { FAQButton } from "components/NavButtons";
 import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
@@ -17,16 +16,11 @@ export const Header = (): ReactElement => {
           </span>
         </Link>
 
-        <HStack
-          spacing="2"
-          display={{ base: "none", lg: "flex" }}
-          alignItems="center"
-          justifyContent="center"
-        >
+        <div className="hidden spacing-x-2 lg:flex items-center justify-center">
           <FAQButton />
           <SignupButton />
           {current && next && <RoundDatesDisplayPopup {...{ current, next }} />}
-        </HStack>
+        </div>
       </div>
     </div>
   );

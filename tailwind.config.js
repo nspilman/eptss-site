@@ -18,6 +18,7 @@ module.exports = {
         themeYellow: "#fffe53",
         bgGradientLighterBLue: "#05397a",
         bgGradientDarkerBLue: "#1C2026",
+        bgTransparent: "hsla(0,0%,100%,.05)",
       },
       boxShadow: {
         NavShadow: " 0px 0px 3px 3px #F6E05E",

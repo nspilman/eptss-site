@@ -3,14 +3,8 @@ import {
   PopoverArrow,
   PopoverBody,
   PopoverCloseButton,
-  PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Stack,
-  Table,
-  Td,
-  Th,
-  Tr,
 } from "@chakra-ui/react";
 import { CalendarIcon } from "@chakra-ui/icons";
 import { useState } from "react";
@@ -61,11 +55,11 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
           <CalendarIcon />
         </button>
       </PopoverTrigger>
-      <PopoverContent background="blue.900">
+      <div className="bg-blue-900">
         <PopoverArrow />
         <PopoverCloseButton />
         <PopoverHeader>
-          <Stack direction="row">
+          <div className="flex row">
             <div className="v-[50%]">
               <h2 className="font-fraunces text-white font-bold">
                 {displayedRoundName} round
@@ -76,44 +70,44 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
                 show {ctaName} round
               </span>
             </button>
-          </Stack>
+          </div>
         </PopoverHeader>
         <PopoverBody>
           <div>
-            <Table>
-              <Tr>
-                <Th>
+            <table>
+              <tr>
+                <th>
                   <span className="text-md font-light font-roboto text-white">
                     Milestone
                   </span>
-                </Th>
-                <Th>
+                </th>
+                <th>
                   <span className="text-md font-light font-roboto text-white">
                     Date
                   </span>
-                </Th>
-              </Tr>
+                </th>
+              </tr>
               {milestones.map(({ name, date }) => (
-                <Tr key={name}>
-                  <Td>
+                <tr key={name}>
+                  <td>
                     <span className="text-sm font-light font-roboto text-white">
                       {name}
                     </span>
-                  </Td>
-                  <Td>
+                  </td>
+                  <td>
                     <span className="text-sm font-light font-roboto text-white">
                       {format(
                         subMilliseconds(new Date(date), 1),
                         "EEEE, MMMM do, yyyy"
                       )}
                     </span>
-                  </Td>
-                </Tr>
+                  </td>
+                </tr>
               ))}
-            </Table>
+            </table>
           </div>
         </PopoverBody>
-      </PopoverContent>
+      </div>
     </Popover>
   );
 };

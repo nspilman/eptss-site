@@ -34,7 +34,7 @@ export const SignUp = () => {
           <AlreadySignedUp signupsCloseDateLabel={signupsCloseDateLabel} />
         }
         FormClosed={<SignupsAreClosed />}
-        hasUserCompletedTask={userRoundDetails.hasSignedUp}
+        hasUserCompletedTask={userRoundDetails?.hasSignedUp}
         isLoading={isLoading}
         shouldRenderForm={shouldRenderForm}
       />

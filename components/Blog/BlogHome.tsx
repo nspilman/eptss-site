@@ -1,13 +1,17 @@
-import { Card, CardHeader } from "@chakra-ui/react";
 import { BlogPost } from "types/BlogPost";
 
 export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
   return (
-    <div className="flex items-baseline w-[100vw]">
-      <h2 className="font-fraunces text-white font-bold text-3xl">The Blog</h2>
+    <div className="flex flex-col items-baseline w-[100vw]">
+      <h2 className="font-fraunces text-white font-bold text-3xl pb-2">
+        The Blog
+      </h2>
       {posts.map(({ frontmatter: { title, subtitle }, slug }) => (
-        <Card bg="bgTransparent" key={slug} mx="8" width="100%">
-          <CardHeader>
+        <article
+          className="bg-bgTransparent mx-8 py-8 shadow-sm shadow-themeYellow px-4"
+          key={slug}
+        >
+          <div>
             <a href={`blog/${slug}`} className="hover:text-themeYellow">
               <h2 className="text-white hover:text-themeYellow pb-4 text-lg font-bold font-fraunces">
                 {title}
@@ -17,8 +21,8 @@ export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
                 {subtitle}
               </span>
             </a>
-          </CardHeader>
-        </Card>
+          </div>
+        </article>
       ))}
     </div>
   );

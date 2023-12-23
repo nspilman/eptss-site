@@ -1,4 +1,3 @@
-import { Radio, RadioGroup } from "@chakra-ui/react";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 interface Props<T extends FieldValues> {

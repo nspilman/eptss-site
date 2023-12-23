@@ -56,7 +56,7 @@ export function DataTable<T extends string>({
         </span>
       </div>
       <div
-        className="w-[90vw] overflow-scroll flex items-center justify-center"
+        className="w-[90vw] overflow-x-scroll overflow-y-scroll flex items-center justify-center"
         style={{ maxHeight }}
       >
         <table

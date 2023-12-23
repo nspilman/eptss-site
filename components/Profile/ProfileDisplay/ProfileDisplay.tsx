@@ -1,4 +1,3 @@
-import { Stack, TableContainer } from "@chakra-ui/react";
 import { DataTable } from "components/shared/DataTable";
 import { Loading } from "components/shared/Loading";
 import { useRouter } from "next/router";
@@ -91,16 +90,10 @@ export const ProfileDisplay = () => {
   ].length;
 
   return (
-    <Stack
-      direction="column"
-      spacing="6"
-      backgroundColor="bgTransparent"
-      p="4"
-      borderRadius="md"
-    >
+    <div className="flex flex-col space-x-6 bg-bgTransparent p-4 rounded-md">
       <h2 className="font-fraunces text-white font-bold">{email}</h2>
       {hasNoRecords ? (
-        <Stack p="20" borderRadius="md" alignItems="center">
+        <div className="p-20 rounded-md items-center">
           <h2 className="font-fraunces text-white font-bold py-4">
             Welome to Everyone Plays the Same Song!
           </h2>
@@ -110,10 +103,10 @@ export const ProfileDisplay = () => {
           <button className="btn-main" onClick={() => router.push("/#rounds")}>
             Rounds
           </button>
-        </Stack>
+        </div>
       ) : (
         <>
-          <TableContainer>
+          <div>
             <DataTable
               title="Your Past Signups"
               rows={signups}
@@ -121,8 +114,8 @@ export const ProfileDisplay = () => {
               subtitle={`You signed up for ${roundSignupsCount} rounds`}
               maxHeight={maxHeight}
             />
-          </TableContainer>
-          <TableContainer>
+          </div>
+          <div>
             <DataTable
               title="Your Vote Summary"
               subtitle={`You have voted on ${voteSummary.length} songs`}
@@ -130,8 +123,8 @@ export const ProfileDisplay = () => {
               headers={headers}
               maxHeight={maxHeight}
             />
-          </TableContainer>
-          <TableContainer>
+          </div>
+          <div>
             <DataTable
               title="Your Past Submissions"
               subtitle={`You have submitted on ${submissions.length} covers`}
@@ -139,9 +132,9 @@ export const ProfileDisplay = () => {
               headers={submissionHeaders}
               maxHeight={maxHeight}
             />
-          </TableContainer>
+          </div>
         </>
       )}
-    </Stack>
+    </div>
   );
 };
