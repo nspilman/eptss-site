@@ -10,8 +10,8 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { theme } from "../../../tailwind.config";
-import colors from "tailwindcss/colors";
-const yellow = theme?.extend?.colors?.["themeYellow"];
+//
+// const yellow = theme?.extend?.colors?.["themeYellow"];
 
 ChartJS.register(
   CategoryScale,
@@ -43,7 +43,7 @@ export const StackedBarChart = ({ data, title }: Props) => {
       title: {
         display: !!title,
         text: title,
-        color: yellow,
+        color: "white",
         font: {
           weight: "bold",
           size: 20,
