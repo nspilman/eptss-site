@@ -1,5 +1,6 @@
 import { useDisclosure } from "@chakra-ui/react";
 import { EmailAuthModal } from "components/shared/EmailAuthModal";
+import { EmailAuthModal2 } from "components/shared/EmailAuthModal/EmailAuthModal2";
 import React, { createContext, useContext, useState } from "react";
 
 // Create a Context object
@@ -25,7 +26,6 @@ export const EmailAuthModalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
     <EmailAuthModalContext.Provider value={{ isOpen, setIsOpen: onOpen }}>
       {children}
