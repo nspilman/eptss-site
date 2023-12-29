@@ -32,7 +32,6 @@ export const EmailAuthModal = ({
         toast({
           title: "Error",
           description: error?.message || "Something went wrong",
-          isClosable: true,
           variant: "destructive",
         });
       } else {
@@ -41,7 +40,6 @@ export const EmailAuthModal = ({
           title: "Check your email to log in!",
           description: "We sent you a login link. Check your email!",
           duration: 8000,
-          isClosable: true,
         });
         onClose?.();
       }
