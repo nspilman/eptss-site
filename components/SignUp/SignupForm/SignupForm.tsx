@@ -5,6 +5,7 @@ import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useSignup } from "../useSignup";
 import Link from "next/link";
+import { Round21Table } from "./round21Table";
 
 interface Props {
   roundId?: number;
@@ -38,9 +39,21 @@ export const SignupForm = ({
             <p className="text-md font-light font-roboto text-white">
               Signing up as {user.email}
             </p>
-            <p className="text-md font-light font-roboto text-white">
-              Sign up with the song you want to cover!
-            </p>
+            {roundId === 21 ? (
+              <div className="flex flex-col items-center">
+                <span>
+                  {`Round 21 is the "runner up" round. Instead of signing up with
+                  a song to cover, the cover candidates are the songs from each
+                  previous round that came in second in the voting. Sign up below.
+             `}{" "}
+                </span>
+                <Round21Table />
+              </div>
+            ) : (
+              <p className="text-md font-light font-roboto text-white">
+                Sign up with the song you want to cover!
+              </p>
+            )}
             <p className="text-md font-light font-roboto text-white">
               Signups close Midnight of {signupsCloseDateLabel}.
             </p>
@@ -54,6 +67,7 @@ export const SignupForm = ({
         }
         errorMessage={GENERIC_ERROR_MESSAGE}
         onSubmit={signUp}
+        submitButtonText="Sign Up!"
       />
     </div>
   );

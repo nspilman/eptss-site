@@ -65,6 +65,7 @@ export const useSignup = (roundId: number, userId: string) => {
       field: "youtubeLink" as const,
       size: "large" as const,
     },
+    additionalComments,
   ].filter((field) => {
     roundId === 21
       ? !["songTitle", "artist", "youtubeLink"].includes(field.field)
@@ -73,7 +74,7 @@ export const useSignup = (roundId: number, userId: string) => {
 
   return {
     signUp,
-    fields: [...fields, additionalComments],
+    fields: [...fields],
     signupSuccess: {
       text: signupSuccessText,
       image: signupSuccessImage,

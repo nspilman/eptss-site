@@ -8,6 +8,7 @@ interface Props<T extends FieldValues> {
   title: React.ReactNode;
   description?: React.ReactNode;
   fields: InputType<T>[];
+  submitButtonText?: string;
 }
 
 export function Form<T extends FieldValues>({
@@ -15,6 +16,7 @@ export function Form<T extends FieldValues>({
   title,
   description = "",
   fields,
+  submitButtonText = "Submit",
 }: Props<T>) {
   const {
     register,
@@ -47,11 +49,11 @@ export function Form<T extends FieldValues>({
           })}
         </div>
         <button
-          className="btn-main w-24 my-2"
+          className="btn-main my-2"
           type="submit"
           data-testid="form-submission"
         >
-          Submit
+          {submitButtonText}
         </button>
       </form>
     </div>

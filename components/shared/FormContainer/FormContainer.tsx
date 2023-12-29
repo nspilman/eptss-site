@@ -10,6 +10,7 @@ interface Props<T extends FieldValues> {
   description?: React.ReactNode;
   fields: InputType<T>[];
   onSubmit: (payload: T) => Promise<"success" | "error">;
+  submitButtonText?: string;
 }
 
 export function FormContainer<T extends FieldValues>({
@@ -19,6 +20,7 @@ export function FormContainer<T extends FieldValues>({
   fields,
   successBlock,
   errorMessage,
+  submitButtonText,
 }: Props<T>) {
   const [successState, setSuccessState] = useSuccessState();
 
@@ -33,6 +35,7 @@ export function FormContainer<T extends FieldValues>({
             onSubmit={async (payload: T) =>
               setSuccessState(await onSubmit(payload))
             }
+            submitButtonText={submitButtonText}
           />
         ) : (
           successBlock

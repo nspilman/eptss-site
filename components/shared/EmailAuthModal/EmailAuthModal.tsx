@@ -97,6 +97,7 @@ export const EmailAuthModal = ({
                   },
                 ]}
                 onSubmit={async (payload) => await onSendLoginLink(payload)}
+                submitButtonText="Email me my login link"
               />
             </div>
             <div className="flex flex-row items-center pt-4"></div>
