@@ -16,7 +16,7 @@ export const SignInGate = ({ children }: { children: React.ReactElement }) => {
     <EmailAuthModal
       redirectUrl={window.location.href}
       isOpen={true}
-      titleOverride="you must be logged in to access this page"
+      titleOverride="Get your Login link"
     />
   );
 };
