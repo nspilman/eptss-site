@@ -44,7 +44,7 @@ export const SignupForm = ({
             <p className="text-md font-light font-roboto text-white">
               Signups close Midnight of {signupsCloseDateLabel}.
             </p>
-            <Link href={Navigation.FAQ} color="yellow.300">
+            <Link href={Navigation.FAQ} className="text-themeYellow">
               FAQ Here
             </Link>
           </div>

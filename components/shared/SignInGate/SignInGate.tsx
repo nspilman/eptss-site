@@ -13,8 +13,10 @@ export const SignInGate = ({ children }: { children: React.ReactElement }) => {
   return !!user ? (
     <>{children}</>
   ) : (
-    <div>
-      <EmailAuthModal redirectUrl={window.location.href} isOpen={true} />
-    </div>
+    <EmailAuthModal
+      redirectUrl={window.location.href}
+      isOpen={true}
+      titleOverride="you must be logged in to access this page"
+    />
   );
 };

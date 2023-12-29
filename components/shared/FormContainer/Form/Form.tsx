@@ -28,13 +28,13 @@ export function Form<T extends FieldValues>({
         <h1 className="py-4 text-center font-bold text-white text-lg">
           {title}
         </h1>
-        <div className="text-white">{description}</div>
+        <span className="text-white font-light text-sm">{description}</span>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col justify-center items-center"
       >
-        <div className="flex flex-wrap flex-col ">
+        <div className="flex flex-wrap flex-col w-full">
           {fields.map((field, i) => {
             return (
               <InputField
@@ -47,7 +47,7 @@ export function Form<T extends FieldValues>({
           })}
         </div>
         <button
-          className="btn-main w-24"
+          className="btn-main w-24 my-2"
           type="submit"
           data-testid="form-submission"
         >

@@ -1,7 +1,6 @@
-import { useDisclosure } from "@chakra-ui/react";
-import { EmailAuthModal } from "components/shared/EmailAuthModal";
-import { EmailAuthModal2 } from "components/shared/EmailAuthModal/EmailAuthModal2";
-import React, { createContext, useContext, useState } from "react";
+import { useDisclosure } from "components/hooks/useDisclosure";
+import { EmailAuthModal } from "components/shared/EmailAuthModal/EmailAuthModal";
+import React, { createContext, useContext } from "react";
 
 // Create a Context object
 const EmailAuthModalContext = createContext<

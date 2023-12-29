@@ -26,44 +26,42 @@ export function InputField<T extends FieldValues>({
       }]`}
       data-testid={getFieldTestId(field.field, type)}
     >
-      <div className="">
-        <div>
-          <label className="text-lg font-semibold pb-2">{`${label}`}</label>
-        </div>
-        {type === "vote" ? (
-          <VoteInput register={register} field={fieldId} />
+      <div>
+        <label className="text-md font-semibold pb-2">{`${label}`}</label>
+      </div>
+      {type === "vote" ? (
+        <VoteInput register={register} field={fieldId} />
+      ) : (
+        <TextInput
+          register={register}
+          field={fieldId}
+          optional={optional}
+          type={type}
+          placeholder={field.placeholder}
+        />
+      )}
+      <div>
+        {errors[fieldId] ? (
+          <p
+            className="mt-2 text-sm text-red-600"
+            data-testid={getFieldErrorId(fieldId)}
+          >
+            This field is required
+          </p>
         ) : (
-          <TextInput
-            register={register}
-            field={fieldId}
-            optional={optional}
-            type={type}
-            placeholder={field.placeholder}
-          />
+          <p>
+            {hasLink && (
+              <Link
+                className="pt-4 font-semibold text-orange-600 shadow-lg"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={field.link}
+              >
+                Listen Here
+              </Link>
+            )}
+          </p>
         )}
-        <div>
-          {errors[fieldId] ? (
-            <p
-              className="mt-2 text-sm text-red-600"
-              data-testid={getFieldErrorId(fieldId)}
-            >
-              This field is required
-            </p>
-          ) : (
-            <p>
-              {hasLink && (
-                <Link
-                  className="pt-4 font-semibold text-orange-600 shadow-lg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href={field.link}
-                >
-                  Listen Here
-                </Link>
-              )}
-            </p>
-          )}
-        </div>
       </div>
     </div>
   );

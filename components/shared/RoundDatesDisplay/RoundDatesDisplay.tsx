@@ -1,12 +1,3 @@
-import {
-  Popover,
-  PopoverArrow,
-  PopoverBody,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverTrigger,
-} from "@chakra-ui/react";
-import { CalendarIcon } from "@chakra-ui/icons";
 import { useState } from "react";
 import { Round } from "queries/roundQueries";
 import { format, subMilliseconds } from "date-fns";
@@ -49,7 +40,8 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
   };
 
   return (
-    <Popover>
+    <div>
+      {/* <Popover>
       <PopoverTrigger>
         <button className="btn-main">
           <CalendarIcon />
@@ -108,6 +100,7 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
           </div>
         </PopoverBody>
       </div>
-    </Popover>
+    </Popover> */}
+    </div>
   );
 };

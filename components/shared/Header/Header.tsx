@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
 import { FAQButton } from "components/NavButtons";
-import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
+// import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 import Link from "next/link";
 
@@ -19,7 +19,7 @@ export const Header = (): ReactElement => {
         <div className="hidden spacing-x-2 lg:flex items-center justify-center">
           <FAQButton />
           <SignupButton />
-          {current && next && <RoundDatesDisplayPopup {...{ current, next }} />}
+          {/* {current && next && <RoundDatesDisplayPopup {...{ current, next }} />} */}
         </div>
       </div>
     </div>

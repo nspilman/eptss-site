@@ -1,42 +1,26 @@
-import * as React from "react";
-import {
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalOverlay,
-  useToast,
-} from "@chakra-ui/react";
+import React from "react";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
-import { Loading } from "../Loading";
+import { useToast } from "components/ui/use-toast";
+import { Form } from "../FormContainer/Form";
 
 export const EmailAuthModal = ({
   isOpen,
   onClose,
   redirectUrl,
+  titleOverride,
 }: {
   isOpen: boolean;
   onClose?: () => void;
   redirectUrl?: string;
+  titleOverride?: string;
 }) => {
-  const [loading, setLoading] = React.useState(false);
-  const [email, setEmail] = React.useState("");
-  const toast = useToast();
-
   const { supabaseClient } = useSessionContext();
   const router = useRouter();
+  const { toast } = useToast();
 
-  const initialRef = React.useRef(null);
-
-  const onSendLoginLink = async () => {
+  const onSendLoginLink = async ({ email }: { email: string }) => {
     try {
-      setLoading(true);
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: email.trim(),
         options: {
@@ -50,22 +34,16 @@ export const EmailAuthModal = ({
           description: error?.message || "Something went wrong",
           status: "error",
           isClosable: true,
+          variant: "destructive",
         });
       } else {
         toast({
           status: "success",
+          variant: "success",
+          title: "Check your email to log in!",
+          description: "We sent you a login link. Check your email!",
           duration: 8000,
           isClosable: true,
-          render: () => (
-            <div className="bg-white p-4 border-themeYellow">
-              <span className="font-fraunces text-black font-bold">
-                Email Sent
-              </span>
-              <span className="text-md font-light font-roboto text-black text-center my-4">
-                We sent you a login link. Check your email!
-              </span>
-            </div>
-          ),
         });
         onClose?.();
       }
@@ -74,70 +52,61 @@ export const EmailAuthModal = ({
       toast({
         title: "Error",
         description: "Something went wrong",
+        variant: "destructive",
       });
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleOverlayClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (event.target === event.currentTarget) {
+      onClose?.();
     }
   };
 
   return (
-    <div data-testid="email-auth-modal">
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose || (() => {})}
-        isCentered={true}
-        initialFocusRef={initialRef}
+    <div
+      className={`inset-0 bg-gray-600 bg-opacity-50 flex overflow-y-auto h-screen w-full z-10 sticky items-center justify-center ${
+        isOpen ? "block" : "hidden"
+      }`}
+      onClick={handleOverlayClick}
+    >
+      <div
+        className={`modal bg-black px-8 py-2 rounded-lg w-[500px]`}
+        data-testid="email-auth-modal"
       >
-        <ModalOverlay />
-        <ModalContent>
-          <div className="p-4">
-            <h1 className="font-bold uppercase">Sign Up / Log In with Email</h1>
-            {onClose && <ModalCloseButton />}
-            <ModalBody>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  onSendLoginLink();
-                }}
-              >
-                <FormControl>
-                  <FormLabel>Email</FormLabel>
-                  <Input
-                    ref={initialRef}
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="ringostarr@gmail.com"
-                    disabled={loading}
-                  />
-                  <FormHelperText>{`You'll receive a link in your email to log you in!`}</FormHelperText>
-                </FormControl>
-              </form>
-            </ModalBody>
-
-            <ModalFooter>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="p-4">
               {!onClose && (
                 <button
-                  className="border-2 uppercase font-bold border-white shadow-md mx-4 p-2 shadow-themeYellow hover:border-themeYellow rounded"
+                  className="border-2 font-bold text-sm border-white shadow-md p-1 shadow-themeYellow hover:border-themeYellow rounded text-white"
                   onClick={() => router.push("/")}
                 >
-                  Go back Home
+                  Back
                 </button>
               )}
-              {loading ? (
-                <Loading />
-              ) : (
-                <button
-                  className="btn-main bg-blue-500 uppercase hover:shadow-white hover:bg-blue-500"
-                  onClick={onSendLoginLink}
-                  disabled={loading}
-                >
-                  Send Login Link
-                </button>
-              )}
-            </ModalFooter>
+              <Form
+                title={titleOverride || "Hey there!"}
+                description={
+                  "Enter your email for a login link sent to your email inbox"
+                }
+                fields={[
+                  {
+                    label: "Email",
+                    placeholder: "michael-buble@itsbublee.com",
+                    field: "email" as const,
+                    size: "large" as const,
+                  },
+                ]}
+                onSubmit={async (payload) => await onSendLoginLink(payload)}
+              />
+            </div>
+            <div className="flex flex-row items-center pt-4"></div>
           </div>
-        </ModalContent>
-      </Modal>
+        </div>
+      </div>
     </div>
   );
 };
