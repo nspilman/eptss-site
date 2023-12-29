@@ -32,13 +32,11 @@ export const EmailAuthModal = ({
         toast({
           title: "Error",
           description: error?.message || "Something went wrong",
-          status: "error",
           isClosable: true,
           variant: "destructive",
         });
       } else {
         toast({
-          status: "success",
           variant: "success",
           title: "Check your email to log in!",
           description: "We sent you a login link. Check your email!",
