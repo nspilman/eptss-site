@@ -39,7 +39,7 @@ export const useSignup = (roundId: number, userId: string) => {
   };
 
   const signupSuccessImage = {
-    src: roundId === 21 ? "welcome-to-round-21.jpg" : "/welcomeimage.png",
+    src: roundId === 21 ? "/welcome-to-round-21.jpg" : "/welcomeimage.png",
     alt: "Welcome to Everyone Plays the Same Song!",
     blurSrc:
       roundId === 21
