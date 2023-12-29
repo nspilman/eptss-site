@@ -106,33 +106,30 @@ export const ProfileDisplay = () => {
         </div>
       ) : (
         <>
-          <div>
-            <DataTable
-              title="Your Past Signups"
-              rows={signups}
-              headers={signupHeaders}
-              subtitle={`You signed up for ${roundSignupsCount} rounds`}
-              maxHeight={maxHeight}
-            />
-          </div>
-          <div>
-            <DataTable
-              title="Your Vote Summary"
-              subtitle={`You have voted on ${voteSummary.length} songs`}
-              rows={voteSummary}
-              headers={headers}
-              maxHeight={maxHeight}
-            />
-          </div>
-          <div>
-            <DataTable
-              title="Your Past Submissions"
-              subtitle={`You have submitted on ${submissions.length} covers`}
-              rows={submissions}
-              headers={submissionHeaders}
-              maxHeight={maxHeight}
-            />
-          </div>
+          <DataTable
+            title="Your Past Signups"
+            rows={signups}
+            headers={signupHeaders}
+            subtitle={`You signed up for ${roundSignupsCount} rounds`}
+            maxHeight={maxHeight}
+            className="mb-8"
+          />
+          <DataTable
+            title="Your Vote Summary"
+            subtitle={`You have voted on ${voteSummary.length} songs`}
+            rows={voteSummary}
+            headers={headers}
+            maxHeight={maxHeight}
+            className="mb-8"
+          />
+          <DataTable
+            title="Your Past Submissions"
+            subtitle={`You have submitted on ${submissions.length} covers`}
+            rows={submissions}
+            headers={submissionHeaders}
+            maxHeight={maxHeight}
+            className="mb-8"
+          />
         </>
       )}
     </div>

@@ -14,6 +14,7 @@ interface Props<T extends string> {
   title?: string;
   subtitle?: string;
   maxHeight?: number;
+  className?: string;
 }
 
 export function DataTable<T extends string>({
@@ -22,6 +23,7 @@ export function DataTable<T extends string>({
   title,
   maxHeight,
   subtitle,
+  className,
 }: Props<T>) {
   const [sortKey, setSortKey] = useState<T>();
   const [descSort, setDescSort] = useState(true);
@@ -46,7 +48,7 @@ export function DataTable<T extends string>({
   const isEmpty = !rows.length;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={`block ${className}`}>
       <div className="pb-4">
         <h2 className="font-fraunces text-white font-bold pb-1 text-xl">
           {title}
@@ -56,14 +58,11 @@ export function DataTable<T extends string>({
         </span>
       </div>
       <div
-        className="w-[90vw] overflow-x-scroll overflow-y-scroll flex items-center justify-center"
+        className="w-[90vw] overflow-x-scroll overflow-y-scroll flex justify-center"
         style={{ maxHeight }}
       >
-        <table
-          className="overflow-y-scroll"
-          style={{ maxHeight: maxHeight || "unset" }}
-        >
-          <thead className="window-border font-fraunces cursor-pointer">
+        <table className="overflow-y-scroll block" style={{ maxHeight }}>
+          <thead className="window-border font-fraunces cursor-pointer sticky top-0">
             <tr>
               {headers.map(({ key, display, sortable }) => (
                 <th
@@ -81,30 +80,32 @@ export function DataTable<T extends string>({
               ))}
             </tr>
           </thead>
-          {isEmpty ? (
-            <div>
-              <span className="text-md font-bold font-roboto text-white text-center my-4">
-                No records to display
-              </span>
-            </div>
-          ) : (
-            <tbody>
-              {rows.map((row, i) => (
-                <tr key={i}>
-                  {headers.map(({ key, className }) => (
-                    <td
-                      key={key}
-                      className={`${className} window-border bg-black`}
-                    >
-                      <span className="text-md font-light text-white text-center my-4 window-border p-1 font-mono shadow-sm shadow-themeYellow">
-                        {row[key]}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          )}
+          <tbody className="overflow-scroll">
+            {isEmpty ? (
+              <div>
+                <span className="text-md font-bold font-roboto text-white text-center my-4">
+                  No records to display
+                </span>
+              </div>
+            ) : (
+              <>
+                {rows.map((row, i) => (
+                  <tr key={i}>
+                    {headers.map(({ key, className }) => (
+                      <td
+                        key={key}
+                        className={`${className} window-border bg-black`}
+                      >
+                        <span className="text-md font-light text-white text-center my-4 window-border p-1 font-mono shadow-sm shadow-themeYellow">
+                          {row[key]}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </>
+            )}
+          </tbody>
         </table>
       </div>
     </div>
