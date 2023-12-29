@@ -18,6 +18,7 @@ export const useSignup = (roundId: number, userId: string) => {
       signupModel.artist = "No Artist Submitted";
       signupModel.songTitle = "No Song Submitted";
       signupModel.youtubeLink = "";
+      signupModel.additionalComments = "";
     }
     const signupEntity = convertModelToEntity(
       signupModel as SignupModel,
