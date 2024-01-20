@@ -20,7 +20,7 @@ export const Hero = () => {
             </span>
           </div>
           <div className="py-8">
-            <span className="font-fraunces text-sm md:text-md text-white animation-delay-2000">
+            <span className="font-fraunces text-sm md:text-md text-white animation-delay-2000 opacity-75">
               Sign up with a song you want to cover.
               <b> Everyone</b> votes, and the most popular is the song that{" "}
               <b>everyone plays</b>. You{`'`}ve got a creative assignment, a

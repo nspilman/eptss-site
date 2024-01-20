@@ -68,7 +68,7 @@ export const RoundActionCard = ({
             <Loading />
           ) : (
             <div className="flex flex-col items-center">
-              <div className="text-white">{labelContent}</div>
+              <div className="text-white opacity-75">{labelContent}</div>
               <div className="pt-4 gap-4 flex flex-col items-center">
                 <div>
                   <CTA

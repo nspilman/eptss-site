@@ -89,7 +89,7 @@ const FAQList: React.FC<FAQListProps> = ({ items }) => {
             </div>
           </h2>
           <div className="py-2">
-            <span className="text-md font-light font-roboto text-white">
+            <span className="text-md font-light font-roboto text-white opacity-75">
               {item.answer}
             </span>
           </div>
