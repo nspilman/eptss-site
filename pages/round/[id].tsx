@@ -151,7 +151,7 @@ const getRoundMetadata = async (id: number) => {
     playlistUrl: roundInfo.playlist_url,
     title: roundInfo.song?.title || "",
     artist: roundInfo.song?.artist || "",
-    submitter: submitterInfo ? submitterInfo[0].username : "",
+    submitter: submitterInfo.length ? submitterInfo[0].username : "",
   };
 };
 
