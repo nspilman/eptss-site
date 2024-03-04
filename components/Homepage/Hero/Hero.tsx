@@ -43,7 +43,7 @@ export const Hero = () => {
             {statusBody}
           </span>
           <span className="text-md  text-white font-fraunces">
-            closing december 31st -{" "}
+            closing march 18th -{" "}
             <Link
               href={phase === "signups" ? Navigation.SignUp : Navigation.Submit}
             >
