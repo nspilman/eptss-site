@@ -27,8 +27,8 @@ module.exports = {
       },
       colors: {
         themeYellow: "#fffe53",
-        bgGradientLighterBLue: "#05397a",
-        bgGradientDarkerBLue: "#1C2026",
+        bgGradientLighterBLue: "red",
+        bgGradientDarkerBLue: "red",
         bgTransparent: "hsla(0,0%,100%,.05)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
