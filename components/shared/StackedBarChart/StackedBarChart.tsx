@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Chart as ChartJS,
@@ -9,9 +10,6 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { theme } from "../../../tailwind.config";
-//
-// const yellow = theme?.extend?.colors?.["themeYellow"];
 
 ChartJS.register(
   CategoryScale,

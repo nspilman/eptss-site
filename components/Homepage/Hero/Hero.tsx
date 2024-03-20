@@ -1,9 +1,14 @@
-import { useRound } from "components/context/RoundContext";
+"use server";
+import { Phase } from "@/services/PhaseMgmtService";
 import { Navigation } from "components/enum/navigation";
 import Link from "next/link";
 
-export const Hero = () => {
-  const { roundId, phase } = useRound();
+interface Props {
+  roundId: number;
+  phase: Phase;
+}
+
+export const Hero = ({ roundId, phase }: Props) => {
   const statusHeadline = phase === "signups" ? "" : "currently covering";
   const statusBody =
     phase === "signups" ? "Signups are open for round " + roundId : "";
@@ -45,11 +50,10 @@ export const Hero = () => {
           <span className="text-md  text-white font-fraunces">
             closing march 18th -{" "}
             <Link
+              className="text-themeYellow font-fraunces text-md"
               href={phase === "signups" ? Navigation.SignUp : Navigation.Submit}
             >
-              <a className="text-themeYellow font-fraunces text-md">
-                {phase === "signups" ? "sign up now" : "submit your cover"}
-              </a>
+              {phase === "signups" ? "sign up now" : "submit your cover"}
             </Link>
           </span>
         </div>

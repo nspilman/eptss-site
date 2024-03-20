@@ -1,14 +1,14 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { Tables } from "queries";
 import { useEffect, useState } from "react";
-import { PhaseMgmtService } from "services/PhaseMgmtService";
+import { getNewPhaseManager } from "services/PhaseMgmtService";
 
 export const Celebration = () => {
   const supabase = useSupabase();
   const [submissions, setSubmissions] = useState<any>();
   useEffect(() => {
     const getSubmissions = async () => {
-      const { roundId } = await PhaseMgmtService.build();
+      const { roundId } = await getNewPhaseManager();
       const { data, error, status } = await supabase
         .from(Tables.Submissions)
         .select("*")

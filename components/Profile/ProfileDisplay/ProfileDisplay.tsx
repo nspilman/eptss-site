@@ -1,6 +1,6 @@
 import { DataTable } from "components/shared/DataTable";
 import { Loading } from "components/shared/Loading";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export interface VoteSummary {

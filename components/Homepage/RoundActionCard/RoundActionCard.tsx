@@ -1,30 +1,58 @@
+"use client";
 import { Phase } from "services/PhaseMgmtService";
-import { CTA, RoundActionFunctions } from "./CTA";
+import { CTA } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
 import { useBlurb } from "../HowItWorks/useBlurb";
 import { Loading } from "components/shared/Loading";
+import { useRouter } from "next/navigation";
+import { useAuthModal } from "components/context/EmailAuthModal";
+import { Navigation } from "components/enum/navigation";
+import { getUserSession } from "@/components/context/getUserSession";
+import { Session } from "@supabase/supabase-js";
+import { RoundDetails, UserRoundDetails } from "@/types";
 
 interface Props {
   phase: Phase;
   roundId: number;
-  isAuthed: boolean;
-  hasCompletedPhase: boolean;
-  roundActionFunctions: RoundActionFunctions;
-  loading?: boolean;
   phaseEndsDate: string;
   phaseEndsDatelabel: string;
+  session: Session | null;
+  userRoundDetails?: UserRoundDetails;
 }
 
 export const RoundActionCard = ({
-  roundActionFunctions,
-  loading,
-  isAuthed,
-  hasCompletedPhase,
   phase,
   roundId,
   phaseEndsDate,
   phaseEndsDatelabel,
+  session,
+  userRoundDetails,
 }: Props) => {
+  const router = useRouter();
+  const { setIsOpen: openAuthModal } = useAuthModal();
+  // console.log({ user, isLoading });
+  const user = session?.user;
+
+  const isAuthed = !!user;
+
+  const completedCheckByPhase: { [key in Phase]: boolean } = {
+    signups: userRoundDetails?.hasSignedUp || false,
+    covering: userRoundDetails?.hasSubmitted || false,
+    voting: userRoundDetails?.hasVoted || false,
+    celebration: userRoundDetails?.hasSubmitted || false,
+  };
+
+  // const hasCompletedPhase = completedCheckByPhase[phase];
+  const roundActionFunctions = {
+    onProfile: () => router.push(Navigation.Profile),
+    onSignup: () => openAuthModal(),
+    onSignupAndJoinRound: () => router.push(Navigation.SignUp),
+    onJoinRound: () => router.push(Navigation.SignUp),
+    onVote: () => router.push(Navigation.Voting),
+    onSubmit: () => router.push(Navigation.Submit),
+    onRoundDetails: () => router.push(`/round/${roundId}`),
+  };
+
   const phaseEndsDaysFromToday =
     // calculates the difference in milliseconds and then rounds up
     Math.ceil(
@@ -64,27 +92,23 @@ export const RoundActionCard = ({
     <div className="py-8 px-4 flex flex-col relative">
       <div>
         <div className="flex flex-col">
-          {loading ? (
-            <Loading />
-          ) : (
-            <div className="flex flex-col items-center">
-              <div className="text-white opacity-75">{labelContent}</div>
-              <div className="pt-4 gap-4 flex flex-col items-center">
-                <div>
-                  <CTA
-                    {...{
-                      roundActionFunctions,
-                      roundId,
-                      hasCompletedPhase,
-                      isAuthed,
-                      phase,
-                    }}
-                  />
-                </div>
-                <span className="text-themeYellow font-fraunces">{blurb}</span>
+          <div className="flex flex-col items-center">
+            <div className="text-white opacity-75">{labelContent}</div>
+            <div className="pt-4 gap-4 flex flex-col items-center">
+              <div>
+                <CTA
+                  {...{
+                    roundActionFunctions,
+                    roundId,
+                    hasCompletedPhase: false,
+                    isAuthed,
+                    phase,
+                  }}
+                />
               </div>
+              <span className="text-themeYellow font-fraunces">{blurb}</span>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,16 +1,7 @@
-import queries from "queries";
-import { Round } from "queries/roundQueries";
-import { useEffect, useState } from "react";
+import queries, { getCurrentAndFutureRounds } from "queries";
 
-export const useGetRoundsDates = () => {
-  const [rounds, setRounds] = useState<Round[]>();
-  useEffect(() => {
-    const getRounds = async () => {
-      const { data: rounds } = await queries.round.getCurrentAndFutureRounds();
-      setRounds(rounds);
-    };
-    getRounds();
-  }, []);
+export const getRoundsDates = async () => {
+  const { data: rounds } = await getCurrentAndFutureRounds();
   const [current, next] = rounds || [undefined, undefined];
   return [current, next];
 };

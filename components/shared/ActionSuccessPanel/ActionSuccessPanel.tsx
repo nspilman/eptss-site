@@ -1,4 +1,3 @@
-import { useRound } from "components/context/RoundContext";
 import { Navigation } from "components/enum/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,14 +14,15 @@ interface Props {
     blurSrc?: string;
   };
   action?: "signups";
+  roundId: number;
 }
 
 export const ActionSuccessPanel = ({
   text: { header, body, thankyou },
   image: { src, alt, blurSrc },
   action,
+  roundId,
 }: Props) => {
-  const { roundId } = useRound();
   return (
     <div className="flex flex-col items-center">
       <h1 className="font-fraunces text-white font-bold text-center">

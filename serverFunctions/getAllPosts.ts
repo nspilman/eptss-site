@@ -7,6 +7,11 @@ const getFileContent = (filename: string, folder: string) => {
   return fs.readFileSync(path.join(POSTS_PATH, filename), "utf8");
 };
 
+interface PostFrontmatter {
+  title: string;
+  subtitle: string;
+}
+
 export const getAllPosts = () => {
   const folder = "blog";
   const POSTS_PATH = path.join(process.cwd(), `/${folder}`);
@@ -20,7 +25,7 @@ export const getAllPosts = () => {
         const slug = fileName.replace(".md", ""); // get the slug from the filename
         const { data: frontmatter, content } = matter(body); // extract frontmatter
         return {
-          frontmatter,
+          frontmatter: frontmatter as PostFrontmatter,
           slug,
           content,
         };

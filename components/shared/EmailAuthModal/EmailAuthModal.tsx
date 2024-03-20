@@ -1,8 +1,9 @@
+"use client";
 import React from "react";
-import { useSessionContext } from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useToast } from "components/ui/use-toast";
 import { Form } from "../FormContainer/Form";
+import { createClient } from "@/utils/supabase/client";
 
 export const EmailAuthModal = ({
   isOpen,
@@ -15,12 +16,12 @@ export const EmailAuthModal = ({
   redirectUrl?: string;
   titleOverride?: string;
 }) => {
-  const { supabaseClient } = useSessionContext();
   const router = useRouter();
   const { toast } = useToast();
 
   const onSendLoginLink = async ({ email }: { email: string }) => {
     try {
+      const supabaseClient = createClient();
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: email.trim(),
         options: {

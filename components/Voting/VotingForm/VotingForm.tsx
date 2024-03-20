@@ -1,8 +1,7 @@
-import { useUserSession } from "components/context/UserSessionContext";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "consts";
-import { useVoting } from "../useVoting";
+import { useVoting } from "./useVoting";
 
 interface Props {
   title: string;
@@ -14,6 +13,7 @@ interface Props {
   }[];
   roundId: number;
   coveringStartsLabel: string;
+  userId?: string;
 }
 
 export const VotingForm = ({
@@ -21,16 +21,15 @@ export const VotingForm = ({
   coveringStartsLabel,
   fields,
   title,
+  userId,
 }: Props) => {
-  const { user } = useUserSession();
-
-  if (!user) {
+  if (!userId) {
     throw new Error("Login required to access Signup page");
   }
   const { submitVotes, successPanelProps } = useVoting(
     roundId,
     coveringStartsLabel,
-    user.id
+    userId
   );
 
   return (

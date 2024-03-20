@@ -28,7 +28,7 @@ export const getRoundDataForUser = async (roundId: number, userId: string) => {
   const { song_selection_votes: votes, submissions, sign_ups } = user;
   const isUserAttributeTruthy = (
     val: typeof votes | typeof submissions | typeof sign_ups
-  ) => Array.isArray(val) && val.length;
+  ) => !!(Array.isArray(val) && val.length);
   return {
     user,
     hasVoted: isUserAttributeTruthy(votes),

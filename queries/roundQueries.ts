@@ -1,6 +1,8 @@
+"use server";
 import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import { Tables } from "queries";
-import { getSupabaseClient } from "utils/getSupabaseClient";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
 
 export interface Round {
   roundId: number;
@@ -13,21 +15,29 @@ export interface Round {
   song: { artist: string; title: string };
 }
 
-const getCurrentRoundId = async (supabase?: SupabaseClient) => {
-  const { data: currentRound } = await (supabase || getSupabaseClient()).rpc(
-    "get_current_round"
-  );
-  return currentRound as unknown as number;
+const defaultDateString = "1970/01/01";
+
+const getClient = async () => {
+  const cookieHeaders = await cookies();
+  const client = await createClient(cookieHeaders);
+  return client;
 };
 
-const getCurrentRound = async (
-  supabase?: SupabaseClient
-): Promise<Round & { error: PostgrestError | null }> => {
+export const getCurrentRoundId = async (supabase?: SupabaseClient) => {
+  const client = await getClient();
+  const { data: currentRound } = await client.rpc("get_current_round");
+  return currentRound || -1;
+};
+
+export const getCurrentRound = async (): Promise<
+  Round & { error: PostgrestError | null }
+> => {
+  const client = await getClient();
   const {
     data: roundData,
     error,
     status,
-  } = await (supabase || (await getSupabaseClient()))
+  } = await client
     .from(Tables.RoundMetadata)
     .select(
       `id, 
@@ -42,11 +52,7 @@ const getCurrentRound = async (
           artist
           )`
     )
-    .filter(
-      "id",
-      "eq",
-      await getCurrentRoundId(supabase || (await getSupabaseClient()))
-    )
+    .filter("id", "eq", await getCurrentRoundId())
     .limit(1);
 
   if (roundData) {
@@ -68,14 +74,14 @@ const getCurrentRound = async (
     if (typeof roundId === "number") {
       return {
         roundId,
-        signupOpens,
-        votingOpens,
-        coveringBegins,
-        coversDue,
-        listeningParty,
+        signupOpens: signupOpens || defaultDateString,
+        votingOpens: votingOpens || defaultDateString,
+        coveringBegins: coveringBegins || defaultDateString,
+        coversDue: coversDue || defaultDateString,
+        listeningParty: listeningParty || defaultDateString,
         error,
         song: songData,
-        typeOverride,
+        typeOverride: typeOverride || undefined,
       };
     }
   }
@@ -83,14 +89,16 @@ const getCurrentRound = async (
   throw new Error("Could not find round");
 };
 
-const getCurrentAndFutureRounds = async (
+export const getCurrentAndFutureRounds = async (
   supabase?: SupabaseClient
 ): Promise<{ data: Round[]; error: PostgrestError | null }> => {
+  const client = await getClient();
+
   const {
     data: roundData,
     error,
     status,
-  } = await (supabase || (await getSupabaseClient()))
+  } = await client
     .from(Tables.RoundMetadata)
     .select(
       `id, 
@@ -105,11 +113,7 @@ const getCurrentAndFutureRounds = async (
             artist
             )`
     )
-    .filter(
-      "id",
-      "gte",
-      await getCurrentRoundId(supabase || (await getSupabaseClient()))
-    )
+    .filter("id", "gte", await getCurrentRoundId())
     .order("id");
 
   const formattedRoundData = await roundData?.map(
@@ -124,35 +128,18 @@ const getCurrentAndFutureRounds = async (
       round_type_override,
     }) => ({
       roundId: id,
-      signupOpens: signup_opens,
-      votingOpens: voting_opens,
-      coveringBegins: covering_begins,
-      coversDue: covers_due,
-      listeningParty: listening_party,
-      song,
-      typeOverride: round_type_override,
+      signupOpens: signup_opens || defaultDateString,
+      votingOpens: voting_opens || defaultDateString,
+      coveringBegins: covering_begins || defaultDateString,
+      coversDue: covers_due || defaultDateString,
+      listeningParty: listening_party || defaultDateString,
+      song: song || { artist: "", title: "" },
+      typeOverride: round_type_override || undefined,
     })
   );
   if (formattedRoundData) {
-    return { data: formattedRoundData as unknown as Round[], error };
+    return { data: formattedRoundData, error };
   }
-  //   if (formattedRoundData) {
-  //     if (
-  //       formattedRoundData.some((round) => {
-  //         if (Array.isArray(round.song)) {
-  //           throw new Error(
-  //             "Only one song can be associated with a single round"
-  //           );
-  //       }
-  //       })
-  //     )
-  //   }
 
   throw new Error("Could not find round");
-};
-
-export const round = {
-  getCurrentRound,
-  getCurrentRoundId,
-  getCurrentAndFutureRounds,
 };

@@ -1,4 +1,4 @@
-import { useUserSession } from "components/context/UserSessionContext";
+import { useUserSession } from "@/components/context/getUserSession";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";

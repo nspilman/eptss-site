@@ -6,7 +6,7 @@ import { PhaseMgmtService } from "services/PhaseMgmtService";
 export const AggregateVoteTable = () => {
   const supabase = useSupabase();
   const getAggregateVote = async () => {
-    const { roundId } = await PhaseMgmtService.build();
+    const { roundId } = await getNewPhaseManager();
     const { data, error, status } = await supabase
       .from(Views.VoteResults)
       .select("*")

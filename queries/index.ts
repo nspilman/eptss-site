@@ -1,5 +1,4 @@
-import { getSupabaseClient } from "utils/getSupabaseClient";
-import { round } from "./roundQueries";
+export * from "./roundQueries";
 import { signups } from "./signups";
 import { voting } from "./votingQueries";
 
@@ -24,7 +23,6 @@ export enum Views {
 
 const queries = {
   signups,
-  round,
   voting,
 };
 

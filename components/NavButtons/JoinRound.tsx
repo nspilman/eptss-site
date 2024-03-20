@@ -1,12 +1,13 @@
-import { useRound } from "components/context/RoundContext";
-import { useUserSession } from "components/context/UserSessionContext";
-import { useRouter } from "next/router";
+import { Phase } from "@/services/PhaseMgmtService";
+import { User } from "@supabase/supabase-js";
 
-export const JoinRoundButton = () => {
-  const { user } = useUserSession();
-  const { phase, roundId } = useRound();
-  const router = useRouter();
+interface Props {
+  user: User;
+  phase: Phase;
+  roundId: number;
+}
 
+export const JoinRoundButton = async ({ user, phase, roundId }: Props) => {
   return user && phase === "signups" ? (
     <button>
       <a href={"/sign-up"}> Sign up for Round {roundId}</a>

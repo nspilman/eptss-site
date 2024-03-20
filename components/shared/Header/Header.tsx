@@ -2,11 +2,14 @@ import React, { ReactElement } from "react";
 import { SignupButton } from "../../Homepage/SignupButton";
 import { FAQButton } from "components/NavButtons";
 // import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
-import { useGetRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 import Link from "next/link";
+// import { getRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
+interface Props {
+  userId?: string;
+}
 
-export const Header = (): ReactElement => {
-  const [current, next] = useGetRoundsDates();
+export const Header = ({ userId }: Props): ReactElement => {
+  // const [current, next] = getRoundsDates();
   return (
     <div id="header" className="backdrop-blur fixed top-0 left-0 w-full">
       <div className="py-4 px-4 md:px-8 flex items-center justify-center md:justify-between">
@@ -18,7 +21,7 @@ export const Header = (): ReactElement => {
 
         <div className="hidden spacing-x-2 lg:flex items-center justify-center">
           <FAQButton />
-          <SignupButton />
+          <SignupButton {...{ userId }} />
           {/* {current && next && <RoundDatesDisplayPopup {...{ current, next }} />} */}
         </div>
       </div>

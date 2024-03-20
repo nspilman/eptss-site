@@ -1,5 +1,6 @@
+"use client";
 import { useDisclosure } from "components/hooks/useDisclosure";
-import { EmailAuthModal } from "components/shared/EmailAuthModal/EmailAuthModal";
+import { EmailAuthModal } from "components/shared/EmailAuthModal";
 import React, { createContext, useContext } from "react";
 
 // Create a Context object

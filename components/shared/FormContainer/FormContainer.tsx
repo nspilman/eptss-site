@@ -1,3 +1,4 @@
+"use client";
 import { useSuccessState } from "components/hooks/useSuccessState";
 import { useToast } from "components/ui/use-toast";
 import { useEffect } from "react";
