@@ -1,7 +1,7 @@
 import { Phase } from "services/PhaseMgmtService";
 
 export interface RoundActionFunctions {
-  onProfile: () => void;
+  // onProfile: () => void;
   onSignup: () => void;
   onSignupAndJoinRound: () => void;
   onJoinRound: () => void;
@@ -26,7 +26,7 @@ export const CTA = ({
   hasCompletedPhase,
 }: Props) => {
   const {
-    onProfile,
+    // onProfile,
     onSignupAndJoinRound,
     onJoinRound,
     onVote,
@@ -93,7 +93,7 @@ export const CTA = ({
         <>
           <RoundDetailsButton />
           {hasCompletedPhase ? (
-            <button className="btn-main" onClick={onProfile}>
+            <button className="btn-main" onClick={() => console.log("profile")}>
               Profile
             </button>
           ) : (

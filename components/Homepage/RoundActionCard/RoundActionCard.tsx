@@ -44,7 +44,7 @@ export const RoundActionCard = ({
 
   // const hasCompletedPhase = completedCheckByPhase[phase];
   const roundActionFunctions = {
-    onProfile: () => router.push(Navigation.Profile),
+    // onProfile: () => router.push(Navigation.Profile),
     onSignup: () => openAuthModal(),
     onSignupAndJoinRound: () => router.push(Navigation.SignUp),
     onJoinRound: () => router.push(Navigation.SignUp),
