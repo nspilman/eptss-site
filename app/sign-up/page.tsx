@@ -10,7 +10,7 @@ import { SignupsAreClosed } from "@/components/SignUp/SignupsAreClosed";
 
 const SignUp = async () => {
   const { roundId, phase, dateLabels } = await getNewPhaseManager();
-  const { userRoundDetails } = await getUserSession();
+  const { userRoundDetails, user } = await getUserSession();
   const areSignupsOpen = phase === "signups";
   const signupsCloseDateLabel = dateLabels?.signups.closes;
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
@@ -25,6 +25,8 @@ const SignUp = async () => {
       <FormScaffolding
         Form={
           <SignupForm
+            userEmail={user?.email || ""}
+            userId={user?.id || ""}
             roundId={roundId || 0}
             signupsCloseDateLabel={signupsCloseDateLabel}
             title={title}

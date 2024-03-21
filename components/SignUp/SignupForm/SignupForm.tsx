@@ -1,4 +1,4 @@
-import { useUserSession } from "@/components/context/getUserSession";
+import { getUserSession } from "@/components/context/getUserSession";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";
@@ -11,16 +11,18 @@ interface Props {
   roundId?: number;
   title: string;
   signupsCloseDateLabel?: string;
+  userId: string;
+  userEmail: string;
 }
 
 export const SignupForm = ({
   roundId,
   title,
   signupsCloseDateLabel,
+  userId,
+  userEmail,
 }: Props) => {
-  const { user } = useUserSession();
-
-  if (!user) {
+  if (!userId) {
     throw new Error("Login required to access Signup page");
   }
 
@@ -28,7 +30,7 @@ export const SignupForm = ({
     throw new Error("roundId and signupCloseDateLabel must be defined");
   }
 
-  const { signUp, signupSuccess, fields } = useSignup(roundId, user.id);
+  const { signUp, signupSuccess, fields } = useSignup(roundId, userId);
   return (
     <div className="flex items-center justify-center">
       <FormContainer
@@ -37,7 +39,7 @@ export const SignupForm = ({
         description={
           <div className="flex flex-col items-center justify-center">
             <p className="text-md font-light font-roboto text-white">
-              Signing up as {user.email}
+              Signing up as {userEmail}
             </p>
             {roundId === 21 ? (
               <div className="flex flex-col items-center">
@@ -63,7 +65,11 @@ export const SignupForm = ({
           </div>
         }
         successBlock={
-          <ActionSuccessPanel {...signupSuccess} action="signups" />
+          <ActionSuccessPanel
+            {...signupSuccess}
+            action="signups"
+            roundId={roundId || 0}
+          />
         }
         errorMessage={GENERIC_ERROR_MESSAGE}
         onSubmit={signUp}
