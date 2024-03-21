@@ -333,8 +333,7 @@ const RoundSummary = ({
         {phase === "Complete" && (
           <>
             <span className="text-md font-light font-roboto text-white">
-              Submitted by:{" "}
-              <Link href={`/profile/${submitter}`}>{submitter}</Link>
+              Submitted by: {submitter}
             </span>
             <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
             <div className="p-10">
@@ -343,9 +342,9 @@ const RoundSummary = ({
                 headers={submissionsDisplayHeaders}
                 rows={(submissions || []).map(
                   ({ username, soundcloud_url }) => ({
-                    username: (
-                      <Link href={`/profile/${username}`}>{username}</Link>
-                    ),
+                    username,
+                    // <Link href={`/profile/${username}`},
+                    // </Link>
                     soundcloud_url: <Link href={soundcloud_url}>Link</Link>,
                   })
                 )}

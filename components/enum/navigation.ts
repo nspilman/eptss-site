@@ -5,5 +5,5 @@ export enum Navigation {
   Submit = "/submit",
   Rounds = "#rounds",
   Voting = "/voting",
-  Profile = "/profile",
+  // Profile = "/profile",
 }

@@ -1,7 +1,7 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { AsyncTableQueryDisplay } from "components/shared/AsyncTableQueryDisplay";
 import { Views } from "queries";
-import { PhaseMgmtService } from "services/PhaseMgmtService";
+import { getNewPhaseManager } from "services/PhaseMgmtService";
 
 export const AggregateVoteTable = () => {
   const supabase = useSupabase();

@@ -1,8 +1,8 @@
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 export const useLocalStorageAuthFromParams = () => {
-  const router = useRouter();
-  const { cuevacito } = router.query;
+  const params = useParams();
+  const { cuevacito } = params;
   const localStorageLoggedInKey = "jeesmanchipski";
   const localStorageIsLoggedIn =
     (typeof window !== "undefined" &&

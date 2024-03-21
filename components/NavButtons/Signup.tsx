@@ -14,9 +14,9 @@ export const SignupButton = ({ userId }: Props): ReactElement => {
 
   const { setIsOpen } = useAuthModal();
 
-  const onProfile = () => {
-    router.push("/profile");
-  };
+  // const onProfile = () => {
+  //   router.push("/profile");
+  // };
 
   const pathname = usePathname();
 
@@ -38,7 +38,7 @@ export const SignupButton = ({ userId }: Props): ReactElement => {
             </button>
           </form>
         ) : (
-          <button onClick={onProfile}>
+          <button onClick={() => console.log("profile")}>
             <Image
               src="/profile-icon.png"
               alt="profile icon"
