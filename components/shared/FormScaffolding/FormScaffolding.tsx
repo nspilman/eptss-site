@@ -10,6 +10,8 @@ interface Props {
   isLoading: boolean;
   shouldRenderForm: boolean;
   hasUserCompletedTask: boolean;
+  userId?: string;
+  redirectUrl: string;
 }
 
 export const FormScaffolding = ({
@@ -19,9 +21,11 @@ export const FormScaffolding = ({
   isLoading,
   shouldRenderForm,
   hasUserCompletedTask,
+  userId,
+  redirectUrl,
 }: Props) => {
   return (
-    <SignInGate>
+    <SignInGate userId={userId} redirectUrl={redirectUrl}>
       {isLoading ? (
         <Loading />
       ) : (

@@ -7,6 +7,7 @@ import { getNewPhaseManager } from "@/services/PhaseMgmtService";
 import { SignupForm } from "@/components/SignUp/SignupForm";
 import { AlreadySignedUp } from "@/components/SignUp/AlreadySignedUp";
 import { SignupsAreClosed } from "@/components/SignUp/SignupsAreClosed";
+import { Navigation } from "@/components/enum/navigation";
 
 const SignUp = async () => {
   const { roundId, phase, dateLabels } = await getNewPhaseManager();
@@ -23,6 +24,8 @@ const SignUp = async () => {
   return (
     <PageContainer title={`Sign up for round ${roundId}`}>
       <FormScaffolding
+        userId={user?.id}
+        redirectUrl={Navigation.SignUp}
         Form={
           <SignupForm
             userEmail={user?.email || ""}

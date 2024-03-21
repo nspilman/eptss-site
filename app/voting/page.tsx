@@ -8,6 +8,7 @@ import { VotingForm } from "@/components/Voting/VotingForm";
 import { FormScaffolding } from "@/components/shared/FormScaffolding";
 import { getRoundOverrideVotes } from "@/queries/votingQueries";
 import { getUserSession } from "@/components/context/getUserSession";
+import { Navigation } from "@/components/enum/navigation";
 
 export interface VoteOptionModel {
   label: string;
@@ -52,7 +53,7 @@ const VotingPage = async () => {
   }));
 
   const { phase } = await getNewPhaseManager();
-  const { userRoundDetails } = await getUserSession();
+  const { userRoundDetails, user } = await getUserSession();
 
   const shouldRenderForm =
     phase === "voting" || (roundId === 21 && phase === "signups");
@@ -60,6 +61,8 @@ const VotingPage = async () => {
   return (
     <PageContainer title={title}>
       <FormScaffolding
+        userId={user?.id}
+        redirectUrl={Navigation.Voting}
         Form={
           <VotingForm
             fields={fields}

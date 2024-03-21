@@ -43,7 +43,7 @@ export const StackedBarChart = ({ data, title }: Props) => {
         text: title,
         color: "white",
         font: {
-          weight: "bold",
+          weight: "bold" as const,
           size: 20,
         },
       },
