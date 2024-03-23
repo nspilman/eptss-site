@@ -16,7 +16,6 @@ interface Props {
 }
 
 export function Form({ formSections, disabled, title, description }: Props) {
-  console.log({ formSections });
   return (
     <div className="w-full flex-col items-center justify-center">
       <div className="flex flex-col text-center font-fraunces">

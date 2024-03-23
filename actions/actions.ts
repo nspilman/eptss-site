@@ -1,6 +1,5 @@
 "use server";
 
-import { SignupEntity, SignupModel } from "@/components/SignUp/types";
 import { getIsSuccess } from "@/utils";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
@@ -70,7 +69,6 @@ const getDataToString = (formData: FormData, key: string) => {
 
 export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
-  console.log({ formData: Object.fromEntries(formData) });
   const getToString = (key: string) => getDataToString(formData, key);
   const headerCookies = await cookies();
   const client = createClient(headerCookies);
@@ -101,11 +99,11 @@ export async function signup(formData: FormData): Promise<FormReturn> {
     round_id: JSON.parse(getToString("roundId") || "-1"),
     user_id: getToString("userId") || "",
     song_title: getToString("songTitle") || "",
-    artist_name: getToString("artist"),
-    youtube_link: getToString("youtubeLink"),
-    additional_comments: getToString("additionalComments"),
+    artist_name: getToString("artist") || "",
+    youtube_link: getToString("youtubeLink") || "",
+    additional_comments: getToString("additionalComments") || "",
   };
 
-  const { status } = await client.from("sign-up").insert(payload);
+  const { status } = await client.rpc("signup", payload);
   return { status: getIsSuccess(status) ? "Success" : "Error", message: "" };
 }

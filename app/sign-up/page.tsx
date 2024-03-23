@@ -49,7 +49,7 @@ const SignUp = async () => {
     {
       label: "roundId",
       placeholder: "Youtube link",
-      field: "userId" as const,
+      field: "roundId" as const,
       size: "large" as const,
       defaultValue: roundId,
       hidden: true,
@@ -76,7 +76,7 @@ const SignUp = async () => {
   return (
     <PageContainer title={title}>
       <SignInGate userId={user?.id} redirectUrl="/sign-up">
-        {userRoundDetails?.hasSubmitted ? (
+        {userRoundDetails?.hasSignedUp ? (
           <ActionSuccessPanel
             text={signupSuccessText}
             image={signupSuccessImage}
