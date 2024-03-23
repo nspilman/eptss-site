@@ -91,17 +91,17 @@ export const EmailAuthModal = ({
                 <Form
                   title={titleOverride || "Hey there!"}
                   description={
-                    "Enter your email for a login link sent to your email inbox"
+                    "Enter your email below and we will send you a login link."
                   }
                   formSections={[
                     {
                       label: "Email",
-                      placeholder: "michael-buble@itsbublee.com",
+                      placeholder: "Enter your email",
                       id: "email",
                       defaultValue: "",
                     },
                   ]}
-                  submitButtonText="Email me my login link"
+                  submitButtonText="Send Login Link"
                 />
               </ClientFormWrapper>
             </div>
