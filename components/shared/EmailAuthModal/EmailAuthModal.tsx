@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useToast } from "components/ui/use-toast";
 import { Form } from "../FormContainer/Form";
 import { createClient } from "@/utils/supabase/client";
+import { ClientFormWrapper } from "@/components/Forms/ClientFormWrapper";
+import { FormReturn } from "@/types";
 
 export const EmailAuthModal = ({
   isOpen,
@@ -17,40 +18,41 @@ export const EmailAuthModal = ({
   titleOverride?: string;
 }) => {
   const router = useRouter();
-  const { toast } = useToast();
 
-  const onSendLoginLink = async ({ email }: { email: string }) => {
+  const onSendLoginLink = async (formData: FormData): Promise<FormReturn> => {
     try {
       const supabaseClient = createClient();
+      const email = formData.get("formData")?.toString();
+      if (!email) {
+        return {
+          status: "Error",
+          message: "Email required",
+        };
+      }
       const { error } = await supabaseClient.auth.signInWithOtp({
-        email: email.trim(),
+        email: email?.trim() || "",
         options: {
           shouldCreateUser: true,
           emailRedirectTo: redirectUrl,
         },
       });
       if (error) {
-        toast({
-          title: "Error",
-          description: error?.message || "Something went wrong",
-          variant: "destructive",
-        });
+        return {
+          status: "Error" as const,
+          message: error?.message || "Something went wrong",
+        };
       } else {
-        toast({
-          variant: "success",
-          title: "Check your email to log in!",
-          description: "We sent you a login link. Check your email!",
-          duration: 8000,
-        });
         onClose?.();
+        return {
+          status: "Success" as const,
+          message: "Check your email for your login link!",
+        };
       }
     } catch (error) {
-      console.error(error);
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-        variant: "destructive",
-      });
+      return {
+        status: "Error" as const,
+        message: "Something went wrong",
+      };
     }
   };
 
@@ -84,22 +86,23 @@ export const EmailAuthModal = ({
                   Back
                 </button>
               )}
-              <Form
-                title={titleOverride || "Hey there!"}
-                description={
-                  "Enter your email for a login link sent to your email inbox"
-                }
-                formSections={[
-                  {
-                    label: "Email",
-                    placeholder: "michael-buble@itsbublee.com",
-                    id: "email",
-                    defaultValue: "",
-                  },
-                ]}
-                onSubmit={async (payload) => await onSendLoginLink(payload)}
-                submitButtonText="Email me my login link"
-              />
+              <ClientFormWrapper action={onSendLoginLink}>
+                <Form
+                  title={titleOverride || "Hey there!"}
+                  description={
+                    "Enter your email for a login link sent to your email inbox"
+                  }
+                  formSections={[
+                    {
+                      label: "Email",
+                      placeholder: "michael-buble@itsbublee.com",
+                      id: "email",
+                      defaultValue: "",
+                    },
+                  ]}
+                  submitButtonText="Email me my login link"
+                />
+              </ClientFormWrapper>
             </div>
             <div className="flex flex-row items-center pt-4"></div>
           </div>

@@ -1,5 +1,4 @@
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
-import { FormContainer } from "components/shared/FormContainer";
 import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useVoting } from "./useVoting";
 
@@ -33,13 +32,14 @@ export const VotingForm = ({
   );
 
   return (
-    <FormContainer
-      onSubmit={submitVotes}
-      title={title}
-      description={<></>}
-      fields={fields}
-      successBlock={<ActionSuccessPanel {...successPanelProps} />}
-      errorMessage={GENERIC_ERROR_MESSAGE}
-    />
+    <div></div>
+    // <FormContainer
+    //   onSubmit={submitVotes}
+    //   title={title}
+    //   description={<></>}
+    //   fields={fields}
+    //   successBlock={<ActionSuccessPanel {...successPanelProps} />}
+    //   errorMessage={GENERIC_ERROR_MESSAGE}
+    // />
   );
 };
