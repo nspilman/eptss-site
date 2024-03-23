@@ -22,7 +22,8 @@ export const EmailAuthModal = ({
   const onSendLoginLink = async (formData: FormData): Promise<FormReturn> => {
     try {
       const supabaseClient = createClient();
-      const email = formData.get("formData")?.toString();
+      console.log(Object.entries(formData));
+      const email = formData.get("email")?.toString();
       if (!email) {
         return {
           status: "Error",
