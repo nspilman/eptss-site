@@ -5,8 +5,14 @@ import { cookies } from "next/headers";
 import { getRoundDataForUser } from "queries/getRoundDataForUser";
 
 // Define a custom hook for easy access to the UserSessionContext
-export const getUserSession = async () => {
-  const headerCookies = cookies();
+interface Props {
+  roundId?: number;
+}
+
+export const getUserSession = async (props?: Props) => {
+  const roundIdOverride = props?.roundId;
+
+  const headerCookies = await cookies();
   const supabaseClient = await createClient(headerCookies);
 
   const { data: session } = await supabaseClient.auth.getSession();
@@ -23,11 +29,13 @@ export const getUserSession = async () => {
   const signOut = () => supabaseClient.auth.signOut();
   const { roundId } = await getNewPhaseManager();
 
+  const chosenRoundId = roundIdOverride || roundId;
+
   const getUserRoundDetails = async () => {
-    if (!roundId) {
+    if (!chosenRoundId) {
       return;
     }
-    const data = await getRoundDataForUser(roundId, userId);
+    const data = await getRoundDataForUser(chosenRoundId, userId);
     return data;
   };
 

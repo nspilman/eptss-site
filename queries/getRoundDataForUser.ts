@@ -1,8 +1,9 @@
-import { getSupabaseClient } from "utils/getSupabaseClient";
-
-const supabase = getSupabaseClient();
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
 
 export const getRoundDataForUser = async (roundId: number, userId: string) => {
+  const headerCookies = await cookies();
+  const supabase = createClient(headerCookies);
   const { data, error } = await supabase
     .from("users")
     .select(

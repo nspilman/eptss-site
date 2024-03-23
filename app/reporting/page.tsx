@@ -6,7 +6,7 @@ import { getNewPhaseManager } from "services/PhaseMgmtService";
 import { Reporting } from "../../components/Reporting";
 
 const ReportingPage = async () => {
-  const headerCookies = cookies();
+  const headerCookies = await cookies();
   const supabase = await createClient(headerCookies);
   const { roundId, phase } = await getNewPhaseManager();
   const roundIdToRemove = ["signups", "voting"].includes(phase) ? roundId : -1;

@@ -1,4 +1,4 @@
-import { getUserSession } from "@/components/context/getUserSession";
+"use client";
 import { Navigation } from "components/enum/navigation";
 import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
 import { FormContainer } from "components/shared/FormContainer";
@@ -6,6 +6,7 @@ import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useSignup } from "../useSignup";
 import Link from "next/link";
 import { Round21Table } from "./round21Table";
+import { ClientFormWrapper } from "@/components/Forms/ClientFormWrapper";
 
 interface Props {
   roundId?: number;
@@ -33,7 +34,10 @@ export const SignupForm = ({
   const { signUp, signupSuccess, fields } = useSignup(roundId, userId);
   return (
     <div className="flex items-center justify-center">
-      <FormContainer
+      <ClientFormWrapper>
+        
+      </ClientFormWrapper>
+      {/* <FormContainer
         fields={fields}
         title={title}
         description={
@@ -74,7 +78,7 @@ export const SignupForm = ({
         errorMessage={GENERIC_ERROR_MESSAGE}
         onSubmit={signUp}
         submitButtonText="Sign Up!"
-      />
+      /> */}
     </div>
   );
 };

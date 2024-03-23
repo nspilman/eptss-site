@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import { SignInGate } from "components/shared/SignInGate";

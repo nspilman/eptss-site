@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { createClient } from "./server";
 
 export const getSession = async () => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabaseClient = await createClient(cookieStore);
 
   const {

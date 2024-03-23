@@ -23,15 +23,13 @@ const getClient = async () => {
   return client;
 };
 
-export const getCurrentRoundId = async (supabase?: SupabaseClient) => {
+export const getCurrentRoundId = async () => {
   const client = await getClient();
   const { data: currentRound } = await client.rpc("get_current_round");
   return currentRound || -1;
 };
 
-export const getCurrentRound = async (): Promise<
-  Round & { error: PostgrestError | null }
-> => {
+export const getRoundById = async (roundId: number) => {
   const client = await getClient();
   const {
     data: roundData,
@@ -52,7 +50,7 @@ export const getCurrentRound = async (): Promise<
           artist
           )`
     )
-    .filter("id", "eq", await getCurrentRoundId())
+    .filter("id", "eq", roundId)
     .limit(1);
 
   if (roundData) {
@@ -87,6 +85,12 @@ export const getCurrentRound = async (): Promise<
   }
 
   throw new Error("Could not find round");
+};
+
+export const getCurrentRound = async (): Promise<
+  Round & { error: PostgrestError | null }
+> => {
+  return await getRoundById(await getCurrentRoundId());
 };
 
 export const getCurrentAndFutureRounds = async (

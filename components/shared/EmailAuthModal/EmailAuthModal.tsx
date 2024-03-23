@@ -89,12 +89,12 @@ export const EmailAuthModal = ({
                 description={
                   "Enter your email for a login link sent to your email inbox"
                 }
-                fields={[
+                formSections={[
                   {
                     label: "Email",
                     placeholder: "michael-buble@itsbublee.com",
-                    field: "email" as const,
-                    size: "large" as const,
+                    id: "email",
+                    defaultValue: "",
                   },
                 ]}
                 onSubmit={async (payload) => await onSendLoginLink(payload)}

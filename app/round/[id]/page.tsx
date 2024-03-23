@@ -2,7 +2,7 @@ import { Tables, Views } from "queries";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
 
 const getDbClient = async () => {
-  const headerCookies = cookies();
+  const headerCookies = await cookies();
   return await createClient(headerCookies);
 };
 

@@ -12,7 +12,7 @@ import { cookies } from "next/headers";
 import { getUserSession } from "@/components/context/getUserSession";
 
 const Homepage = async () => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const supabase = await createClient(cookieStore);
 
   const { data, error } = await supabase

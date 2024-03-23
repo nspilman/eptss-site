@@ -44,7 +44,7 @@ export function FormContainer<T extends FieldValues>({
           <Form
             title={title}
             description={description}
-            fields={fields}
+            formSections={fields}
             onSubmit={async (payload: T) =>
               setSuccessState(await onSubmit(payload))
             }

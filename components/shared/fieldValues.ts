@@ -27,4 +27,5 @@ export const additionalComments = {
   field: "additionalComments" as const,
   size: "large" as const,
   optional: true,
+  defaultValue: "",
 };
