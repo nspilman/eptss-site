@@ -1,13 +1,14 @@
-import { PageContainer } from "@/components/shared/PageContainer";
+import { PageTitle } from "@/components/PageTitle";
 import { getAllPosts } from "@/serverFunctions/getAllPosts";
-import { BlogHome } from "@/components/Blog";
+import { BlogHome } from "@/app/blog/Blog";
 
 const BlogPage = () => {
   const posts = getAllPosts();
   return (
-    <PageContainer title="Blog Home">
+    <>
+      <PageTitle title="Blog Home" />
       <BlogHome posts={posts} />
-    </PageContainer>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import { ActionSuccessPanel } from "components/shared/ActionSuccessPanel";
+import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { GENERIC_ERROR_MESSAGE } from "consts";
 import { useVoting } from "./useVoting";
 

@@ -1,5 +1,4 @@
-import { PageContainer } from "components/shared/PageContainer";
-import { SignInGate } from "components/shared/SignInGate";
+import { PageTitle } from "@/components/PageTitle";
 import { Phase } from "services/PhaseMgmtService";
 import { VotingReport } from "./Phases/Voting/VotingReport";
 import { useLocalStorageAuthFromParams } from "./useLocalStorageAuthFromParams";
@@ -15,12 +14,13 @@ export const LaCueva = ({
 }) => {
   const { isLoggedIn } = useLocalStorageAuthFromParams();
   return (
-    <PageContainer title="la cueva">
+    <>
+      <PageTitle title="la cueva" />
       {isLoggedIn ? (
         <VotingReport dateLabels={dateLabels.voting} />
       ) : (
         <div>Get outa here</div>
       )}
-    </PageContainer>
+    </>
   );
 };

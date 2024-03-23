@@ -1,15 +1,15 @@
-import { Hero } from "../components/Homepage/Hero";
-import { HowItWorks } from "../components/Homepage/HowItWorks";
+import { Hero } from "./voting/Homepage/Hero";
+import { HowItWorks } from "./voting/Homepage/HowItWorks";
 import Head from "next/head";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
-import { RoundsDisplay } from "../components/Homepage/RoundsDisplay";
-import { RoundActionCard } from "../components/Homepage/RoundActionCard";
+import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
+import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
 import { Tables, getCurrentRoundId } from "queries";
 import { format } from "date-fns";
-import { EmailAuthModalContextProvider } from "components/context/EmailAuthModal";
+import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { getUserSession } from "@/components/context/getUserSession";
+import { getUserSession } from "@/components/client/context/getUserSession";
 
 const Homepage = async () => {
   const cookieStore = await cookies();

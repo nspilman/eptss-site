@@ -1,13 +1,13 @@
 import React from "react";
 
-import { PageContainer } from "components/shared/PageContainer";
-import { getUserSession } from "@/components/context/getUserSession";
+import { PageTitle } from "@/components/PageTitle";
+import { getUserSession } from "@/components/client/context/getUserSession";
 import { getNewPhaseManager } from "@/services/PhaseMgmtService";
-import { SignInGate } from "@/components/shared/SignInGate";
-import { ClientFormWrapper } from "@/components/Forms/ClientFormWrapper";
-import { Form } from "@/components/shared/FormContainer/Form";
-import { ActionSuccessPanel } from "@/components/shared/ActionSuccessPanel";
-import { additionalComments } from "@/components/shared/fieldValues";
+import { SignInGate } from "@/components/SignInGate";
+import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
+import { Form } from "@/components/Form";
+import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
+import { additionalComments } from "@/components/fieldValues";
 import { signup } from "@/actions/actions";
 
 const SignUp = async () => {
@@ -74,7 +74,8 @@ const SignUp = async () => {
   };
 
   return (
-    <PageContainer title={title}>
+    <>
+      <PageTitle title={title} />
       <SignInGate userId={user?.id} redirectUrl="/sign-up">
         {userRoundDetails?.hasSignedUp ? (
           <ActionSuccessPanel
@@ -96,7 +97,7 @@ const SignUp = async () => {
           </ClientFormWrapper>
         )}
       </SignInGate>
-    </PageContainer>
+    </>
   );
 };
 

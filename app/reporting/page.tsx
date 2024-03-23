@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { Views } from "queries";
 import React from "react";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
-import { Reporting } from "../../components/Reporting";
+import { Reporting } from "./Reporting";
 
 const ReportingPage = async () => {
   const headerCookies = await cookies();

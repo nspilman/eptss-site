@@ -1,11 +1,11 @@
 import { getNewPhaseManager } from "@/services/PhaseMgmtService";
-import { SignInGate } from "components/shared/SignInGate";
-import { PageContainer } from "components/shared/PageContainer";
-import { ClientFormWrapper } from "@/components/Forms/ClientFormWrapper";
+import { SignInGate } from "@/components/SignInGate";
+import { PageTitle } from "@/components/PageTitle";
+import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { submitCover } from "@/actions/actions";
-import { Form } from "@/components/shared/FormContainer/Form/Form";
-import { getUserSession } from "@/components/context/getUserSession";
-import { ActionSuccessPanel } from "@/components/shared/ActionSuccessPanel";
+import { Form } from "@/components/Form";
+import { getUserSession } from "@/components/client/context/getUserSession";
+import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { getRoundById } from "@/queries";
 
 const SubmitPage = async () => {
@@ -112,7 +112,8 @@ const SubmitPage = async () => {
   };
 
   return (
-    <PageContainer title={`Submit your cover for round ${roundToReference}`}>
+    <>
+      <PageTitle title={`Submit your cover for round ${roundToReference}`} />
       <SignInGate userId={userId} redirectUrl="/submit">
         {userRoundDetails?.hasSubmitted ? (
           <ActionSuccessPanel
@@ -134,7 +135,7 @@ const SubmitPage = async () => {
           </ClientFormWrapper>
         )}
       </SignInGate>
-    </PageContainer>
+    </>
   );
 };
 

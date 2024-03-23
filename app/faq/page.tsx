@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PageContainer } from "components/shared/PageContainer";
+import { PageTitle } from "@/components/PageTitle";
 
 type FAQItem = {
   question: string;
@@ -65,14 +65,15 @@ const FAQPage = async () => {
   ];
 
   return (
-    <PageContainer title={"Frequently Asked Questions"}>
+    <>
+      <PageTitle title={"Frequently Asked Questions"} />
       <div className="pt-8 px-4">
         <h2 className="font-fraunces text-white font-bold underline pb-4 text-md">
           Frequently Asked Questions
         </h2>
         <FAQList items={faqItems} />
       </div>
-    </PageContainer>
+    </>
   );
 };
 

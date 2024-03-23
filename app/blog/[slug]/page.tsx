@@ -1,5 +1,5 @@
-import { Post } from "@/components/Blog/Post";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { Post } from "@/app/blog/Blog/Post";
+import { PageTitle } from "@/components/PageTitle";
 import { getAllPosts } from "@/serverFunctions/getAllPosts";
 import { PageNotFoundError } from "next/dist/shared/lib/utils";
 
@@ -9,9 +9,10 @@ const BlogPost = ({ params }: { params: { slug: string } }) => {
     return <div>page not found</div>;
   }
   return (
-    <PageContainer title={post.slug}>
+    <>
+      <PageTitle title={post.slug} />
       <Post post={post} />
-    </PageContainer>
+    </>
   );
 };
 

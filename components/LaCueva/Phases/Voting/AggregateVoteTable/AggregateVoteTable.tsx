@@ -1,5 +1,5 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import { AsyncTableQueryDisplay } from "components/shared/AsyncTableQueryDisplay";
+import { AsyncTableQueryDisplay } from "@/components/AsyncTableQueryDisplay";
 import { Views } from "queries";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
 

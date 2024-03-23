@@ -12,7 +12,7 @@ export default async function Post({ params }: { params: { id: string } }) {
   const voteResults = await getVoteResults(roundId);
   const signupData = (await getSignupData(roundId)) || [];
   const signupCount = signupData?.length || 0;
-  const { roundId: currentRoundId, phase } = await getNewPhaseManager();
+  const { phase } = await getNewPhaseManager();
   const metadata = await getRoundMetadata(roundId);
   const submissions = await getSubmissions(roundId);
   const voteBreakdown = await getVoteBreakdownBySong(roundId);
@@ -43,9 +43,10 @@ export default async function Post({ params }: { params: { id: string } }) {
     submissions,
   };
   return (
-    <PageContainer title={`Round ${roundId} Overview`}>
+    <>
+      <PageTitle title={`Round ${roundId} Overview`} />
       <RoundSummary {...props} />
-    </PageContainer>
+    </>
   );
 }
 
@@ -175,9 +176,9 @@ const getVoteBreakdownBySong = async (id: number) => {
 };
 
 import Link from "next/link";
-import { DataTable } from "components/shared/DataTable";
-import { PageContainer } from "components/shared/PageContainer";
-import { StackedBarChart } from "components/shared/StackedBarChart";
+import { DataTable } from "@/components/DataTable";
+import { PageTitle } from "@/components/PageTitle";
+import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
 import { Phase } from "services/PhaseMgmtService";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
@@ -313,7 +314,8 @@ const RoundSummary = ({
 
   const isVotingPhase = phase === "voting";
   return (
-    <PageContainer title={`Round ${roundId} Info`}>
+    <>
+      <PageTitle title={`Round ${roundId} Info`} />
       <div className="flex flex-col items-center">
         <div className="pb-4 text-center">
           <h1 className="font-fraunces text-white font-semibold text-lg pb-1">
@@ -390,7 +392,7 @@ const RoundSummary = ({
           )}
         </div>
       </div>
-    </PageContainer>
+    </>
   );
 };
 

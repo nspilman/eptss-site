@@ -1,6 +1,6 @@
 import { PostgrestError } from "@supabase/supabase-js";
 import { useSupabase } from "components/hooks/useSupabaseClient";
-import { AsyncTableQueryDisplay } from "components/shared/AsyncTableQueryDisplay/AsyncTableQueryDisplay";
+import { AsyncTableQueryDisplay } from "@/components/AsyncTableQueryDisplay/AsyncTableQueryDisplay";
 
 export const OutstandingVotes = () => {
   const supabase = useSupabase();

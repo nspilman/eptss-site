@@ -1,4 +1,4 @@
-import { Navigation } from "components/enum/navigation";
+import { Navigation } from "@/enum/navigation";
 
 export const FAQButton = () => (
   <button className="btn-main">

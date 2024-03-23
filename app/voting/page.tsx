@@ -1,14 +1,13 @@
 import React from "react";
 import queries, { getCurrentRound } from "queries";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
-import { SignInGate } from "components/shared/SignInGate";
 import seedrandom from "seedrandom";
-import { PageContainer } from "@/components/shared/PageContainer";
+import { PageTitle } from "@/components/PageTitle";
 import { VotingForm } from "@/components/Voting/VotingForm";
 import { FormScaffolding } from "@/components/shared/FormScaffolding";
 import { getRoundOverrideVotes } from "@/queries/votingQueries";
-import { getUserSession } from "@/components/context/getUserSession";
-import { Navigation } from "@/components/enum/navigation";
+import { getUserSession } from "@/components/client/context/getUserSession";
+import { Navigation } from "@/enum/navigation";
 
 export interface VoteOptionModel {
   label: string;
@@ -59,7 +58,8 @@ const VotingPage = async () => {
     phase === "voting" || (roundId === 21 && phase === "signups");
 
   return (
-    <PageContainer title={title}>
+    <>
+      <PageTitle title={title} />
       <FormScaffolding
         userId={user?.id}
         redirectUrl={Navigation.Voting}
@@ -85,7 +85,7 @@ const VotingPage = async () => {
         hasUserCompletedTask={userRoundDetails?.hasVoted || false}
         shouldRenderForm={shouldRenderForm}
       />
-    </PageContainer>
+    </>
   );
 };
 

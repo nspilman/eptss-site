@@ -2,7 +2,7 @@
 import React, { ReactElement } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuthModal } from "components/context/EmailAuthModal";
+import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { signout } from "@/actions/actions";
 
 interface Props {
