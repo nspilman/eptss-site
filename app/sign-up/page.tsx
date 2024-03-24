@@ -12,7 +12,8 @@ import { signup } from "@/actions/actions";
 
 const SignUp = async () => {
   const { roundId, dateLabels } = await getNewPhaseManager();
-  const { userRoundDetails, user } = await getUserSession();
+  const { userRoundDetails } = await getUserSession();
+  const userId = userRoundDetails?.user.userid;
   const signupsCloseDateLabel = dateLabels?.signups.closes;
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
@@ -43,7 +44,7 @@ const SignUp = async () => {
       placeholder: "Youtube link",
       field: "userId" as const,
       size: "large" as const,
-      defaultValue: user?.id,
+      defaultValue: userId,
       hidden: true,
     },
     {
@@ -76,7 +77,7 @@ const SignUp = async () => {
   return (
     <>
       <PageTitle title={title} />
-      <SignInGate userId={user?.id} redirectUrl="/sign-up">
+      <SignInGate userId={userId} redirectUrl="/sign-up">
         {userRoundDetails?.hasSignedUp ? (
           <ActionSuccessPanel
             text={signupSuccessText}

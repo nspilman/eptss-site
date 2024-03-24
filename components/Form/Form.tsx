@@ -1,16 +1,18 @@
 import { InputField } from "./InputField";
 
+interface FormSections {
+  id: string;
+  placeholder: string;
+  defaultValue: string | number;
+  label: string;
+  isSmall?: boolean;
+  value?: number | string;
+  hidden?: boolean;
+  optional?: boolean;
+}
+
 interface Props {
-  formSections?: {
-    id: string;
-    placeholder: string;
-    defaultValue: string | number;
-    label: string;
-    isSmall?: boolean;
-    value?: number | string;
-    hidden?: boolean;
-    optional?: boolean;
-  }[];
+  formSections?: FormSections[];
   disabled?: boolean;
   title: string;
   description: React.ReactNode;

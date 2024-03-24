@@ -3,11 +3,11 @@ import queries, { getCurrentRound } from "queries";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
 import seedrandom from "seedrandom";
 import { PageTitle } from "@/components/PageTitle";
-import { VotingForm } from "@/components/Voting/VotingForm";
-import { FormScaffolding } from "@/components/shared/FormScaffolding";
 import { getRoundOverrideVotes } from "@/queries/votingQueries";
 import { getUserSession } from "@/components/client/context/getUserSession";
-import { Navigation } from "@/enum/navigation";
+import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
+import { Form } from "@/components/Form";
+import { submitVotes } from "@/actions/actions";
 
 export interface VoteOptionModel {
   label: string;
@@ -36,7 +36,7 @@ const VotingPage = async () => {
 
   const isVotingOpen = true;
   const unsortedVoteOptions = isVotingOpen
-    ? await getVoteOptions(roundId, typeOverride as "runner_up" | undefined)
+    ? await getVoteOptions(20, typeOverride as "runner_up" | undefined)
     : [];
 
   const voteOptions =
@@ -49,10 +49,12 @@ const VotingPage = async () => {
   const fields = voteOptions.map((option) => ({
     ...option,
     type: "vote" as const,
+    defaultValue: undefined,
+    placeholder: "",
   }));
 
   const { phase } = await getNewPhaseManager();
-  const { userRoundDetails, user } = await getUserSession();
+  const { userRoundDetails } = await getUserSession();
 
   const shouldRenderForm =
     phase === "voting" || (roundId === 21 && phase === "signups");
@@ -60,31 +62,21 @@ const VotingPage = async () => {
   return (
     <>
       <PageTitle title={title} />
-      <FormScaffolding
-        userId={user?.id}
-        redirectUrl={Navigation.Voting}
-        Form={
-          <VotingForm
-            fields={fields}
-            coveringStartsLabel={coveringStartLabel}
+      {phase === "voting" ? (
+        <ClientFormWrapper action={submitVotes}>
+          <Form
             title={title}
-            roundId={roundId}
+            description={`Covering starts ${coveringStartLabel}`}
+            formSections={fields.map((field) => ({
+              ...field,
+              id: field.field,
+              defaultValue: field.defaultValue || "",
+            }))}
           />
-        }
-        isLoading={false}
-        AlreadyCompleted={
-          <h2 className="font-fraunces text-white font-bold text-xl">
-            Thanks for Voting!
-          </h2>
-        }
-        FormClosed={
-          <h2 className="font-fraunces text-white font-bold text-xl">
-            Voting is not open at this time! Check back later
-          </h2>
-        }
-        hasUserCompletedTask={userRoundDetails?.hasVoted || false}
-        shouldRenderForm={shouldRenderForm}
-      />
+        </ClientFormWrapper>
+      ) : (
+        <></>
+      )}
     </>
   );
 };

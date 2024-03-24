@@ -147,3 +147,20 @@ export const getCurrentAndFutureRounds = async (
 
   throw new Error("Could not find round");
 };
+
+export const getCurrentAndPastRounds = async () => {
+  const client = await getClient();
+  return await client
+    .from(Tables.RoundMetadata)
+    .select(
+      `playlist_url, 
+  id, 
+  song_id,
+  song:songs (
+  title, 
+  artist
+)`
+    )
+    .filter("id", "lte", await getCurrentRoundId())
+    .order("id", { ascending: false });
+};

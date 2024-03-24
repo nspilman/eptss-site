@@ -14,7 +14,7 @@ interface Props {
   roundId: number;
   phaseEndsDate: string;
   phaseEndsDatelabel: string;
-  session: Session | null;
+  session?: Session | null;
   userRoundDetails?: UserRoundDetails;
 }
 

@@ -1,55 +1,38 @@
-import { Hero } from "./voting/Homepage/Hero";
-import { HowItWorks } from "./voting/Homepage/HowItWorks";
 import Head from "next/head";
 import { getNewPhaseManager } from "services/PhaseMgmtService";
-import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
-import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
-import { Tables, getCurrentRoundId } from "queries";
+import { getCurrentAndPastRounds } from "queries";
 import { format } from "date-fns";
-import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getUserSession } from "@/components/client/context/getUserSession";
+import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
+import { Hero } from "./voting/Homepage/Hero";
+import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
+import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
+import { HowItWorks } from "./voting/Homepage/HowItWorks";
 
 const Homepage = async () => {
   const cookieStore = await cookies();
   const supabase = await createClient(cookieStore);
 
-  const { data, error } = await supabase
-    .from(Tables.RoundMetadata)
-    .select(
-      `playlist_url, 
-      id, 
-      song_id,
-      song:songs (
-      title, 
-      artist
-    )`
-    )
-    .filter("id", "lte", await getCurrentRoundId())
-    .order("id", { ascending: false });
-  if (error) {
-    throw new Error(JSON.stringify(error));
-  }
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const { data, error } = await getCurrentAndPastRounds();
 
   const phaseMgmtService = await getNewPhaseManager();
   const { phase, dateLabels, roundId } = phaseMgmtService;
 
-  const roundContent = data
-    .map(({ song, playlist_url, id }) => {
-      const { title, artist } = song || { title: null, artist: null };
-      return {
-        title,
-        artist,
-        roundId: id,
-        playlist: playlist_url,
-      };
-    })
-    .filter((round) => !(round.roundId === roundId && phase === "signups"));
+  const roundContent =
+    data
+      ?.map(({ song, playlist_url, id }) => {
+        const { title, artist } = song || { title: null, artist: null };
+        return {
+          title,
+          artist,
+          roundId: id,
+          playlist: playlist_url,
+        };
+      })
+      .filter((round) => !(round.roundId === roundId && phase === "signups")) ||
+    [];
 
   const phaseEndsDate = format(
     phaseMgmtService.dates[phase].closes,
@@ -58,7 +41,7 @@ const Homepage = async () => {
   const phaseEndsDatelabel = dateLabels[phase].closes;
   const isVotingPhase = phase === "voting";
 
-  const { userRoundDetails } = await getUserSession();
+  const { userRoundDetails, session } = await getUserSession();
   return (
     <div className="flex flex-col items-center">
       <Head>
@@ -93,7 +76,6 @@ const Homepage = async () => {
         />
         <HowItWorks />
       </EmailAuthModalContextProvider>
-      {/* </UserSessionProvider> */}
     </div>
   );
 };

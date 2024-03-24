@@ -20,7 +20,7 @@ export const getUserSession = async (props?: Props) => {
   const userId = session?.session?.user.id || "";
   if (!userId) {
     return {
-      user: undefined,
+      session: undefined,
       getUserRoundDetails: undefined,
       signOut: undefined,
     };
@@ -40,7 +40,7 @@ export const getUserSession = async (props?: Props) => {
   };
 
   return {
-    user: session.session?.user,
+    session: session.session,
     userRoundDetails: await getUserRoundDetails(),
     signOut,
   };

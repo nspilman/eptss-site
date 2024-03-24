@@ -23,10 +23,10 @@ const SubmitPage = async () => {
     song,
   } = await getNewPhaseManager(await getRoundById(roundToReference));
 
-  const { user, userRoundDetails } = await getUserSession({
+  const { userRoundDetails } = await getUserSession({
     roundId: roundToReference,
   });
-  const userId = user?.id;
+  const userId = userRoundDetails?.user.userid;
 
   const fields = [
     {

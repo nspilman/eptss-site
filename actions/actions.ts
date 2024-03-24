@@ -107,3 +107,11 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   const { status } = await client.rpc("signup", payload);
   return { status: getIsSuccess(status) ? "Success" : "Error", message: "" };
 }
+
+export const submitVotes = async (formData: FormData) => {
+  const entries = formData.entries();
+  const payload = Object.fromEntries(entries);
+  console.log({ payload });
+  return { status: "Success" as const, message: "" };
+  // return payload;
+};
