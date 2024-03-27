@@ -1,6 +1,5 @@
-"use server";
-import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import { Tables } from "queries";
+import { PostgrestError } from "@supabase/supabase-js";
+import { Tables, Views } from "@/data-access";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
@@ -23,13 +22,13 @@ const getClient = async () => {
   return client;
 };
 
-export const getCurrentRoundId = async () => {
+const getCurrentRoundId = async () => {
   const client = await getClient();
   const { data: currentRound } = await client.rpc("get_current_round");
   return currentRound || -1;
 };
 
-export const getRoundById = async (roundId: number) => {
+const getRoundById = async (roundId: number) => {
   const client = await getClient();
   const {
     data: roundData,
@@ -93,33 +92,24 @@ export const getCurrentRound = async (): Promise<
   return await getRoundById(await getCurrentRoundId());
 };
 
-export const getCurrentAndFutureRounds = async (
-  supabase?: SupabaseClient
-): Promise<{ data: Round[]; error: PostgrestError | null }> => {
-  const client = await getClient();
-
-  const {
-    data: roundData,
-    error,
-    status,
-  } = await client
-    .from(Tables.RoundMetadata)
-    .select(
-      `id, 
-          signup_opens, 
-          voting_opens, 
-          covering_begins, 
-          covers_due, 
-          listening_party, 
-          round_type_override,
-          song:songs(
-            title, 
-            artist
-            )`
-    )
-    .filter("id", "gte", await getCurrentRoundId())
-    .order("id");
-
+const getFormattedRoundData = async (
+  roundData:
+    | {
+        id: number;
+        signup_opens: string | null;
+        voting_opens: string | null;
+        covering_begins: string | null;
+        covers_due: string | null;
+        listening_party: string | null;
+        playlist_url: string | null;
+        round_type_override: "runner_up" | null;
+        song: {
+          artist: string;
+          title: string;
+        } | null;
+      }[]
+    | null
+) => {
   const formattedRoundData = await roundData?.map(
     ({
       id,
@@ -130,6 +120,7 @@ export const getCurrentAndFutureRounds = async (
       listening_party,
       song,
       round_type_override,
+      playlist_url,
     }) => ({
       roundId: id,
       signupOpens: signup_opens || defaultDateString,
@@ -139,28 +130,105 @@ export const getCurrentAndFutureRounds = async (
       listeningParty: listening_party || defaultDateString,
       song: song || { artist: "", title: "" },
       typeOverride: round_type_override || undefined,
+      playlistUrl: playlist_url || "",
     })
   );
   if (formattedRoundData) {
-    return { data: formattedRoundData, error };
+    return formattedRoundData;
   }
 
   throw new Error("Could not find round");
 };
 
-export const getCurrentAndPastRounds = async () => {
-  const client = await getClient();
-  return await client
-    .from(Tables.RoundMetadata)
-    .select(
-      `playlist_url, 
-  id, 
-  song_id,
-  song:songs (
+const roundQuery = `id, 
+signup_opens, 
+voting_opens, 
+covering_begins, 
+covers_due, 
+listening_party, 
+round_type_override,
+playlist_url,
+song:songs(
   title, 
   artist
-)`
-    )
+  )`;
+
+const getCurrentAndFutureRounds = async (): Promise<{
+  data: Round[];
+  error: PostgrestError | null;
+}> => {
+  const client = await getClient();
+
+  const { data: roundData, error } = await client
+    .from(Tables.RoundMetadata)
+    .select(roundQuery)
+    .filter("id", "gte", await getCurrentRoundId())
+    .order("id");
+
+  const formattedRoundData = await getFormattedRoundData(roundData);
+  return { data: formattedRoundData, error };
+};
+
+const getCurrentAndPastRounds = async () => {
+  const client = await getClient();
+
+  const { data: roundData, error } = await client
+    .from(Tables.RoundMetadata)
+    .select(roundQuery)
     .filter("id", "lte", await getCurrentRoundId())
-    .order("id", { ascending: false });
+    .order("id");
+
+  const formattedRoundData = await getFormattedRoundData(roundData);
+  return { data: formattedRoundData, error };
+};
+
+const getRoundMetadata = async (id: number) => {
+  const client = await getClient();
+
+  const { data } = await client
+    .from(Tables.RoundMetadata)
+    .select(
+      `playlist_url,
+        id,
+        song_id, 
+        song:songs(artist, title)`
+    )
+    .filter("id", "eq", id);
+
+  const roundInfo = data?.[0];
+
+  if (!roundInfo) {
+    return {
+      playlistUrl: "",
+      title: "",
+      artist: "",
+      submitter: "",
+    };
+  }
+  const { data: submitterInfo } = (await client
+    .from(Views.Signups)
+    .select("username")
+    .filter("title", "eq", roundInfo.song?.title)
+    .filter("artist", "eq", roundInfo.song?.artist)
+    .filter("round_id", "eq", roundInfo?.id)) as {
+    data: {
+      username: string;
+    }[];
+  };
+
+  return {
+    playlistUrl: roundInfo.playlist_url || "",
+    title: roundInfo.song?.title || "",
+    artist: roundInfo.song?.artist || "",
+    submitter: submitterInfo.length ? submitterInfo[0].username : "",
+  };
+};
+
+export const roundService = {
+  getCurrentRound,
+  getCurrentAndFutureRounds,
+  getRoundById,
+  getCurrentRoundId,
+  getRoundMetadata,
+  getCurrentAndPastRounds,
 };

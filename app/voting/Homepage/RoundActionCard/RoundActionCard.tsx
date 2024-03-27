@@ -1,12 +1,11 @@
 "use client";
-import { Phase } from "services/PhaseMgmtService";
+import { Phase } from "@/services/roundManager";
 import { CTA } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
 import { useBlurb } from "../HowItWorks/useBlurb";
 import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { Navigation } from "@/enum/navigation";
-import { Session } from "@supabase/supabase-js";
 import { UserRoundDetails } from "@/types";
 
 interface Props {
@@ -14,7 +13,6 @@ interface Props {
   roundId: number;
   phaseEndsDate: string;
   phaseEndsDatelabel: string;
-  session?: Session | null;
   userRoundDetails?: UserRoundDetails;
 }
 
@@ -23,14 +21,12 @@ export const RoundActionCard = ({
   roundId,
   phaseEndsDate,
   phaseEndsDatelabel,
-  session,
   userRoundDetails,
 }: Props) => {
   const router = useRouter();
   const { setIsOpen: openAuthModal } = useAuthModal();
-  const user = session?.user;
 
-  const isAuthed = !!user;
+  const isAuthed = !!userRoundDetails?.user?.userid;
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {
     signups: userRoundDetails?.hasSignedUp || false,

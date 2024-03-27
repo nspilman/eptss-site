@@ -1,5 +1,13 @@
-import { Tables, Views } from "queries";
-import { getNewPhaseManager } from "services/PhaseMgmtService";
+import { Tables, Views } from "@/data-access";
+import { roundManager } from "@/services/roundManager";
+import Link from "next/link";
+import { DataTable } from "@/components/DataTable";
+import { PageTitle } from "@/components/PageTitle";
+import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
+import { Phase } from "@/services/roundManager";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
+import { roundService } from "@/data-access/roundService";
 
 const getDbClient = async () => {
   const headerCookies = await cookies();
@@ -12,8 +20,8 @@ export default async function Post({ params }: { params: { id: string } }) {
   const voteResults = await getVoteResults(roundId);
   const signupData = (await getSignupData(roundId)) || [];
   const signupCount = signupData?.length || 0;
-  const { phase } = await getNewPhaseManager();
-  const metadata = await getRoundMetadata(roundId);
+  const { phase } = await roundManager();
+  const metadata = await roundService.getRoundMetadata(roundId);
   const submissions = await getSubmissions(roundId);
   const voteBreakdown = await getVoteBreakdownBySong(roundId);
 
@@ -85,48 +93,6 @@ const getSignupData = async (id: number) => {
   }));
 };
 
-const getRoundMetadata = async (id: number) => {
-  const dbClient = await getDbClient();
-
-  const { data } = await dbClient
-    .from(Tables.RoundMetadata)
-    .select(
-      `playlist_url,
-        id,
-        song_id, 
-        song:songs(artist, title)`
-    )
-    .filter("id", "eq", id);
-
-  const roundInfo = data?.[0];
-
-  if (!roundInfo) {
-    return {
-      playlistUrl: "",
-      title: "",
-      artist: "",
-      submitter: "",
-    };
-  }
-  const { data: submitterInfo } = (await dbClient
-    .from(Views.Signups)
-    .select("username")
-    .filter("title", "eq", roundInfo.song?.title)
-    .filter("artist", "eq", roundInfo.song?.artist)
-    .filter("round_id", "eq", roundInfo?.id)) as {
-    data: {
-      username: string;
-    }[];
-  };
-
-  return {
-    playlistUrl: roundInfo.playlist_url || "",
-    title: roundInfo.song?.title || "",
-    artist: roundInfo.song?.artist || "",
-    submitter: submitterInfo.length ? submitterInfo[0].username : "",
-  };
-};
-
 const getSubmissions = async (id: number) => {
   const dbClient = await getDbClient();
 
@@ -174,14 +140,6 @@ const getVoteBreakdownBySong = async (id: number) => {
     ) || []
   );
 };
-
-import Link from "next/link";
-import { DataTable } from "@/components/DataTable";
-import { PageTitle } from "@/components/PageTitle";
-import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
-import { Phase } from "services/PhaseMgmtService";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export interface VoteResults {
   title: string;

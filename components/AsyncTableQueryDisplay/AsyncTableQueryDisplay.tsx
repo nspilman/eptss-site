@@ -1,4 +1,3 @@
-import { PostgrestError } from "@supabase/supabase-js";
 import { DataTable } from "@/components/DataTable";
 import { useEffect, useState } from "react";
 import { SummaryDisplay } from "./SummaryDisplay/SummaryDisplay";
@@ -7,7 +6,6 @@ interface Props<T extends string> {
   headers: { key: T; display: string }[];
   queryFn: () => Promise<{
     data: Record<T, string | number>[];
-    error: PostgrestError | null;
     status: number;
   }>;
   summaryFunction?: {
@@ -26,7 +24,7 @@ export function AsyncTableQueryDisplay<T extends string>({
   useEffect(() => {
     const getAggregateVote = async () => {
       setIsLoading(true);
-      const { data, error, status } = await queryFn();
+      const { data, status } = await queryFn();
       setPayload(data);
       setIsLoading(false);
     };

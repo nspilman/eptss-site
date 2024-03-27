@@ -1,4 +1,4 @@
-import { Phase } from "services/PhaseMgmtService";
+import { Phase } from "@/services/roundManager";
 
 export interface RoundActionFunctions {
   // onProfile: () => void;

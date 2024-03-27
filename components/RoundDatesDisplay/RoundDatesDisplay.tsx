@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Round } from "queries/roundQueries";
+import { Round } from "@/data-access/roundService";
 import { format, subMilliseconds } from "date-fns";
 
 type RoundDates = Pick<

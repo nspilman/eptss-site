@@ -1,7 +1,5 @@
 import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Toaster } from "@/components/ui/toaster";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 import { Header } from "./Header";
 
 export const metadata = {
@@ -10,17 +8,15 @@ export const metadata = {
 };
 
 import "../styles/globals.css";
+import { userSessionService } from "@/data-access/userSessionService";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const supabase = await createClient(cookieStore);
-
-  const { data } = await supabase.auth.getUser();
-  const userId = data.user?.id;
+  const { user } = await userSessionService.getUserSession();
+  const userId = user?.id;
 
   return (
     <html lang="en">

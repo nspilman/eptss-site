@@ -1,15 +1,17 @@
-import { getNewPhaseManager } from "@/services/PhaseMgmtService";
+import { roundManager } from "@/services/roundManager";
 import { SignInGate } from "@/components/SignInGate";
 import { PageTitle } from "@/components/PageTitle";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { submitCover } from "@/actions/actions";
 import { Form } from "@/components/Form";
-import { getUserSession } from "@/components/client/context/getUserSession";
+import { getUserSession } from "@/components/client/context/userSessionProvider";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
-import { getRoundById } from "@/queries";
+import { roundService } from "@/data-access/roundService";
+import { revalidatePath } from "next/cache";
+import { Navigation } from "@/enum/navigation";
 
 const SubmitPage = async () => {
-  const { roundId, phase } = await getNewPhaseManager();
+  const { roundId, phase } = await roundManager();
 
   const roundToReference = ["celebration", "covering"].includes(phase)
     ? roundId
@@ -21,7 +23,7 @@ const SubmitPage = async () => {
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await getNewPhaseManager(await getRoundById(roundToReference));
+  } = await roundManager(await roundService.getRoundById(roundToReference));
 
   const { userRoundDetails } = await getUserSession({
     roundId: roundToReference,
@@ -122,7 +124,10 @@ const SubmitPage = async () => {
             roundId={roundToReference}
           />
         ) : (
-          <ClientFormWrapper action={submitCover}>
+          <ClientFormWrapper
+            action={submitCover}
+            onSuccess={() => revalidatePath(Navigation.Submit)}
+          >
             <Form
               title={title}
               description={description}

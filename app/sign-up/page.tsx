@@ -1,8 +1,8 @@
 import React from "react";
 
 import { PageTitle } from "@/components/PageTitle";
-import { getUserSession } from "@/components/client/context/getUserSession";
-import { getNewPhaseManager } from "@/services/PhaseMgmtService";
+import { getUserSession } from "@/components/client/context/userSessionProvider";
+import { roundManager } from "@/services/roundManager";
 import { SignInGate } from "@/components/SignInGate";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
@@ -11,7 +11,7 @@ import { additionalComments } from "@/components/fieldValues";
 import { signup } from "@/actions/actions";
 
 const SignUp = async () => {
-  const { roundId, dateLabels } = await getNewPhaseManager();
+  const { roundId, dateLabels } = await roundManager();
   const { userRoundDetails } = await getUserSession();
   const userId = userRoundDetails?.user.userid;
   const signupsCloseDateLabel = dateLabels?.signups.closes;

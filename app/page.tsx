@@ -1,34 +1,29 @@
 import Head from "next/head";
-import { getNewPhaseManager } from "services/PhaseMgmtService";
-import { getCurrentAndPastRounds } from "queries";
+import { roundManager } from "@/services/roundManager";
 import { format } from "date-fns";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
-import { getUserSession } from "@/components/client/context/getUserSession";
+import { getUserSession } from "@/components/client/context/userSessionProvider";
 import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
 import { HowItWorks } from "./voting/Homepage/HowItWorks";
+import { roundService } from "@/data-access/roundService";
 
 const Homepage = async () => {
-  const cookieStore = await cookies();
-  const supabase = await createClient(cookieStore);
+  const { data } = await roundService.getCurrentAndPastRounds();
 
-  const { data, error } = await getCurrentAndPastRounds();
-
-  const phaseMgmtService = await getNewPhaseManager();
+  const phaseMgmtService = await roundManager();
   const { phase, dateLabels, roundId } = phaseMgmtService;
 
   const roundContent =
     data
-      ?.map(({ song, playlist_url, id }) => {
+      ?.map(({ song, playlistUrl, roundId }) => {
         const { title, artist } = song || { title: null, artist: null };
         return {
           title,
           artist,
-          roundId: id,
-          playlist: playlist_url,
+          roundId,
+          playlistUrl,
         };
       })
       .filter((round) => !(round.roundId === roundId && phase === "signups")) ||
@@ -41,7 +36,7 @@ const Homepage = async () => {
   const phaseEndsDatelabel = dateLabels[phase].closes;
   const isVotingPhase = phase === "voting";
 
-  const { userRoundDetails, session } = await getUserSession();
+  const { userRoundDetails } = await getUserSession();
   return (
     <div className="flex flex-col items-center">
       <Head>
@@ -60,13 +55,12 @@ const Homepage = async () => {
             roundId={roundId}
             phaseEndsDate={phaseEndsDate}
             phaseEndsDatelabel={phaseEndsDatelabel}
-            session={session}
             userRoundDetails={userRoundDetails}
           />
         </div>
         <RoundsDisplay
           rounds={roundContent.map((round) => ({
-            playlist: round.playlist || "",
+            playlist: round.playlistUrl || "",
             title: round.title || "",
             artist: round.artist || "",
             roundId: round.roundId,

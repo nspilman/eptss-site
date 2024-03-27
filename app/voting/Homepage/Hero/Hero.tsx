@@ -1,5 +1,5 @@
 "use server";
-import { Phase } from "@/services/PhaseMgmtService";
+import { Phase } from "@/services/roundManager";
 import { Navigation } from "@/enum/navigation";
 import Link from "next/link";
 

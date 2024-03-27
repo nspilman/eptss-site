@@ -1,4 +1,4 @@
-import { Phase } from "services/PhaseMgmtService";
+import { Phase } from "@/services/roundManager";
 
 export const useBlurb = ({
   phase,

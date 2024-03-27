@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Tables } from "queries";
+import { Tables } from "@/data-access";
 import { getSupabaseClient } from "utils/getSupabaseClient";
 
 export const getRoundOverrideVotes = async (

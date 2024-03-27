@@ -1,6 +1,6 @@
 "use server";
 import { format, subDays } from "date-fns";
-import queries, { getCurrentRound } from "queries";
+import { roundService } from "@/data-access/roundService";
 
 interface Props {
   votingOpens: Date;
@@ -110,7 +110,7 @@ const PhaseMgmtService = async ({
   };
 };
 
-export const getNewPhaseManager = async (currentRound?: {
+export const roundManager = async (currentRound?: {
   votingOpens: string;
   coveringBegins: string;
   coversDue: string;
@@ -132,7 +132,7 @@ export const getNewPhaseManager = async (currentRound?: {
     roundId,
     song,
     typeOverride,
-  } = currentRound || (await getCurrentRound());
+  } = currentRound || (await roundService.getCurrentRound());
   const datify = (dateString: string) => {
     const date = new Date(dateString);
     const isValidDate = date instanceof Date && !isNaN(date.getDate());

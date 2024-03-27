@@ -1,17 +1,17 @@
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
-export const getRoundDataForUser = async (roundId: number, userId: string) => {
+const getRoundDataForUser = async (roundId: number, userId: string) => {
   const headerCookies = await cookies();
   const supabase = createClient(headerCookies);
   const { data, error } = await supabase
     .from("users")
     .select(
       `
-  userid,
-  song_selection_votes ( round_id, created_at ),
-  submissions ( round_id, created_at ),
-  sign_ups ( round_id, created_at)
+    userid,
+    song_selection_votes ( round_id, created_at ),
+    submissions ( round_id, created_at ),
+    sign_ups ( round_id, created_at)
 `
     )
     .eq("userid", userId)
@@ -37,3 +37,5 @@ export const getRoundDataForUser = async (roundId: number, userId: string) => {
     hasSignedUp: isUserAttributeTruthy(sign_ups),
   };
 };
+
+export const userParticipationService = { getRoundDataForUser };
