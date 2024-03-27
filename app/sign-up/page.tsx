@@ -9,6 +9,8 @@ import { Form } from "@/components/Form";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { additionalComments } from "@/components/fieldValues";
 import { signup } from "@/actions/actions";
+import { Navigation } from "@/enum/navigation";
+import { revalidatePath } from "next/cache";
 
 const SignUp = async () => {
   const { roundId, dateLabels } = await roundManager();
@@ -77,7 +79,7 @@ const SignUp = async () => {
   return (
     <>
       <PageTitle title={title} />
-      <SignInGate userId={userId} redirectUrl="/sign-up">
+      <SignInGate userId={userId} redirectUrl={Navigation.SignUp}>
         {userRoundDetails?.hasSignedUp ? (
           <ActionSuccessPanel
             text={signupSuccessText}
@@ -85,7 +87,10 @@ const SignUp = async () => {
             roundId={roundId}
           />
         ) : (
-          <ClientFormWrapper action={signup}>
+          <ClientFormWrapper
+            action={signup}
+            onSuccess={() => revalidatePath(Navigation.Submit)}
+          >
             <Form
               title={title}
               description={`Signups close ${signupsCloseDateLabel}`}

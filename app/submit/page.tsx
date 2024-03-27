@@ -116,7 +116,7 @@ const SubmitPage = async () => {
   return (
     <>
       <PageTitle title={`Submit your cover for round ${roundToReference}`} />
-      <SignInGate userId={userId} redirectUrl="/submit">
+      <SignInGate userId={userId} redirectUrl={Navigation.Submit}>
         {userRoundDetails?.hasSubmitted ? (
           <ActionSuccessPanel
             text={submitSuccessText}
