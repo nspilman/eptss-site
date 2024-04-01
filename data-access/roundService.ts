@@ -224,6 +224,54 @@ const getRoundMetadata = async (id: number) => {
   };
 };
 
+const getSubmissions = async (id: number) => {
+  const client = await getClient();
+
+  const { data } = await client
+    .from(Views.PublicSubmissions)
+    .select("*")
+    .filter("round_id", "eq", id);
+  return data?.map((val) => ({
+    artist: val.artist || "",
+    created_at: val.created_at || "",
+    round_id: val.round_id || -1,
+    soundcloud_url: val.soundcloud_url || "",
+    title: val.title || "",
+    username: val.username || "",
+  }));
+};
+
+const getVoteBreakdownBySong = async (id: number) => {
+  const dbClient = await getClient();
+
+  const { data } = await dbClient
+    .from(Views.VoteBreakdownBySong)
+    .select()
+    .filter("round_id", "eq", id);
+
+  return (
+    data?.map(
+      ({
+        title,
+        artist,
+        one_count,
+        two_count,
+        three_count,
+        four_count,
+        five_count,
+      }) => ({
+        title: title || "",
+        artist: artist || "",
+        oneCount: one_count || 0,
+        twoCount: two_count || 0,
+        threeCount: three_count || 0,
+        fourCount: four_count || 0,
+        fiveCount: five_count || 0,
+      })
+    ) || []
+  );
+};
+
 export const roundService = {
   getCurrentRound,
   getCurrentAndFutureRounds,
@@ -231,4 +279,6 @@ export const roundService = {
   getCurrentRoundId,
   getRoundMetadata,
   getCurrentAndPastRounds,
+  getSubmissions,
+  getVoteBreakdownBySong,
 };

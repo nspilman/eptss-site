@@ -22,8 +22,8 @@ export default async function Post({ params }: { params: { id: string } }) {
   const signupCount = signupData?.length || 0;
   const { phase } = await roundManager();
   const metadata = await roundService.getRoundMetadata(roundId);
-  const submissions = await getSubmissions(roundId);
-  const voteBreakdown = await getVoteBreakdownBySong(roundId);
+  const submissions = await roundService.getSubmissions(roundId);
+  const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
 
   const dbClient = await getDbClient();
 
@@ -91,54 +91,6 @@ const getSignupData = async (id: number) => {
     artist: val.artist || "",
     title: val.title || "",
   }));
-};
-
-const getSubmissions = async (id: number) => {
-  const dbClient = await getDbClient();
-
-  const { data } = await dbClient
-    .from(Views.PublicSubmissions)
-    .select("*")
-    .filter("round_id", "eq", id);
-  return data?.map((val) => ({
-    artist: val.artist || "",
-    created_at: val.created_at || "",
-    round_id: val.round_id || -1,
-    soundcloud_url: val.soundcloud_url || "",
-    title: val.title || "",
-    username: val.username || "",
-  }));
-};
-
-const getVoteBreakdownBySong = async (id: number) => {
-  const dbClient = await getDbClient();
-
-  const { data } = await dbClient
-    .from(Views.VoteBreakdownBySong)
-    .select()
-    .filter("round_id", "eq", id);
-
-  return (
-    data?.map(
-      ({
-        title,
-        artist,
-        one_count,
-        two_count,
-        three_count,
-        four_count,
-        five_count,
-      }) => ({
-        title: title || "",
-        artist: artist || "",
-        oneCount: one_count || 0,
-        twoCount: two_count || 0,
-        threeCount: three_count || 0,
-        fourCount: four_count || 0,
-        fiveCount: five_count || 0,
-      })
-    ) || []
-  );
 };
 
 export interface VoteResults {
