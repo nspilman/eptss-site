@@ -11,7 +11,10 @@ interface Props {
 export const Header = ({ userId }: Props): ReactElement => {
   // const [current, next] = getRoundsDates();
   return (
-    <div id="header" className="backdrop-blur fixed top-0 left-0 w-full">
+    <div
+      id="header"
+      className="backdrop-blur fixed top-0 left-0 w-full  shadow-inner shadow-themeYellow"
+    >
       <div className="py-4 px-4 md:px-8 flex items-center justify-center md:justify-between">
         <Link href={"/"}>
           <span className="md:text-xl font-fraunces font-semibold text-white cursor-pointer hover:text-themeYellow">

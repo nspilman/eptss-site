@@ -25,9 +25,10 @@ module.exports = {
         header: ["36px", "1.25rem"],
       },
       colors: {
-        themeYellow: "#fffe53",
-        bgGradientLighterBLue: "red",
-        bgGradientDarkerBLue: "red",
+        themeYellow: "#fcec86",
+        bgGradientLighterBLue: "#6d60b4",
+
+        bgDeepRed: "#e877a2",
         bgTransparent: "hsla(0,0%,100%,.05)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -28,7 +28,7 @@ export const RoundDisplay = ({
 
   return (
     <div className="relative">
-      <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientDarkerBLue bg-opacity-10 flex justify-between">
+      <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientLighterBLue bg-opacity-20 flex justify-between">
         <span className="text-md md:text-lg text-white font-fraunces font-semibold">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
         </span>
