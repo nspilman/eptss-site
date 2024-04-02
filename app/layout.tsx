@@ -24,17 +24,11 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <div className="p-0 w-100">
+          <EmailAuthModalContextProvider>
+            <Header userId={userId} />
+          </EmailAuthModalContextProvider>
           <div className="flex flex-wrap py-24 px-8 justify-center min-h-[100vh]">
-            <Suspense fallback={<Loading />}>
-              {
-                <>
-                  <EmailAuthModalContextProvider>
-                    <Header userId={userId} />
-                  </EmailAuthModalContextProvider>
-                  {children}
-                </>
-              }
-            </Suspense>
+            <Suspense fallback={<Loading />}>{children}</Suspense>
           </div>
           <Toaster />
           <div id="footer" className="flex py-2 justify-center" />

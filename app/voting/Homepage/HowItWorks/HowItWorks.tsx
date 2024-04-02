@@ -3,8 +3,8 @@ import { FAQButton, RoundsButton, SignupButton } from "components/NavButtons";
 
 export const HowItWorks = () => {
   return (
-    <div className="relative px-8 md:px-24 bg-black bg-opacity-5 py-4 mx-8">
-      <div className="absolute -inset-12 bg-gradient-to-r from-white to-themeYellow rounded-lg blur opacity-5 pointer-events-none group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+    <div className="relative px-8 md:px-24">
+      <div className="absolute -inset-12 bg-gradient-to-r from-bgGradientLighterBLue to-themeYellow rounded-lg blur opacity-5 pointer-events-none group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
       <div>
         <div>
           <h3 className="text-white font-fraunces font-bold text-xl">
