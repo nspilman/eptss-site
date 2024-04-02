@@ -17,13 +17,14 @@ const SubmitPage = async () => {
     ? roundId
     : roundId - 1;
 
+  const round = await roundService.getRoundById(roundToReference);
   const {
     dateLabels: {
       covering: { closes: coverClosesLabel },
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundManager(await roundService.getRoundById(roundToReference));
+  } = await roundManager(round);
 
   const { userRoundDetails } = await getUserSession({
     roundId: roundToReference,

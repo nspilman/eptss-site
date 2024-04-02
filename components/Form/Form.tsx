@@ -35,7 +35,6 @@ export function Form({ formSections, disabled, title, description }: Props) {
             !!field.isSmall ? "250px" : "400px"
           }] ${field.hidden ? "hidden" : ""}`}
         >
-          <label className="text-md font-semibold pb-2">{`${field.label}`}</label>
           <InputField
             field={{ ...field, field: field.id.toString() }}
             errors={[]}

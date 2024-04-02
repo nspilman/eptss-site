@@ -52,7 +52,7 @@ const getRoundById = async (roundId: number) => {
     .filter("id", "eq", roundId)
     .limit(1);
 
-  if (roundData) {
+  if (roundData?.length) {
     const {
       id: roundId,
       signup_opens: signupOpens,
@@ -83,13 +83,17 @@ const getRoundById = async (roundId: number) => {
     }
   }
 
-  throw new Error("Could not find round");
+  return;
 };
 
 export const getCurrentRound = async (): Promise<
   Round & { error: PostgrestError | null }
 > => {
-  return await getRoundById(await getCurrentRoundId());
+  const currentRound = await getRoundById(await getCurrentRoundId());
+  if (!currentRound) {
+    throw new Error("Unable to find current round");
+  }
+  return currentRound;
 };
 
 const getFormattedRoundData = async (
