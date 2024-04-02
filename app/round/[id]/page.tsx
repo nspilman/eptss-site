@@ -4,7 +4,6 @@ import Link from "next/link";
 import { DataTable } from "@/components/DataTable";
 import { PageTitle } from "@/components/PageTitle";
 import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
-import { Phase } from "@/services/roundManager";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { roundService } from "@/data-access/roundService";
@@ -14,46 +13,11 @@ const getDbClient = async () => {
   return await createClient(headerCookies);
 };
 
-export default async function Post({ params }: { params: { id: string } }) {
-  const roundId = parseInt(params.id);
-
-  const voteResults = await getVoteResults(roundId);
-  const signupData = (await getSignupData(roundId)) || [];
-  const signupCount = signupData?.length || 0;
-  const { phase } = await roundManager();
-  const metadata = await roundService.getRoundMetadata(roundId);
-  const submissions = await roundService.getSubmissions(roundId);
-  const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
-
-  const dbClient = await getDbClient();
-
-  const { data: roundIds } = await dbClient
-    .from(Tables.RoundMetadata)
-    .select("id")
-    .lt("covering_begins", new Date().toDateString());
-
-  const navigation = {
-    previous: roundId !== 0 ? roundId - 1 : undefined,
-    next: roundIds?.map((val) => val.id).includes(roundId + 1)
-      ? roundId + 1
-      : undefined,
-  };
-
-  const props = {
-    voteResults,
-    signupCount,
-    signupData,
-    phase,
-    metadata,
-    roundId,
-    voteBreakdown,
-    navigation,
-    submissions,
-  };
+export default async function Round({ params }: { params: { id: string } }) {
   return (
     <>
-      <PageTitle title={`Round ${roundId} Overview`} />
-      <RoundSummary {...props} />
+      <PageTitle title={`Round ${params.id} Overview`} />
+      <RoundSummary roundId={JSON.parse(params.id)} />
     </>
   );
 }
@@ -128,15 +92,7 @@ export interface VoteBreakdown {
 }
 
 interface Props {
-  voteResults: VoteResults[];
-  signupCount: number;
-  signupData: SignupData[];
-  phase: Phase | "Complete";
   roundId: number;
-  metadata: RoundMetadata;
-  submissions?: { username: string; soundcloud_url: string }[];
-  voteBreakdown: VoteBreakdown[];
-  navigation: Navigation;
 }
 
 const voteResultsHeaders = [
@@ -157,17 +113,41 @@ const signupsHeaders = [
   { key: "youtubeLink", display: "Youtube Link" },
 ] as const;
 
-const RoundSummary = ({
-  voteResults,
-  signupCount,
-  signupData,
-  phase,
-  roundId,
-  metadata,
-  submissions,
-  voteBreakdown,
-  navigation,
-}: Props) => {
+const RoundSummary = async ({ roundId }: Props) => {
+  const voteResults = await getVoteResults(roundId);
+  const signupData = (await getSignupData(roundId)) || [];
+  const signupCount = signupData?.length || 0;
+  const { phase } = await roundManager();
+  const metadata = await roundService.getRoundMetadata(roundId);
+  const submissions = await roundService.getSubmissions(roundId);
+  const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
+
+  const dbClient = await getDbClient();
+
+  const { data: roundIds } = await dbClient
+    .from(Tables.RoundMetadata)
+    .select("id")
+    .lt("covering_begins", new Date().toDateString());
+
+  const navigation = {
+    previous: roundId !== 0 ? roundId - 1 : undefined,
+    next: roundIds?.map((val) => val.id).includes(roundId + 1)
+      ? roundId + 1
+      : undefined,
+  };
+
+  const props = {
+    voteResults,
+    signupCount,
+    signupData,
+    phase,
+    metadata,
+    roundId,
+    voteBreakdown,
+    navigation,
+    submissions,
+  };
+
   const { artist, title, playlistUrl, submitter } = metadata || {};
 
   const roundSummaryHeaders: {
@@ -202,7 +182,7 @@ const RoundSummary = ({
     display: "Submission Count",
     key: "submissionCount" as const,
   };
-  const roundIsComplete = phase === "Complete";
+  const roundIsComplete = phase === "celebration";
 
   if (roundIsComplete) {
     roundSummaryHeaders.push(submissionCountHeader);
@@ -242,7 +222,7 @@ const RoundSummary = ({
           dangerouslySetInnerHTML={{ __html: playlistUrl }}
         />
 
-        {phase === "Complete" && (
+        {phase === "celebration" && (
           <>
             <span className="text-md font-light font-roboto text-white">
               Submitted by: {submitter}
@@ -283,10 +263,10 @@ const RoundSummary = ({
           <div
             className={`w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px] overflow-scroll`}
           >
-            <StackedBarChart
+            {/* <StackedBarChart
               data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
               title="Vote Breakdown Bar Chart"
-            />
+            /> */}
           </div>
         )}
         <div className="flex justify-between w-full">

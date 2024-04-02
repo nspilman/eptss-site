@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import {
   Chart as ChartJS,
@@ -10,6 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { ClientBar } from "./ClientBar/ClientBar";
 
 ChartJS.register(
   CategoryScale,
@@ -62,12 +62,5 @@ export const StackedBarChart = ({ data, title }: Props) => {
     },
   };
 
-  return (
-    <Bar
-      options={options}
-      data={data}
-      height={400}
-      width={data.labels.length * 75}
-    />
-  );
+  return <ClientBar data={data} options={options} />;
 };
