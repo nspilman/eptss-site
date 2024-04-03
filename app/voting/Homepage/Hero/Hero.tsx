@@ -1,17 +1,8 @@
 "use server";
-import { Phase } from "@/services/roundManager";
 import { Navigation } from "@/enum/navigation";
-import Link from "next/link";
+import { HeroActions } from "./HeroActions/HeroActions";
 
-interface Props {
-  roundId: number;
-  phase: Phase;
-}
-
-export const Hero = ({ roundId, phase }: Props) => {
-  const statusHeadline = phase === "signups" ? "" : "currently covering";
-  const statusBody =
-    phase === "signups" ? "Signups are open for round " + roundId : "";
+export const Hero = () => {
   return (
     <div className="w-full flex flex-col md:flex-row pt-32 pb-8 md:py-52 bg-gradient-to-b items-center md:items-start">
       <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center">
@@ -39,25 +30,7 @@ export const Hero = ({ roundId, phase }: Props) => {
           </button>
         </div>
       </div>
-      <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 md:mt-16 relative h-full md:text-right md:justify-end">
-        <div className="flex-col flex md:mx-16">
-          <span className="font-fraunces text-md text-white">
-            {statusHeadline}
-          </span>
-          <span className="text-md md:text-lg lg:text-2xl font-semibold text-white font-fraunces">
-            {statusBody}
-          </span>
-          <span className="text-md  text-white font-fraunces">
-            closing march 18th -{" "}
-            <Link
-              className="text-themeYellow font-fraunces text-md"
-              href={phase === "signups" ? Navigation.SignUp : Navigation.Submit}
-            >
-              {phase === "signups" ? "sign up now" : "submit your cover"}
-            </Link>
-          </span>
-        </div>
-      </div>
+      <HeroActions />
     </div>
   );
 };

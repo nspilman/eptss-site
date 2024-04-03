@@ -43,7 +43,7 @@ const Homepage = async () => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <EmailAuthModalContextProvider>
-        <Hero phase={phase} roundId={roundId} />
+        <Hero />
         <div className="pointer-events-none">
           <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
           <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>

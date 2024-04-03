@@ -147,3 +147,21 @@ export const roundManager = async (currentRound?: {
     typeOverride: typeOverride as "runner_up" | undefined,
   });
 };
+
+const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
+
+export const getPhaseOrderPosition = (phase: Phase) => {
+  return phaseOrder.indexOf(phase);
+};
+
+export const hasRoundStarted = (phase: Phase) => {
+  return getPhaseOrderPosition(phase) > getPhaseOrderPosition("signups");
+};
+
+export const hasSubmissionsOpened = (phase: Phase) => {
+  return getPhaseOrderPosition(phase) > getPhaseOrderPosition("voting");
+};
+
+export const hasRoundEnded = (phase: Phase) => {
+  return phase === "celebration";
+};
