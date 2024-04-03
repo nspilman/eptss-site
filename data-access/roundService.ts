@@ -180,7 +180,8 @@ const getCurrentAndPastRounds = async () => {
     .from(Tables.RoundMetadata)
     .select(roundQuery)
     .filter("id", "lte", await getCurrentRoundId())
-    .order("id");
+    .filter("voting_opens", "lte", new Date().toISOString())
+    .order("id", { ascending: false });
 
   const formattedRoundData = await getFormattedRoundData(roundData);
   return { data: formattedRoundData, error };
