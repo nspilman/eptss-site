@@ -33,11 +33,6 @@ const PhaseMgmtService = async ({
       "current date cannot be before signup date. Signup starts the current round"
     );
   }
-  if (now > listeningParty) {
-    throw new Error(
-      "current date cannot be after listening party. The Listening Party ends the round"
-    );
-  }
   if (!(votingOpens < coveringBegins && coveringBegins < coversDue)) {
     throw new Error("dates are in incorrect order");
   }

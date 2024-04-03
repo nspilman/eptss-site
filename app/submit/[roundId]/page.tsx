@@ -1,16 +1,15 @@
-import { roundManager } from "@/services/roundManager";
 import { getUserSession } from "@/components/client/context/userSessionProvider";
 import { roundService } from "@/data-access/roundService";
-import { SubmitPage } from "./SubmitPage";
+import { roundManager } from "@/services/roundManager";
+import { SubmitPage } from "../SubmitPage";
 
-const Submit = async () => {
-  const { roundId, phase } = await roundManager();
-
-  const roundToReference = ["celebration", "covering"].includes(phase)
-    ? roundId
-    : roundId - 1;
-
-  const round = await roundService.getRoundById(roundToReference);
+export default async function SignUpForRound({
+  params,
+}: {
+  params: { roundId: string };
+}) {
+  const roundId = JSON.parse(params.roundId);
+  const round = await roundService.getRoundById(JSON.parse(roundId));
   const {
     dateLabels: {
       covering: { closes: coverClosesLabel },
@@ -20,22 +19,17 @@ const Submit = async () => {
   } = await roundManager(round);
 
   const { userRoundDetails } = await getUserSession({
-    roundId: roundToReference,
+    roundId,
   });
   const userId = userRoundDetails?.user.userid || "";
 
   return (
     <SubmitPage
       userId={userId}
-      roundId={roundToReference}
+      dateStrings={{ listeningPartyLabel, coverClosesLabel }}
+      roundId={roundId}
       hasSubmitted={userRoundDetails?.hasSubmitted || false}
       song={song}
-      dateStrings={{
-        coverClosesLabel,
-        listeningPartyLabel,
-      }}
     />
   );
-};
-
-export default Submit;
+}
