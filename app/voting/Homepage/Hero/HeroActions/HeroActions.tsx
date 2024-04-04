@@ -8,11 +8,11 @@ import {
 import Link from "next/link";
 
 export async function HeroActions() {
-  const { roundId, phase, song } = await roundManager();
+  const { roundId, phase, song, dateLabels } = await roundManager();
   const nextRound = await roundManager(
     await roundService.getRoundById(roundId + 1)
   );
-  const roundHasStarted = hasRoundStarted(phase);
+  const roundHasStarted = await hasRoundStarted(phase);
   const submissionsAreOpenForCurrentRound = hasSubmissionsOpened(phase);
 
   const signupLink = `${Navigation.SignUp}/${
@@ -28,12 +28,12 @@ export async function HeroActions() {
       ? `${song.title} by ${song.artist}`
       : "";
 
-  const statusBody = `Signups are open for round ${
-    phase === "signups"
-      ? roundId
-      : `${roundId + 1}. Voting begins for the next round on ${
-          nextRound?.dateLabels.voting.opens
-        }`
+  const signupsAreOpenString = `Signups are open for round ${
+    roundHasStarted ? roundId + 1 : roundId
+  } `;
+
+  const statusBody = `${signupsAreOpenString}. Voting begins on ${
+    (roundHasStarted ? nextRound.dateLabels : dateLabels).voting.opens
   }`;
 
   return (
