@@ -38,6 +38,7 @@ export function InputField<T extends FieldValues>({
           type={type}
           placeholder={field.placeholder}
           disabled={disabled}
+          defaultValue={field.defaultValue}
         />
       )}
       <div>

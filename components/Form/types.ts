@@ -11,6 +11,7 @@ interface BaseField<T> {
 export interface TextField<T> extends BaseField<T> {
   type?: Extract<FieldTypes, "text" | "email" | "password">;
   placeholder: string;
+  defaultValue?: string | number;
 }
 
 export interface VoteField<T> extends BaseField<T> {

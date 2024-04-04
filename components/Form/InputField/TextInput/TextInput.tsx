@@ -7,6 +7,7 @@ interface Props<T extends FieldValues> {
   type?: "email" | "text" | "password";
   placeholder: string;
   disabled?: boolean;
+  defaultValue?: string | number;
 }
 
 export function TextInput<T extends FieldValues>({
@@ -15,6 +16,7 @@ export function TextInput<T extends FieldValues>({
   type = "text",
   placeholder,
   disabled,
+  defaultValue,
 }: Props<T>) {
   const required = !optional;
 
@@ -26,6 +28,7 @@ export function TextInput<T extends FieldValues>({
       required={required}
       name={field}
       disabled={disabled}
+      defaultValue={defaultValue}
     />
   );
 }

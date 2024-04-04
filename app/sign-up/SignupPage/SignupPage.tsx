@@ -49,11 +49,11 @@ export async function SignupPage({
     },
     {
       label: "userId",
-      placeholder: "Youtube link",
+      placeholder: "userId",
       field: "userId" as const,
-      size: "large" as const,
       defaultValue: userId,
       hidden: true,
+      optional: true,
     },
     {
       label: "roundId",
@@ -62,6 +62,7 @@ export async function SignupPage({
       size: "large" as const,
       defaultValue: roundId,
       hidden: true,
+      optional: true,
     },
     additionalComments,
   ];
@@ -93,10 +94,7 @@ export async function SignupPage({
             roundId={roundId}
           />
         ) : (
-          <ClientFormWrapper
-            action={signup}
-            onSuccess={() => revalidatePath(Navigation.Submit)}
-          >
+          <ClientFormWrapper action={signup}>
             <Form
               title={title}
               description={`Signups close ${signupsCloseDateLabel}`}

@@ -1,7 +1,9 @@
 "use server";
 
+import { Navigation } from "@/enum/navigation";
 import { getIsSuccess } from "@/utils";
 import { createClient } from "@/utils/supabase/server";
+import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const signout = async () => {
@@ -104,14 +106,20 @@ export async function signup(formData: FormData): Promise<FormReturn> {
     additional_comments: getToString("additionalComments") || "",
   };
 
-  const { status } = await client.rpc("signup", payload);
-  return { status: getIsSuccess(status) ? "Success" : "Error", message: "" };
+  const { status, error } = await client.rpc("signup", payload);
+  const isSuccess = getIsSuccess(status);
+  if (isSuccess) {
+    revalidateTag(Navigation.SignUp);
+  }
+  return {
+    status: getIsSuccess(status) ? "Success" : "Error",
+    message: error?.message || "",
+  };
 }
 
 export const submitVotes = async (formData: FormData) => {
   const entries = formData.entries();
   const payload = Object.fromEntries(entries);
-  console.log({ payload });
   return { status: "Success" as const, message: "" };
   // return payload;
 };
