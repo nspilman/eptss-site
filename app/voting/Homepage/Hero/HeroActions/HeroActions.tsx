@@ -32,7 +32,7 @@ export async function HeroActions() {
     roundHasStarted ? roundId + 1 : roundId
   } `;
 
-  const statusBody = `${signupsAreOpenString}. Voting begins on ${
+  const statusBody = `Voting begins on ${
     (roundHasStarted ? nextRound.dateLabels : dateLabels).voting.opens
   }`;
 
@@ -43,8 +43,8 @@ export async function HeroActions() {
           <span className="font-fraunces text-md text-white flex-col flex">
             {songText ? "Currently covering" : "Get Started"}
           </span>
-          <span className="text-md md:text-lg font-semibold text-white font-fraunces">
-            {songText}
+          <span className="text-md md:text-lg font-semibold text-themeYellow font-fraunces">
+            {songText || signupsAreOpenString}
           </span>
         </div>
         <span className="text-md  text-white font-fraunces">
