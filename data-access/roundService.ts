@@ -44,6 +44,7 @@ const getRoundById = async (roundId: number) => {
         covers_due, 
         listening_party, 
         round_type_override,
+        playlist_url,
         song:songs(
           title, 
           artist
@@ -61,6 +62,7 @@ const getRoundById = async (roundId: number) => {
       covers_due: coversDue,
       listening_party: listeningParty,
       round_type_override: typeOverride,
+      playlist_url: playlistUrl,
       song,
     } = roundData[0];
 
@@ -79,6 +81,7 @@ const getRoundById = async (roundId: number) => {
         error,
         song: songData,
         typeOverride: typeOverride || undefined,
+        playlistUrl: playlistUrl || "",
       };
     }
   }
@@ -187,47 +190,47 @@ const getCurrentAndPastRounds = async () => {
   return { data: formattedRoundData, error };
 };
 
-const getRoundMetadata = async (id: number) => {
-  const client = await getClient();
+// const getRoundMetadata = async (id: number) => {
+//   const client = await getClient();
 
-  const { data } = await client
-    .from(Tables.RoundMetadata)
-    .select(
-      `playlist_url,
-        id,
-        song_id, 
-        song:songs(artist, title)`
-    )
-    .filter("id", "eq", id);
+//   const { data } = await client
+//     .from(Tables.RoundMetadata)
+//     .select(
+//       `playlist_url,
+//         id,
+//         song_id,
+//         song:songs(artist, title)`
+//     )
+//     .filter("id", "eq", id);
 
-  const roundInfo = data?.[0];
+//   const roundInfo = data?.[0];
 
-  if (!roundInfo) {
-    return {
-      playlistUrl: "",
-      title: "",
-      artist: "",
-      submitter: "",
-    };
-  }
-  const { data: submitterInfo } = (await client
-    .from(Views.Signups)
-    .select("username")
-    .filter("title", "eq", roundInfo.song?.title)
-    .filter("artist", "eq", roundInfo.song?.artist)
-    .filter("round_id", "eq", roundInfo?.id)) as {
-    data: {
-      username: string;
-    }[];
-  };
+//   if (!roundInfo) {
+//     return {
+//       playlistUrl: "",
+//       title: "",
+//       artist: "",
+//       submitter: "",
+//     };
+//   }
+//   // const { data: submitterInfo } = (await client
+//   //   .from(Views.Signups)
+//   //   .select("username")
+//   //   .filter("title", "eq", roundInfo.song?.title)
+//   //   .filter("artist", "eq", roundInfo.song?.artist)
+//   //   .filter("round_id", "eq", roundInfo?.id)) as {
+//   //   data: {
+//   //     username: string;
+//   //   }[];
+//   // };
 
-  return {
-    playlistUrl: roundInfo.playlist_url || "",
-    title: roundInfo.song?.title || "",
-    artist: roundInfo.song?.artist || "",
-    submitter: submitterInfo.length ? submitterInfo[0].username : "",
-  };
-};
+//   return {
+//     playlistUrl: roundInfo.playlist_url || "",
+//     title: roundInfo.song?.title || "",
+//     artist: roundInfo.song?.artist || "",
+//     // submitter: submitterInfo.length ? submitterInfo[0].username : "",
+//   };
+// };
 
 const getSubmissions = async (id: number) => {
   const client = await getClient();
@@ -282,7 +285,6 @@ export const roundService = {
   getCurrentAndFutureRounds,
   getRoundById,
   getCurrentRoundId,
-  getRoundMetadata,
   getCurrentAndPastRounds,
   getSubmissions,
   getVoteBreakdownBySong,

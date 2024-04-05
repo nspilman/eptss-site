@@ -116,9 +116,10 @@ const signupsHeaders = [
 const RoundSummary = async ({ roundId }: Props) => {
   const voteResults = await getVoteResults(roundId);
   const signupData = (await getSignupData(roundId)) || [];
+  const round = await roundService.getRoundById(roundId);
+  const { phase } = await roundProvider(round);
+
   const signupCount = signupData?.length || 0;
-  const { phase } = await roundProvider();
-  const metadata = await roundService.getRoundMetadata(roundId);
   const submissions = await roundService.getSubmissions(roundId);
   const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
 
@@ -141,14 +142,13 @@ const RoundSummary = async ({ roundId }: Props) => {
     signupCount,
     signupData,
     phase,
-    metadata,
     roundId,
     voteBreakdown,
     navigation,
     submissions,
   };
 
-  const { artist, title, playlistUrl, submitter } = metadata || {};
+  const { song, playlistUrl } = round || {};
 
   const roundSummaryHeaders: {
     display: string;
@@ -213,20 +213,20 @@ const RoundSummary = async ({ roundId }: Props) => {
           </h1>
           {!isVotingPhase && (
             <h2 className="font-fraunces text-white font-bold text-xl">
-              {title} by {artist}
+              {song?.title || ""} by {song?.artist || ""}
             </h2>
           )}
         </div>
         <div
           className={`w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px]`}
-          dangerouslySetInnerHTML={{ __html: playlistUrl }}
+          dangerouslySetInnerHTML={{ __html: playlistUrl || "" }}
         />
 
         {phase === "celebration" && (
           <>
-            <span className="text-md font-light font-roboto text-white">
+            {/* <span className="text-md font-light font-roboto text-white">
               Submitted by: {submitter}
-            </span>
+            </span> */}
             <DataTable headers={roundSummaryHeaders} rows={roundSummary} />
             <div className="p-10">
               <DataTable
