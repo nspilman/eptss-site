@@ -8,30 +8,28 @@ export const metadata = {
 };
 
 import "../styles/globals.css";
-import { userSessionService } from "@/data-access/userSessionService";
+
 import { Suspense } from "react";
 import { Loading } from "@/components/Loading";
+import { userSessionProvider } from "@/providers/userSessionProvider";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await userSessionService.getUserSession();
-  const userId = user?.id;
-
   return (
     <html lang="en">
       <body>
         <div className="p-0 w-100">
           <EmailAuthModalContextProvider>
-            <Header userId={userId} />
+            <Header />
+            <div className="flex flex-wrap py-24 px-8 justify-center min-h-[100vh]">
+              <Suspense fallback={<Loading />}>{children}</Suspense>
+            </div>
+            <Toaster />
+            <div id="footer" className="flex py-2 justify-center" />
           </EmailAuthModalContextProvider>
-          <div className="flex flex-wrap py-24 px-8 justify-center min-h-[100vh]">
-            <Suspense fallback={<Loading />}>{children}</Suspense>
-          </div>
-          <Toaster />
-          <div id="footer" className="flex py-2 justify-center" />
         </div>
       </body>
     </html>

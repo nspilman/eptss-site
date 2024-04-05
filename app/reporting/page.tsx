@@ -2,13 +2,13 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { Views } from "@/data-access";
 import React from "react";
-import { roundManager } from "@/services/roundManager";
+import { roundProvider } from "@/providers/roundProvider";
 import { Reporting } from "./Reporting";
 
 const ReportingPage = async () => {
   const headerCookies = await cookies();
   const supabase = await createClient(headerCookies);
-  const { roundId, phase } = await roundManager();
+  const { roundId, phase } = await roundProvider();
   const roundIdToRemove = ["signups", "voting"].includes(phase) ? roundId : -1;
   const { data: allSongsData } = await supabase
     .from(Views.VoteResults)

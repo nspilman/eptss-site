@@ -1,5 +1,5 @@
 import { Tables, Views } from "@/data-access";
-import { roundManager } from "@/services/roundManager";
+import { roundProvider } from "@/providers/roundProvider";
 import Link from "next/link";
 import { DataTable } from "@/components/DataTable";
 import { PageTitle } from "@/components/PageTitle";
@@ -117,7 +117,7 @@ const RoundSummary = async ({ roundId }: Props) => {
   const voteResults = await getVoteResults(roundId);
   const signupData = (await getSignupData(roundId)) || [];
   const signupCount = signupData?.length || 0;
-  const { phase } = await roundManager();
+  const { phase } = await roundProvider();
   const metadata = await roundService.getRoundMetadata(roundId);
   const submissions = await roundService.getSubmissions(roundId);
   const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);

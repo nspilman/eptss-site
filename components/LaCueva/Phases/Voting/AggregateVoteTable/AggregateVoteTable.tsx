@@ -1,12 +1,12 @@
 import { useSupabase } from "components/hooks/useSupabaseClient";
 import { AsyncTableQueryDisplay } from "@/components/AsyncTableQueryDisplay";
 import { Views } from "@/data-access";
-import { roundManager } from "@/services/roundManager";
+import { roundProvider } from "@/providers/roundProvider";
 
 export const AggregateVoteTable = () => {
   const supabase = useSupabase();
   const getAggregateVote = async () => {
-    const { roundId } = await roundManager();
+    const { roundId } = await roundProvider();
     const { data, error, status } = await supabase
       .from(Views.VoteResults)
       .select("*")

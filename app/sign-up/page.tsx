@@ -1,12 +1,12 @@
 import React from "react";
 
-import { getUserSession } from "@/components/client/context/userSessionProvider";
-import { roundManager } from "@/services/roundManager";
+import { userSessionProvider } from "@/providers/userSessionProvider";
+import { roundProvider } from "@/providers/roundProvider";
 import { SignupPage } from "./SignupPage";
 
 const SignUp = async () => {
-  const { roundId, dateLabels } = await roundManager();
-  const { userRoundDetails } = await getUserSession();
+  const { roundId, dateLabels } = await roundProvider();
+  const { userRoundDetails } = await userSessionProvider();
   const userId = userRoundDetails?.user.userid || "";
   const signupsCloseDateLabel = dateLabels?.signups.closes;
 

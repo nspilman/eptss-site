@@ -1,7 +1,7 @@
 import Head from "next/head";
-import { roundManager } from "@/services/roundManager";
+import { roundProvider } from "@/providers/roundProvider";
 import { format } from "date-fns";
-import { getUserSession } from "@/components/client/context/userSessionProvider";
+import { userSessionProvider } from "@/providers/userSessionProvider";
 import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
@@ -12,8 +12,7 @@ import { roundService } from "@/data-access/roundService";
 const Homepage = async () => {
   const { data } = await roundService.getCurrentAndPastRounds();
 
-  const phaseMgmtService = await roundManager();
-  const { phase, dateLabels, roundId } = phaseMgmtService;
+  const { phase, dateLabels, roundId, dates } = await roundProvider();
 
   const roundContent =
     data
@@ -29,14 +28,11 @@ const Homepage = async () => {
       .filter((round) => !(round.roundId === roundId && phase === "signups")) ||
     [];
 
-  const phaseEndsDate = format(
-    phaseMgmtService.dates[phase].closes,
-    "yyyy-MM-dd"
-  );
+  const phaseEndsDate = format(dates[phase].closes, "yyyy-MM-dd");
   const phaseEndsDatelabel = dateLabels[phase].closes;
   const isVotingPhase = phase === "voting";
 
-  const { userRoundDetails } = await getUserSession();
+  const { userRoundDetails } = await userSessionProvider();
   return (
     <div className="flex flex-col items-center">
       <Head>

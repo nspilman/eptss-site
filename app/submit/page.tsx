@@ -1,10 +1,10 @@
-import { roundManager } from "@/services/roundManager";
-import { getUserSession } from "@/components/client/context/userSessionProvider";
+import { roundProvider } from "@/providers/roundProvider";
+import { userSessionProvider } from "@/providers/userSessionProvider";
 import { roundService } from "@/data-access/roundService";
 import { SubmitPage } from "./SubmitPage";
 
 const Submit = async () => {
-  const { roundId, phase } = await roundManager();
+  const { roundId, phase } = await roundProvider();
 
   const roundToReference = ["celebration", "covering"].includes(phase)
     ? roundId
@@ -17,9 +17,9 @@ const Submit = async () => {
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundManager(round);
+  } = await roundProvider(round);
 
-  const { userRoundDetails } = await getUserSession({
+  const { userRoundDetails } = await userSessionProvider({
     roundId: roundToReference,
   });
   const userId = userRoundDetails?.user.userid || "";

@@ -1,6 +1,6 @@
-import { getUserSession } from "@/components/client/context/userSessionProvider";
+import { userSessionProvider } from "@/providers/userSessionProvider";
 import { roundService } from "@/data-access/roundService";
-import { roundManager } from "@/services/roundManager";
+import { roundProvider } from "@/providers/roundProvider";
 import { SubmitPage } from "../SubmitPage";
 
 export default async function SignUpForRound({
@@ -16,9 +16,9 @@ export default async function SignUpForRound({
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundManager(round);
+  } = await roundProvider(round);
 
-  const { userRoundDetails } = await getUserSession({
+  const { userRoundDetails } = await userSessionProvider({
     roundId,
   });
   const userId = userRoundDetails?.user.userid || "";

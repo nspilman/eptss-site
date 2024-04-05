@@ -3,12 +3,15 @@ import { SignupButton } from "../voting/Homepage/SignupButton";
 import { FAQButton } from "components/NavButtons";
 // import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import Link from "next/link";
+import { userSessionProvider } from "@/providers/userSessionProvider";
 // import { getRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 interface Props {
   userId?: string;
 }
 
-export const Header = ({ userId }: Props): ReactElement => {
+export const Header = async () => {
+  const { userRoundDetails } = await userSessionProvider();
+  const userId = userRoundDetails?.user?.userid || "";
   // const [current, next] = getRoundsDates();
   return (
     <div id="header" className="backdrop-blur fixed top-0 left-0 w-full">

@@ -105,7 +105,7 @@ const PhaseMgmtService = async ({
   };
 };
 
-export const roundManager = async (currentRound?: {
+export const roundProvider = async (currentRound?: {
   votingOpens: string;
   coveringBegins: string;
   coversDue: string;

@@ -1,14 +1,13 @@
 import React from "react";
 import queries from "@/data-access";
-import { roundManager } from "@/services/roundManager";
+import { roundProvider } from "@/providers/roundProvider";
 import seedrandom from "seedrandom";
 import { PageTitle } from "@/components/PageTitle";
 import { getRoundOverrideVotes } from "@/data-access/votingQueries";
-import { getUserSession } from "@/components/client/context/userSessionProvider";
+import { userSessionProvider } from "@/providers/userSessionProvider";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
 import { submitVotes } from "@/actions/actions";
-import { roundService } from "@/data-access/roundService";
 
 export interface VoteOptionModel {
   label: string;
@@ -32,8 +31,8 @@ const VotingPage = async () => {
     dateLabels: {
       covering: { opens: coveringStartLabel },
     },
-  } = await roundManager();
-  const { typeOverride } = await roundService.getCurrentRound();
+    typeOverride,
+  } = await roundProvider();
 
   const isVotingOpen = true;
   const unsortedVoteOptions = isVotingOpen
@@ -54,8 +53,8 @@ const VotingPage = async () => {
     placeholder: "",
   }));
 
-  const { phase } = await roundManager();
-  const { userRoundDetails } = await getUserSession();
+  const { phase } = await roundProvider();
+  const { userRoundDetails } = await userSessionProvider();
 
   const shouldRenderForm =
     phase === "voting" || (roundId === 21 && phase === "signups");

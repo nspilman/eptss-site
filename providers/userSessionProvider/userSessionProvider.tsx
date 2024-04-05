@@ -1,14 +1,14 @@
 "use server";
-import { roundManager } from "@/services/roundManager";
 import { userParticipationService } from "@/data-access/userParticipationService";
 import { userSessionService } from "@/data-access/userSessionService";
+import { roundService } from "@/data-access/roundService";
 
 // Define a custom hook for easy access to the UserSessionContext
 interface Props {
   roundId?: number;
 }
 
-export const getUserSession = async (props?: Props) => {
+export const userSessionProvider = async (props?: Props) => {
   const roundIdOverride = props?.roundId;
 
   const { user, session } = await userSessionService.getUserSession();
@@ -23,7 +23,7 @@ export const getUserSession = async (props?: Props) => {
     };
   }
 
-  const { roundId } = await roundManager();
+  const roundId = await roundService.getCurrentRoundId();
 
   const chosenRoundId = roundIdOverride || roundId;
 

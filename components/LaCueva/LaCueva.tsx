@@ -1,5 +1,5 @@
 import { PageTitle } from "@/components/PageTitle";
-import { Phase } from "@/services/roundManager";
+import { Phase } from "@/providers/roundProvider";
 import { VotingReport } from "./Phases/Voting/VotingReport";
 import { useLocalStorageAuthFromParams } from "./useLocalStorageAuthFromParams";
 
