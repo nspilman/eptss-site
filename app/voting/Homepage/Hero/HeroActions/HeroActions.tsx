@@ -51,14 +51,14 @@ export async function HeroActions() {
           <p>{statusBody}</p>
           <div className="py-4">
             <div className="flex justify-end gap-4">
-              <button className="btn-main">
-                <Link href={signupLink}>Sign up for the next round</Link>
-              </button>
+              <Link href={signupLink}>
+                <button className="btn-main">Sign up for the next round</button>
+              </Link>
             </div>
             <div className="flex justify-end gap-4">
-              <button className="btn-main">
-                <Link href={submitLink}>Submit your cover</Link>
-              </button>
+              <Link href={submitLink}>
+                <button className="btn-main">Submit your cover</button>
+              </Link>
             </div>
           </div>
         </span>
