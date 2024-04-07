@@ -89,9 +89,7 @@ const getRoundById = async (roundId: number) => {
   return;
 };
 
-export const getCurrentRound = async (): Promise<
-  Round & { error: PostgrestError | null }
-> => {
+export const getCurrentRound = async () => {
   const currentRound = await getRoundById(await getCurrentRoundId());
   if (!currentRound) {
     throw new Error("Unable to find current round");

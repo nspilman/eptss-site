@@ -1,6 +1,5 @@
 import { roundProvider } from "@/providers/roundProvider";
 import { userSessionProvider } from "@/providers/userSessionProvider";
-import { roundService } from "@/data-access/roundService";
 import { SubmitPage } from "./SubmitPage";
 
 const Submit = async () => {
@@ -10,14 +9,13 @@ const Submit = async () => {
     ? roundId
     : roundId - 1;
 
-  const round = await roundService.getRoundById(roundToReference);
   const {
     dateLabels: {
       covering: { closes: coverClosesLabel },
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider(round);
+  } = await roundProvider(roundToReference);
 
   const { userRoundDetails } = await userSessionProvider({
     roundId: roundToReference,

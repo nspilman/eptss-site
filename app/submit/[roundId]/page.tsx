@@ -1,5 +1,4 @@
 import { userSessionProvider } from "@/providers/userSessionProvider";
-import { roundService } from "@/data-access/roundService";
 import { roundProvider } from "@/providers/roundProvider";
 import { SubmitPage } from "../SubmitPage";
 
@@ -9,14 +8,13 @@ export default async function SignUpForRound({
   params: { roundId: string };
 }) {
   const roundId = JSON.parse(params.roundId);
-  const round = await roundService.getRoundById(JSON.parse(roundId));
   const {
     dateLabels: {
       covering: { closes: coverClosesLabel },
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider(round);
+  } = await roundProvider(roundId);
 
   const { userRoundDetails } = await userSessionProvider({
     roundId,

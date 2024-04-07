@@ -11,6 +11,7 @@ interface Props {
   roundId: number;
   song: { artist: string; title: string };
   typeOverride?: "runner_up";
+  playlistUrl?: string;
 }
 
 export type Phase = "signups" | "voting" | "covering" | "celebration";
@@ -24,6 +25,7 @@ const PhaseMgmtService = async ({
   roundId,
   song,
   typeOverride,
+  playlistUrl,
 }: Props) => {
   let phase: Phase;
 
@@ -102,22 +104,17 @@ const PhaseMgmtService = async ({
     typeOverride,
     dateLabels,
     dates,
+    playlistUrl,
   };
 };
 
-export const roundProvider = async (currentRound?: {
-  votingOpens: string;
-  coveringBegins: string;
-  coversDue: string;
-  signupOpens: string;
-  listeningParty: string;
-  roundId: number;
-  typeOverride?: string;
-  song: {
-    artist: string;
-    title: string;
-  };
-}) => {
+export const roundProvider = async (currentRoundId?: number) => {
+  const round = currentRoundId
+    ? await roundService.getRoundById(currentRoundId)
+    : await roundService.getCurrentRound();
+  if (!round) {
+    throw new Error("Unable to find round in RoundProvider");
+  }
   const {
     votingOpens,
     coveringBegins,
@@ -127,7 +124,9 @@ export const roundProvider = async (currentRound?: {
     roundId,
     song,
     typeOverride,
-  } = currentRound || (await roundService.getCurrentRound());
+    playlistUrl,
+  } = round;
+
   const datify = (dateString: string) => {
     const date = new Date(dateString);
     const isValidDate = date instanceof Date && !isNaN(date.getDate());
@@ -145,6 +144,7 @@ export const roundProvider = async (currentRound?: {
     roundId,
     song,
     typeOverride: typeOverride as "runner_up" | undefined,
+    playlistUrl,
   });
 };
 

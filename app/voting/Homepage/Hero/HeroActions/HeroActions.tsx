@@ -1,4 +1,3 @@
-import { roundService } from "@/data-access/roundService";
 import { Navigation } from "@/enum/navigation";
 import {
   hasRoundStarted,
@@ -9,9 +8,7 @@ import Link from "next/link";
 
 export async function HeroActions() {
   const { roundId, phase, song, dateLabels } = await roundProvider();
-  const nextRound = await roundProvider(
-    await roundService.getRoundById(roundId + 1)
-  );
+  const nextRound = await roundProvider(roundId + 1);
   const roundHasStarted = await hasRoundStarted(phase);
   const submissionsAreOpenForCurrentRound = hasSubmissionsOpened(phase);
 

@@ -116,8 +116,7 @@ const signupsHeaders = [
 const RoundSummary = async ({ roundId }: Props) => {
   const voteResults = await getVoteResults(roundId);
   const signupData = (await getSignupData(roundId)) || [];
-  const round = await roundService.getRoundById(roundId);
-  const { phase } = await roundProvider(round);
+  const { phase, song, playlistUrl } = await roundProvider(roundId);
 
   const signupCount = signupData?.length || 0;
   const submissions = await roundService.getSubmissions(roundId);
@@ -147,8 +146,6 @@ const RoundSummary = async ({ roundId }: Props) => {
     navigation,
     submissions,
   };
-
-  const { song, playlistUrl } = round || {};
 
   const roundSummaryHeaders: {
     display: string;
