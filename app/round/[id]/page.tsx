@@ -6,7 +6,6 @@ import { PageTitle } from "@/components/PageTitle";
 import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { roundService } from "@/data-access/roundService";
 
 const getDbClient = async () => {
   const headerCookies = await cookies();
@@ -116,11 +115,12 @@ const signupsHeaders = [
 const RoundSummary = async ({ roundId }: Props) => {
   const voteResults = await getVoteResults(roundId);
   const signupData = (await getSignupData(roundId)) || [];
-  const { phase, song, playlistUrl } = await roundProvider(roundId);
+  const { phase, song, playlistUrl, submissions } = await roundProvider(
+    roundId
+  );
 
   const signupCount = signupData?.length || 0;
-  const submissions = await roundService.getSubmissions(roundId);
-  const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
+  // const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
 
   const dbClient = await getDbClient();
 
@@ -134,17 +134,6 @@ const RoundSummary = async ({ roundId }: Props) => {
     next: roundIds?.map((val) => val.id).includes(roundId + 1)
       ? roundId + 1
       : undefined,
-  };
-
-  const props = {
-    voteResults,
-    signupCount,
-    signupData,
-    phase,
-    roundId,
-    voteBreakdown,
-    navigation,
-    submissions,
   };
 
   const roundSummaryHeaders: {

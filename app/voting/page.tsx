@@ -1,13 +1,13 @@
 import React from "react";
-import queries from "@/data-access";
 import { roundProvider } from "@/providers/roundProvider";
 import seedrandom from "seedrandom";
 import { PageTitle } from "@/components/PageTitle";
 import { getRoundOverrideVotes } from "@/data-access/votingQueries";
-import { userSessionProvider } from "@/providers/userSessionProvider";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
 import { submitVotes } from "@/actions/actions";
+import { signupService } from "@/data-access/signupService";
+import { userParticipationProvider } from "@/providers/userParticipationProvider";
 
 export interface VoteOptionModel {
   label: string;
@@ -54,7 +54,7 @@ const VotingPage = async () => {
   }));
 
   const { phase } = await roundProvider();
-  const { userRoundDetails } = await userSessionProvider();
+  const { userRoundDetails } = await userParticipationProvider();
 
   const shouldRenderForm =
     phase === "voting" || (roundId === 21 && phase === "signups");
@@ -103,7 +103,7 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
       throw new Error(JSON.stringify(error));
     }
   } else {
-    const { data, error } = await queries.signups.getSignupsByRound(roundId);
+    const { data, error } = await signupService.getSignupsByRound(roundId);
     //@ts-ignore
     data?.forEach((record) => resultEntities.push(record));
     if (error) {

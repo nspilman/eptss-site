@@ -6,10 +6,10 @@ import { useAuthModal } from "@/components/client/context/EmailAuthModalContext"
 import { signout } from "@/actions/actions";
 
 interface Props {
-  userId?: string;
+  isLoggedIn?: boolean;
 }
 
-export const SignupButton = ({ userId }: Props): ReactElement => {
+export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
   const router = useRouter();
 
   const { setIsOpen } = useAuthModal();
@@ -26,7 +26,7 @@ export const SignupButton = ({ userId }: Props): ReactElement => {
 
   return (
     <>
-      {userId ? (
+      {isLoggedIn ? (
         isUserProfileRoute ? (
           //@ts-ignore
           <form action={signout}>

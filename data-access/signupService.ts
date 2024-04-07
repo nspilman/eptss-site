@@ -22,4 +22,4 @@ const getSignupsByRound = async (roundId: number) => {
     .order("created_at");
 };
 
-export const signups = { getSignupsByRound };
+export const signupService = { getSignupsByRound };

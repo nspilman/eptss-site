@@ -1,6 +1,6 @@
 import { roundProvider } from "@/providers/roundProvider";
-import { userSessionProvider } from "@/providers/userSessionProvider";
 import { SubmitPage } from "./SubmitPage";
+import { userParticipationProvider } from "@/providers/userParticipationProvider";
 
 const Submit = async () => {
   const { roundId, phase } = await roundProvider();
@@ -17,10 +17,9 @@ const Submit = async () => {
     song,
   } = await roundProvider(roundToReference);
 
-  const { userRoundDetails } = await userSessionProvider({
+  const { userRoundDetails, userId } = await userParticipationProvider({
     roundId: roundToReference,
   });
-  const userId = userRoundDetails?.user.userid || "";
 
   return (
     <SubmitPage

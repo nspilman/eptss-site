@@ -1,4 +1,3 @@
-import { signups } from "./signups";
 import { voting } from "./votingQueries";
 
 export enum Tables {
@@ -21,7 +20,6 @@ export enum Views {
 }
 
 const queries = {
-  signups,
   voting,
 };
 

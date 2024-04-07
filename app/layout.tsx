@@ -11,7 +11,6 @@ import "../styles/globals.css";
 
 import { Suspense } from "react";
 import { Loading } from "@/components/Loading";
-import { userSessionProvider } from "@/providers/userSessionProvider";
 
 export default async function RootLayout({
   children,

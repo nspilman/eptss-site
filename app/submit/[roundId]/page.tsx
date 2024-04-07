@@ -1,6 +1,6 @@
-import { userSessionProvider } from "@/providers/userSessionProvider";
 import { roundProvider } from "@/providers/roundProvider";
 import { SubmitPage } from "../SubmitPage";
+import { userParticipationProvider } from "@/providers/userParticipationProvider";
 
 export default async function SignUpForRound({
   params,
@@ -16,10 +16,9 @@ export default async function SignUpForRound({
     song,
   } = await roundProvider(roundId);
 
-  const { userRoundDetails } = await userSessionProvider({
+  const { userRoundDetails, userId } = await userParticipationProvider({
     roundId,
   });
-  const userId = userRoundDetails?.user.userid || "";
 
   return (
     <SubmitPage

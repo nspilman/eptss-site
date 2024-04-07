@@ -1,6 +1,7 @@
 "use server";
 import { format, subDays } from "date-fns";
 import { roundService } from "@/data-access/roundService";
+import { submissionService } from "@/data-access/submissionService";
 
 interface Props {
   votingOpens: Date;
@@ -105,6 +106,7 @@ const PhaseMgmtService = async ({
     dateLabels,
     dates,
     playlistUrl,
+    submissions: (await getSubmissions(roundId)) || [],
   };
 };
 
@@ -164,4 +166,13 @@ export const hasSubmissionsOpened = (phase: Phase) => {
 
 export const hasRoundEnded = (phase: Phase) => {
   return phase === "celebration";
+};
+
+const getSubmissions = async (roundId: number) => {
+  const submissions = await submissionService.getSubmissions(roundId);
+  return submissions?.map((submission) => ({
+    ...submission,
+    roundId: submission.round_id,
+    soundcloudUrl: submission.soundcloud_url,
+  }));
 };

@@ -1,13 +1,13 @@
 import Head from "next/head";
 import { roundProvider } from "@/providers/roundProvider";
 import { format } from "date-fns";
-import { userSessionProvider } from "@/providers/userSessionProvider";
 import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
 import { HowItWorks } from "./voting/Homepage/HowItWorks";
 import { roundService } from "@/data-access/roundService";
+import { userParticipationProvider } from "@/providers/userParticipationProvider";
 
 const Homepage = async () => {
   const { data } = await roundService.getCurrentAndPastRounds();
@@ -32,7 +32,7 @@ const Homepage = async () => {
   const phaseEndsDatelabel = dateLabels[phase].closes;
   const isVotingPhase = phase === "voting";
 
-  const { userRoundDetails } = await userSessionProvider();
+  const { userRoundDetails } = await userParticipationProvider();
   return (
     <div className="flex flex-col items-center">
       <Head>
