@@ -1,8 +1,11 @@
 "use server";
 import { format, subDays } from "date-fns";
-import { roundService } from "@/data-access/roundService";
-import { submissionService } from "@/data-access/submissionService";
-import { signupService } from "@/data-access";
+import {
+  getCurrentRound,
+  getRoundById,
+  getSignupsByRound,
+  getSubmissions,
+} from "@/data-access";
 import { Phase } from "@/types";
 
 interface Props {
@@ -98,7 +101,7 @@ const PhaseMgmtService = async ({
     },
   };
 
-  const signups = (await signupService.getSignupsByRound(roundId)) || [];
+  const signups = (await getSignupsByRound(roundId)) || [];
 
   return {
     phase,
@@ -108,7 +111,7 @@ const PhaseMgmtService = async ({
     dateLabels,
     dates,
     playlistUrl,
-    submissions: (await getSubmissions(roundId)) || [],
+    submissions: (await _getSubmissions(roundId)) || [],
     signups,
     areSubmissionsOpen: hasSubmissionsOpened(phase),
     hasRoundStarted: hasRoundStarted(phase),
@@ -118,8 +121,8 @@ const PhaseMgmtService = async ({
 
 export const roundProvider = async (currentRoundId?: number) => {
   const round = currentRoundId
-    ? await roundService.getRoundById(currentRoundId)
-    : await roundService.getCurrentRound();
+    ? await getRoundById(currentRoundId)
+    : await getCurrentRound();
   if (!round) {
     throw new Error("Unable to find round in RoundProvider");
   }
@@ -174,8 +177,8 @@ const hasRoundEnded = (phase: Phase) => {
   return phase === "celebration";
 };
 
-const getSubmissions = async (roundId: number) => {
-  const submissions = await submissionService.getSubmissions(roundId);
+const _getSubmissions = async (roundId: number) => {
+  const submissions = await getSubmissions(roundId);
   return submissions?.map((submission) => ({
     ...submission,
     roundId: submission.round_id,

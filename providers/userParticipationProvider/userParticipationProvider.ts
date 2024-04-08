@@ -1,7 +1,9 @@
 "use server";
-import { userParticipationService } from "@/data-access/userParticipationService";
-import { userSessionService } from "@/data-access/userSessionService";
-import { roundService } from "@/data-access/roundService";
+import {
+  getCurrentRoundId,
+  getRoundDataForUser,
+  getUserSession,
+} from "@/data-access";
 
 // Define a custom hook for easy access to the UserSessionContext
 interface Props {
@@ -11,7 +13,7 @@ interface Props {
 export const userParticipationProvider = async (props?: Props) => {
   const roundIdOverride = props?.roundId;
 
-  const { user } = await userSessionService.getUserSession();
+  const { user } = await getUserSession();
 
   const userId = user?.id || "";
   if (!userId) {
@@ -21,7 +23,7 @@ export const userParticipationProvider = async (props?: Props) => {
     };
   }
 
-  const roundId = await roundService.getCurrentRoundId();
+  const roundId = await getCurrentRoundId();
 
   const chosenRoundId = roundIdOverride || roundId;
 
@@ -29,10 +31,7 @@ export const userParticipationProvider = async (props?: Props) => {
     if (!chosenRoundId) {
       return;
     }
-    const data = await userParticipationService.getRoundDataForUser(
-      chosenRoundId,
-      userId
-    );
+    const data = await getRoundDataForUser(chosenRoundId, userId);
     return data;
   };
 

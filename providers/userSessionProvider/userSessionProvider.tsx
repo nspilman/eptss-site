@@ -1,9 +1,7 @@
-"use server";
-import { userSessionService } from "@/data-access/userSessionService";
+import { getUserSession, signInWithOTP, signOut } from "@/data-access";
 
 export const userSessionProvider = async () => {
-  const { user, session } = await userSessionService.getUserSession();
-  const { signOut } = userSessionService;
+  const { user, session } = await getUserSession();
 
   const userId = user?.id || "";
 
@@ -11,6 +9,6 @@ export const userSessionProvider = async () => {
     session,
     signOut,
     userId,
-    signInWithOTP: userSessionService.signInWithOTP,
+    signInWithOTP: signInWithOTP,
   };
 };

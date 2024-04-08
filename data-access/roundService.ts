@@ -24,13 +24,13 @@ const getClient = async () => {
   return client;
 };
 
-const getCurrentRoundId = async () => {
+export const getCurrentRoundId = async () => {
   const client = await getClient();
   const { data: currentRound } = await client.rpc("get_current_round");
   return currentRound || -1;
 };
 
-const getRoundById = async (roundId: number) => {
+export const getRoundById = async (roundId: number) => {
   const client = await getClient();
   const {
     data: roundData,
@@ -160,7 +160,7 @@ song:songs(
   artist
   )`;
 
-const getCurrentAndFutureRounds = async (): Promise<{
+export const getCurrentAndFutureRounds = async (): Promise<{
   data: Round[];
   error: PostgrestError | null;
 }> => {
@@ -176,7 +176,7 @@ const getCurrentAndFutureRounds = async (): Promise<{
   return { data: formattedRoundData, error };
 };
 
-const getCurrentAndPastRounds = async () => {
+export const getCurrentAndPastRounds = async () => {
   const client = await getClient();
 
   const { data: roundData, error } = await client
@@ -232,7 +232,7 @@ const getCurrentAndPastRounds = async () => {
 //   };
 // };
 
-const getVoteBreakdownBySong = async (id: number) => {
+export const getVoteBreakdownBySong = async (id: number) => {
   const dbClient = await getClient();
 
   const { data } = await dbClient
@@ -263,7 +263,7 @@ const getVoteBreakdownBySong = async (id: number) => {
   );
 };
 
-const getAllRoundIds = async () => {
+export const getAllRoundIds = async () => {
   const client = await getClient();
 
   const { data: roundIds } = await client
@@ -271,14 +271,4 @@ const getAllRoundIds = async () => {
     .select("id")
     .lt("covering_begins", new Date().toDateString());
   return roundIds;
-};
-
-export const roundService = {
-  getCurrentRound,
-  getCurrentAndFutureRounds,
-  getRoundById,
-  getCurrentRoundId,
-  getCurrentAndPastRounds,
-  getVoteBreakdownBySong,
-  getAllRoundIds,
 };

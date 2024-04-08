@@ -2,7 +2,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
-const getRoundDataForUser = async (roundId: number, userId: string) => {
+export const getRoundDataForUser = async (roundId: number, userId: string) => {
   const headerCookies = await cookies();
   const supabase = createClient(headerCookies);
   const { data, error } = await supabase
@@ -38,5 +38,3 @@ const getRoundDataForUser = async (roundId: number, userId: string) => {
     hasSignedUp: isUserAttributeTruthy(sign_ups),
   };
 };
-
-export const userParticipationService = { getRoundDataForUser };

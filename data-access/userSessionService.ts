@@ -2,7 +2,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
-const getUserSession = async () => {
+export const getUserSession = async () => {
   const headerCookies = await cookies();
   const supabaseClient = await createClient(headerCookies);
 
@@ -10,13 +10,13 @@ const getUserSession = async () => {
   return { session: session?.session, user: session?.session?.user };
 };
 
-const signOut = async () => {
+export const signOut = async () => {
   const headerCookies = await cookies();
   const supabaseClient = await createClient(headerCookies);
   await supabaseClient.auth.signOut();
 };
 
-const signInWithOTP = async ({
+export const signInWithOTP = async ({
   email,
   redirectUrl,
 }: {
@@ -33,10 +33,4 @@ const signInWithOTP = async ({
     },
   });
   return { error };
-};
-
-export const userSessionService = {
-  getUserSession,
-  signOut,
-  signInWithOTP,
 };

@@ -5,8 +5,7 @@ import { PageTitle } from "@/components/PageTitle";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
 import { submitVotes } from "@/actions/actions";
-import { signupService } from "@/data-access/signupService";
-import { votesService } from "@/data-access";
+import { getRoundOverrideVotes, getSignupsByRound } from "@/data-access";
 
 export interface VoteOptionModel {
   label: string;
@@ -95,14 +94,14 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
       }[]
     | null = [];
   if (typeOverride === "runner_up") {
-    const { data, error } = await votesService.getRoundOverrideVotes(roundId);
+    const { data, error } = await getRoundOverrideVotes(roundId);
     //@ts-ignore
     data?.forEach((record) => record.song && resultEntities.push(record));
     if (error) {
       throw new Error(JSON.stringify(error));
     }
   } else {
-    const data = await signupService.getSignupsByRound(roundId);
+    const data = await getSignupsByRound(roundId);
     //@ts-ignore
     data?.forEach((record) => resultEntities.push(record));
     // if (error) {

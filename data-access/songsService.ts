@@ -4,7 +4,7 @@ import { Views } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
-const getAllSongs = async ({
+export const getAllSongs = async ({
   roundIdToRemove = -1,
 }: {
   roundIdToRemove: number;
@@ -27,5 +27,3 @@ const getAllSongs = async ({
     })) || []
   );
 };
-
-export const songsService = { getAllSongs };

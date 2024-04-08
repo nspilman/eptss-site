@@ -1,12 +1,12 @@
-import { roundService, votesService } from "@/data-access";
+import { getCurrentRoundId, getVoteResults } from "@/data-access";
 
 interface Props {
   roundId?: number;
 }
 
 export const votesProvider = async ({ roundId }: Props) => {
-  const voteResults = await votesService.getVoteResults(
-    roundId || (await roundService.getCurrentRoundId())
+  const voteResults = await getVoteResults(
+    roundId || (await getCurrentRoundId())
   );
 
   return { voteResults };

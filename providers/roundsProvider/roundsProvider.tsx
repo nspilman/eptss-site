@@ -1,5 +1,9 @@
 "use server";
-import { roundService } from "@/data-access/roundService";
+import {
+  getAllRoundIds,
+  getCurrentAndPastRounds,
+  getCurrentRound,
+} from "@/data-access/roundService";
 
 interface Props {
   excludeCurrentRound?: boolean;
@@ -8,8 +12,8 @@ interface Props {
 export const roundsProvider = async ({
   excludeCurrentRound = false,
 }: Props) => {
-  const { data } = await roundService.getCurrentAndPastRounds();
-  const { roundId } = await roundService.getCurrentRound();
+  const { data } = await getCurrentAndPastRounds();
+  const { roundId } = await getCurrentRound();
   const roundContent =
     data
       ?.map(({ song, playlistUrl, roundId }) => {
@@ -24,7 +28,7 @@ export const roundsProvider = async ({
       .filter((round) => !(round.roundId === roundId && excludeCurrentRound)) ||
     [];
 
-  const allRoundIds = await roundService.getAllRoundIds();
+  const allRoundIds = await getAllRoundIds();
 
   return { roundContent, allRoundIds };
 };

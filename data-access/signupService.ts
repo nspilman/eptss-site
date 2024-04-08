@@ -4,7 +4,7 @@ import { Tables } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
-const getSignupsByRound = async (roundId: number) => {
+export const getSignupsByRound = async (roundId: number) => {
   const headerCookies = await cookies();
   const supabase = await createClient(headerCookies);
   const { data } = await supabase
@@ -25,5 +25,3 @@ const getSignupsByRound = async (roundId: number) => {
 
   return data;
 };
-
-export const signupService = { getSignupsByRound };

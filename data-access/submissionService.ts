@@ -10,7 +10,7 @@ const getClient = async () => {
   return client;
 };
 
-const getSubmissions = async (id: number) => {
+export const getSubmissions = async (id: number) => {
   const client = await getClient();
 
   const { data } = await client
@@ -26,5 +26,3 @@ const getSubmissions = async (id: number) => {
     username: val.username || "",
   }));
 };
-
-export const submissionService = { getSubmissions };
