@@ -1,11 +1,13 @@
-import { Tables } from "@/data-access";
+"use server";
+
+import { Tables } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
 const getSignupsByRound = async (roundId: number) => {
   const headerCookies = await cookies();
   const supabase = await createClient(headerCookies);
-  return await supabase
+  const { data } = await supabase
     .from(Tables.SignUps)
     .select(
       `
@@ -20,6 +22,8 @@ const getSignupsByRound = async (roundId: number) => {
     )
     .eq("round_id", roundId)
     .order("created_at");
+
+  return data;
 };
 
 export const signupService = { getSignupsByRound };

@@ -1,4 +1,6 @@
-import { Views } from "@/data-access";
+"use server";
+
+import { Views } from "@/types";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 

@@ -1,4 +1,4 @@
-import { Phase } from "@/providers/roundProvider";
+import { Phase } from "@/types";
 
 export interface RoundActionFunctions {
   // onProfile: () => void;

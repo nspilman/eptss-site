@@ -3,7 +3,7 @@ import { SignupButton } from "../voting/Homepage/SignupButton";
 import { FAQButton } from "components/NavButtons";
 // import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import Link from "next/link";
-import { userSessionProvider } from "@/providers/userSessionProvider";
+import { userSessionProvider } from "@/providers";
 // import { getRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 
 export const Header = async () => {

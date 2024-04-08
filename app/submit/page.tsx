@@ -1,6 +1,5 @@
-import { roundProvider } from "@/providers/roundProvider";
+import { roundProvider, userParticipationProvider } from "@/providers";
 import { SubmitPage } from "./SubmitPage";
-import { userParticipationProvider } from "@/providers/userParticipationProvider";
 
 const Submit = async () => {
   const { roundId, phase } = await roundProvider();

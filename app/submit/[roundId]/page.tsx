@@ -1,6 +1,5 @@
-import { roundProvider } from "@/providers/roundProvider";
+import { roundProvider, userParticipationProvider } from "@/providers";
 import { SubmitPage } from "../SubmitPage";
-import { userParticipationProvider } from "@/providers/userParticipationProvider";
 
 export default async function SignUpForRound({
   params,

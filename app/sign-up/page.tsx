@@ -1,8 +1,8 @@
 import React from "react";
 
-import { roundProvider } from "@/providers/roundProvider";
+import { roundProvider, userParticipationProvider } from "@/providers";
 import { SignupPage } from "./SignupPage";
-import { userParticipationProvider } from "@/providers/userParticipationProvider";
+
 
 const SignUp = async () => {
   const { roundId, dateLabels } = await roundProvider();

@@ -1,7 +1,9 @@
+"use server";
+
 import { PostgrestError } from "@supabase/supabase-js";
-import { Tables, Views } from "@/data-access";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
+import { Tables, Views } from "@/types";
 
 export interface Round {
   roundId: number;
@@ -261,6 +263,16 @@ const getVoteBreakdownBySong = async (id: number) => {
   );
 };
 
+const getAllRoundIds = async () => {
+  const client = await getClient();
+
+  const { data: roundIds } = await client
+    .from(Tables.RoundMetadata)
+    .select("id")
+    .lt("covering_begins", new Date().toDateString());
+  return roundIds;
+};
+
 export const roundService = {
   getCurrentRound,
   getCurrentAndFutureRounds,
@@ -268,4 +280,5 @@ export const roundService = {
   getCurrentRoundId,
   getCurrentAndPastRounds,
   getVoteBreakdownBySong,
+  getAllRoundIds,
 };

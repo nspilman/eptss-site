@@ -1,5 +1,5 @@
 "use client";
-import { Phase } from "@/providers/roundProvider";
+import { Phase } from "@/types";
 import { CTA } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
 import { useBlurb } from "../HowItWorks/useBlurb";

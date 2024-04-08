@@ -2,9 +2,9 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Form } from "../../Form";
-import { createClient } from "@/utils/supabase/client";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { FormReturn } from "@/types";
+import { userSessionProvider } from "@/providers";
 
 export const EmailAuthModal = ({
   isOpen,
@@ -21,8 +21,6 @@ export const EmailAuthModal = ({
 
   const onSendLoginLink = async (formData: FormData): Promise<FormReturn> => {
     try {
-      const supabaseClient = createClient();
-      console.log(Object.entries(formData));
       const email = formData.get("email")?.toString();
       if (!email) {
         return {
@@ -30,12 +28,12 @@ export const EmailAuthModal = ({
           message: "Email required",
         };
       }
-      const { error } = await supabaseClient.auth.signInWithOtp({
+
+      const { signInWithOTP } = await userSessionProvider();
+
+      const { error } = await signInWithOTP({
         email: email?.trim() || "",
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: redirectUrl,
-        },
+        redirectUrl,
       });
       if (error) {
         return {

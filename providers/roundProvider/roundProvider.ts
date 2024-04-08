@@ -2,6 +2,8 @@
 import { format, subDays } from "date-fns";
 import { roundService } from "@/data-access/roundService";
 import { submissionService } from "@/data-access/submissionService";
+import { signupService } from "@/data-access";
+import { Phase } from "@/types";
 
 interface Props {
   votingOpens: Date;
@@ -14,8 +16,6 @@ interface Props {
   typeOverride?: "runner_up";
   playlistUrl?: string;
 }
-
-export type Phase = "signups" | "voting" | "covering" | "celebration";
 
 const PhaseMgmtService = async ({
   votingOpens,
@@ -98,6 +98,8 @@ const PhaseMgmtService = async ({
     },
   };
 
+  const signups = (await signupService.getSignupsByRound(roundId)) || [];
+
   return {
     phase,
     roundId,
@@ -107,6 +109,10 @@ const PhaseMgmtService = async ({
     dates,
     playlistUrl,
     submissions: (await getSubmissions(roundId)) || [],
+    signups,
+    areSubmissionsOpen: hasSubmissionsOpened(phase),
+    hasRoundStarted: hasRoundStarted(phase),
+    hasRoundEnded: hasRoundEnded(phase),
   };
 };
 
@@ -152,19 +158,19 @@ export const roundProvider = async (currentRoundId?: number) => {
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
-export const getPhaseOrderPosition = (phase: Phase) => {
+const getPhaseOrderPosition = (phase: Phase) => {
   return phaseOrder.indexOf(phase);
 };
 
-export const hasRoundStarted = (phase: Phase) => {
+const hasRoundStarted = (phase: Phase) => {
   return getPhaseOrderPosition(phase) > getPhaseOrderPosition("signups");
 };
 
-export const hasSubmissionsOpened = (phase: Phase) => {
+const hasSubmissionsOpened = (phase: Phase) => {
   return getPhaseOrderPosition(phase) > getPhaseOrderPosition("voting");
 };
 
-export const hasRoundEnded = (phase: Phase) => {
+const hasRoundEnded = (phase: Phase) => {
   return phase === "celebration";
 };
 

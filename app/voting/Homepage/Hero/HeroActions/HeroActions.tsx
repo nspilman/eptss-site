@@ -1,23 +1,24 @@
 import { Navigation } from "@/enum/navigation";
-import {
-  hasRoundStarted,
-  hasSubmissionsOpened,
-  roundProvider,
-} from "@/providers/roundProvider";
+import { roundProvider } from "@/providers";
 import Link from "next/link";
 
 export async function HeroActions() {
-  const { roundId, phase, song, dateLabels } = await roundProvider();
+  const {
+    roundId,
+    phase,
+    song,
+    dateLabels,
+    hasRoundStarted,
+    areSubmissionsOpen,
+  } = await roundProvider();
   const nextRound = await roundProvider(roundId + 1);
-  const roundHasStarted = await hasRoundStarted(phase);
-  const submissionsAreOpenForCurrentRound = hasSubmissionsOpened(phase);
 
   const signupLink = `${Navigation.SignUp}/${
-    roundHasStarted ? roundId + 1 : ""
+    hasRoundStarted ? roundId + 1 : ""
   }`;
 
   const submitLink = `${Navigation.Submit}/${
-    submissionsAreOpenForCurrentRound ? "" : roundId - 1
+    areSubmissionsOpen ? "" : roundId - 1
   }`;
 
   const songText =
@@ -26,11 +27,11 @@ export async function HeroActions() {
       : "";
 
   const signupsAreOpenString = `Signups are open for round ${
-    roundHasStarted ? roundId + 1 : roundId
+    hasRoundStarted ? roundId + 1 : roundId
   } `;
 
   const statusBody = `Voting begins on ${
-    (roundHasStarted ? nextRound.dateLabels : dateLabels).voting.opens
+    (hasRoundStarted ? nextRound.dateLabels : dateLabels).voting.opens
   }`;
 
   return (

@@ -6,17 +6,11 @@ export const userSessionProvider = async () => {
   const { signOut } = userSessionService;
 
   const userId = user?.id || "";
-  if (!userId) {
-    return {
-      session: undefined,
-      signOut: undefined,
-      userId: "",
-    };
-  }
 
   return {
     session,
     signOut,
     userId,
+    signInWithOTP: userSessionService.signInWithOTP,
   };
 };

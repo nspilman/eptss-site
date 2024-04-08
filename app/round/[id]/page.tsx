@@ -1,16 +1,8 @@
-import { Tables, Views } from "@/data-access";
-import { roundProvider } from "@/providers/roundProvider";
 import Link from "next/link";
 import { DataTable } from "@/components/DataTable";
 import { PageTitle } from "@/components/PageTitle";
 import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
-
-const getDbClient = async () => {
-  const headerCookies = await cookies();
-  return await createClient(headerCookies);
-};
+import { votesProvider, roundsProvider, roundProvider } from "@/providers";
 
 export default async function Round({ params }: { params: { id: string } }) {
   return (
@@ -20,41 +12,6 @@ export default async function Round({ params }: { params: { id: string } }) {
     </>
   );
 }
-
-const getVoteResults = async (id: number) => {
-  const dbClient = await getDbClient();
-
-  const { data: voteResults } = await dbClient
-    .from(Views.VoteResults)
-    .select("title, artist, average")
-    .filter("round_id", "eq", id);
-
-  return (
-    voteResults?.map((result) => ({
-      title: result.title || "",
-      artist: result.artist || "",
-      average: JSON.parse(result.average?.toPrecision(3) || "0"),
-    })) || []
-  );
-};
-
-const getSignupData = async (id: number) => {
-  const dbClient = await getDbClient();
-
-  const { data } = await dbClient
-    .from(Views.Signups)
-    .select(
-      `youtube_link,
-      title,
-      artist`
-    )
-    .filter("round_id", "eq", id);
-  return data?.map((val) => ({
-    youtube_link: val.youtube_link || "",
-    artist: val.artist || "",
-    title: val.title || "",
-  }));
-};
 
 export interface VoteResults {
   title: string;
@@ -113,21 +70,17 @@ const signupsHeaders = [
 ] as const;
 
 const RoundSummary = async ({ roundId }: Props) => {
-  const voteResults = await getVoteResults(roundId);
-  const signupData = (await getSignupData(roundId)) || [];
-  const { phase, song, playlistUrl, submissions } = await roundProvider(
-    roundId
-  );
+  const { voteResults } = await votesProvider({ roundId });
+  // const signupData = (await signupService.getSignupsByRound(roundId)) || [];
+  const { phase, song, playlistUrl, submissions, signups } =
+    await roundProvider(roundId);
 
-  const signupCount = signupData?.length || 0;
+  const { allRoundIds: roundIds } = await roundsProvider({
+    excludeCurrentRound: true,
+  });
+
+  const signupCount = signups?.length || 0;
   // const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
-
-  const dbClient = await getDbClient();
-
-  const { data: roundIds } = await dbClient
-    .from(Tables.RoundMetadata)
-    .select("id")
-    .lt("covering_begins", new Date().toDateString());
 
   const navigation = {
     previous: roundId !== 0 ? roundId - 1 : undefined,
@@ -182,10 +135,10 @@ const RoundSummary = async ({ roundId }: Props) => {
     },
   ];
 
-  const signupDataDisplay = signupData.map((signup) => ({
+  const signupDataDisplay = signups.map((signup) => ({
     youtubeLink: signup.youtube_link,
-    title: signup.title,
-    artist: signup.artist,
+    title: signup.song?.title || "",
+    artist: signup.song?.artist || "",
   }));
 
   const isVotingPhase = phase === "voting";
