@@ -8,11 +8,12 @@ export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
       </h2>
       <div>
         {posts.map(({ frontmatter: { title, subtitle }, slug }) => (
-          <a href={`blog/${slug}`} className="hover:text-themeYellow">
-            <article
-              className="bg-bgTransparent mx-8 py-8 shadow-sm shadow-themeYellow px-4 w-full my-4"
-              key={slug}
-            >
+          <a
+            href={`blog/${slug}`}
+            className="hover:text-themeYellow"
+            key={slug}
+          >
+            <article className="bg-bgTransparent mx-8 py-8 shadow-sm shadow-themeYellow px-4 w-full my-4">
               <div>
                 <h2 className="text-white hover:text-themeYellow pb-4 text-lg font-bold font-fraunces">
                   {title}
