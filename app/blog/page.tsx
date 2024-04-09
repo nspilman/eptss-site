@@ -1,9 +1,9 @@
 import { PageTitle } from "@/components/PageTitle";
-import { getAllPosts } from "@/serverFunctions/getAllPosts";
 import { BlogHome } from "@/app/blog/Blog";
+import { blogProvider } from "@/providers/blogProvider/blogProvider";
 
 const BlogPage = () => {
-  const posts = getAllPosts();
+  const { posts } = blogProvider();
   return (
     <>
       <PageTitle title="Blog Home" />

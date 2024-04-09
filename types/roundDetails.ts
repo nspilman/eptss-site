@@ -1,5 +1,5 @@
 export interface RoundDetails {
-  playlist: string;
+  playlistUrl: string;
   roundId: number;
   title: string;
   artist: string;

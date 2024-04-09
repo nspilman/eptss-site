@@ -1,9 +1,5 @@
 import Head from "next/head";
-import {
-  roundProvider,
-  roundsProvider,
-  userParticipationProvider,
-} from "@/providers";
+import { roundProvider, userParticipationProvider } from "@/providers";
 import { format } from "date-fns";
 import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
@@ -12,10 +8,6 @@ import { HowItWorks } from "./voting/Homepage/HowItWorks";
 
 const Homepage = async () => {
   const { phase, dateLabels, roundId, dates } = await roundProvider();
-
-  const { roundContent } = await roundsProvider({
-    excludeCurrentRound: phase === "signups",
-  });
 
   const phaseEndsDate = format(dates[phase].closes, "yyyy-MM-dd");
   const phaseEndsDatelabel = dateLabels[phase].closes;
@@ -43,14 +35,9 @@ const Homepage = async () => {
         />
       </div>
       <RoundsDisplay
-        rounds={roundContent.map((round) => ({
-          playlist: round.playlistUrl || "",
-          title: round.title || "",
-          artist: round.artist || "",
-          roundId: round.roundId,
-        }))}
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
+        phase={phase}
       />
       <HowItWorks />
     </div>

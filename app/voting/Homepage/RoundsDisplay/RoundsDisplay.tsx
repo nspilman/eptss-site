@@ -1,16 +1,21 @@
-import { RoundDetails } from "types";
+import { Phase } from "types";
 import { RoundDisplay } from "./RoundDisplay";
+import { roundsProvider } from "@/providers";
 
 interface Props {
-  rounds: RoundDetails[];
   currentRound: number;
   isVotingPhase: boolean;
+  phase: Phase;
 }
-export const RoundsDisplay = ({
-  rounds,
+export const RoundsDisplay = async ({
   currentRound,
   isVotingPhase,
+  phase,
 }: Props) => {
+  const { roundContent: rounds } = await roundsProvider({
+    excludeCurrentRound: phase === "signups",
+  });
+
   return (
     <div className="flex flex-col pt-8 pb-32 relative">
       <div className="pointer-events-none absolute translate-x-52">

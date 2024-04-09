@@ -11,7 +11,7 @@ export const RoundDisplay = ({
   currentRound: number;
   isVotingPhase: boolean;
 }): ReactElement => {
-  const { playlist, title, artist, roundId } = round;
+  const { playlistUrl, title, artist, roundId } = round;
   const showVotingUnderwayText =
     round.roundId === currentRound && isVotingPhase;
 
@@ -32,9 +32,9 @@ export const RoundDisplay = ({
         <span className="text-md md:text-lg text-white font-fraunces font-semibold">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
         </span>
-        {playlist && (
+        {playlistUrl && (
           <Link
-            href={getPlaylistUrl(playlist)}
+            href={getPlaylistUrl(playlistUrl)}
             target="_blank"
             rel="noreferrer"
           >
@@ -43,7 +43,7 @@ export const RoundDisplay = ({
             </span>
           </Link>
         )}
-        {!playlist && (
+        {!playlistUrl && (
           <span className="text-md font-light font-roboto text-white">
             The round is underway!
           </span>
