@@ -48,6 +48,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(redirectUrl);
       }
     }
+
+    //O auth Thing
     if (code) {
       const cookieStore = cookies();
       const supabase = createServerClient(

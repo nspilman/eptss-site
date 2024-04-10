@@ -49,6 +49,26 @@ export async function sendSignInLinkToEmail(
   };
 }
 
+export async function signInWithOAuth(provider: string): Promise<FormReturn> {
+  "use server";
+
+  const cookieStore = await cookies();
+  const supabaseClient = await createClient(cookieStore);
+
+  const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'spotify',
+    options: {
+      redirectTo: "/auth/callback",
+    },
+  });
+
+
+  // TODO Need to figure out the return signature. -b
+  // if (data?.url) {
+  //   res.writeHead(302, { Location: data.url });
+  //   res.end();  }
+}
+
 interface SubmitModel {
   soundcloudUrl: string;
   coolThingsLearned?: string;
