@@ -6,9 +6,8 @@ import * as Sentry from "@sentry/nextjs";
 import { TOAST_REDIRECT_KEY } from "@/constants";
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
-  const code = searchParams.get("code");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/";
   const redirectTo = request.nextUrl.clone();
@@ -48,32 +47,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(redirectUrl);
       }
     }
-
-    //O auth Thing
-    if (code) {
-      const cookieStore = cookies();
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            get(name: string) {
-              return cookieStore.get(name)?.value;
-            },
-            set(name: string, value: string, options: CookieOptions) {
-              cookieStore.set({ name, value, ...options });
-            },
-            remove(name: string, options: CookieOptions) {
-              cookieStore.delete({ name, ...options });
-            },
-          },
-        }
-      );
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (!error) {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-    }
   } catch (e) {
     // return the user to an error page with some instructions
     return NextResponse.redirect(
@@ -85,5 +58,3 @@ export async function GET(request: NextRequest) {
     redirectUrl + `/?${TOAST_REDIRECT_KEY}="An error has occured"`
   );
 }
-
-
