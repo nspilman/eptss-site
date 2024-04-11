@@ -1,6 +1,7 @@
 "use server";
 
 import { Navigation } from "@/enum/navigation";
+import { Tables } from "@/types";
 import { getIsSuccess } from "@/utils";
 import { createClient } from "@/utils/supabase/server";
 import { revalidateTag } from "next/cache";
@@ -117,9 +118,33 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   };
 }
 
-export const submitVotes = async (formData: FormData) => {
+export const submitVotes = async (formData: FormData): Promise<FormReturn> => {
   const entries = formData.entries();
   const payload = Object.fromEntries(entries);
-  return { status: "Success" as const, message: "" };
-  // return payload;
+  const voteKeys = Object.keys(payload).filter(
+    (key) => !["name", "email"].includes(key)
+  );
+
+  const votes = voteKeys
+    .filter((key) => !["userId", "roundId"].includes(key))
+    .map((key) => ({
+      song_id: JSON.parse(key),
+      vote: JSON.parse(formData.get(key)?.toString() || "-1"),
+      round_id: JSON.parse(formData.get("roundId")?.toString() || "-1"),
+      user_id: formData.get("userId")?.toString() || "",
+    }));
+  const headerCookies = await cookies();
+  const client = createClient(headerCookies);
+
+  const { status, error } = await client.from(Tables.Votes).insert(votes);
+
+  console.log({ votes });
+  if (getIsSuccess(status)) {
+    revalidateTag(Navigation.Voting);
+  }
+
+  return {
+    status: getIsSuccess(status) ? "Success" : "Error",
+    message: error?.message || "",
+  };
 };
