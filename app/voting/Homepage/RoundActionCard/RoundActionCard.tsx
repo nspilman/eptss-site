@@ -2,18 +2,11 @@
 import { Phase } from "@/types";
 import { CTA } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
-import { useBlurb } from "../HowItWorks/useBlurb";
+import { getBlurb } from "../HowItWorks/getBlurb";
 import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { Navigation } from "@/enum/navigation";
-import { UserRoundDetails, songDetails } from "@/types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { UserRoundDetails } from "@/types";
 
 interface Props {
   phase: Phase;
@@ -21,7 +14,6 @@ interface Props {
   phaseEndsDate: string;
   phaseEndsDatelabel: string;
   userRoundDetails?: UserRoundDetails;
-  song: songDetails;
 }
 
 export const RoundActionCard = ({
@@ -30,7 +22,6 @@ export const RoundActionCard = ({
   phaseEndsDate,
   phaseEndsDatelabel,
   userRoundDetails,
-  song,
 }: Props) => {
   const router = useRouter();
   const { setIsOpen: openAuthModal } = useAuthModal();
@@ -55,8 +46,6 @@ export const RoundActionCard = ({
     onRoundDetails: () => router.push(`/round/${roundId}`),
   };
 
-  const { title: songTitle, artist: songArtist } = song;
-
   const phaseEndsDaysFromToday =
     // calculates the difference in milliseconds and then rounds up
     Math.ceil(
@@ -71,37 +60,50 @@ export const RoundActionCard = ({
           phaseEndsDaysFromToday !== 1 ? "s" : ""
         }`;
 
+  const labelContent = (() => {
+    const authedLabels: { [key in Phase]: string } = {
+      signups: `Next round starts ${specificDaysOrSoonLabel}`,
+      celebration: `Stay tuned for next round details!`,
+      voting: `Voting ends ${specificDaysOrSoonLabel}`,
+      covering: `Round ends ${specificDaysOrSoonLabel}`,
+    };
 
-  const {phaseStatus, phaseBlurb} = useBlurb({ phase, roundId, phaseEndsDatelabel });
+    if (isAuthed) {
+      return authedLabels[phase];
+    } else {
+      return phase === "signups" ? (
+        <>{`Next round starts in ${phaseEndsDaysFromToday} days`}</>
+      ) : (
+        <>Notify me when next round starts</>
+      );
+    }
+  })();
+
+  const blurb = getBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
-    <Card className="mx-auto ">
-        <CardHeader>
-      <CardTitle>
-              {phaseStatus}
-      </CardTitle>
-        <CardDescription>
-
-          {phase === "covering" ? phaseBlurb: ''} 
-        </CardDescription>
-        </CardHeader>
-
-      <CardContent>
-        <div className="text-xl font-bold">
-          {phase == "covering" ? <p>Covering : {songTitle} by {songArtist}</p> : phaseBlurb }
+    <div className="py-8 px-4 flex flex-col relative">
+      <div>
+        <div className="flex flex-col">
+          <div className="flex flex-col items-center">
+            <div className="text-white opacity-75">{labelContent}</div>
+            <div className="pt-4 gap-4 flex flex-col items-center">
+              <div>
+                <CTA
+                  {...{
+                    roundActionFunctions,
+                    roundId,
+                    hasCompletedPhase: false,
+                    isAuthed,
+                    phase,
+                  }}
+                />
+              </div>
+              <span className="text-themeYellow font-fraunces">{blurb}</span>
+            </div>
+          </div>
         </div>
-      <div className="pt-4">
-                  <CTA
-                    {...{
-                      roundActionFunctions,
-                      roundId,
-                      hasCompletedPhase: false,
-                      isAuthed,
-                      phase,
-                    }}
-                  />
-                </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
