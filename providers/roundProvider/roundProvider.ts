@@ -213,22 +213,6 @@ const _getSubmissions = async (roundId: number) => {
 };
 
 const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
-  interface VoteOptionEntity {
-    song: {
-      title: string;
-      artist: string;
-    };
-    song_id: number;
-    round_id: string;
-    youtube_link?: string;
-  }
-
-  interface VoteOptionModel {
-    label: string;
-    field: string;
-    link: string;
-  }
-
   const resultEntities:
     | {
         round_id: any;
@@ -254,5 +238,7 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
     data?.forEach((record) => resultEntities.push(record));
   }
 
-  return resultEntities?.filter((result) => result.song_id);
+  return resultEntities?.filter(
+    (result) => result.song_id && result.song_id !== -1
+  );
 };
