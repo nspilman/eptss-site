@@ -35,6 +35,7 @@ export const EmailAuthModal = ({
         email: email?.trim() || "",
         redirectUrl,
       });
+      console.log("hit signInWithOTP")
       if (error) {
         return {
           status: "Error" as const,
