@@ -1,6 +1,6 @@
 import React from "react";
 import { SignupButton } from "../voting/Homepage/SignupButton";
-import { FAQButton } from "components/NavButtons";
+import { FAQButton, SignInWithSpotifyBtn } from "components/NavButtons";
 // import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import Link from "next/link";
 import { userSessionProvider } from "@/providers";
@@ -21,6 +21,7 @@ export const Header = async () => {
         <div className="hidden spacing-x-2 lg:flex items-center justify-center">
           <FAQButton />
           <SignupButton isLoggedIn={!!userId} />
+          <SignInWithSpotifyBtn />
           {/* {current && next && <RoundDatesDisplayPopup {...{ current, next }} />} */}
         </div>
       </div>
