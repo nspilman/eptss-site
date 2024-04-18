@@ -29,7 +29,7 @@ export const signInWithOTP = async ({
     email: email?.trim() || "",
     options: {
       shouldCreateUser: true,
-      emailRedirectTo: redirectUrl,
+      emailRedirectTo: redirectUrl ?? "/",
     },
   });
   return { error };
