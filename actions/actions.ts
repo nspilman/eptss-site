@@ -118,7 +118,10 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   };
 }
 
-export const submitVotes = async (formData: FormData): Promise<FormReturn> => {
+export const submitVotes = async (
+  { userId, roundId }: { userId: string; roundId: number },
+  formData: FormData
+): Promise<FormReturn> => {
   const entries = formData.entries();
   const payload = Object.fromEntries(entries);
   const voteKeys = Object.keys(payload).filter(
@@ -130,8 +133,8 @@ export const submitVotes = async (formData: FormData): Promise<FormReturn> => {
     .map((key) => ({
       song_id: JSON.parse(key),
       vote: JSON.parse(formData.get(key)?.toString() || "-1"),
-      round_id: JSON.parse(formData.get("roundId")?.toString() || "-1"),
-      user_id: formData.get("userId")?.toString() || "",
+      round_id: roundId,
+      user_id: userId,
     }));
   const headerCookies = await cookies();
   const client = createClient(headerCookies);
