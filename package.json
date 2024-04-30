@@ -29,11 +29,12 @@
     "chart.js": "latest",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.5.1",
-    "clsx": "^2.1.0",
+    "clsx": "^2.1.1",
     "data-uri-to-buffer": "^5.0.1",
     "date-fns": "^2.30.0",
     "framer-motion": "^9.1.7",
     "gray-matter": "^4.0.3",
+    "lucide-react": "^0.376.0",
     "next": "^14.1.4",
     "nodemailer": "^6.9.13",
     "react": "^18.2.0",
@@ -43,7 +44,7 @@
     "react-markdown": "^8.0.7",
     "remark-gfm": "^3.0.1",
     "seedrandom": "^3.0.5",
-    "tailwind-merge": "^2.2.2",
+    "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
