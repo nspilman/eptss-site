@@ -19,12 +19,12 @@ const Homepage = async () => {
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <Hero />
-      <div className="pointer-events-none">
+      {/* <Hero /> */}
+      {/* <div className="pointer-events-none">
         <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
         <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
         <div className="absolute top-28 left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div>
+      </div> */}
       <div className="mt-8 md:-mt-20 mb-12">
         <RoundActionCard
           phase={phase}
@@ -34,12 +34,12 @@ const Homepage = async () => {
           userRoundDetails={userRoundDetails}
         />
       </div>
-      <RoundsDisplay
+      {/* <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
         phase={phase}
-      />
-      <HowItWorks />
+      /> */}
+      {/* <HowItWorks /> */}
     </div>
   );
 };
