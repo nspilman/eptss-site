@@ -1,17 +1,20 @@
-import * as React from "react";
 import { PageTitle } from "@/components/PageTitle";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
-type FAQItem = {
+
+type FAQItems = {
   question: string;
   answer: string;
 };
 
-type FAQListProps = {
-  items: FAQItem[];
-};
-
-const FAQPage = async () => {
-  const faqItems = [
+export default function Page() {
+  const FAQItems = [
     {
       question: 'What is the "Everyone Plays the Same Song" project?',
       answer:
@@ -64,40 +67,30 @@ const FAQPage = async () => {
     },
   ];
 
-  return (
-    <>
-      <PageTitle title={"Frequently Asked Questions"} />
-      <div className="pt-8 px-4">
-        <h2 className="font-fraunces text-white font-bold underline pb-4 text-md">
-          Frequently Asked Questions
-        </h2>
-        <FAQList items={faqItems} />
+  const mappedFAQItems = FAQItems.map((faq, index) =>{
+    return (
+      <div 
+      key={index}
+      className="py-2" >
+        <h2 className="text-xl font-bold pb-1"> {faq.question}</h2>
+        <p>
+          {faq.answer}
+        </p>
       </div>
-    </>
-  );
-};
-
-const FAQList: React.FC<FAQListProps> = ({ items }) => {
+    )
+  })
   return (
-    <div className="w-100">
-      {items.map((item, index) => (
-        <article key={index} className="pb-4">
-          <h2>
-            <div>
-              <h2 className="font-fraunces text-white font-bold">
-                {item.question}
-              </h2>
-            </div>
-          </h2>
-          <div className="py-2">
-            <span className="text-md font-light font-roboto text-white opacity-75">
-              {item.answer}
-            </span>
-          </div>
-        </article>
-      ))}
-    </div>
-  );
-};
+    
+<div className=" w-3/4">
+  <Card>
+    <CardHeader>
+       <p className="font-extrabold text-3xl">Frequently Asked Questions </p>
+    </CardHeader>
+    <CardContent>
+      {mappedFAQItems}
+    </CardContent>
+  </Card>
+</div>
 
-export default FAQPage;
+  );
+}
