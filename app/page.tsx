@@ -15,17 +15,16 @@ const Homepage = async () => {
 
   const { userRoundDetails } = await userParticipationProvider();
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col gap-4 items-center">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      {/* <Hero /> */}
-      {/* <div className="pointer-events-none">
-        <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="absolute top-28 left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div> */}
-      <div className="mt-8 md:-mt-20 mb-12">
+      <div className="flex justify-center items-center h-4/5">
+      <Hero />
+
+      </div>
+     
+      {/* <div className="mt-8 md:-mt-20 mb-12">
         <RoundActionCard
           phase={phase}
           roundId={roundId}
@@ -33,7 +32,7 @@ const Homepage = async () => {
           phaseEndsDatelabel={phaseEndsDatelabel}
           userRoundDetails={userRoundDetails}
         />
-      </div>
+      </div> */}
       {/* <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
