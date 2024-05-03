@@ -9,7 +9,6 @@ export const useBlurb = ({
   phaseEndsDatelabel: string;
   roundId: number;
 }) => {
-  console.log(`live from the useBlurb`, phase)
   switch (phase) {
     case "signups":
       return {
@@ -19,7 +18,7 @@ export const useBlurb = ({
     case "voting":
       return {
         phaseStatus: `Round ${roundId} is underway`,
-        phaseBlurb: `Votes are due  by ${phaseEndsDatelabel}`,
+        phaseBlurb: `Votes are due by ${phaseEndsDatelabel}`,
       };
     case "covering":
       return {
