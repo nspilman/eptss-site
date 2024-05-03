@@ -11,13 +11,25 @@ export const getBlurb = ({
 }) => {
   switch (phase) {
     case "signups":
-      return `Signups for round ${roundId} are open! Signups close ${phaseEndsDatelabel}`;
+      return {
+        phaseStatus: `Signups for round ${roundId} are open!`,
+        phaseBlurb: `Signups close ${phaseEndsDatelabel}`,
+      };
     case "voting":
-      return `Round ${roundId} - voting is due ${phaseEndsDatelabel}`;
+      return {
+        phaseStatus: `Round ${roundId} is underway`,
+        phaseBlurb: `Votes are due by ${phaseEndsDatelabel}`,
+      };
     case "covering":
-      return `Round ${roundId} - covers are due ${phaseEndsDatelabel}`;
+      return {
+        phaseStatus: `Round ${roundId} is underway`,
+        phaseBlurb: `Covers are due ${phaseEndsDatelabel}`,
+      };
     case "celebration":
     default:
-      return `Round ${roundId} is over! The listening party is on ${phaseEndsDatelabel}, and the next round will start after that!`;
+      return {
+        phaseStatus: `Round ${roundId} is over!`,
+        phaseBlurb: `The listening party is on ${phaseEndsDatelabel}, and the next round will start after that!`,
+      };
   }
 };
