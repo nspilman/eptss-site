@@ -1,4 +1,5 @@
 import { Phase } from "@/types";
+import { Button } from "@/components/ui/button";
 
 export interface RoundActionFunctions {
   // onProfile: () => void;
@@ -41,37 +42,37 @@ export const CTA = ({
   if (!isAuthed) {
     if (phase === "signups") {
       return (
-        <button className="btn-main" onClick={onSignupAndJoinRound}>
+        <Button className="btn-main" onClick={onSignupAndJoinRound}>
           I&apos;m in!
-        </button>
+        </Button>
       );
     } else {
-      return <button className="btn-main">Sign Up</button>;
+      return <Button className="btn-main">Login</Button>;
     }
   }
   switch (phase) {
     case "signups":
       return (
-        <button
+        <Button
           className="btn-main"
           disabled={hasCompletedPhase}
           onClick={onJoinRound}
         >
           {hasCompletedPhase ? `You're in!` : `I'm in!`}
-        </button>
+        </Button>
       );
 
     case "voting":
       return (
         <>
           <RoundDetailsButton />
-          <button
+          <Button
             className="btn-main"
             onClick={onVote}
             disabled={hasCompletedPhase}
           >
             {hasCompletedPhase ? "You've Voted" : "Vote Now"}
-          </button>
+          </Button>
         </>
       );
 
@@ -79,13 +80,13 @@ export const CTA = ({
       return (
         <>
           <RoundDetailsButton />
-          <button
+          <Button
             className="btn-main"
             disabled={hasCompletedPhase}
             onClick={onSubmit}
           >
             {hasCompletedPhase ? `You've Submitted!` : "Submit My Cover"}
-          </button>
+          </Button>
         </>
       );
     case "celebration":
@@ -93,13 +94,13 @@ export const CTA = ({
         <>
           <RoundDetailsButton />
           {hasCompletedPhase ? (
-            <button className="btn-main" onClick={() => console.log("profile")}>
+            <Button className="btn-main" onClick={() => console.log("profile")}>
               Profile
-            </button>
+            </Button>
           ) : (
-            <button className="btn-main" onClick={onSubmit}>
+            <Button className="btn-main" onClick={onSubmit}>
               Submit My Cover
-            </button>
+            </Button>
           )}
         </>
       );
