@@ -47,7 +47,7 @@ export const CTA = ({
         </Button>
       );
     } else {
-      return <Button className="btn-main">Sign Up</Button>;
+      return <Button className="btn-main">Login</Button>;
     }
   }
   switch (phase) {
