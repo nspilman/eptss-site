@@ -72,28 +72,6 @@ export const RoundActionCard = ({
         }`;
 
 
-  // Do we need this???? 
-
-  // const labelContent = (() => {
-  //   const authedLabels: { [key in Phase]: string } = {
-  //     signups: `Next round starts ${specificDaysOrSoonLabel}`,
-  //     celebration: `Stay tuned for next round details!`,
-  //     voting: `Voting ends ${specificDaysOrSoonLabel}`,
-  //     covering: `Round ends ${specificDaysOrSoonLabel}`,
-  //   };
-
-  //   if (isAuthed) {
-  //     return authedLabels[phase];
-  //   } else {
-  //     return phase === "signups" ? (
-  //       <>{`Next round starts in ${phaseEndsDaysFromToday} days`}</>
-  //     ) : (
-  //       <>Notify me when next round starts</>
-  //     );
-  //   }
-  // })();
-
-
   const {phaseStatus, phaseBlurb} = useBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
