@@ -6,7 +6,14 @@ import { useBlurb } from "../HowItWorks/useBlurb";
 import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { Navigation } from "@/enum/navigation";
-import { UserRoundDetails } from "@/types";
+import { UserRoundDetails, songDetails } from "@/types";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Props {
   phase: Phase;
@@ -14,6 +21,7 @@ interface Props {
   phaseEndsDate: string;
   phaseEndsDatelabel: string;
   userRoundDetails?: UserRoundDetails;
+  song: songDetails;
 }
 
 export const RoundActionCard = ({
@@ -22,6 +30,7 @@ export const RoundActionCard = ({
   phaseEndsDate,
   phaseEndsDatelabel,
   userRoundDetails,
+  song,
 }: Props) => {
   const router = useRouter();
   const { setIsOpen: openAuthModal } = useAuthModal();
@@ -45,6 +54,8 @@ export const RoundActionCard = ({
     onSubmit: () => router.push(Navigation.Submit),
     onRoundDetails: () => router.push(`/round/${roundId}`),
   };
+
+  const { title: songTitle, artist: songArtist } = song;
 
   const phaseEndsDaysFromToday =
     // calculates the difference in milliseconds and then rounds up
@@ -78,32 +89,60 @@ export const RoundActionCard = ({
       );
     }
   })();
+  phase = "covering"
 
-  const blurb = useBlurb({ phase, roundId, phaseEndsDatelabel });
+  const {phaseStatus, phaseBlurb} = useBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
-    <div className="py-8 px-4 flex flex-col relative">
-      <div>
-        <div className="flex flex-col">
-          <div className="flex flex-col items-center">
-            <div className="text-white opacity-75">{labelContent}</div>
-            <div className="pt-4 gap-4 flex flex-col items-center">
-              <div>
-                <CTA
-                  {...{
-                    roundActionFunctions,
-                    roundId,
-                    hasCompletedPhase: false,
-                    isAuthed,
-                    phase,
-                  }}
-                />
-              </div>
-              <span className="text-themeYellow font-fraunces">{blurb}</span>
-            </div>
-          </div>
+    <Card className="mx-auto ">
+        <CardHeader>
+      <CardTitle>
+              {phaseStatus}
+      </CardTitle>
+        <CardDescription>
+          {phaseBlurb}
+        </CardDescription>
+        <div className="flex flex-col mx-auto items-center">
+          <p>
+            <span className="text-2xl">
+            </span>
+            <span className="text-lg">
+
+            </span>
+          </p>
+        
         </div>
-      </div>
-    </div>
+        </CardHeader>
+
+      <CardContent>
+        <div className="text-xl font-bold">
+          {phase == "covering" ? <p>Covering : {songTitle} by {songArtist}</p> : '' }
+        </div>
+      <div>
+                  <CTA
+                    {...{
+                      roundActionFunctions,
+                      roundId,
+                      hasCompletedPhase: false,
+                      isAuthed,
+                      phase,
+                    }}
+                  />
+                </div>
+      </CardContent>
+    </Card>
   );
 };
+
+      // <div className="py-8 px-4 flex flex-col relative">
+      //   <div>
+      //     <div className="flex flex-col">
+      //       <div className="flex flex-col items-center">
+      //         <div className="text-white opacity-75">{labelContent}</div>
+      //         <div className="pt-4 gap-4 flex flex-col items-center">
+               
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
