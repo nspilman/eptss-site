@@ -71,25 +71,28 @@ export const RoundActionCard = ({
           phaseEndsDaysFromToday !== 1 ? "s" : ""
         }`;
 
-  const labelContent = (() => {
-    const authedLabels: { [key in Phase]: string } = {
-      signups: `Next round starts ${specificDaysOrSoonLabel}`,
-      celebration: `Stay tuned for next round details!`,
-      voting: `Voting ends ${specificDaysOrSoonLabel}`,
-      covering: `Round ends ${specificDaysOrSoonLabel}`,
-    };
 
-    if (isAuthed) {
-      return authedLabels[phase];
-    } else {
-      return phase === "signups" ? (
-        <>{`Next round starts in ${phaseEndsDaysFromToday} days`}</>
-      ) : (
-        <>Notify me when next round starts</>
-      );
-    }
-  })();
-  phase = "covering"
+  // Do we need this???? 
+
+  // const labelContent = (() => {
+  //   const authedLabels: { [key in Phase]: string } = {
+  //     signups: `Next round starts ${specificDaysOrSoonLabel}`,
+  //     celebration: `Stay tuned for next round details!`,
+  //     voting: `Voting ends ${specificDaysOrSoonLabel}`,
+  //     covering: `Round ends ${specificDaysOrSoonLabel}`,
+  //   };
+
+  //   if (isAuthed) {
+  //     return authedLabels[phase];
+  //   } else {
+  //     return phase === "signups" ? (
+  //       <>{`Next round starts in ${phaseEndsDaysFromToday} days`}</>
+  //     ) : (
+  //       <>Notify me when next round starts</>
+  //     );
+  //   }
+  // })();
+
 
   const {phaseStatus, phaseBlurb} = useBlurb({ phase, roundId, phaseEndsDatelabel });
 
@@ -100,25 +103,16 @@ export const RoundActionCard = ({
               {phaseStatus}
       </CardTitle>
         <CardDescription>
-          {phaseBlurb}
-        </CardDescription>
-        <div className="flex flex-col mx-auto items-center">
-          <p>
-            <span className="text-2xl">
-            </span>
-            <span className="text-lg">
 
-            </span>
-          </p>
-        
-        </div>
+          {phase === "covering" ? phaseBlurb: ''} 
+        </CardDescription>
         </CardHeader>
 
       <CardContent>
         <div className="text-xl font-bold">
-          {phase == "covering" ? <p>Covering : {songTitle} by {songArtist}</p> : '' }
+          {phase == "covering" ? <p>Covering : {songTitle} by {songArtist}</p> : phaseBlurb }
         </div>
-      <div>
+      <div className="pt-4">
                   <CTA
                     {...{
                       roundActionFunctions,
@@ -133,16 +127,3 @@ export const RoundActionCard = ({
     </Card>
   );
 };
-
-      // <div className="py-8 px-4 flex flex-col relative">
-      //   <div>
-      //     <div className="flex flex-col">
-      //       <div className="flex flex-col items-center">
-      //         <div className="text-white opacity-75">{labelContent}</div>
-      //         <div className="pt-4 gap-4 flex flex-col items-center">
-               
-      //         </div>
-      //       </div>
-      //     </div>
-      //   </div>
-      // </div>
