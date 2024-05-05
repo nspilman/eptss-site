@@ -26,11 +26,12 @@ const about: { title: string; href: string; description: string }[] = [
     description: "What's new?!",
   },
 ];
+
 console.log("damn am I' on your client");
 const NavMenus: React.FC<UserIdProp> = ({ userId }) => {
   return (
     <>
-      <TopNav userId={userId} />
+      <TopNav userId={userId} about={about} />
       <BottomNav userId={userId} />
     </>
   );
