@@ -1,6 +1,5 @@
-import React from 'react'
+import React from "react";
 import Link from "next/link";
-
 import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
@@ -11,9 +10,6 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import BottomNav from "./BottomNav";
-import { LogIn } from 'lucide-react';
-
 
 interface TopNavProps {
   userId: string;
@@ -21,52 +17,51 @@ interface TopNavProps {
 }
 
 const TopNav: React.FC<TopNavProps> = ({ userId, about }) => {
-  console.log("userId", userId)
+  console.log("userId", userId);
   // You can use the userId prop here to customize the TopNav component
   return (
     <div className="invisible z-0 lg:visible sm:visible">
-      <NavigationMenu >
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>About</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-3 p-4 ">
-              {about.map((about) => (
-                <ListItem
-                  key={about.title}
-                  title={about.title}
-                  href={about.href}
-                >
-                  {about.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          {/* TODO NEED TO CHANGE ROUTE FOR THE STUDIO */}
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Studio
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>{" "}
-        <NavigationMenuItem>
-          {/* NEED TO FIGURE OUT THE ROUTE FOR LOGIN/LOGOUT */}
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              {!userId ? "Login" : "Log Out"}
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-      </NavigationMenuList>
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>About</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[200px] gap-3 p-4 ">
+                {about.map((about) => (
+                  <ListItem
+                    key={about.title}
+                    title={about.title}
+                    href={about.href}
+                  >
+                    {about.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            {/* TODO NEED TO CHANGE ROUTE FOR THE STUDIO */}
+            <Link href="/docs" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Studio
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>{" "}
+          <NavigationMenuItem>
+            {/* NEED TO FIGURE OUT THE ROUTE FOR LOGIN/LOGOUT */}
+            <Link href="/docs" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                {!userId ? "Login" : "Log Out"}
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenuList>
       </NavigationMenu>
-      </div>
+    </div>
   );
 };
 
 export default TopNav;
-
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,
