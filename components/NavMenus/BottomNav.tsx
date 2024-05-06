@@ -15,7 +15,10 @@ interface BottomNavProps {
   userId: string;
   about: { title: string; href: string; description: string }[];
 }
-export const BottomNav: React.FC<BottomNavProps> = ({ userId, about }) => {
+export const BottomNav = ({
+  userId,
+  about,
+}: BottomNavProps): React.ReactElement => {
   return (
     <div className="fixed bottom-0 left-0 w-full flex py-2 justify-center bg-slate-500/20 backdrop-blur z-10 box-shadow inset 0 -2px 4px rgba(0, 0, 0, 0.2)  sm:hidden">
       <div className="relative z-20 w-full flex justify-center ">

@@ -11,12 +11,12 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-interface TopNavProps {
+interface Props {
   userId: string;
   about: { title: string; href: string; description: string }[];
 }
 
-export const TopNav: React.FC<TopNavProps> = ({ userId, about }) => {
+export const TopNav = ({ userId, about }: Props) => {
   console.log("userId", userId);
   // You can use the userId prop here to customize the TopNav component
   return (
