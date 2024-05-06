@@ -29,7 +29,6 @@ const about: { title: string; href: string; description: string }[] = [
 
 
 const NavMenus: React.FC<UserIdProp> = ({ userId }) => {
-  userId ='booty'
   return (
     <>
       <TopNav userId={userId} about={about} />

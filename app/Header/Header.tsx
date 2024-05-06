@@ -1,10 +1,10 @@
 import React from "react";
 import { SignupButton } from "../voting/Homepage/SignupButton";
-import { FAQButton } from "components/NavButtons";
+// import { FAQButton } from "components/NavButtons";
 // import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import Link from "next/link";
 import { userSessionProvider } from "@/providers";
-import NavMenus from "@/components/Navbar/NavMenus";
+import NavMenus from "@/components/Navbars/NavMenus";
 
 // import { getRoundsDates } from "../RoundDatesDisplay/useGetRoundsDates";
 
