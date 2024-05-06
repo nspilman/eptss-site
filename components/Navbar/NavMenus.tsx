@@ -32,7 +32,7 @@ const NavMenus: React.FC<UserIdProp> = ({ userId }) => {
   return (
     <>
       <TopNav userId={userId} about={about} />
-      <BottomNav userId={userId} />
+      <BottomNav userId={userId} about={about} />
     </>
   );
 };
