@@ -7,7 +7,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import React from "react";
 import Link from "next/link";
 
@@ -15,7 +15,7 @@ interface BottomNavProps {
   userId: string;
   about: { title: string; href: string; description: string }[];
 }
-const BottomNav: React.FC<BottomNavProps> = ({ userId, about }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ userId, about }) => {
   return (
     <div className="fixed bottom-0 left-0 w-full flex py-2 justify-center bg-slate-500/20 backdrop-blur z-10 box-shadow inset 0 -2px 4px rgba(0, 0, 0, 0.2)  sm:hidden">
       <div className="relative z-20 w-full flex justify-center ">
@@ -28,7 +28,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ userId, about }) => {
               <DrawerTitle>Navigation Menu</DrawerTitle>
             </DrawerHeader>
             <div className="flex flex-col gap-2 items-center">
-            <Button variant={"secondary"} className="w-2/3">
+              <Button variant={"secondary"} className="w-2/3">
                 <Link href="/">Home</Link>
               </Button>
               {about.map((about) => (
@@ -66,5 +66,3 @@ const BottomNav: React.FC<BottomNavProps> = ({ userId, about }) => {
     </div>
   );
 };
-
-export default BottomNav;

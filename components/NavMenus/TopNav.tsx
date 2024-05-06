@@ -16,7 +16,7 @@ interface TopNavProps {
   about: { title: string; href: string; description: string }[];
 }
 
-const TopNav: React.FC<TopNavProps> = ({ userId, about }) => {
+export const TopNav: React.FC<TopNavProps> = ({ userId, about }) => {
   console.log("userId", userId);
   // You can use the userId prop here to customize the TopNav component
   return (
@@ -60,8 +60,6 @@ const TopNav: React.FC<TopNavProps> = ({ userId, about }) => {
     </div>
   );
 };
-
-export default TopNav;
 
 const ListItem = React.forwardRef<
   React.ElementRef<"a">,

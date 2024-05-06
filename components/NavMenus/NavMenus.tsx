@@ -1,18 +1,8 @@
 "use client";
 
-import * as React from "react";
-import TopNav from "./TopNav";
-import BottomNav from "./BottomNav";
-
-interface AboutMenuRoutes {
-  title: string;
-  href: string;
-  description: string;
-}
-
-interface UserIdProp {
-  userId: string
-}
+import React from "react";
+import { TopNav } from "./TopNav";
+import { BottomNav } from "./BottomNav";
 
 const about: { title: string; href: string; description: string }[] = [
   {
@@ -27,8 +17,11 @@ const about: { title: string; href: string; description: string }[] = [
   },
 ];
 
+interface Props {
+  userId: string;
+}
 
-const NavMenus: React.FC<UserIdProp> = ({ userId }) => {
+export const NavMenus = ({ userId }: Props): React.ReactElement => {
   return (
     <>
       <TopNav userId={userId} about={about} />
@@ -36,5 +29,3 @@ const NavMenus: React.FC<UserIdProp> = ({ userId }) => {
     </>
   );
 };
-
-export default NavMenus;
