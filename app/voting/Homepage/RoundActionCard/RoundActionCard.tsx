@@ -2,7 +2,7 @@
 import { Phase } from "@/types";
 import { CTA } from "./CTA";
 import { differenceInMilliseconds } from "date-fns";
-import { useBlurb } from "../HowItWorks/useBlurb";
+import { getBlurb } from "../HowItWorks/getBlurb";
 import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { Navigation } from "@/enum/navigation";
@@ -79,7 +79,7 @@ export const RoundActionCard = ({
     }
   })();
 
-  const blurb = useBlurb({ phase, roundId, phaseEndsDatelabel });
+  const blurb = getBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
     <div className="py-8 px-4 flex flex-col relative">

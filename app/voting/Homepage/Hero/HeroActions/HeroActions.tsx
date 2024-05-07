@@ -1,6 +1,7 @@
 import { Navigation } from "@/enum/navigation";
-import { roundProvider } from "@/providers";
+import { roundProvider, userParticipationProvider } from "@/providers";
 import Link from "next/link";
+import { getBlurb } from "../../HowItWorks/getBlurb";
 
 export async function HeroActions() {
   const {
@@ -12,6 +13,13 @@ export async function HeroActions() {
     areSubmissionsOpen,
   } = await roundProvider();
   const nextRound = await roundProvider(roundId + 1);
+
+  const { userId, userRoundDetails } = await userParticipationProvider();
+  const signedUpBlurb = getBlurb({
+    phase,
+    roundId,
+    phaseEndsDatelabel: dateLabels[phase].closes,
+  });
 
   const signupLink = `${Navigation.SignUp}/${
     hasRoundStarted ? roundId + 1 : ""
@@ -30,23 +38,25 @@ export async function HeroActions() {
     hasRoundStarted ? roundId + 1 : roundId
   } `;
 
-  const statusBody = `Voting begins on ${
-    (hasRoundStarted ? nextRound.dateLabels : dateLabels).voting.opens
-  }`;
+  // const statusBody = `Voting begins on ${
+  //   (hasRoundStarted ? nextRound.dateLabels : dateLabels).voting.opens
+  // }`;
 
   return (
     <div className="flex w-[80vw] md:max-w-[50vw] bg-cover bg-no-repeat bg-center mt-4 relative h-full md:text-right md:justify-end">
       <div className="flex-col flex md:mx-16">
         <div className="pb-8">
           <span className="font-fraunces text-md text-white flex-col flex">
-            {songText ? "Currently covering" : "Get Started"}
+            {songText ? "Currently covering" : userId ? "" : "Get Started"}
           </span>
           <span className="text-md md:text-lg font-semibold text-themeYellow font-fraunces">
-            {songText || signupsAreOpenString}
+            {songText || userRoundDetails?.hasSignedUp
+              ? signedUpBlurb
+              : signupsAreOpenString}
           </span>
         </div>
         <span className="text-md  text-white font-fraunces">
-          <p>{statusBody}</p>
+          {/* <p>{statusBody}</p> */}
           <div className="py-4">
             <div className="flex justify-end gap-4">
               <Link href={signupLink}>

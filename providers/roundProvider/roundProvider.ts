@@ -3,10 +3,12 @@ import { format, subDays } from "date-fns";
 import {
   getCurrentRound,
   getRoundById,
+  getRoundOverrideVotes,
   getSignupsByRound,
   getSubmissions,
 } from "@/data-access";
 import { Phase } from "@/types";
+import { seededShuffle } from "@/utils/seededShuffle";
 
 interface Props {
   votingOpens: Date;
@@ -101,7 +103,30 @@ const PhaseMgmtService = async ({
     },
   };
 
-  const signups = (await getSignupsByRound(roundId)) || [];
+  const signupsToVoteOptions = ({ song, song_id, youtube_link }: any) => {
+    const { artist, title } = song || {};
+    // if (!artist || !title) {
+    //   throw new Error("artist or title is null");
+    // }
+    return {
+      label: `${title} by ${artist}`,
+      field: song_id.toString(),
+      link: youtube_link || "",
+    };
+  };
+
+  const unsortedSignups = await getVoteOptions(roundId, typeOverride);
+  const unsortedVoteOptions = unsortedSignups.map((entity) =>
+    signupsToVoteOptions(entity)
+  );
+  const signups = seededShuffle(
+    unsortedSignups,
+    JSON.stringify(unsortedVoteOptions)
+  );
+  const voteOptions = seededShuffle(
+    unsortedVoteOptions,
+    JSON.stringify(unsortedVoteOptions)
+  );
 
   return {
     phase,
@@ -116,6 +141,7 @@ const PhaseMgmtService = async ({
     areSubmissionsOpen: hasSubmissionsOpened(phase),
     hasRoundStarted: hasRoundStarted(phase),
     hasRoundEnded: hasRoundEnded(phase),
+    voteOptions,
   };
 };
 
@@ -184,4 +210,35 @@ const _getSubmissions = async (roundId: number) => {
     roundId: submission.round_id,
     soundcloudUrl: submission.soundcloud_url,
   }));
+};
+
+const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
+  const resultEntities:
+    | {
+        round_id: any;
+        original_round_id?: any;
+        song_id: any;
+        youtube_link: string;
+        song: {
+          title: any;
+          artist: any;
+        };
+      }[]
+    | null = [];
+  if (typeOverride === "runner_up") {
+    const { data, error } = await getRoundOverrideVotes(roundId);
+    //@ts-ignore
+    data?.forEach((record) => record.song && resultEntities.push(record));
+    if (error) {
+      throw new Error(JSON.stringify(error));
+    }
+  } else {
+    const data = await getSignupsByRound(roundId);
+    //@ts-ignore
+    data?.forEach((record) => resultEntities.push(record));
+  }
+
+  return resultEntities?.filter(
+    (result) => result.song_id && result.song_id !== -1
+  );
 };

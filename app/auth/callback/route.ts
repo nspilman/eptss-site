@@ -53,7 +53,9 @@ export async function GET(request: NextRequest) {
       redirectUrl + `/?${TOAST_REDIRECT_KEY}=${(e as Error).message}`
     );
   }
-  Sentry.captureException("Login error occurred - no exception thrown");
+  Sentry.captureException(
+    "Login error occurred - no exception thrown. url:" + request.url
+  );
   return NextResponse.redirect(
     redirectUrl + `/?${TOAST_REDIRECT_KEY}="An error has occured"`
   );

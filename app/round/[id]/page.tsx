@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { DataTable } from "@/components/DataTable";
 import { PageTitle } from "@/components/PageTitle";
-import { StackedBarChart } from "@/app/round/[id]/StackedBarChart";
 import { votesProvider, roundsProvider, roundProvider } from "@/providers";
 
 export default async function Round({ params }: { params: { id: string } }) {
