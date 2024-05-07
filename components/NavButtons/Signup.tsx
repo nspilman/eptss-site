@@ -14,10 +14,6 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
 
   const { setIsOpen } = useAuthModal();
 
-  // const onProfile = () => {
-  //   router.push("/profile");
-  // };
-
   const pathname = usePathname();
 
   // TODO: I don't love adding "if x route, do y" logic for generic components like this, since it degrades the reusability of the component
