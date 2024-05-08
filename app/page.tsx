@@ -33,11 +33,11 @@ const Homepage = async () => {
           song={song}
         />
       </div>
-      {/* <RoundsDisplay
+      <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
         phase={phase}
-      /> */}
+      />
       {/* <HowItWorks /> */}
     </div>
   );
