@@ -71,7 +71,7 @@ export const RoundActionCard = ({
           phaseEndsDaysFromToday !== 1 ? "s" : ""
         }`;
 
-  const { phaseStatus, phaseBlurb } = useBlurb({
+  const { phaseStatus, phaseBlurb } = getBlurb({
     phase,
     roundId,
     phaseEndsDatelabel,
