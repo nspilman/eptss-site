@@ -1,5 +1,6 @@
 export * from "./database";
 export * from "./roundDetails";
+export * from "./songDetails"
 
 export type Status = "Success" | "Error";
 export type FormReturn = { status: Status; message: string };
