@@ -3,22 +3,32 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 export type Rounds = {
-    round: number,
-    song: string,
-    link: string,
+    title: string;
+    artist: string;
+    roundId: number;
+    playlistUrl: string;
 }
 
 export const columns: ColumnDef<Rounds>[] = [
+    
     {
-      accessorKey: "rounds",
-      header: "Rounds",
+        accessorKey: "roundId",
+        header: () => <div className="font-extrabold">Round</div>
     },
     {
-      accessorKey: "song",
-      header: "Cover Song",
+      accessorKey: "artist",
+      header: "Cover Artist",
+      cell() {
+        
+          
+      },
     },
     {
-      accessorKey: "link",
-      header: "Link",
+      accessorKey: "title",
+      header: "Cover Title",
     },
+    // {
+    //   accessorKey: "playlistUrl",
+    //   header: "Listen",
+    // },
   ]

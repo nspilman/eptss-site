@@ -5,6 +5,7 @@ import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
 import { HowItWorks } from "./voting/Homepage/HowItWorks";
+import { DemoPage } from "./voting/Homepage/RoundsDisplay/RoundsDisplayTable/page";
 
 const Homepage = async () => {
   const { phase, dateLabels, roundId, dates, song  } = await roundProvider();
@@ -38,6 +39,11 @@ const Homepage = async () => {
         isVotingPhase={isVotingPhase}
         phase={phase}
       />
+      {/* <DemoPage 
+      currentRound={roundId}
+      isVotingPhase={isVotingPhase}
+      phase={phase}
+      /> */}
       {/* <HowItWorks /> */}
     </div>
   );
