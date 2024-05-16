@@ -15,14 +15,13 @@ export const RoundsDisplay = async ({
   const { roundContent: rounds } = await roundsProvider({
     excludeCurrentRound: phase === "signups",
   });
-
   return (
     <div className="flex flex-col pt-8 pb-32 relative">
      
       <div>
         <h2
           id="rounds"
-          className="text-white font-fraunces text-xl pb-8 font-bold"
+          className="font-fraunces text-xl pb-8 font-bold"
         >
           Rounds
         </h2>

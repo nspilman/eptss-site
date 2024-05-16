@@ -29,7 +29,7 @@ export const RoundDisplay = ({
   return (
     <div className="relative">
       <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientDarkerBLue bg-opacity-10 flex justify-between">
-        <span className="text-md md:text-lg text-white font-fraunces font-semibold">
+        <span className="text-md md:text-lg font-fraunces font-semibold">
           <Link href={`/round/${roundId}`}>{headingText}</Link>
         </span>
         {playlistUrl && (
@@ -38,13 +38,13 @@ export const RoundDisplay = ({
             target="_blank"
             rel="noreferrer"
           >
-            <span className="text-md font-bold font-roboto text-themeYellow hover:text-white py-1 cursor-pointer">
+            <span className="text-md font-bold font-roboto text-themeYellow  py-1 cursor-pointer">
               Listen
             </span>
           </Link>
         )}
         {!playlistUrl && (
-          <span className="text-md font-light font-roboto text-white">
+          <span className="text-md font-light font-roboto ">
             The round is underway!
           </span>
         )}
