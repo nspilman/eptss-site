@@ -1,6 +1,9 @@
+'use client'
 import { ReactElement } from "react";
 import { RoundDetails } from "types";
 import Link from "next/link";
+import ReactPlayer from "react-player";
+
 
 export const RoundDisplay = ({
   round,
@@ -26,6 +29,8 @@ export const RoundDisplay = ({
     return match ? match[1] : "No URL found";
   }
 
+  let url = getPlaylistUrl(playlistUrl)
+  console.log(url)
   return (
     <div className="relative">
       <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientDarkerBLue bg-opacity-10 flex justify-between">
@@ -48,6 +53,10 @@ export const RoundDisplay = ({
             The round is underway!
           </span>
         )}
+      </div>
+      <div>
+        
+<ReactPlayer url={url}/>
       </div>
     </div>
   );
