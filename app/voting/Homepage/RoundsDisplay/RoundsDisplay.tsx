@@ -15,18 +15,17 @@ export const RoundsDisplay = async ({
   const { roundContent: rounds } = await roundsProvider({
     excludeCurrentRound: phase === "signups",
   });
+  const pastRounds = rounds.slice(1)
   return (
-    <div className="flex flex-col pt-8 pb-32 relative">
-     
+    <div className="flex flex-col pt-8 gap-6 relative items-center">
       <div>
         <h2
-          id="rounds"
-          className="font-fraunces text-xl pb-8 font-bold"
+          className="text-3xl font-bold"
         >
-          Rounds
+          Past Rounds
         </h2>
       </div>
-      {rounds.map((round) => {
+      {pastRounds.map((round) => {
         return (
           <RoundDisplay
             key={round.roundId}

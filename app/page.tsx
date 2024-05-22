@@ -5,7 +5,6 @@ import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
 import { HowItWorks } from "./voting/Homepage/HowItWorks";
-import { DemoPage } from "./voting/Homepage/RoundsDisplay/RoundsDisplayTable/page";
 
 const Homepage = async () => {
   const { phase, dateLabels, roundId, dates, song  } = await roundProvider();
@@ -20,11 +19,11 @@ const Homepage = async () => {
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <div className="flex justify-center items-center h-4/5">
+      {/* <div className="flex justify-center items-center h-4/5"> */}
       <Hero />
-      </div>
+      {/* </div> */}
      
-      <div className="mt-8 md:-mt-20 mb-12">
+      {/* <div className="mt-8 md:-mt-20 mb-12"> */}
         <RoundActionCard
           phase={phase}
           roundId={roundId}
@@ -33,17 +32,13 @@ const Homepage = async () => {
           userRoundDetails={userRoundDetails}
           song={song}
         />
-      </div>
+      {/* </div> */}
       <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
         phase={phase}
       />
-      {/* <DemoPage 
-      currentRound={roundId}
-      isVotingPhase={isVotingPhase}
-      phase={phase}
-      /> */}
+     
       {/* <HowItWorks /> */}
     </div>
   );
