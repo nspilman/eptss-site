@@ -17,7 +17,6 @@ interface Props {
 }
 
 export const TopNav = ({ userId, about }: Props) => {
-  console.log("userId", userId);
   // You can use the userId prop here to customize the TopNav component
   return (
     <div className="invisible z-0 lg:visible sm:visible">
