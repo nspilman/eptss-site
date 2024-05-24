@@ -1,6 +1,16 @@
+"use client";
 import { ReactElement } from "react";
 import { RoundDetails } from "types";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export const RoundDisplay = ({
   round,
@@ -15,7 +25,7 @@ export const RoundDisplay = ({
   const showVotingUnderwayText =
     round.roundId === currentRound && isVotingPhase;
 
-  const headingText = `${roundId}. ${
+  const headingText = ` ${
     showVotingUnderwayText ? "Voting Underway" : `${title} by ${artist}`
   }`;
 
@@ -25,30 +35,36 @@ export const RoundDisplay = ({
     let match = regex.exec(inputText);
     return match ? match[1] : "No URL found";
   }
-
   return (
-    <div className="relative">
-      <div className="w-[80vw] rounded-lg z-10 relative p-2 my-2 bg-bgGradientDarkerBLue bg-opacity-10 flex justify-between">
-        <span className="text-md md:text-lg text-white font-fraunces font-semibold">
-          <Link href={`/round/${roundId}`}>{headingText}</Link>
-        </span>
-        {playlistUrl && (
-          <Link
-            href={getPlaylistUrl(playlistUrl)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span className="text-md font-bold font-roboto text-themeYellow hover:text-white py-1 cursor-pointer">
-              Listen
-            </span>
-          </Link>
-        )}
-        {!playlistUrl && (
-          <span className="text-md font-light font-roboto text-white">
-            The round is underway!
-          </span>
-        )}
-      </div>
-    </div>
+    <Card className="w-3/4">
+      <CardHeader>
+        <CardTitle>Round {roundId}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="pt-4 pb-10">
+          <div className="pb-4 sm:pb-6">
+            <p className="font-semibold text-lg text-center sm:text-2xl sm:text-left">
+              Covered: {headingText}
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <Button className="w-1/2">
+              <Link
+                href={getPlaylistUrl(playlistUrl)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Listen
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="flex justify-center sm:justify-end">
+          <Button variant={"outline"}>
+            <Link href={`/round/${roundId}`}> Round Details</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

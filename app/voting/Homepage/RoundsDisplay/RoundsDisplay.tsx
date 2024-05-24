@@ -15,33 +15,17 @@ export const RoundsDisplay = async ({
   const { roundContent: rounds } = await roundsProvider({
     excludeCurrentRound: phase === "signups",
   });
-
+  const pastRounds = rounds.slice(1)
   return (
-    <div className="flex flex-col pt-8 pb-32 relative">
-      <div className="pointer-events-none absolute translate-x-52">
-        <div className="fixed top-28 md:left-40 right-24 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-20 animate-blob"></div>
-        <div className="fixed top-28 md:-left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-20 animate-blob"></div>
-        <div className="fixed top-28 md:left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div>
-
-      <div className="pointer-events-none absolute translate-x-[40vw] translate-y-[80vh]">
-        <div className="fixed top-28 md:-left-4 right-6 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="fixed top-28 md:left-40 left-8 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="fixed top-28 md:left-60 left-0 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div>
-      <div className="pointer-events-none absolute translate-x-[40vw] translate-y-[160vh] md:hidden">
-        <div className="fixed top-28 md:left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="fixed top-28 md:left-60  right-6 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div>
+    <div className="flex flex-col pt-8 gap-6 relative items-center">
       <div>
         <h2
-          id="rounds"
-          className="text-white font-fraunces text-xl pb-8 font-bold"
+          className="text-3xl font-bold"
         >
-          Rounds
+          Past Rounds
         </h2>
       </div>
-      {rounds.map((round) => {
+      {pastRounds.map((round) => {
         return (
           <RoundDisplay
             key={round.roundId}

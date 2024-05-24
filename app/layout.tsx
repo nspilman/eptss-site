@@ -1,6 +1,7 @@
 import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from "./Header";
+import { cn } from "@/lib/utils"
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
@@ -19,7 +20,8 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={cn(
+          "min-h-screen bg-background font-sans antialiased")}>
         <div className="p-0 w-100">
           <EmailAuthModalContextProvider>
             <Header />

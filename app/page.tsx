@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { Hero } from "./voting/Homepage/Hero";
 import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
-import { HowItWorks } from "./voting/Homepage/HowItWorks";
 
 const Homepage = async () => {
   const { phase, dateLabels, roundId, dates, song  } = await roundProvider();
@@ -19,11 +18,8 @@ const Homepage = async () => {
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <div className="flex justify-center items-center h-4/5">
       <Hero />
-      </div>
      
-      <div className="mt-8 md:-mt-20 mb-12">
         <RoundActionCard
           phase={phase}
           roundId={roundId}
@@ -32,13 +28,12 @@ const Homepage = async () => {
           userRoundDetails={userRoundDetails}
           song={song}
         />
-      </div>
-      {/* <RoundsDisplay
+      <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
         phase={phase}
-      /> */}
-      {/* <HowItWorks /> */}
+      />
+     
     </div>
   );
 };
