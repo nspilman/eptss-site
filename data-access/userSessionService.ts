@@ -2,12 +2,12 @@
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
-export const getUserSession = async () => {
+export const getUser = async () => {
   const headerCookies = await cookies();
   const supabaseClient = await createClient(headerCookies);
 
-  const { data: session } = await supabaseClient.auth.getSession();
-  return { session: session?.session, user: session?.session?.user };
+  const { data } = await supabaseClient.auth.getUser();
+  return { user: data.user };
 };
 
 export const signOut = async () => {
