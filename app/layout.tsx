@@ -1,17 +1,25 @@
 import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from "./Header";
+import { Inter as FontSans } from "next/font/google"
 import { cn } from "@/lib/utils"
+import { Suspense } from "react";
+import { Loading } from "@/components/Loading";
+
+import "../styles/globals.css";
+import { ThemeProvider } from "@/components/theme-providers";
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
   description: "Community Covers Project",
 };
 
-import "../styles/globals.css";
 
-import { Suspense } from "react";
-import { Loading } from "@/components/Loading";
 
 export default async function RootLayout({
   children,
@@ -21,7 +29,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={cn(
-          "min-h-screen bg-background font-sans antialiased")}>
+        "min-h-screen bg-background font-sans antialiased",
+        fontSans.variable
+      )}>
+        <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem  
+        disableTransitionOnChange 
+        >
+
         <div className="p-0 w-100">
           <EmailAuthModalContextProvider>
             <Header />
@@ -32,6 +49,7 @@ export default async function RootLayout({
             <div id="footer" className="flex py-2 justify-center" />
           </EmailAuthModalContextProvider>
         </div>
+        </ThemeProvider>
       </body>
     </html>
   );
