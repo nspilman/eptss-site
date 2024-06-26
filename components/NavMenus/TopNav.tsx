@@ -19,12 +19,12 @@ interface Props {
 export const TopNav = ({ userId, about }: Props) => {
   // You can use the userId prop here to customize the TopNav component
   return (
-    <div className="invisible z-0 lg:visible sm:visible">
+    <div className=" z-0 lg:visible sm:visible">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuTrigger>About</NavigationMenuTrigger>
-            <NavigationMenuContent>
+            <NavigationMenuContent className="backdrop-blur-sm">
               <ul className="grid w-[200px] gap-3 p-4 ">
                 {about.map((about) => (
                   <ListItem
