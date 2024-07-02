@@ -1,10 +1,10 @@
 import Head from "next/head";
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { format } from "date-fns";
-import { Hero } from "./voting/Homepage/Hero";
-import { RoundActionCard } from "./voting/Homepage/RoundActionCard";
-import { RoundsDisplay } from "./voting/Homepage/RoundsDisplay";
-import { HowItWorks } from "./voting/Homepage/HowItWorks";
+import { Hero } from "./index/Homepage/Hero";
+import { RoundActionCard } from "./index/Homepage/RoundActionCard";
+import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
+import { HowItWorks } from "./index/Homepage/HowItWorks";
 
 const Homepage = async () => {
   const { phase, dateLabels, roundId, dates } = await roundProvider();

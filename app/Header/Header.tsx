@@ -1,5 +1,5 @@
 import React from "react";
-import { SignupButton } from "../voting/Homepage/SignupButton";
+import { SignupButton } from "../index/Homepage/SignupButton";
 import { FAQButton } from "components/NavButtons";
 // import { RoundDatesDisplayPopup } from "../RoundDatesDisplay";
 import Link from "next/link";
