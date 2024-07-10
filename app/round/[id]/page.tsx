@@ -69,10 +69,16 @@ const signupsHeaders = [
 ] as const;
 
 const RoundSummary = async ({ roundId }: Props) => {
-  const { voteResults } = await votesProvider({ roundId });
   // const signupData = (await signupService.getSignupsByRound(roundId)) || [];
   const { phase, song, playlistUrl, submissions, signups } =
     await roundProvider(roundId);
+
+  console.log({ phase, roundId, song });
+
+  if (!song.artist || phase === "voting") {
+    return <></>;
+  }
+  const { voteResults } = await votesProvider({ roundId });
 
   const { allRoundIds: roundIds } = await roundsProvider({
     excludeCurrentRound: true,

@@ -95,9 +95,9 @@ export function DataTable<T extends string>({
                     {headers.map(({ key, className }) => (
                       <td
                         key={key}
-                        className={`${className} window-border bg-black`}
+                        className={`${className} bg-black shadow-themeYellow border-2 border-white`}
                       >
-                        <span className="text-md font-light text-white text-center my-4 window-border p-1 font-mono shadow-sm shadow-themeYellow">
+                        <span className="text-md font-light text-white text-center my-4 p-1 font-mono shadow-sm">
                           {row[key]}
                         </span>
                       </td>
