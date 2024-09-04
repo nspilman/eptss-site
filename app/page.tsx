@@ -5,6 +5,9 @@ import { Hero } from "./index/Homepage/Hero";
 import { RoundActionCard } from "./index/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
+import * as React from "react"
+import { ClientPage } from "./ClientPage";
+
 
 const Homepage = async () => {
   const { phase, dateLabels, roundId, dates } = await roundProvider();
@@ -19,29 +22,8 @@ const Homepage = async () => {
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <Hero />
-      <div className="pointer-events-none">
-        <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="absolute top-28 left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div>
-      <div className="mt-8 md:-mt-20 mb-12">
-        <RoundActionCard
-          phase={phase}
-          roundId={roundId}
-          phaseEndsDate={phaseEndsDate}
-          phaseEndsDatelabel={phaseEndsDatelabel}
-          userRoundDetails={userRoundDetails}
-        />
-      </div>
-      <RoundsDisplay
-        currentRound={roundId}
-        isVotingPhase={isVotingPhase}
-        phase={phase}
-      />
-      <HowItWorks />
+    <ClientPage/>
     </div>
-  );
-};
+      )};
 
 export default Homepage;
