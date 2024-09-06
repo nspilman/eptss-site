@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { signout } from "@/actions/actions";
+import { Button } from "@/components/ui/button";
+import { UserIcon } from "lucide-react";
 
 interface Props {
   isLoggedIn?: boolean;
@@ -11,48 +13,43 @@ interface Props {
 
 export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
   const router = useRouter();
-
   const { setIsOpen } = useAuthModal();
-
-  // const onProfile = () => {
-  //   router.push("/profile");
-  // };
-
   const pathname = usePathname();
-
-  // TODO: I don't love adding "if x route, do y" logic for generic components like this, since it degrades the reusability of the component
-  // when we do a UI refactor, we should allow each route to render its own custom header component, and this won't be needed anymore.
   const isUserProfileRoute = pathname === "/profile";
 
-  return (
-    <>
-      {isLoggedIn ? (
-        isUserProfileRoute ? (
-          //@ts-ignore
-          <form action={signout}>
-            <button
-              className=" h-10 py-2 px-4 border-2 font-bold text-white border-white bg-transparent flex items-center rounded-md
-       hover:bg-white hover:text-black hover:shadow-NavShadow hover:cursor-pointer"
-            >
-              Sign Out
-            </button>
-          </form>
-        ) : (
-          <button onClick={() => console.log("profile")}>
-            <Image
-              src="/profile-icon.png"
-              alt="profile icon"
-              width={60}
-              height={50}
-              className="hover:shadow-NavShadow hover:cursor-pointer"
-            />
-          </button>
-        )
-      ) : (
-        <button className="btn-main" onClick={setIsOpen}>
-          Sign up / Log In!
-        </button>
-      )}
-    </>
-  );
+  if (isLoggedIn) {
+    if (isUserProfileRoute) {
+      return (
+        <form action={signout}>
+          <Button
+            variant="outline"
+            className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors"
+            type="submit"
+          >
+            Sign Out
+          </Button>
+        </form>
+      );
+    } else {
+      return (
+        <Button
+          variant="ghost"
+          className="p-2 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors rounded-full"
+          onClick={() => console.log("profile")}
+        >
+          <UserIcon className="h-6 w-6" />
+        </Button>
+      );
+    }
+  } else {
+    return (
+      <Button
+        variant="outline"
+        className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors"
+        onClick={setIsOpen}
+      >
+        Sign up / Log In!
+      </Button>
+    );
+  }
 };

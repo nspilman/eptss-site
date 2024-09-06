@@ -7,6 +7,9 @@ import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { Navigation } from "@/enum/navigation";
 import { UserRoundDetails } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface Props {
   phase: Phase;
@@ -35,9 +38,7 @@ export const RoundActionCard = ({
     celebration: userRoundDetails?.hasSubmitted || false,
   };
 
-  // const hasCompletedPhase = completedCheckByPhase[phase];
   const roundActionFunctions = {
-    // onProfile: () => router.push(Navigation.Profile),
     onSignup: () => openAuthModal(),
     onSignupAndJoinRound: () => router.push(Navigation.SignUp),
     onJoinRound: () => router.push(Navigation.SignUp),
@@ -46,12 +47,10 @@ export const RoundActionCard = ({
     onRoundDetails: () => router.push(`/round/${roundId}`),
   };
 
-  const phaseEndsDaysFromToday =
-    // calculates the difference in milliseconds and then rounds up
-    Math.ceil(
-      differenceInMilliseconds(new Date(phaseEndsDate), new Date()) /
-        (1000 * 60 * 60 * 24)
-    );
+  const phaseEndsDaysFromToday = Math.ceil(
+    differenceInMilliseconds(new Date(phaseEndsDate), new Date()) /
+      (1000 * 60 * 60 * 24)
+  );
 
   const specificDaysOrSoonLabel =
     phaseEndsDaysFromToday < 0
@@ -71,39 +70,47 @@ export const RoundActionCard = ({
     if (isAuthed) {
       return authedLabels[phase];
     } else {
-      return phase === "signups" ? (
-        <>{`Next round starts in ${phaseEndsDaysFromToday} days`}</>
-      ) : (
-        <>Notify me when next round starts</>
-      );
+      return phase === "signups"
+        ? `Next round starts in ${phaseEndsDaysFromToday} days`
+        : "Notify me when next round starts";
     }
   })();
 
   const blurb = getBlurb({ phase, roundId, phaseEndsDatelabel });
 
   return (
-    <div className="py-8 px-4 flex flex-col relative">
-      <div>
-        <div className="flex flex-col">
-          <div className="flex flex-col items-center">
-            <div className="text-white opacity-75">{labelContent}</div>
-            <div className="pt-4 gap-4 flex flex-col items-center">
-              <div>
-                <CTA
-                  {...{
-                    roundActionFunctions,
-                    roundId,
-                    hasCompletedPhase: false,
-                    isAuthed,
-                    phase,
-                  }}
-                />
-              </div>
-              <span className="text-themeYellow font-fraunces">{blurb}</span>
-            </div>
-          </div>
-        </div>
+    <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="flex flex-col items-center space-y-6 max-w-3xl mx-auto bg-gray-800 bg-opacity-50 backdrop-blur-md rounded-lg p-8 border border-gray-700"
+        >
+      <Badge variant="secondary" className="bg-[#e2e240] text-[#0a0a1e] self-start">
+        {phase === "signups" ? "Next Round" : "Now Covering"}
+      </Badge>
+      <h3 className="text-2xl font-semibold text-gray-100">
+        {phase === "signups" ? "Join the next round" : `Round ${roundId}`}
+      </h3>
+      <p className="text-lg text-gray-300">{labelContent}</p>
+      <p className="text-sm text-gray-400">{blurb}</p>
+      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+        <CTA
+          {...{
+            roundActionFunctions,
+            roundId,
+            hasCompletedPhase: completedCheckByPhase[phase],
+            isAuthed,
+            phase,
+          }}
+        />
+        <Button
+          variant="outline"
+          className="flex-1 text-gray-300 border-gray-600 hover:bg-gray-700 hover:text-white transition-colors"
+          onClick={roundActionFunctions.onRoundDetails}
+        >
+          Round Details
+        </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
