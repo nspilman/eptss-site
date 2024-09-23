@@ -1,6 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "../../LoadingSpinner";
+import { Button } from "@/components/ui/button";
 
 export const SubmitButton = ({
   label,
@@ -12,15 +13,15 @@ export const SubmitButton = ({
   pending?: boolean;
 }) => {
   return (
-    <button
+    <Button
       type="submit"
-      className={`border btn-main ${
+      className={`w-full bg-gradient-to-r from-[#e2e240] to-[#40e2e2] text-gray-900 hover:from-[#f0f050] hover:to-[#50f0f0] transition-all duration-300 ${
         pending ? "text-gray-400" : "white"
-      } p-2 w-full h-[40px] lg:w-40 mt-4 flex items-center content-center justify-center`}
+      }`}
       disabled={disabled}
       style={{ marginTop: "unset" }}
     >
       {!pending ? label : <LoadingSpinner />}
-    </button>
+    </Button>
   );
 };

@@ -18,17 +18,12 @@ export function InputField<T extends FieldValues>({
 }: Props<T>) {
   const { size, type, label, field: fieldId, optional } = field;
   const hasLink = "link" in field && field.link;
-  const isSmall = size === "small";
   return (
     <div
-      className={`flex flex-col bg-gray-50 my-2 mx-1 p-4 rounded-2xl flex-1 min-w-[100px] sm:min-w-[${
-        isSmall ? "250px" : "400px"
-      }]`}
+      className={`bg-gray-800 bg-opacity-50 backdrop-blur-md rounded-lg p-4 border border-gray-700`}
       data-testid={getFieldTestId(field.field, type)}
     >
-      <div>
-        <label className="text-md font-semibold pb-2">{`${label}`}</label>
-      </div>
+        <label className="text-gray-200 font-semibold mb-2 block">{`${label}`}</label>
       {type === "vote" ? (
         <VoteInput field={fieldId} />
       ) : (

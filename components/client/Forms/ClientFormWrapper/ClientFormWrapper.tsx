@@ -73,6 +73,7 @@ export const ClientFormWrapper = ({
           {/* Thank you so much for your submission. */}
           {children}
           <>
+          <span className="pb-1" />
             <SubmitButton
               label={submitButtonLabel || "Submit"}
               disabled={disabled}

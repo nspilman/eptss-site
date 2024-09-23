@@ -22,6 +22,7 @@ export function VoteInput<T extends FieldValues>({
                 {value}
               </label>
               <input
+                className="w-full bg-gray-700 text-gray-100 border-gray-600 focus:border-[#e2e240] focus:ring-[#e2e240] rounded-md"
                 required={!optional}
                 type="radio"
                 value={value}

@@ -5,6 +5,7 @@ import { Form } from "../../Form";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { FormReturn } from "@/types";
 import { userSessionProvider } from "@/providers";
+import { Button } from "@/components/ui/button";
 
 export const EmailAuthModal = ({
   isOpen,
@@ -77,24 +78,16 @@ export const EmailAuthModal = ({
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="p-4">
-              {!onClose && (
-                <button
-                  className="border-2 font-bold text-sm border-white shadow-md p-1 shadow-themeYellow hover:border-themeYellow rounded text-white"
-                  onClick={() => router.push("/")}
-                >
-                  Back
-                </button>
-              )}
               <ClientFormWrapper action={onSendLoginLink}>
                 <Form
                   title={titleOverride || "Hey there!"}
                   description={
-                    "Enter your email below and we will send you a login link."
+                   "" 
                   }
                   formSections={[
                     {
                       label: "Email",
-                      placeholder: "Enter your email",
+                      placeholder: "We will email you your login link",
                       id: "email",
                       defaultValue: "",
                     },
@@ -102,6 +95,16 @@ export const EmailAuthModal = ({
                   submitButtonText="Send Login Link"
                 />
               </ClientFormWrapper>
+   {!onClose && (
+    <div className="w-full flex justify-center">
+                <Button
+                  className="w-32 mt-4"
+                  onClick={() => router.push("/")}
+                >
+                  Go Back
+                </Button>
+              </div>
+              )}
             </div>
             <div className="flex flex-row items-center pt-4"></div>
           </div>
