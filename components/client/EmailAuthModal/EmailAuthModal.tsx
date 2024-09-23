@@ -66,7 +66,7 @@ export const EmailAuthModal = ({
 
   return (
     <div
-      className={`inset-0 bg-gray-600 bg-opacity-50 flex overflow-y-auto h-screen w-full z-10 sticky items-center justify-center ${
+      className={`inset-0 bg-gray-600 bg-opacity-10 flex overflow-y-auto h-screen w-full z-10 sticky items-center justify-center ${
         isOpen ? "block" : "hidden"
       }`}
       onClick={handleOverlayClick}
