@@ -35,6 +35,7 @@
     "date-fns": "^2.30.0",
     "framer-motion": "^9.1.7",
     "gray-matter": "^4.0.3",
+    "lucide-react": "^0.445.0",
     "next": "^14.1.4",
     "nodemailer": "^6.9.13",
     "react": "^18.2.0",
