@@ -72,7 +72,7 @@ export const PagePioneer = ({
             className="text-lg md:text-xl mb-8 leading-relaxed text-gray-300"
           >
             Sign up with a song you want to cover. Everyone votes, and the most
-            popular is the song that everyone plays. You've got a creative
+            popular is the song that everyone plays. You&apos;ve got a creative
             assignment, a deadline and a community of musicians doing the same
             thing.
           </motion.p>
@@ -116,7 +116,7 @@ export const PagePioneer = ({
             <Link href={submitLink} passHref>
               <Button
                 variant="outline"
-                className="w-full text-gray-100 border-gray-100 hover:bg-gray-100 text-gray-600 hover:text-[#0a0a1e]"
+                className="w-full border-gray-100 hover:bg-gray-100 text-gray-600 hover:text-[#0a0a1e]"
               >
                 Submit your cover
               </Button>
