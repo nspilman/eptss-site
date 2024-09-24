@@ -1,5 +1,7 @@
 "use client";
+import { motion } from "framer-motion";
 import React, { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 interface Header<T> {
   key: T;
@@ -49,66 +51,68 @@ export function DataTable<T extends string>({
   const isEmpty = !rows.length;
 
   return (
-    <div className={`block ${className}`}>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className={`bg-gray-900 bg-opacity-50 backdrop-blur-md rounded-lg border border-gray-800 p-6 ${className}`}
+    >
       <div className="pb-4">
-        <h2 className="font-fraunces text-white font-bold pb-1 text-xl">
-          {title}
-        </h2>
-        <span className="text-sm font-light font-roboto text-white text-center my-4">
-          {subtitle}
-        </span>
+        <h2 className="text-2xl font-bold text-gray-100 mb-2">{title}</h2>
+        <p className="text-sm text-gray-300">{subtitle}</p>
       </div>
-      <div
-        className="w-[90vw] overflow-x-scroll overflow-y-scroll flex justify-center"
-        style={{ maxHeight }}
-      >
-        <table className="overflow-y-scroll block" style={{ maxHeight }}>
-          <thead className="window-border font-fraunces cursor-pointer sticky top-0">
+      <div className="w-full overflow-x-auto" style={{ maxHeight }}>
+        <table className="w-full">
+          <thead className="bg-gray-800 sticky top-0">
             <tr>
               {headers.map(({ key, display, sortable }) => (
                 <th
                   key={key}
-                  className={`text-sm ${sortable ? "pointer" : "auto"}`}
+                  className={`px-4 py-2 text-left text-sm font-medium text-gray-300 ${sortable ? 'cursor-pointer hover:bg-gray-700' : ''}`}
                   onClick={() => sortable && onHeaderClick(key)}
                 >
-                  <h4 className="font-fraunces text-white font-bold">
-                    {display}{" "}
-                    {sortKey === key && (
-                      <span className="text-xs">{descSort ? "^" : "v"}</span>
+                  <div className="flex items-center">
+                    {display}
+                    {sortable && sortKey === key && (
+                      <span className="ml-1">
+                        {descSort ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+                      </span>
                     )}
-                  </h4>
+                  </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="overflow-scroll">
+          <tbody>
             {isEmpty ? (
-              <div>
-                <span className="text-md font-bold font-roboto text-white text-center my-4">
+              <tr>
+                <td colSpan={headers.length} className="px-4 py-8 text-center text-gray-400">
                   No records to display
-                </span>
-              </div>
+                </td>
+              </tr>
             ) : (
-              <>
-                {rows.map((row, i) => (
-                  <tr key={i}>
-                    {headers.map(({ key, className }) => (
-                      <td
-                        key={key}
-                        className={`${className} bg-black shadow-themeYellow border-2 border-white`}
-                      >
-                        <span className="text-md font-light text-white text-center my-4 p-1 font-mono shadow-sm">
-                          {row[key]}
-                        </span>
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </>
+              rows.map((row, i) => (
+                <motion.tr 
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: i * 0.05 }}
+                  className="border-b border-gray-800 hover:bg-gray-800"
+                >
+                  {headers.map(({ key, className }) => (
+                    <td
+                      key={key}
+                      className={`px-4 py-2 text-sm text-gray-300 ${className}`}
+                    >
+                      {row[key]}
+                    </td>
+                  ))}
+                </motion.tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
-    </div>
+    </motion.div>
   );
 }

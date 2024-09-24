@@ -11,24 +11,22 @@ import "../styles/globals.css";
 
 import { Suspense } from "react";
 import { Loading } from "@/components/Loading";
+import { userSessionProvider } from "@/providers";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const {userId} = await userSessionProvider()
   return (
     <html lang="en">
       <body>
-        <div className="p-0 w-100">
-          <EmailAuthModalContextProvider>
-            <Header />
-            <div className="flex flex-wrap py-24 px-8 justify-center min-h-[100vh]">
+        <div className="min-h-screen bg-[#0a0a1e] text-gray-100 p-6 md:p-12 relative overflow-hidden font-sans">
+            <Header userId={userId} />
               <Suspense fallback={<Loading />}>{children}</Suspense>
-            </div>
             <Toaster />
             <div id="footer" className="flex py-2 justify-center" />
-          </EmailAuthModalContextProvider>
         </div>
       </body>
     </html>

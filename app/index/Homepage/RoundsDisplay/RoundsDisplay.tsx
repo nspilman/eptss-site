@@ -1,6 +1,7 @@
 import { Phase } from "types";
 import { RoundDisplay } from "./RoundDisplay";
 import { roundsProvider } from "@/providers";
+import { ClientRoundsDisplay } from "./ClientRoundsDisplay";
 
 interface Props {
   currentRound: number;
@@ -41,16 +42,7 @@ export const RoundsDisplay = async ({
           Rounds
         </h2>
       </div>
-      {rounds.map((round) => {
-        return (
-          <RoundDisplay
-            key={round.roundId}
-            round={round}
-            currentRound={currentRound}
-            isVotingPhase={isVotingPhase}
-          />
-        );
-      })}
+ <ClientRoundsDisplay rounds={rounds}/>
     </div>
   );
 };

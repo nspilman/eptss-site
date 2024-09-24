@@ -1,39 +1,58 @@
 import Head from "next/head";
 import { roundProvider, userParticipationProvider } from "@/providers";
-import { format } from "date-fns";
-import { Hero } from "./index/Homepage/Hero";
-import { RoundActionCard } from "./index/Homepage/RoundActionCard";
 import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
+import { PagePioneer } from "./PagePioneer";
+import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
+import { Navigation } from "@/enum/navigation";
 
 const Homepage = async () => {
-  const { phase, dateLabels, roundId, dates } = await roundProvider();
+  const {  roundId,
+    phase,
+    song,
+    dateLabels,
+    hasRoundStarted,
+    areSubmissionsOpen } = await roundProvider();
 
-  const phaseEndsDate = format(dates[phase].closes, "yyyy-MM-dd");
-  const phaseEndsDatelabel = dateLabels[phase].closes;
   const isVotingPhase = phase === "voting";
 
-  const { userRoundDetails } = await userParticipationProvider();
+  const { userRoundDetails, userId } = await userParticipationProvider();
+
+  const nextRound = await roundProvider(roundId + 1);
+
+  const signedUpBlurb = getBlurb({
+    phase,
+    roundId,
+    phaseEndsDatelabel: dateLabels[phase].closes,
+  });
+
+  const signupLink = `${Navigation.SignUp}/${
+    hasRoundStarted ? roundId + 1 : ""
+  }`;
+
+  const submitLink = `${Navigation.Submit}/${
+    areSubmissionsOpen ? "" : roundId - 1
+  }`;
+
+  const songText = song.artist && song.title ? `${song.title} by ${song.artist}` : "";
+  const signupsAreOpenString = `Signups are open for round ${
+    hasRoundStarted ? roundId + 1 : roundId
+  }`;
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <Hero />
-      <div className="pointer-events-none">
-        <div className="absolute top-28 -left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="absolute top-28 left-40 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-10 animate-blob"></div>
-        <div className="absolute top-28 left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
-      </div>
-      <div className="mt-8 md:-mt-20 mb-12">
-        <RoundActionCard
-          phase={phase}
-          roundId={roundId}
-          phaseEndsDate={phaseEndsDate}
-          phaseEndsDatelabel={phaseEndsDatelabel}
-          userRoundDetails={userRoundDetails}
-        />
-      </div>
+      <PagePioneer 
+      roundInfo={{ roundId, phase, song, dateLabels, hasRoundStarted, areSubmissionsOpen }}
+      userInfo={{ userId, userRoundDetails }}
+      nextRoundInfo={nextRound}
+      signedUpBlurb={signedUpBlurb}
+      signupLink={signupLink}
+      submitLink={submitLink}
+      songText={songText}
+      signupsAreOpenString={signupsAreOpenString} />
       <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}

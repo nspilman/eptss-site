@@ -26,10 +26,11 @@ export const EmailAuthModalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  console.log({isOpen})
   return (
     <EmailAuthModalContext.Provider value={{ isOpen, setIsOpen: onOpen }}>
       {children}
-      <EmailAuthModal isOpen={isOpen} onClose={() => onClose()} />
+      <EmailAuthModal isOpen={isOpen} onClose={() => onClose()} titleOverride="Sign up or sign in" />
     </EmailAuthModalContext.Provider>
   );
 };
