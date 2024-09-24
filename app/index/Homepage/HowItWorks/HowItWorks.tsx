@@ -64,10 +64,10 @@ export const HowItWorks = () => {
           Everyone Plays the Same Song is a community project open to musicians of all skill levels, inviting participants to cover the same song each round.
         </p>
         <p>
-          Sign up by creating an account and submit the song you'd like to cover for the upcoming round. Songs are chosen based on participant voting, using a scale from 1 (not interested in covering) to 5 (very interested in covering). Once the song is selected, you will have just over a month to submit your SoundCloud cover link. The fun doesn't stop there - after submission, we compile all covers into a playlist for a communal listening party.
+          Sign up by creating an account and submit the song you&apos;d like to cover for the upcoming round. Songs are chosen based on participant voting, using a scale from 1 (not interested in covering) to 5 (very interested in covering). Once the song is selected, you will have just over a month to submit your SoundCloud cover link. The fun doesn&apos;t stop there - after submission, we compile all covers into a playlist for a communal listening party.
         </p>
         <p>
-          No special equipment or software is required - just your passion for music. You choose which rounds to participate in, allowing you to be part of the song selection and music-making process as per your interest and convenience. Join us for a celebration of music and community! We can't wait to hear your interpretation of... the same song!
+          No special equipment or software is required - just your passion for music. You choose which rounds to participate in, allowing you to be part of the song selection and music-making process as per your interest and convenience. Join us for a celebration of music and community! We can&apos;t wait to hear your interpretation of... the same song!
         </p>
       </motion.div>
 
