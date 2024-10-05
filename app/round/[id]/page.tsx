@@ -69,7 +69,6 @@ const signupsHeaders = [
 ] as const;
 
 const RoundSummary = async ({ roundId }: Props) => {
-  // const signupData = (await signupService.getSignupsByRound(roundId)) || [];
   const { phase, song, playlistUrl, submissions, signups } =
     await roundProvider(roundId);
 

@@ -42,7 +42,7 @@ export const RoundsDisplay = async ({
           Rounds
         </h2>
       </div>
- <ClientRoundsDisplay rounds={rounds}/>
+ <ClientRoundsDisplay rounds={rounds} currentRoundId={currentRound} isVotingPhase={isVotingPhase} />
     </div>
   );
 };
