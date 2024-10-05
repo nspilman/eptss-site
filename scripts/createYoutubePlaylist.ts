@@ -4,11 +4,9 @@ import readline from 'readline';
 import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/types'
-
-
+import { seededShuffle } from '@/utils/seededShuffle';
 
 dotenv.config();
-
 
 const args = process.argv.slice(2);
 const roundId = args[0]
@@ -56,8 +54,13 @@ function getAccessToken(): Promise<string> {
   
   async function createPlaylist() {
 
-    const {data} = await client.from("sign_ups").select(`*`).filter("round_id", "eq", roundId);
-    const urls = data?.map(field => field.youtube_link) || [];
+    const {data} = await client.from("sign_ups").select(`*`).filter("round_id", "eq", roundId)
+    .order("created_at");
+    const unsortedUrls = data?.map(field => field.youtube_link) || [];
+    const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
+    const urls = sortedData.map(field => field.youtube_link)
+    console.log({sortedData, urls})
+    
     const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
       const title = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates`
     try {

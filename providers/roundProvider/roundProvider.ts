@@ -125,8 +125,10 @@ const PhaseMgmtService = async ({
   );
   const voteOptions = seededShuffle(
     unsortedVoteOptions,
-    JSON.stringify(unsortedVoteOptions)
+    JSON.stringify(unsortedVoteOptions.map(option => option.link))
   );
+
+  console.log({voteOptions})
 
   return {
     phase,

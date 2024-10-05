@@ -1,5 +1,5 @@
+"use client"
 import React from "react";
-import { userParticipationProvider, userSessionProvider } from "@/providers";
 import { PageTitle } from "@/components/PageTitle";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
@@ -20,14 +20,20 @@ interface Props {
   roundId: number;
   phase: string;
   coveringStartLabel: string;
+  userId: string;
+  userRoundDetails?: {
+    hasSubmitted: boolean
+    hasVoted: boolean
+    hasSignedUp: boolean;}
 }
 const VotingPage = async ({
   voteOptions,
   roundId,
   phase,
   coveringStartLabel,
+  userId,
+  userRoundDetails
 }: Props) => {
-  const { userId } = await userSessionProvider();
 
   const title = `Vote for the songs you want to cover in Round ${roundId}`;
 
@@ -57,7 +63,6 @@ const VotingPage = async ({
     },
   ];
 
-  const { userRoundDetails } = await userParticipationProvider({ roundId });
 
   console.log({ phase, roundId });
   const shouldRenderForm =

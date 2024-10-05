@@ -1,4 +1,4 @@
-import { roundProvider } from "@/providers";
+import { roundProvider, userParticipationProvider, userSessionProvider } from "@/providers";
 import VotingPage from "../VotingPage";
 
 export default async function VotingForRound({
@@ -19,12 +19,17 @@ export default async function VotingForRound({
     return <div>Round not found</div>;
   }
 
+  const { userId } = await userSessionProvider();
+  const { userRoundDetails } = await userParticipationProvider({ roundId });
+
   return (
     <VotingPage
       roundId={roundId}
       voteOptions={voteOptions}
       phase={phase}
       coveringStartLabel={coveringStartLabel}
+      userId={userId}
+      userRoundDetails={userRoundDetails}
     />
   );
 }

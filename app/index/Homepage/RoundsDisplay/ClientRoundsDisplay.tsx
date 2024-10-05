@@ -15,6 +15,7 @@ interface Props {
   currentRoundId: number;
   isVotingPhase: boolean;
 }
+
 export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: Props) => {
   const [showAllRounds, setShowAllRounds] = useState(false);
   const displayedRounds = showAllRounds ? rounds : rounds.filter(round => round.roundId > currentRoundId - 5)

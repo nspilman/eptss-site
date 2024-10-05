@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/types';
 import readline from 'readline';
+import { seededShuffle } from '@/utils/seededShuffle';
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ const scopes = [
     'user-read-email'
   ];
 
-const getAccessToken = async() => {
+const run = async() => {
       const authUrl = spotifyApi.createAuthorizeURL(scopes, 'state');
   
       console.log('Authorize this app by visiting this url:', authUrl);
@@ -65,7 +66,7 @@ const getAccessToken = async() => {
         const track = response.body.tracks.items[0];
         return track.id;
       } else {
-        console.log('No tracks found matching the search criteria.');
+        console.log('No tracks found matching the search criteria for search query:' + searchQuery);
       }
     } catch (error) {
       console.error('Error occurred while searching for the track:', error);
@@ -90,18 +91,18 @@ const getAccessToken = async() => {
 async function createPlaylist(client: SpotifyWebApi) {
   const { data } = await supabase
     .from("sign_ups")
-    .select(`song:songs(title, artist)`)
-    .filter("round_id", "eq", roundId);
+    .select(`youtube_link, song:songs(title, artist)`)
+    .filter("round_id", "eq", roundId)
+    .order("created_at");
 
-  const songs = await data?.map((field) =>  field.song) || [];
+  const sortedData = seededShuffle(data || [], JSON.stringify(data?.map(val => val.youtube_link)));
+
+  const songs = await sortedData.map((field) =>  field.song) || [];
   const spotifyUrls = await Promise.all(songs.map((song) => searchTrack(song?.artist || "", song?.title || "")));
-//   const playlistName = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates`;
-const playlistName = "WE OUT HERE";
+  const playlistName = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates`;
+// const playlistName = "WE OUT HERE";
 
   try {
-    const me = await client.getMe();
-    const userId = me.body.id;
-
     const playlist = await client.createPlaylist(playlistName, { public: false });
     const playlistId = playlist.body.id;
 
@@ -120,13 +121,9 @@ const playlistName = "WE OUT HERE";
   }
 }
 
-function getSpotifyTrackId(url: string): string | null {
-  const match = url.match(/\/track\/([a-zA-Z0-9]+)/);
-  return match ? match[1] : null;
-}
 
 async function main() {
-  const client = await getAccessToken();
+  await run();
 //   await createPlaylist(client);
 }
 

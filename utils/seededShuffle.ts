@@ -3,6 +3,8 @@ import seedrandom from "seedrandom";
 export function seededShuffle<T>(array: T[], seed: string): T[] {
   const rng = seedrandom(seed);
 
+  console.log({seed})
+
   // Creating a new array to avoid modifying the original
   const newArray = array.slice();
 

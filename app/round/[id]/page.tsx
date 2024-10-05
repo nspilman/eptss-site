@@ -72,7 +72,7 @@ const RoundSummary = async ({ roundId }: Props) => {
   const { phase, song, playlistUrl, submissions, signups } =
     await roundProvider(roundId);
 
-  if (!song.artist) {
+  if (phase === "signups") {
     return <></>;
   }
   const { voteResults } = await votesProvider({ roundId });
