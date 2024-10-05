@@ -72,7 +72,7 @@ const run = async() => {
       console.error('Error occurred while searching for the track:', error);
       
       // If the error is due to an expired token, try refreshing it
-      if (error.statusCode === 401) {
+      if (error instanceof Error && 'statusCode' in error && error.statusCode === 401) {
         console.log('Access token has expired. Attempting to refresh...');
         try {
           const data = await spotifyApi.refreshAccessToken();
