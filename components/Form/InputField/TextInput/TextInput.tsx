@@ -1,3 +1,6 @@
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 import React from "react";
 import { FieldValues, UseFormRegister, Path } from "react-hook-form";
 
@@ -21,14 +24,24 @@ export function TextInput<T extends FieldValues>({
   const required = !optional;
 
   return (
-    <input
-      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-white"
+    <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="w-full max-w-md mx-auto"
+  >
+    <Input
       type={type}
-      placeholder={placeholder}
-      required={required}
+      id={field}
       name={field}
-      disabled={disabled}
+      placeholder={placeholder}
       defaultValue={defaultValue}
+      disabled={disabled}
+      required={required}
+      className="w-full bg-gray-800 bg-opacity-50 text-gray-100 border-gray-700 rounded-md focus:border-[#e2e240] focus:ring-[#e2e240] focus:ring-opacity-50 placeholder-gray-500"
     />
+  </motion.div>
   );
 }
+
+

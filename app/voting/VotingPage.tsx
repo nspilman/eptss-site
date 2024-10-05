@@ -26,7 +26,7 @@ interface Props {
     hasVoted: boolean
     hasSignedUp: boolean;}
 }
-const VotingPage = async ({
+const VotingPage = ({
   voteOptions,
   roundId,
   phase,
@@ -64,7 +64,6 @@ const VotingPage = async ({
   ];
 
 
-  console.log({ phase, roundId });
   const shouldRenderForm =
     phase === "voting" ||
     !!(roundId === 21 && phase === "signups" && userRoundDetails?.hasSignedUp);

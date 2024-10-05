@@ -1,42 +1,61 @@
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+"use client"
+
+import { FieldValues, Path } from "react-hook-form";
+import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
 
 interface Props<T extends FieldValues> {
   field: Path<T>;
   optional?: boolean;
+  defaultValue?: string;
 }
 
 export function VoteInput<T extends FieldValues>({
   field,
   optional,
+  defaultValue,
 }: Props<T>) {
+  const [selectedValue, setSelectedValue] = useState<string | undefined>(defaultValue);
+
+  useEffect(() => {
+    setSelectedValue(defaultValue);
+  }, [defaultValue]);
+
+  const handleChange = (value: string) => {
+    setSelectedValue(value);
+  };
+
   return (
-    <div className="flex flex-col w-full">
-      <div>
-        <div className="flex flex-row">
-          {["1", "2", "3", "4", "5"].map((value, i) => (
-            <div key={i} className="px-2 flex items-center">
-              <label
-                htmlFor={field + i}
-                className="font-fraunces text-md font-medium text-black"
-              >
+    <div className="space-y-4">
+      <div className="flex justify-between pt-2">
+        {[1, 2, 3, 4, 5].map((value) => (
+          <div key={value} className="flex flex-col items-center">
+            <input
+              type="radio"
+              id={`${field}-${value}`}
+              name={field}
+              value={value.toString()}
+              className="sr-only"
+              defaultChecked={defaultValue === value.toString()}
+              onChange={() => handleChange(value.toString())}
+            />
+            <Label
+              htmlFor={`${field}-${value}`}
+              className="flex flex-col items-center cursor-pointer"
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
+                selectedValue === value.toString()
+                  ? "bg-[#e2e240] border-[#e2e240] text-[#0a0a1e]"
+                  : "border-gray-600 text-gray-400 hover:border-[#e2e240] hover:text-[#e2e240]"
+              }`}>
                 {value}
-              </label>
-              <input
-                className="w-full bg-gray-700 text-gray-100 border-gray-600 focus:border-[#e2e240] focus:ring-[#e2e240] rounded-md"
-                required={!optional}
-                type="radio"
-                value={value}
-                name={field}
-                id={field + i}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex flex-row">
-        <span className="text-md font-light font-roboto text-black-800 text-center my-4">
-          Absolutely not! ---------- yes please!!{" "}
-        </span>
+              </div>
+              <span className="mt-1 text-xs text-gray-400">
+                {value === 1 ? "No" : value === 5 ? "Yes!" : ""}
+              </span>
+            </Label>
+          </div>
+        ))}
       </div>
     </div>
   );
