@@ -1,6 +1,5 @@
-import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { Toaster } from "@/components/ui/toaster";
-import { Header } from "./Header";
+import { Header } from "@/components/Header";
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
