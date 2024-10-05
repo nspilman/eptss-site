@@ -2,7 +2,7 @@ import Head from "next/head";
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
-import { PagePioneer } from "./PagePioneer";
+import { ClientHero } from "./ClientHero";
 import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
 import { Navigation } from "@/enum/navigation";
 
@@ -44,7 +44,7 @@ const Homepage = async () => {
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <PagePioneer 
+      <ClientHero 
       roundInfo={{ roundId, phase, song, dateLabels, hasRoundStarted, areSubmissionsOpen }}
       userInfo={{ userId, userRoundDetails }}
       nextRoundInfo={nextRound}
