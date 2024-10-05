@@ -50,6 +50,45 @@ export const ClientHero = ({
     celebration: userRoundDetails?.hasSubmitted || false,
   };
 
+  const getHeroContent = () => {
+    if (!userId) {
+      return {
+        title: "Join the next round",
+        subtitle: "Be part of our creative community",
+      };
+    }
+
+    switch (phase) {
+      case "signups":
+        return {
+          title: song.title || "Voting on next song",
+          subtitle: song.artist || "Submit your song choice",
+        };
+      case "covering":
+        return {
+          title: `Now Covering: ${song.title}`,
+          subtitle: `by ${song.artist}`,
+        };
+      case "voting":
+        return {
+          title: "Time to vote!",
+          subtitle: "Listen and choose your favorites",
+        };
+      case "celebration":
+        return {
+          title: "Round Complete!",
+          subtitle: "Check out the results",
+        };
+      default:
+        return {
+          title: song.title || "Round in progress",
+          subtitle: song.artist || "Stay tuned for updates",
+        };
+    }
+  };
+
+  const heroContent = getHeroContent();
+
   const getButtonProps = () => {
     if (!userId) {
       return {
@@ -137,17 +176,13 @@ export const ClientHero = ({
             variant="secondary"
             className="bg-[#e2e240] text-[#0a0a1e] mb-3"
           >
-            {songText
-              ? "Now Covering"
-              : userId
-              ? "Round Status"
-              : "Get Started"}
+            {phase === "covering" ? "Now Covering" : phase.charAt(0).toUpperCase() + phase.slice(1) + " Phase"}
           </Badge>
           <h3 className="text-2xl font-semibold text-gray-100 mb-2">
-            {song.title || "Join the next round"}
+            {heroContent.title}
           </h3>
           <p className="text-lg text-gray-300 mb-4">
-            {song.artist || "Be part of our creative community"}
+            {heroContent.subtitle}
           </p>
           <p className="text-sm text-gray-400 mb-4">
             {userRoundDetails?.hasSignedUp
