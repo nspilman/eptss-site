@@ -108,7 +108,6 @@ async function createPlaylist(client: SpotifyWebApi) {
 
     for (const trackId of spotifyUrls) {
         
-      console.log({trackId})
       if (await trackId) {
         await spotifyApi.addTracksToPlaylist(playlistId, [`spotify:track:${trackId}`]);
         console.log(`Added track ${trackId} to playlist`);

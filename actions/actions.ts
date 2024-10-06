@@ -134,7 +134,6 @@ export const submitVotes = async (
 
   const { status, error } = await client.from(Tables.Votes).insert(votes);
 
-  console.log({ votes });
   if (getIsSuccess(status)) {
     revalidateTag(Navigation.Voting);
   }

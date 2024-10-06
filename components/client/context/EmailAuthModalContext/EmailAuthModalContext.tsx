@@ -26,7 +26,6 @@ export const EmailAuthModalContextProvider = ({
   children: React.ReactNode;
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  console.log({isOpen})
   return (
     <EmailAuthModalContext.Provider value={{ isOpen, setIsOpen: onOpen }}>
       {children}

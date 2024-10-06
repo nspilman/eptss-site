@@ -128,8 +128,6 @@ const PhaseMgmtService = async ({
     JSON.stringify(unsortedVoteOptions.map(option => option.link))
   );
 
-  console.log({voteOptions})
-
   return {
     phase,
     roundId,

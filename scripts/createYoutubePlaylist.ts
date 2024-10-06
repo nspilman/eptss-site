@@ -59,7 +59,6 @@ function getAccessToken(): Promise<string> {
     const unsortedUrls = data?.map(field => field.youtube_link) || [];
     const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
     const urls = sortedData.map(field => field.youtube_link)
-    console.log({sortedData, urls})
     
     const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
       const title = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates`
@@ -74,7 +73,6 @@ function getAccessToken(): Promise<string> {
   
   
       for (const url of urls) {
-        console.log({url})
         const videoId = getYouTubeVideoId(url);
         await youtube.playlistItems.insert({
           part: ['snippet'],
