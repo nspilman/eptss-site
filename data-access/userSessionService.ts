@@ -1,18 +1,15 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export const getUser = async () => {
-  const headerCookies = await cookies();
-  const supabaseClient = await createClient(headerCookies);
+  const supabaseClient = await createClient();
 
   const { data } = await supabaseClient.auth.getUser();
   return { user: data.user };
 };
 
 export const signOut = async () => {
-  const headerCookies = await cookies();
-  const supabaseClient = await createClient(headerCookies);
+  const supabaseClient = await createClient();
   await supabaseClient.auth.signOut();
 };
 
@@ -23,8 +20,7 @@ export const signInWithOTP = async ({
   email: string;
   redirectUrl?: string;
 }) => {
-  const headerCookies = await cookies();
-  const supabaseClient = await createClient(headerCookies);
+  const supabaseClient = await createClient();
   const { error } = await supabaseClient.auth.signInWithOtp({
     email: email?.trim() || "",
     options: {

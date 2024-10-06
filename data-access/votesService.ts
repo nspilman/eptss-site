@@ -2,11 +2,9 @@
 
 import { Tables, Views } from "@/types";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export const getRoundOverrideVotes = async (roundId: number) => {
-  const headerCookies = await cookies();
-  const supabaseClient = await createClient(headerCookies);
+  const supabaseClient = await createClient();
   const { data, error } = await supabaseClient
     .from(Tables.VotingCandidateOverrides)
     .select(
@@ -26,8 +24,7 @@ export const getRoundOverrideVotes = async (roundId: number) => {
 };
 
 export const getVoteResults = async (id: number) => {
-  const headerCookies = await cookies();
-  const supabaseClient = await createClient(headerCookies);
+  const supabaseClient = await createClient();
 
   const { data: voteResults } = await supabaseClient
     .from(Views.VoteResults)

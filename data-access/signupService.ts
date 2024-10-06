@@ -2,11 +2,9 @@
 
 import { Tables } from "@/types";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export const getSignupsByRound = async (roundId: number) => {
-  const headerCookies = await cookies();
-  const supabase = await createClient(headerCookies);
+  const supabase = await createClient();
   const { data } = await supabase
     .from(Tables.SignUps)
     .select(

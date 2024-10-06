@@ -2,15 +2,13 @@
 
 import { Views } from "@/types";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 export const getAllSongs = async ({
   roundIdToRemove = -1,
 }: {
   roundIdToRemove: number;
 }) => {
-  const headerCookies = await cookies();
-  const supabaseClient = await createClient(headerCookies);
+  const supabaseClient = await createClient();
   const { data: allSongsData } = await supabaseClient
     .from(Views.VoteResults)
     .select("artist, title, round_id, average, id, round_metadata(song_id)")

@@ -2,11 +2,9 @@
 
 import { Views } from "@/types";
 import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 
 const getClient = async () => {
-  const cookieHeaders = await cookies();
-  const client = await createClient(cookieHeaders);
+  const client = await createClient();
   return client;
 };
 

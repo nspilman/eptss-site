@@ -19,8 +19,7 @@ export interface Round {
 const defaultDateString = "1970/01/01";
 
 const getClient = async () => {
-  const cookieHeaders = await cookies();
-  const client = await createClient(cookieHeaders);
+  const client = await createClient();
   return client;
 };
 

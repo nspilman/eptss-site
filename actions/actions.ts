@@ -5,13 +5,10 @@ import { Tables } from "@/types";
 import { getIsSuccess } from "@/utils";
 import { createClient } from "@/utils/supabase/server";
 import { revalidateTag } from "next/cache";
-import { cookies } from "next/headers";
 
 export const signout = async () => {
   "use server";
-  const cookieStore = await cookies();
-  const supabase = await createClient(cookieStore);
-
+  const supabase = await createClient();
   return supabase.auth.signOut();
 };
 
@@ -22,8 +19,7 @@ export async function sendSignInLinkToEmail(
   formData: FormData
 ): Promise<FormReturn> {
   "use server";
-  const cookieStore = await cookies();
-  const supabaseClient = await createClient(cookieStore);
+  const supabaseClient = await createClient();
 
   const email = formData.get("email")?.toString();
   if (!email) {
@@ -72,9 +68,8 @@ const getDataToString = (formData: FormData, key: string) => {
 
 export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
-  const getToString = (key: string) => getDataToString(formData, key);
-  const headerCookies = await cookies();
-  const client = createClient(headerCookies);
+  const getToString = (key: string) => getDataToString(formData, key);;
+  const client = createClient();
 
   const payload = {
     round_id: JSON.parse(getToString("roundId") || "-1"),
@@ -95,8 +90,7 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   "use server";
 
   const getToString = (key: string) => getDataToString(formData, key);
-  const headerCookies = await cookies();
-  const client = createClient(headerCookies);
+  const client = createClient();
 
   const payload = {
     round_id: JSON.parse(getToString("roundId") || "-1"),
@@ -136,8 +130,7 @@ export const submitVotes = async (
       round_id: roundId,
       user_id: userId,
     }));
-  const headerCookies = await cookies();
-  const client = createClient(headerCookies);
+  const client = createClient();
 
   const { status, error } = await client.from(Tables.Votes).insert(votes);
 
