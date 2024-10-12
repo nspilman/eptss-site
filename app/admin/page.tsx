@@ -2,12 +2,16 @@ import { DataTable } from "@/components/DataTable";
 import { roundProvider, userSessionProvider, votesProvider } from "@/providers";
 import { notFound } from "next/navigation";
 
-const AdminPage = async ({searchParams}:  {searchParams: { roundId: string } }) => {
+const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } }) => {
     const { email } = await userSessionProvider()
     if ((!email.length || email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) && process.env.NODE_ENV !== "development") {
         return notFound()
     }
-    const { roundId, dates } = await roundProvider(searchParams.roundId ? JSON.parse(searchParams.roundId) : undefined);
+    console.log(searchParams.roundId)
+
+    const roundIdParam = searchParams.roundId ? Number(searchParams.roundId) : undefined;
+    console.log({roundIdParam})
+    const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
     const { voteResults } = await votesProvider({ roundId })
 
     // Vote results table setup
@@ -23,15 +27,31 @@ const AdminPage = async ({searchParams}:  {searchParams: { roundId: string } }) 
         closes: new Date(closes).toLocaleString()
     }));
     const dateHeaders = [
-        { key: 'phase', display: 'Phase', sortable: false },
-        { key: 'opens', display: 'Opens', sortable: false },
-        { key: 'closes', display: 'Closes', sortable: false }
+        { key: 'phase', display: 'Phase', sortable: true },
+        { key: 'opens', display: 'Opens', sortable: true },
+        { key: 'closes', display: 'Closes', sortable: true }
+    ];
+
+    // Vote options table setup
+    const voteOptionsArray = voteOptions.map((option, index) => ({
+        id: index + 1,
+        label: option.label,
+        field: option.field,
+        link: option.link
+    }));
+    const voteOptionHeaders = [
+        { key: 'id', display: 'ID', sortable: true },
+        { key: 'label', display: 'Label', sortable: true },
+        { key: 'field', display: 'Field', sortable: true },
+        { key: 'link', display: 'Link', sortable: true }
     ];
 
     return (
         <>
             <h2>Round Dates</h2>
             <DataTable rows={datesArray} headers={dateHeaders} />
+            <h2>Vote Options</h2>
+            <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} />
             <h2>Vote Results</h2>
             <DataTable rows={voteResults} headers={voteHeaders} />
         </>
