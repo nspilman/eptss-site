@@ -28,7 +28,7 @@ export const getVoteResults = async (id: number) => {
 
   const { data: voteResults } = await supabaseClient
     .from(Views.VoteResults)
-    .select("title, artist, average")
+    .select("title, artist, average, votes_count")
     .filter("round_id", "eq", id);
 
   return (
@@ -36,6 +36,7 @@ export const getVoteResults = async (id: number) => {
       title: result.title || "",
       artist: result.artist || "",
       average: JSON.parse(result.average?.toPrecision(3) || "0"),
+      votesCount: result.votes_count || 0
     })) || []
   );
 };

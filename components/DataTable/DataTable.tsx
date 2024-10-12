@@ -48,7 +48,7 @@ export function DataTable<T extends string>({
       return evaluationByDirection ? -1 : 1;
     });
   }
-  const isEmpty = !rows.length;
+  const isEmpty = !rows?.length;
 
   return (
     <motion.div 
