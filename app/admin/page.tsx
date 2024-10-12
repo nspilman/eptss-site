@@ -10,7 +10,6 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
     console.log(searchParams.roundId)
 
     const roundIdParam = searchParams.roundId ? Number(searchParams.roundId) : undefined;
-    console.log({roundIdParam})
     const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
     const { voteResults } = await votesProvider({ roundId })
 
@@ -34,15 +33,11 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
 
     // Vote options table setup
     const voteOptionsArray = voteOptions.map((option, index) => ({
-        id: index + 1,
         label: option.label,
-        field: option.field,
         link: option.link
     }));
     const voteOptionHeaders = [
-        { key: 'id', display: 'ID', sortable: true },
         { key: 'label', display: 'Label', sortable: true },
-        { key: 'field', display: 'Field', sortable: true },
         { key: 'link', display: 'Link', sortable: true }
     ];
 
