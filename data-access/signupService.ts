@@ -23,3 +23,13 @@ export const getSignupsByRound = async (roundId: number) => {
 
   return data;
 };
+
+export const getSignupUsersByRound = async (roundId: number) => {
+  const supabase = await createClient();
+  const { data } = await supabase.from(Tables.SignUps).select(
+    `user_id,
+    users:users(email, userid)
+    )`
+  ).eq("round_id", roundId)
+  return data
+} 

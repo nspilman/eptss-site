@@ -1,17 +1,17 @@
 import { DataTable } from "@/components/DataTable";
-import { roundProvider, userSessionProvider, votesProvider } from "@/providers";
+import { roundProvider, votesProvider } from "@/providers";
+import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
 
 const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } }) => {
-    const { email } = await userSessionProvider()
-    if ((!email.length || email !== process.env.NEXT_PUBLIC_ADMIN_EMAIL) && process.env.NODE_ENV !== "development") {
-        return notFound()
-    }
-    console.log(searchParams.roundId)
 
     const roundIdParam = searchParams.roundId ? Number(searchParams.roundId) : undefined;
+    if(await !isAdmin()){
+        return notFound();
+    }
+
     const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
-    const { voteResults } = await votesProvider({ roundId })
+    const { voteResults, outstandingVoters } = await votesProvider({ roundId })
 
     // Vote results table setup
     const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;
@@ -20,7 +20,7 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
     }));
 
     // Dates table setup
-    const datesArray = Object.entries(dates).map(([key, { opens, closes }]) => ({
+    const datesArray = Object.entries(dates)?.map(([key, { opens, closes }]) => ({
         phase: key,
         opens: new Date(opens).toLocaleString(),
         closes: new Date(closes).toLocaleString()
@@ -41,12 +41,18 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
         { key: 'link', display: 'Link', sortable: true }
     ];
 
+    const outstandingVotesHeader = [
+        {key: "email", "display": "Email"}
+    ]
+
     return (
         <>
             <h2>Round Dates</h2>
             <DataTable rows={datesArray} headers={dateHeaders} />
             <h2>Vote Options</h2>
             <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} />
+            <h2>Outstanding Voters</h2>
+            <DataTable rows={outstandingVoters.map(email => ({email}))} headers={outstandingVotesHeader}/>
             <h2>Vote Results</h2>
             <DataTable rows={voteResults} headers={voteHeaders} />
         </>

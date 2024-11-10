@@ -1,6 +1,7 @@
 "use server";
 
 import { Tables, Views } from "@/types";
+import { isAdmin } from "@/utils/isAdmin";
 import { createClient } from "@/utils/supabase/server";
 
 export const getRoundOverrideVotes = async (roundId: number) => {
@@ -40,3 +41,15 @@ export const getVoteResults = async (id: number) => {
     })) || []
   );
 };
+
+export const getVotingUsersByRound = async (roundId: number) => {
+  if(!await isAdmin()){
+    return []
+  }
+  const supabaseClient = await createClient();
+  const { data: userIds } = await supabaseClient
+  .from(Tables.Votes)
+  .select("user_id")
+  .filter("round_id", "eq", roundId);
+  return [...new Set(userIds?.map(row => row.user_id))]
+}

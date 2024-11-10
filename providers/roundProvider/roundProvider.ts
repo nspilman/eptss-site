@@ -182,7 +182,7 @@ export const roundProvider = async (currentRoundId?: number) => {
     song,
     typeOverride: typeOverride as "runner_up" | undefined,
     playlistUrl,
-  });
+  })
 };
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
