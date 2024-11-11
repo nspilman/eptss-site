@@ -51,5 +51,5 @@ export const getVotingUsersByRound = async (roundId: number) => {
   .from(Tables.Votes)
   .select("user_id")
   .filter("round_id", "eq", roundId);
-  return [...new Set(userIds?.map(row => row.user_id))]
+  return Array.from(new Set(userIds?.map(row => row.user_id)));
 }
