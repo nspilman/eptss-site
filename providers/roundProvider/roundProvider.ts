@@ -150,7 +150,7 @@ export const roundProvider = async (currentRoundId?: number) => {
     ? await getRoundById(currentRoundId)
     : await getCurrentRound();
   if (!round) {
-    throw new Error("Unable to find round in RoundProvider");
+    throw new Error(`Requested round ${currentRoundId} does now exist`);
   }
   const {
     votingOpens,

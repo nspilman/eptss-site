@@ -69,7 +69,7 @@ const getDataToString = (formData: FormData, key: string) => {
 export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
   const getToString = (key: string) => getDataToString(formData, key);;
-  const client = createClient();
+  const client = await createClient();
 
   const payload = {
     round_id: JSON.parse(getToString("roundId") || "-1"),
@@ -90,7 +90,7 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   "use server";
 
   const getToString = (key: string) => getDataToString(formData, key);
-  const client = createClient();
+  const client = await createClient();
 
   const payload = {
     round_id: JSON.parse(getToString("roundId") || "-1"),
@@ -130,7 +130,7 @@ export const submitVotes = async (
       round_id: roundId,
       user_id: userId,
     }));
-  const client = createClient();
+  const client = await createClient();
 
   const { status, error } = await client.from(Tables.Votes).insert(votes);
 

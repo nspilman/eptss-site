@@ -2,7 +2,7 @@
 import { createClient } from "@/utils/supabase/server";
 
 export const getRoundDataForUser = async (roundId: number, userId: string) => {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("users")
     .select(
