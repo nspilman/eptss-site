@@ -9,6 +9,7 @@ on:
 jobs:
   post-song:
     runs-on: ubuntu-latest
+    environment: Pioneer
     
     steps:
       - name: Checkout repository
