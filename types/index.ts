@@ -11,6 +11,7 @@ export enum Tables {
   Votes = "song_selection_votes",
   Submissions = "submissions",
   VotingCandidateOverrides = "round_voting_candidate_overrides",
+  UserSharePermissions = "user_share_permissions"
 }
 
 export enum Views {

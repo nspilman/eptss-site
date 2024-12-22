@@ -1,0 +1,30 @@
+name: Daily Song Post
+
+on:
+  schedule:
+    # Runs at 11:00 AM PST (19:00 UTC) every day
+    - cron: '0 19 * * *'
+  workflow_dispatch: # Allows manual triggering for testing
+
+jobs:
+  post-song:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run song posting script
+        run: npm run post-song
+        env:
+          BSKY_USERNAME: ${{ secrets.BSKY_USERNAME }}
+          BSKY_PASSWORD: ${{ secrets.BSKY_PASSWORD }} 
