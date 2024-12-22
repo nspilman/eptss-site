@@ -11,7 +11,7 @@
     "test-coverage": "jest --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "post-song": "ts-node --esm scripts/post-song-to-bsky.ts"
+    "post-song": "bun scripts/post-song-to-bsky.ts"
   },
   "dependencies": {
     "@atproto/api": "^0.13.22",
