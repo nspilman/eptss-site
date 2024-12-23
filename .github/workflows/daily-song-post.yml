@@ -9,8 +9,12 @@ on:
 jobs:
   post-song:
     runs-on: ubuntu-latest
+    environment: Pioneer
     
     steps:
+      - name: Debug environment variables
+        run: |
+          echo "Environment: $ENVIRONMENT"
       - name: Checkout repository
         uses: actions/checkout@v4
 
