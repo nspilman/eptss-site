@@ -9,7 +9,6 @@ on:
 jobs:
   post-song:
     runs-on: ubuntu-latest
-    environment: Pioneer
     
     steps:
       - name: Checkout repository
@@ -26,5 +25,6 @@ jobs:
       - name: Run song posting script
         run: bun run post-song
         env:
-          BSKY_USERNAME: ${{ secrets.BSKY_USERNAME }}
-          BSKY_PASSWORD: ${{ secrets.BSKY_PASSWORD }} 
+          environment: Pioneer
+          BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }} 
