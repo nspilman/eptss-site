@@ -22,8 +22,15 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Debug environment variables
+        run: |
+          echo "Environment: $ENVIRONMENT"
+          echo "Username exists: ${{ secrets.BLUESKY_USERNAME != '' }}"
+          echo "Password exists: ${{ secrets.BLUESKY_PASSWORD != '' }}"
+
       - name: Run song posting script
         run: bun run post-song
+
         env:
           ENVIRONMENT: Pioneer
           BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
