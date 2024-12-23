@@ -25,6 +25,6 @@ jobs:
       - name: Run song posting script
         run: bun run post-song
         env:
-          environment: Pioneer
+          ENVIRONMENT: Pioneer
           BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
           BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }} 
