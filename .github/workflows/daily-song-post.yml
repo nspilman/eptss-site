@@ -10,11 +10,15 @@ jobs:
   post-song:
     runs-on: ubuntu-latest
     environment: Pioneer
+    env:
+        ENVIRONMENT: Pioneer  # Set at job level
     
     steps:
-      - name: Debug environment variables
+      - name: Debug environment variables and secrets
         run: |
           echo "Environment: $ENVIRONMENT"
+          echo "BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }} "
+          
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -31,7 +35,10 @@ jobs:
           echo "Environment: $ENVIRONMENT"
 
       - name: Run song posting script
-        run: bun run post-song
-
         env:
-          ENVIRONMENT: Pioneer
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: bun run post-song
