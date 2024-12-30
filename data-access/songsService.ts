@@ -21,6 +21,7 @@ export const getAllSongs = async ({
       title: song.title || "",
       round_id: song.round_id || -1,
       average: song.average || 0,
+      //@ts-ignore
       isWinningSong: !!((song.round_metadata as []) || []).length,
     })) || []
   );
