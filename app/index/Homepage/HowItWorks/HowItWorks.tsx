@@ -89,7 +89,7 @@ export const HowItWorks = () => {
             <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         </Link>
-        <Link href="/signup" passHref>
+        <Link href="/sign-up" passHref>
           <Button className="bg-[#e2e240] text-[#0a0a1e] hover:bg-[#f0f050] flex items-center">
             Sign Up
             <ChevronRight className="ml-1 h-4 w-4" />
