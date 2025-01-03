@@ -1,5 +1,6 @@
 "use server";
-import { getCurrentRoundId, getRoundDataForUser, getUser } from "@/data-access";
+import { getCurrentRoundId, getRoundDataForUser } from "@/data-access";
+import { getAuthUser } from "@/utils/supabase/server";
 
 // Define a custom hook for easy access to the UserSessionContext
 interface Props {
@@ -9,9 +10,9 @@ interface Props {
 export const userParticipationProvider = async (props?: Props) => {
   const roundIdOverride = props?.roundId;
 
-  const { user } = await getUser();
+  const {userId} = getAuthUser();
 
-  const userId = user?.id || "";
+
   if (!userId) {
     return {
       getUserRoundDetails: undefined,

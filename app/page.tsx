@@ -5,8 +5,8 @@ import { HowItWorks } from "./index/Homepage/HowItWorks";
 import { ClientHero } from "./ClientHero";
 import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
 import { Navigation } from "@/enum/navigation";
-import { headers } from 'next/headers'
-import { getUserid } from "@/utils/supabase/server";
+import { getAuthUser } from "@/utils/supabase/server";
+import { Suspense } from "react";
 
 const Homepage = async () => {
   const {  roundId,
@@ -18,7 +18,7 @@ const Homepage = async () => {
 
   const isVotingPhase = phase === "voting";
 
-const userId = getUserid();
+const { userId } = getAuthUser();
   const { userRoundDetails } = await userParticipationProvider();
 
   const nextRound = await roundProvider(roundId + 1);
@@ -65,12 +65,14 @@ const userId = getUserid();
       submitLink={submitLink}
       songText={songText}
       signupsAreOpenString={signupsAreOpenString} />
+      <HowItWorks />
+      <Suspense fallback={null}>
       <RoundsDisplay
         currentRound={roundId}
         isVotingPhase={isVotingPhase}
         phase={phase}
       />
-      <HowItWorks />
+      </Suspense>
     </div>
   );
 };

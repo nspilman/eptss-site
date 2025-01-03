@@ -57,7 +57,7 @@ const run = async() => {
       });
   }
 
-  async function searchTrack(artistName: string, trackName: string) {
+  async function searchTrack(artistName: string, trackName: string): Promise<string | null> {
     try {
       const searchQuery = `track:${trackName} artist:${artistName}`;
       const response = await spotifyApi.searchTracks(searchQuery, { limit: 1 });

@@ -1,5 +1,6 @@
-import { roundProvider, userParticipationProvider, userSessionProvider } from "@/providers";
+import { roundProvider, userParticipationProvider } from "@/providers";
 import VotingPage from "../VotingPage";
+import { getAuthUser } from "@/utils/supabase/server";
 
 export default async function VotingForRound({
   params,
@@ -19,7 +20,7 @@ export default async function VotingForRound({
     return <div>Round not found</div>;
   }
 
-  const { userId } = await userSessionProvider();
+  const { userId } = await getAuthUser();
   const { userRoundDetails } = await userParticipationProvider({ roundId });
 
   return (

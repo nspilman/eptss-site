@@ -19,10 +19,10 @@ export const RoundsDisplay = async ({
 
   return (
     <div className="flex flex-col pt-8 pb-32 relative">
-      <div className="pointer-events-none absolute translate-x-52">
-        <div className="fixed top-28 md:left-40 right-24 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-20 animate-blob"></div>
-        <div className="fixed top-28 md:-left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-20 animate-blob"></div>
-        <div className="fixed top-28 md:left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob"></div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-28 md:left-40 right-24 w-80 h-80 bg-white rounded-full mix-blend-lighten filter blur-xl opacity-20 animate-blob will-change-transform contain-paint"></div>
+        <div className="absolute top-28 md:-left-4 w-80 h-80 bg-themeYellow rounded-full mix-blend-lighten filter blur-xl opacity-20 animate-blob will-change-transform contain-paint"></div>
+        <div className="absolute top-28 md:left-60 w-80 h-80 bg-bgGradientLighterBLue rounded-full mix-blend-lighten filter blur-xl opacity-40 animate-blob will-change-transform contain-paint"></div>
       </div>
 
       <div className="pointer-events-none absolute translate-x-[40vw] translate-y-[80vh]">

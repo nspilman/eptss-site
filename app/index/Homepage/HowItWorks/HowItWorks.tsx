@@ -19,7 +19,7 @@ export const HowItWorks = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="relative px-8 md:px-24 py-16 bg-gray-900 bg-opacity-50 backdrop-blur-md rounded-lg border border-gray-800"
+      className="relative px-8 md:px-24 py-16 bg-gray-900 bg-opacity-50 backdrop-blur-md rounded-lg border border-gray-800 mt-16" 
     >
       <div className="absolute -inset-1 bg-gradient-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur opacity-25 pointer-events-none group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
       

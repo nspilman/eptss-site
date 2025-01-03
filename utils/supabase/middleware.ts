@@ -1,3 +1,4 @@
+import { AUTH_HEADER_KEYS } from '@/constants'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -34,9 +35,10 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  
+
   if (user) {
-    supabaseResponse.headers.set('x-user-id', user.id)
+    supabaseResponse.headers.set(AUTH_HEADER_KEYS.USER_ID, user.id)
+    supabaseResponse.headers.set(AUTH_HEADER_KEYS.EMAIL, user.email || "")
     // Add any other user data you need
   }
 

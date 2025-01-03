@@ -8,24 +8,31 @@ export const metadata = {
 
 import "../styles/globals.css";
 
-import { Suspense } from "react";
-import { Loading } from "@/components/Loading";
-import { getUserid } from "@/utils/supabase/server";
+import { getAuthUser } from "@/utils/supabase/server";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const userId =getUserid()
+  const { userId } = getAuthUser();
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href={process.env.NEXT_PUBLIC_SUPABASE_URL}
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
+      </head>
       <body>
         <div className="min-h-screen bg-[#0a0a1e] text-gray-100 p-6 md:p-12 relative overflow-hidden font-sans">
-            <Header userId={userId} />
-              <Suspense fallback={<Loading />}>{children}</Suspense>
-            <Toaster />
-            <div id="footer" className="flex py-2 justify-center" />
+
+          <Header userId={userId} />
+          {children}
+          <Toaster />
+          <div id="footer" className="flex py-2 justify-center" />
         </div>
       </body>
     </html>

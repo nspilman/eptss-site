@@ -2,9 +2,9 @@ import React from "react";
 import {
   roundProvider,
   userParticipationProvider,
-  userSessionProvider,
 } from "@/providers";
 import VotingPage from "./VotingPage";
+import { getAuthUser } from "@/utils/supabase/server";
 
 const VotingPageHome = async () => {
   const {
@@ -16,7 +16,8 @@ const VotingPageHome = async () => {
     phase,
   } = await roundProvider();
 
-  const { userId } = await userSessionProvider();
+  const {userId} = getAuthUser();
+
   const { userRoundDetails } = await userParticipationProvider({ roundId });
 
   return (

@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies, headers } from 'next/headers'
 import { Database } from '@/types'
+import { AUTH_HEADER_KEYS } from '@/constants'
 
 export async function createClient() {
   const cookieStore = await cookies()
@@ -29,8 +30,9 @@ export async function createClient() {
   )
 }
 
-export function getUserid() {
+export function getAuthUser() {
   const headersList = headers()
-  const userId = headersList.get('x-user-id') || ""
-  return userId;
+  const userId = headersList.get(AUTH_HEADER_KEYS.USER_ID) || ""
+  const email = headersList.get(AUTH_HEADER_KEYS.EMAIL) || ""
+  return { userId, email };
 }
