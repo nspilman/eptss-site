@@ -5,6 +5,8 @@ import { HowItWorks } from "./index/Homepage/HowItWorks";
 import { ClientHero } from "./ClientHero";
 import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
 import { Navigation } from "@/enum/navigation";
+import { headers } from 'next/headers'
+import { getUserid } from "@/utils/supabase/server";
 
 const Homepage = async () => {
   const {  roundId,
@@ -16,7 +18,8 @@ const Homepage = async () => {
 
   const isVotingPhase = phase === "voting";
 
-  const { userRoundDetails, userId } = await userParticipationProvider();
+const userId = getUserid();
+  const { userRoundDetails } = await userParticipationProvider();
 
   const nextRound = await roundProvider(roundId + 1);
 
@@ -45,7 +48,16 @@ const Homepage = async () => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <ClientHero 
-      roundInfo={{ roundId, phase, song, dateLabels, hasRoundStarted, areSubmissionsOpen }}
+      roundInfo={{ 
+        roundId, 
+        phase, 
+        song, 
+        dateLabels, 
+        hasRoundStarted, 
+        areSubmissionsOpen,
+        isSubmissionOpen: areSubmissionsOpen,
+        isVotingOpen: phase === "voting"
+      }}
       userInfo={{ userId, userRoundDetails }}
       nextRoundInfo={nextRound}
       signedUpBlurb={signedUpBlurb}

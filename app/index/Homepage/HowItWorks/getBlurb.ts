@@ -18,6 +18,6 @@ export const getBlurb = ({
       return `Round ${roundId} - covers are due ${phaseEndsDatelabel}`;
     case "celebration":
     default:
-      return `Round ${roundId} is over! The listening party is on ${phaseEndsDatelabel}, and the next round will start after that!`;
+      return `The listening party is on ${phaseEndsDatelabel}, where the winning cover for the next round will be announced!`
   }
 };

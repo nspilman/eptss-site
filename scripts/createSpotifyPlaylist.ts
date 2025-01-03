@@ -61,65 +61,78 @@ const run = async() => {
     try {
       const searchQuery = `track:${trackName} artist:${artistName}`;
       const response = await spotifyApi.searchTracks(searchQuery, { limit: 1 });
-  
+
       if (response?.body?.tracks?.items?.length) {
         const track = response.body.tracks.items[0];
         return track.id;
       } else {
-        console.log('No tracks found matching the search criteria for search query:' + searchQuery);
+        console.log(`No tracks found for: ${searchQuery}`);
+        return null;
       }
-    } catch (error) {
-      console.error('Error occurred while searching for the track:', error);
+    } catch (error: any) {
+      // Log the error details more explicitly
+      console.error('Search track error details:', {
+        message: error.message,
+        statusCode: error.statusCode,
+        body: error.body
+      });
       
-      // If the error is due to an expired token, try refreshing it
-      if (error instanceof Error && 'statusCode' in error && error.statusCode === 401) {
-        console.log('Access token has expired. Attempting to refresh...');
+      if (error?.statusCode === 401) {
         try {
           const data = await spotifyApi.refreshAccessToken();
-          console.log('Access token has been refreshed.');
           spotifyApi.setAccessToken(data.body['access_token']);
           
           // Retry the search with the new token
-          await searchTrack(artistName, trackName);
-        } catch (refreshError) {
-          console.error('Could not refresh access token:', refreshError);
+          return await searchTrack(artistName, trackName);
+        } catch (refreshError: any) {
+          console.error('Token refresh failed:', {
+            message: refreshError.message,
+            statusCode: refreshError.statusCode
+          });
+          return null;
         }
       }
+      
+      // Return null instead of undefined for failed searches
+      return null;
     }
   }
 
 async function createPlaylist(client: SpotifyWebApi) {
-  const { data } = await supabase
-    .from("sign_ups")
-    .select(`youtube_link, song:songs(title, artist)`)
-    .filter("round_id", "eq", roundId)
-    .order("created_at");
-
-  const sortedData = seededShuffle(data || [], JSON.stringify(data?.map(val => val.youtube_link)));
-
-  const songs = await sortedData.map((field) =>  field.song) || [];
-  const spotifyUrls = await Promise.all(songs.map((song) => searchTrack(song?.artist || "", song?.title || "")));
-  const playlistName = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates`;
-// const playlistName = "WE OUT HERE";
-
   try {
+    const { data } = await supabase
+      .from("sign_ups")
+      .select(`youtube_link, song:songs(title, artist)`)
+      .filter("round_id", "eq", roundId)
+      .filter('song_id', 'neq', -1)
+      .order("created_at");
+
+    const sortedData = seededShuffle(data || [], JSON.stringify(data?.map(val => val.youtube_link)));
+    const songs = await sortedData.map((field) => field.song) || [];
+    const spotifyUrls = await Promise.all(songs.map((song) => searchTrack(song?.artist || "", song?.title || "")));
+    const playlistName = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates 2`;
+
     const playlist = await client.createPlaylist(playlistName, { public: false });
     const playlistId = playlist.body.id;
 
     for (const trackId of spotifyUrls) {
-        
-      if (await trackId) {
-        await spotifyApi.addTracksToPlaylist(playlistId, [`spotify:track:${trackId}`]);
-        console.log(`Added track ${trackId} to playlist`);
+      if (trackId) {  // Only attempt to add if trackId exists
+        try {
+          await spotifyApi.addTracksToPlaylist(playlistId, [`spotify:track:${trackId}`]);
+          console.log(`Added track ${trackId} to playlist`);
+        } catch (error) {
+          console.error(`Failed to add track ${trackId}:`, error);
+          // Continue with next track even if one fails
+        }
       }
     }
 
     console.log('Playlist creation completed.');
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error creating playlist:', error);
+    throw error; // Re-throw to be caught by main error handler
   }
 }
-
 
 async function main() {
   await run();

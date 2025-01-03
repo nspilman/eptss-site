@@ -10,14 +10,14 @@ import "../styles/globals.css";
 
 import { Suspense } from "react";
 import { Loading } from "@/components/Loading";
-import { userSessionProvider } from "@/providers";
+import { getUserid } from "@/utils/supabase/server";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const {userId} = await userSessionProvider()
+  const userId =getUserid()
   return (
     <html lang="en">
       <body>

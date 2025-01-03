@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { Database } from '@/types'
 
 export async function createClient() {
@@ -27,4 +27,10 @@ export async function createClient() {
       },
     }
   )
+}
+
+export function getUserid() {
+  const headersList = headers()
+  const userId = headersList.get('x-user-id') || ""
+  return userId;
 }

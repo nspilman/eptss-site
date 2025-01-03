@@ -18,6 +18,8 @@ type HeroActionsClientProps = {
     dateLabels: any;
     hasRoundStarted: boolean;
     areSubmissionsOpen: boolean;
+    isSubmissionOpen: boolean;
+    isVotingOpen: boolean;
   };
   userInfo: {
     userId: string | null;
@@ -29,6 +31,11 @@ type HeroActionsClientProps = {
   submitLink: string;
   songText: string;
   signupsAreOpenString: string;
+};
+
+type ButtonProps = {
+  text: string;
+  href: string;
 };
 
 export const ClientHero = ({
@@ -76,8 +83,8 @@ export const ClientHero = ({
         };
       case "celebration":
         return {
-          title: "Round Complete!",
-          subtitle: "Check out the results",
+          title: "Submissions are open",
+          subtitle: "Submit your cover before the listening party!",
         };
       default:
         return {
@@ -89,44 +96,88 @@ export const ClientHero = ({
 
   const heroContent = getHeroContent();
 
-  const getButtonProps = () => {
+  const getButtonProps = (): ButtonProps[] => {
     if (!userId) {
-      return {
+      // Handle signed out user states
+      if (phase === "voting" || phase === "covering") {
+        const buttons: ButtonProps[] = [
+          {
+            text: "Join Waitlist",
+            href: Navigation.Waitlist,
+          }
+        ];
+        
+        if (phase === "covering") {
+          buttons.push({
+            text: "Sign Up to Cover",
+            href: signupLink,
+          });
+        }
+        
+        return buttons;
+      }
+      return [{
         text: "Sign up for the next round",
         href: signupLink,
-      };
+      }];
     }
 
-    switch (phase) {
-      case "signups":
-        return {
-          text: completedCheckByPhase.signups ? "Round Details" : "Join Round",
-          href: completedCheckByPhase.signups ? `/round/${roundId}` : signupLink,
-        };
-      case "covering":
-        return {
-          text: completedCheckByPhase.covering ? "Update Submission" : "Submit Cover",
-          href: submitLink,
-        };
-      case "voting":
-        return {
-          text: completedCheckByPhase.voting ? "Update Vote" : "Vote Now",
-          href: Navigation.Voting,
-        };
-      case "celebration":
-        return {
-          text: "View Results",
-          href: `/round/${roundId}`,
-        };
-      default:
-        return {
-          text: "Round Details",
-          href: `/round/${roundId}`,
-        };
+    // Handle signed in user states
+    const isInCurrentRound = userRoundDetails?.hasSignedUp;
+
+    if (isInCurrentRound) {
+      switch (phase) {
+        case "covering":
+          return [
+            {
+              text: completedCheckByPhase.covering ? "Update Submission" : "Submit Cover",
+              href: submitLink,
+            },
+            {
+              text: "Sign up for Next Round",
+              href: signupLink,
+            },
+          ];
+        case "voting":
+          return [{
+            text: completedCheckByPhase.voting ? "Update Vote" : "Vote Now",
+            href: Navigation.Voting,
+          }];
+        default:
+          return [{
+            text: "Round Details",
+            href: `/round/${roundId}`,
+          }];
+      }
     }
+
+    // User is signed in but not in current round
+    if (phase === "voting" || phase === "covering") {
+      const buttons: ButtonProps[] = [
+        {
+          text: "Join Waitlist",
+          href: Navigation.Waitlist,
+        }
+      ];
+      
+      if (phase === "covering") {
+        buttons.push({
+          text: "Sign Up to Cover",
+          href: signupLink,
+        });
+      }
+      
+      return buttons;
+    }
+
+    // Default case
+    return [{
+      text: "Round Details",
+      href: `/round/${roundId}`,
+    }];
   };
 
-  const buttonProps = getButtonProps();
+  const buttons = getButtonProps();
 
   return (
     <main className="flex flex-col space-y-16 relative z-10">
@@ -176,7 +227,11 @@ export const ClientHero = ({
             variant="secondary"
             className="bg-[#e2e240] text-[#0a0a1e] mb-3"
           >
-            {phase === "covering" ? "Now Covering" : phase.charAt(0).toUpperCase() + phase.slice(1) + " Phase"}
+            {phase === "celebration" 
+              ? "Next Round Signups Open"
+              : phase === "covering" 
+                ? "Now Covering" 
+                : phase.charAt(0).toUpperCase() + phase.slice(1)}
           </Badge>
           <h3 className="text-2xl font-semibold text-gray-100 mb-2">
             {heroContent.title}
@@ -190,14 +245,19 @@ export const ClientHero = ({
               : signupsAreOpenString}
           </p>
           <div className="flex flex-col space-y-2">
-            <Link href={buttonProps.href} passHref>
-              <Button
-                className="w-full bg-[#e2e240] text-[#0a0a1e] hover:bg-[#f0f050]"
-              >
-                {buttonProps.text}
-              </Button>
-            </Link>
-            {/* Remove or adjust the second button as needed */}
+            {buttons.map((button, index) => (
+              <Link key={index} href={button.href} passHref>
+                <Button
+                  className={`w-full ${
+                    index === 0 
+                      ? "bg-[#e2e240] text-[#0a0a1e] hover:bg-[#f0f050]"
+                      : "bg-gray-700 text-gray-100 hover:bg-gray-600"
+                  }`}
+                >
+                  {button.text}
+                </Button>
+              </Link>
+            ))}
           </div>
         </motion.div>
       </motion.div>
