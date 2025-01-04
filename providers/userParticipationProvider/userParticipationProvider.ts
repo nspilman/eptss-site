@@ -10,7 +10,7 @@ interface Props {
 export const userParticipationProvider = async (props?: Props) => {
   const roundIdOverride = props?.roundId;
 
-  const {userId} = getAuthUser();
+  const { userId } = getAuthUser();
 
 
   if (!userId) {

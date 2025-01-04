@@ -16,7 +16,7 @@ const VotingPageHome = async () => {
     phase,
   } = await roundProvider();
 
-  const {userId} = getAuthUser();
+  const { userId } = getAuthUser();
 
   const { userRoundDetails } = await userParticipationProvider({ roundId });
 
