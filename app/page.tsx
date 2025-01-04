@@ -73,9 +73,6 @@ const { userId } = getAuthUser();
         phase={phase}
       />
       </Suspense>
-      {JSON.stringify(getHeaders())}
-      ---
-      {JSON.stringify(getAuthUser())}
     </div>
   );
 };

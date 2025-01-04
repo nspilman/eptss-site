@@ -38,8 +38,21 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (user) {
-    supabaseResponse.headers.set(AUTH_HEADER_KEYS.USER_ID, user.id)
-    supabaseResponse.headers.set(AUTH_HEADER_KEYS.EMAIL, user.email || "")
+    supabaseResponse.cookies.set(AUTH_HEADER_KEYS.USER_ID, user.id, {
+      path: '/', 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'strict'
+    });
+
+    supabaseResponse.cookies.set(AUTH_HEADER_KEYS.EMAIL, user.email || "", {
+      path: '/', 
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'strict'
+    });
+    // supabaseResponse.headers.set(AUTH_HEADER_KEYS.USER_ID, user.id)
+    // supabaseResponse.headers.set(AUTH_HEADER_KEYS.EMAIL, user.email || "")
     // Add any other user data you need
   }
   else{

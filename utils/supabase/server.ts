@@ -31,9 +31,8 @@ export async function createClient() {
 }
 
 export function getAuthUser() {
-  const headersList = headers()
-  const userId = headersList.get(AUTH_HEADER_KEYS.USER_ID) || ""
-  const email = headersList.get(AUTH_HEADER_KEYS.EMAIL) || ""
+  const userId = cookies().get('x-user-id')?.value || '';
+  const email = cookies().get(AUTH_HEADER_KEYS.EMAIL)?.value || '';
   return { userId, email };
 }
 
