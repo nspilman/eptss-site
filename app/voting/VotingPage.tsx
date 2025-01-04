@@ -5,8 +5,6 @@ import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
 import { submitVotes } from "@/actions/actions";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
-import { SignInGate } from "@/components/SignInGate";
-import { Navigation } from "@/enum/navigation";
 
 interface Props {
   voteOptions: {
