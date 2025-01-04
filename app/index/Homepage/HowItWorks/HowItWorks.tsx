@@ -23,7 +23,7 @@ export const HowItWorks = () => {
     {
       icon: "🎸",
       title: "Structured Progress",
-      description: "Monthly deadlines and peer accountability keep you motivated and improving"
+      description: "Quarterly deadlines and peer accountability keep you motivated and improving"
     },
     {
       icon: "🎧",
@@ -126,7 +126,7 @@ export const HowItWorks = () => {
           className="space-y-4 text-gray-300"
         >
           <p>
-            Tired of putting off your musical goals? Join our community where monthly deadlines and peer accountability keep you moving forward. Create your free account and help choose our next challenge song through community voting.
+            Tired of putting off your musical goals? Join our community where quarterly deadlines and peer accountability keep you moving forward. Create your free account and help choose our next challenge song through community voting.
           </p>
           <p>
             Each round gives you one month to push your limits and create your cover. No more endless perfectionism - our deadline-driven approach helps you finish what you start, while our supportive community keeps you accountable and growing.
