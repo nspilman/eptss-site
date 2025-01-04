@@ -87,7 +87,6 @@ const VotingPage = ({
   });
 
   return (
-    <SignInGate userId={userId} redirectUrl={Navigation.Voting}>
       <>
         <PageTitle title={title} />
         {shouldRenderForm ? (
@@ -116,7 +115,6 @@ const VotingPage = ({
           <></>
         )}
       </>
-    </SignInGate>
   );
 };
 

@@ -5,6 +5,13 @@ export enum Navigation {
   Submit = "/submit",
   Rounds = "#rounds",
   Voting = "/voting",
-  Waitlist = "/waitlist"
+  Waitlist = "/waitlist",
+  Login = "/login"
   // Profile = "/profile",
 }
+
+export const protectedRoutes = [
+  Navigation.SignUp,
+  Navigation.SignUp,
+  Navigation.Voting
+]

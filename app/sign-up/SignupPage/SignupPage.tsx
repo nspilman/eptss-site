@@ -2,7 +2,6 @@
 import React from "react";
 
 import { PageTitle } from "@/components/PageTitle";
-import { SignInGate } from "@/components/SignInGate";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
@@ -86,7 +85,6 @@ export async function SignupPage({
   return (
     <>
       <PageTitle title={title} />
-      <SignInGate userId={userId} redirectUrl={Navigation.SignUp}>
         {hasSignedUp ? (
           <ActionSuccessPanel
             text={signupSuccessText}
@@ -106,7 +104,6 @@ export async function SignupPage({
             />
           </ClientFormWrapper>
         )}
-      </SignInGate>
     </>
   );
 }

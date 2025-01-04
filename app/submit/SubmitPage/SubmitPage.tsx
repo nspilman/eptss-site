@@ -1,5 +1,4 @@
 "use client";
-import { SignInGate } from "@/components/SignInGate";
 import { PageTitle } from "@/components/PageTitle";
 import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { submitCover } from "@/actions/actions";
@@ -116,7 +115,6 @@ export const SubmitPage = ({
   return (
     <>
       <PageTitle title={`Submit your cover for round ${roundId}`} />
-      <SignInGate userId={userId} redirectUrl={Navigation.Submit}>
         {hasSubmitted ? (
           <ActionSuccessPanel
             text={submitSuccessText}
@@ -139,7 +137,6 @@ export const SubmitPage = ({
             />
           </ClientFormWrapper>
         )}
-      </SignInGate>
     </>
   );
 };

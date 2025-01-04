@@ -1,4 +1,5 @@
 import { AUTH_HEADER_KEYS } from '@/constants'
+import { Navigation, protectedRoutes } from '@/enum/navigation'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -40,6 +41,19 @@ export async function updateSession(request: NextRequest) {
     supabaseResponse.headers.set(AUTH_HEADER_KEYS.USER_ID, user.id)
     supabaseResponse.headers.set(AUTH_HEADER_KEYS.EMAIL, user.email || "")
     // Add any other user data you need
+  }
+  else{
+    for (let index = 0; index < protectedRoutes.length; index++) {
+      const route = protectedRoutes[index];
+      console.log(request.nextUrl.pathname, route)
+      if(request.nextUrl.pathname.startsWith(route)){
+        const url = request.nextUrl.clone()
+        url.pathname = Navigation.Login;
+        url.searchParams.append("redirectUrl",route)
+        return {response: NextResponse.redirect(url)}
+      }
+      
+    }
   }
 
   // if (
