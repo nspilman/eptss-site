@@ -36,3 +36,9 @@ export function getAuthUser() {
   const email = headersList.get(AUTH_HEADER_KEYS.EMAIL) || ""
   return { userId, email };
 }
+
+export function getHeaders() {
+  const rawHeaders = headers();
+  console.log('Raw headers:', Object.fromEntries(rawHeaders.entries()));
+  return Object.fromEntries(rawHeaders.entries());
+}

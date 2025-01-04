@@ -5,7 +5,7 @@ import { HowItWorks } from "./index/Homepage/HowItWorks";
 import { ClientHero } from "./ClientHero";
 import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
 import { Navigation } from "@/enum/navigation";
-import { getAuthUser } from "@/utils/supabase/server";
+import { getAuthUser, getHeaders } from "@/utils/supabase/server";
 import { Suspense } from "react";
 
 const Homepage = async () => {
@@ -73,6 +73,9 @@ const { userId } = getAuthUser();
         phase={phase}
       />
       </Suspense>
+      {JSON.stringify(getHeaders())}
+      ---
+      {JSON.stringify(getAuthUser())}
     </div>
   );
 };
