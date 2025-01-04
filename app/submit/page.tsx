@@ -16,13 +16,12 @@ const Submit = async () => {
     song,
   } = await roundProvider(roundToReference);
 
-  const { userRoundDetails, userId } = await userParticipationProvider({
+  const { userRoundDetails } = await userParticipationProvider({
     roundId: roundToReference,
   });
 
   return (
     <SubmitPage
-      userId={userId}
       roundId={roundToReference}
       hasSubmitted={userRoundDetails?.hasSubmitted || false}
       song={song}

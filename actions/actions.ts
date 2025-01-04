@@ -46,22 +46,6 @@ export async function sendSignInLinkToEmail(
   };
 }
 
-interface SubmitModel {
-  soundcloudUrl: string;
-  coolThingsLearned?: string;
-  toolsUsed?: string;
-  happyAccidents?: string;
-  didntWork?: string;
-  userId: string;
-}
-
-interface SubmitEntity {
-  round_id: number;
-  soundcloud_url: string;
-  additional_comments?: string;
-  user_id: string;
-}
-
 const getDataToString = (formData: FormData, key: string) => {
   return formData.get(key)?.toString();
 };
@@ -70,11 +54,12 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
   const getToString = (key: string) => getDataToString(formData, key);;
   const client = await createClient();
+  const { userId } = getAuthUser();
 
   const payload = {
     round_id: JSON.parse(getToString("roundId") || "-1"),
     soundcloud_url: getToString("soundcloudUrl") || "",
-    user_id: getToString("userId") || "",
+    user_id: userId || "",
     additional_comments: JSON.stringify({
       coolThingsLearned: getToString("coolThingsLearned") || "",
       toolsUsed: getToString("toolsUsed") || "",
@@ -91,10 +76,11 @@ export async function signup(formData: FormData): Promise<FormReturn> {
 
   const getToString = (key: string) => getDataToString(formData, key);
   const client = await createClient();
+  const { userId } = getAuthUser();
 
   const payload = {
     round_id: JSON.parse(getToString("roundId") || "-1"),
-    user_id: getToString("userId") || "",
+    user_id: userId || "",
     song_title: getToString("songTitle") || "",
     artist_name: getToString("artist") || "",
     youtube_link: getToString("youtubeLink") || "",
@@ -116,7 +102,7 @@ export const submitVotes = async (
   { roundId }: { roundId: number },
   formData: FormData
 ): Promise<FormReturn> => {
-  const {userId} = getAuthUser();
+  const { userId } = getAuthUser();
   const entries = formData.entries();
   const payload = Object.fromEntries(entries);
   const voteKeys = Object.keys(payload).filter(

@@ -28,7 +28,7 @@ export const userParticipationProvider = async (props?: Props) => {
     if (!chosenRoundId) {
       return;
     }
-    const data = await getRoundDataForUser(chosenRoundId, userId);
+    const data = await getRoundDataForUser(chosenRoundId);
     return data;
   };
 

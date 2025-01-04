@@ -8,7 +8,6 @@ import { revalidatePath } from "next/cache";
 import { Navigation } from "@/enum/navigation";
 
 interface Props {
-  userId: string;
   roundId: number;
   hasSubmitted: boolean;
   song: {
@@ -22,7 +21,6 @@ interface Props {
 }
 
 export const SubmitPage = ({
-  userId,
   roundId,
   hasSubmitted,
   song,
@@ -78,16 +76,6 @@ export const SubmitPage = ({
       size: "small",
       defaultValue: roundId,
       hidden: true,
-    } as const,
-    {
-      label: "Invisible userId",
-      placeholder: "",
-      field: "userId",
-      type: "text",
-      size: "small",
-      defaultValue: userId,
-      hidden: true,
-      optional: true,
     } as const,
   ];
 

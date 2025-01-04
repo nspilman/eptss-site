@@ -12,14 +12,13 @@ export default async function SignUpForRound({
     return <div>Round not found</div>;
   }
 
-  const { userRoundDetails, userId } = await userParticipationProvider({
+  const { userRoundDetails } = await userParticipationProvider({
     roundId,
   });
   const signupsCloseDateLabel = dateLabels?.signups.closes;
 
   return (
     <SignupPage
-      userId={userId}
       signupsCloseDateLabel={signupsCloseDateLabel}
       roundId={roundId}
       hasSignedUp={userRoundDetails?.hasSignedUp || false}

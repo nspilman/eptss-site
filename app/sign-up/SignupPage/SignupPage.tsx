@@ -7,17 +7,13 @@ import { Form } from "@/components/Form";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { additionalComments } from "@/components/fieldValues";
 import { signup } from "@/actions/actions";
-import { Navigation } from "@/enum/navigation";
-import { revalidatePath } from "next/cache";
 
 interface Props {
-  userId: string;
   hasSignedUp: boolean;
   roundId: number;
   signupsCloseDateLabel: string;
 }
 export async function SignupPage({
-  userId,
   hasSignedUp,
   roundId,
   signupsCloseDateLabel,
@@ -45,14 +41,6 @@ export async function SignupPage({
       field: "youtubeLink" as const,
       size: "large" as const,
       defaultValue: "",
-    },
-    {
-      label: "userId",
-      placeholder: "userId",
-      field: "userId" as const,
-      defaultValue: userId,
-      hidden: true,
-      optional: true,
     },
     {
       label: "roundId",

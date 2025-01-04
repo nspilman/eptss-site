@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 const SignUp = async () => {
   const { roundId, dateLabels, hasRoundStarted } = await roundProvider();
-  const { userRoundDetails, userId } = await userParticipationProvider();
+  const { userRoundDetails } = await userParticipationProvider();
   const signupsCloseDateLabel = dateLabels?.signups.closes;
 
   if (hasRoundStarted) {
@@ -16,7 +16,6 @@ const SignUp = async () => {
   return (
     <>
       <SignupPage
-        userId={userId}
         signupsCloseDateLabel={signupsCloseDateLabel}
         roundId={roundId}
         hasSignedUp={userRoundDetails?.hasSignedUp || false}

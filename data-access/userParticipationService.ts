@@ -1,7 +1,8 @@
 "use server";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, getAuthUser } from "@/utils/supabase/server";
 
-export const getRoundDataForUser = async (roundId: number, userId: string) => {
+export const getRoundDataForUser = async (roundId: number) => {
+  const { userId } = getAuthUser();
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("users")
