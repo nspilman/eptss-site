@@ -18,7 +18,6 @@ interface Props {
   roundId: number;
   phase: string;
   coveringStartLabel: string;
-  userId: string;
   userRoundDetails?: {
     hasSubmitted: boolean
     hasVoted: boolean
@@ -29,7 +28,6 @@ const VotingPage = ({
   roundId,
   phase,
   coveringStartLabel,
-  userId,
   userRoundDetails
 }: Props) => {
 
@@ -42,14 +40,6 @@ const VotingPage = ({
       defaultValue: undefined,
       placeholder: "",
     })),
-    {
-      label: "userId",
-      placeholder: "userId",
-      field: "userId" as const,
-      defaultValue: userId,
-      hidden: true,
-      optional: true,
-    },
     {
       label: "roundId",
       placeholder: "Youtube link",
@@ -80,7 +70,6 @@ const VotingPage = ({
   };
 
   const submitVotesWithUserAndRound = submitVotes.bind(null, {
-    userId,
     roundId,
   });
 

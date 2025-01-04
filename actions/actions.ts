@@ -3,7 +3,7 @@
 import { Navigation } from "@/enum/navigation";
 import { Tables } from "@/types";
 import { getIsSuccess } from "@/utils";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, getAuthUser } from "@/utils/supabase/server";
 import { revalidateTag } from "next/cache";
 
 export const signout = async () => {
@@ -113,9 +113,10 @@ export async function signup(formData: FormData): Promise<FormReturn> {
 }
 
 export const submitVotes = async (
-  { userId, roundId }: { userId: string; roundId: number },
+  { roundId }: { roundId: number },
   formData: FormData
 ): Promise<FormReturn> => {
+  const {userId} = getAuthUser();
   const entries = formData.entries();
   const payload = Object.fromEntries(entries);
   const voteKeys = Object.keys(payload).filter(
