@@ -12,7 +12,7 @@ export default async function SignUpForRound({
     return <div>Round not found</div>;
   }
 
-  const { userRoundDetails } = await userParticipationProvider({
+  const userRoundDetails  = await userParticipationProvider({
     roundId,
   });
   const signupsCloseDateLabel = dateLabels?.signups.closes;

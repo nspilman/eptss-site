@@ -19,7 +19,7 @@ export default async function VotingForRound({
     return <div>Round not found</div>;
   }
 
-  const { userRoundDetails } = await userParticipationProvider({ roundId });
+  const userRoundDetails = await userParticipationProvider({ roundId });
 
   return (
     <VotingPage

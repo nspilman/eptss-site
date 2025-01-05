@@ -15,7 +15,7 @@ export default async function SignUpForRound({
     song,
   } = await roundProvider(roundId);
 
-  const { userRoundDetails } = await userParticipationProvider({
+  const userRoundDetails = await userParticipationProvider({
     roundId,
   });
 

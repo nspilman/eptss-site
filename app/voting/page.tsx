@@ -16,7 +16,7 @@ const VotingPageHome = async () => {
   } = await roundProvider();
 
 
-  const { userRoundDetails } = await userParticipationProvider({ roundId });
+  const userRoundDetails  = await userParticipationProvider({ roundId });
 
   return (
     <VotingPage

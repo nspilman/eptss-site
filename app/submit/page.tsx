@@ -16,7 +16,7 @@ const Submit = async () => {
     song,
   } = await roundProvider(roundToReference);
 
-  const { userRoundDetails } = await userParticipationProvider({
+  const userRoundDetails  = await userParticipationProvider({
     roundId: roundToReference,
   });
 
