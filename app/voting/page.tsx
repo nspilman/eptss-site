@@ -4,7 +4,6 @@ import {
   userParticipationProvider,
 } from "@/providers";
 import VotingPage from "./VotingPage";
-import { getAuthUser } from "@/utils/supabase/server";
 
 const VotingPageHome = async () => {
   const {

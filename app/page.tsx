@@ -5,7 +5,6 @@ import { HowItWorks } from "./index/Homepage/HowItWorks";
 import { ClientHero } from "./ClientHero";
 import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
 import { Navigation } from "@/enum/navigation";
-import { getAuthUser } from "@/utils/supabase/server";
 import { Suspense } from "react";
 
 const Homepage = async () => {
@@ -18,8 +17,7 @@ const Homepage = async () => {
 
   const isVotingPhase = phase === "voting";
 
-const { userId } = getAuthUser();
-  const { userRoundDetails } = await userParticipationProvider();
+  const userRoundDetails  = await userParticipationProvider();
 
   const nextRound = await roundProvider(roundId + 1);
 
@@ -58,7 +56,7 @@ const { userId } = getAuthUser();
         isSubmissionOpen: areSubmissionsOpen,
         isVotingOpen: phase === "voting"
       }}
-      userInfo={{ userId, userRoundDetails }}
+      userRoundDetails={userRoundDetails}
       nextRoundInfo={nextRound}
       signedUpBlurb={signedUpBlurb}
       signupLink={signupLink}

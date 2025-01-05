@@ -3,17 +3,15 @@ import { roundProvider, votesProvider } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
 
-const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } }) => {
-
-    const roundIdParam = searchParams.roundId ? Number(searchParams.roundId) : undefined;
+const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
     if(!(await isAdmin())){
         return notFound();
     }
 
+    const roundIdParam = Number(params.roundId);
     const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
-    console.log({roundId, dates, voteOptions, roundIdParam})
     const { voteResults, outstandingVoters } = await votesProvider({ roundId })
-
+    
     // Vote results table setup
     const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;
     const voteHeaders = voteResultsHeaderKeys.map(key => ({
@@ -60,4 +58,4 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
     )
 }
 
-export default AdminPage;
+export default AdminRoundPage; 

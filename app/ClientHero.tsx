@@ -21,10 +21,26 @@ type HeroActionsClientProps = {
     isSubmissionOpen: boolean;
     isVotingOpen: boolean;
   };
-  userInfo: {
-    userId: string | null;
-    userRoundDetails: any;
-  };
+  userRoundDetails: {
+    user: {
+        userid: string;
+        song_selection_votes: {
+            round_id: number;
+            created_at: string;
+        }[];
+        submissions: {
+            round_id: number;
+            created_at: string | null;
+        }[];
+        sign_ups: {
+            round_id: number;
+            created_at: string | null;
+        }[];
+    };
+    hasVoted: boolean;
+    hasSubmitted: boolean;
+    hasSignedUp: boolean;
+} | undefined;
   nextRoundInfo: any;
   signedUpBlurb: string;
   signupLink: string;
@@ -40,14 +56,13 @@ type ButtonProps = {
 
 export const ClientHero = ({
   songText,
-  userInfo,
+  userRoundDetails,
   roundInfo,
   signedUpBlurb,
   signupsAreOpenString,
   signupLink,
   submitLink,
 }: HeroActionsClientProps) => {
-  const { userRoundDetails, userId } = userInfo;
   const { song, roundId, phase } = roundInfo;
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {
@@ -56,6 +71,8 @@ export const ClientHero = ({
     voting: userRoundDetails?.hasVoted || false,
     celebration: userRoundDetails?.hasSubmitted || false,
   };
+
+  const userId = userRoundDetails?.user.userid
 
   const getHeroContent = () => {
     if (!userId) {

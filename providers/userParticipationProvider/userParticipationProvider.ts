@@ -12,12 +12,8 @@ export const userParticipationProvider = async (props?: Props) => {
 
   const { userId } = getAuthUser();
 
-
   if (!userId) {
-    return {
-      getUserRoundDetails: undefined,
-      userId,
-    };
+    return
   }
 
   const roundId = await getCurrentRoundId();
@@ -31,9 +27,6 @@ export const userParticipationProvider = async (props?: Props) => {
     const data = await getRoundDataForUser(chosenRoundId);
     return data;
   };
-
-  return {
-    userRoundDetails: await getUserRoundDetails(),
-    userId,
-  };
+  
+  return await getUserRoundDetails();
 };

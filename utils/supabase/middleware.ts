@@ -58,14 +58,12 @@ export async function updateSession(request: NextRequest) {
   else{
     for (let index = 0; index < protectedRoutes.length; index++) {
       const route = protectedRoutes[index];
-      console.log(request.nextUrl.pathname, route)
       if(request.nextUrl.pathname.startsWith(route)){
         const url = request.nextUrl.clone()
         url.pathname = Navigation.Login;
         url.searchParams.append("redirectUrl",route)
         return {response: NextResponse.redirect(url)}
       }
-      
     }
   }
 
