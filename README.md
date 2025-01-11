@@ -1,34 +1,100 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Everyone Plays the Same Song 🎶
 
-## Getting Started
+Welcome to the **Everyone Plays the Same Song** project! This is a community-driven web application where musicians of all levels come together to cover the same song. Explore, create, and grow your musical journey with us!
 
-First, run the development server:
+## Features
+
+- **Signup & Participation**: Join the community, suggest songs, and vote on the next track to cover.
+- **Song Voting System**: A streamlined voting process helps the community decide the song for each round.
+- **Cover Submission**: Submit your unique take on the winning song.
+- **Listening Parties**: Celebrate creativity with compiled playlists shared at virtual listening parties.
+- **Admin Dashboard**: Manage rounds, view submissions, and track progress.
+- **Blog & Resources**: Access articles and resources to enhance your musical craft.
+
+## Tech Stack
+
+- **Frontend**: Next.js, React
+- **Styling**: Tailwind CSS
+- **State Management**: Context API
+- **Authentication**: Supabase
+- **Database**: Supabase Postgres
+- **Charting**: Chart.js
+- **Deployment**: Netlify
+
+## Project Structure
+
+```plaintext
+.
+├── app/                     # Application pages and components
+│   ├── api/                 # API routes
+│   ├── auth/                # Authentication flows
+│   ├── blog/                # Blog functionality
+│   ├── index/               # Homepage content
+│   ├── sign-up/             # Signup forms and related pages
+│   ├── submit/              # Submission forms
+│   ├── voting/              # Voting pages
+│   └── admin/               # Admin dashboard
+├── components/              # Reusable UI components
+├── types/                   # TypeScript types and enums
+├── utils/                   # Utility functions and helpers
+├── styles/                  # Global and component-specific styles
+├── middleware.ts            # Middleware for session updates
+├── tailwind.config.js       # Tailwind CSS configuration
+└── bun.lockb                # Bun dependency lock file
+```
+Installation and Setup
+Prerequisites
+Node.js >= 16
+Yarn or Bun
+Supabase account
+Steps
+Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
+git clone https://github.com/your-username/everyone-plays-the-same-song.git
+cd everyone-plays-the-same-song
+```
+Install dependencies:
+
+```bash
+bun install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a .env file in the root directory and configure the required environment variables:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Other keys as needed.
+Run the development server:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+```bash
+bun dev
+```
+Open the application in your browser:
+http://localhost:3000
 
-## Learn More
+For deployment, push the repository to a connected Netlify site, ensuring the required environment variables are configured in Netlify's settings.
 
-To learn more about Next.js, take a look at the following resources:
+How It Works
+Sign Up: Register to participate in the current or next round.
+Suggest & Vote: Submit song ideas and vote on community suggestions.
+Create: Record your cover of the selected song and submit your masterpiece.
+Celebrate: Share and listen to covers at the community's listening party.
+Contribution
+We welcome contributions! Please follow these steps to get started:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Fork the repository.
+Create a feature branch.
+Make your changes and test thoroughly.
+Submit a pull request.
+License
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Acknowledgements
+Community members for their creativity and participation.
+Open-source libraries and tools.
+Start your musical journey today with Everyone Plays the Same Song!
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
