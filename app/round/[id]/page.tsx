@@ -2,6 +2,8 @@ import Link from "next/link";
 import { DataTable } from "@/components/DataTable";
 import { PageTitle } from "@/components/PageTitle";
 import { votesProvider, roundsProvider, roundProvider } from "@/providers";
+import { StackedBarChart } from "./StackedBarChart";
+import { getVoteBreakdownBySong } from "@/data-access";
 
 export default async function Round({ params }: { params: { id: string } }) {
   return (
@@ -69,6 +71,7 @@ const signupsHeaders = [
 ] as const;
 
 const RoundSummary = async ({ roundId }: Props) => {
+  "use client"
   const { phase, song, playlistUrl, submissions, signups } =
     await roundProvider(roundId);
 
@@ -82,7 +85,7 @@ const RoundSummary = async ({ roundId }: Props) => {
   });
 
   const signupCount = signups?.length || 0;
-  // const voteBreakdown = await roundService.getVoteBreakdownBySong(roundId);
+  const voteBreakdown = await getVoteBreakdownBySong(roundId);
 
   const navigation = {
     previous: roundId !== 0 ? roundId - 1 : undefined,
@@ -204,10 +207,10 @@ const RoundSummary = async ({ roundId }: Props) => {
           <div
             className={`w-[400px] sm:w-[600px] md:w-[800px] lg:w-[1000px] overflow-scroll`}
           >
-            {/* <StackedBarChart
+            <StackedBarChart
               data={convertVoteBreakdownToBarchartFormat(voteBreakdown)}
               title="Vote Breakdown Bar Chart"
-            /> */}
+            />
           </div>
         )}
         <div className="flex justify-between w-full">

@@ -225,10 +225,7 @@ export const ClientHero = ({
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-lg md:text-xl mb-8 leading-relaxed text-gray-300"
           >
-            Sign up with a song you want to cover. Everyone votes, and the most
-            popular is the song that everyone plays. You&apos;ve got a creative
-            assignment, a deadline and a community of musicians doing the same
-            thing.
+           Sign up and suggest a song to cover. Everyone votes on the submitted cover candidates, and whichever song wins becomes the community&apos;s creative assignment - we all cover the same winning track. You&apos;ll have a clear deadline and be part of a community of musicians all tackling the same creative challenge.
           </motion.p>
           <EmailAuthModalContextProvider>
             <JoinTheCreativeCommunity/>

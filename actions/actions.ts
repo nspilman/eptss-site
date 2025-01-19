@@ -6,6 +6,14 @@ import { getIsSuccess } from "@/utils";
 import { createClient, getAuthUser } from "@/utils/supabase/server";
 import { revalidateTag } from "next/cache";
 
+const handleResponse = (status: number, tagToRevalidate: Navigation, errorMessage: string): FormReturn => {
+  const isSuccess = getIsSuccess(status);
+  if(isSuccess){
+    revalidateTag(tagToRevalidate)
+  }
+  return { status: isSuccess ? "Success" : "Error", message: errorMessage };
+}
+
 export const signout = async () => {
   "use server";
   const supabase = await createClient();
@@ -13,7 +21,7 @@ export const signout = async () => {
 };
 
 export type Status = "Success" | "Error";
-export type FormReturn = { status: Status; message: string };
+export type FormReturn = { status: Status; message: string;};
 
 export async function sendSignInLinkToEmail(
   formData: FormData
@@ -67,8 +75,8 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       didntWork: getToString("didntWork") || "",
     }),
   };
-  const { status } = await client.from("submissions").insert(payload);
-  return { status: getIsSuccess(status) ? "Success" : "Error", message: "" };
+  const { status, error } = await client.from("submissions").insert(payload);
+  return handleResponse(status, Navigation.Submit, error?.message || "")
 }
 
 export async function signup(formData: FormData): Promise<FormReturn> {
@@ -88,14 +96,7 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   };
 
   const { status, error } = await client.rpc("signup", payload);
-  const isSuccess = getIsSuccess(status);
-  if (isSuccess) {
-    revalidateTag(Navigation.SignUp);
-  }
-  return {
-    status: getIsSuccess(status) ? "Success" : "Error",
-    message: error?.message || "",
-  };
+  return handleResponse(status, Navigation.SignUp, error?.message || "")
 }
 
 export const submitVotes = async (
@@ -120,13 +121,5 @@ export const submitVotes = async (
   const client = await createClient();
 
   const { status, error } = await client.from(Tables.Votes).insert(votes);
-
-  if (getIsSuccess(status)) {
-    revalidateTag(Navigation.Voting);
-  }
-
-  return {
-    status: getIsSuccess(status) ? "Success" : "Error",
-    message: error?.message || "",
-  };
+  return handleResponse(status, Navigation.Voting, error?.message || "")
 };
