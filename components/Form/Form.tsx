@@ -5,6 +5,7 @@ interface FormSections {
   placeholder: string;
   defaultValue: string | number;
   label: string;
+  type?: "email" | "text" | "password";
   isSmall?: boolean;
   value?: number | string;
   hidden?: boolean;
@@ -19,7 +20,7 @@ interface Props {
   submitButtonText?: string;
 }
 
-export function Form({ formSections, disabled, title, description }: Props) {
+export function Form({ formSections, disabled, title, description}: Props) {
   return (
     <div className="w-full flex-col items-center justify-center">
       <div className="flex flex-col text-center font-fraunces">

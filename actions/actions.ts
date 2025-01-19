@@ -23,37 +23,6 @@ export const signout = async () => {
 export type Status = "Success" | "Error";
 export type FormReturn = { status: Status; message: string;};
 
-export async function sendSignInLinkToEmail(
-  formData: FormData
-): Promise<FormReturn> {
-  "use server";
-  const supabaseClient = await createClient();
-
-  const email = formData.get("email")?.toString();
-  if (!email) {
-    return {
-      status: "Error",
-      message: "Email required",
-    };
-  }
-
-  const emailRedirectTo = `${process.env.NEXT_PUBLIC_BASE_URL}`;
-
-  const { error } = await supabaseClient.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo,
-    },
-  });
-  if (error) {
-    return { status: "Error", message: error.message };
-  }
-  return {
-    status: "Success",
-    message: "Check your email for your login link!",
-  };
-}
-
 const getDataToString = (formData: FormData, key: string) => {
   return formData.get(key)?.toString();
 };
