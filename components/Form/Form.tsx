@@ -1,11 +1,12 @@
 import { InputField } from "./InputField";
+import { FieldTypes } from "./types";
 
 interface FormSections {
   id: string;
   placeholder: string;
   defaultValue: string | number;
   label: string;
-  type?: "email" | "text" | "password";
+  type?: FieldTypes;
   isSmall?: boolean;
   value?: number | string;
   hidden?: boolean;
@@ -35,6 +36,7 @@ export function Form({ formSections, disabled, title, description}: Props) {
           className={`space-y-6 ${field.hidden ? "hidden" : ""}`}
         >
           <InputField
+          //@ts-ignore
             field={{ ...field, field: field.id.toString() }}
             errors={[]}
             disabled={disabled}
