@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import React from "react";
 import Link from "next/link";
-import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 import { JoinTheCreativeCommunity } from "./JoinTheCreativeCommunityButton";
 import { Phase } from "@/types";
 import { Navigation } from "@/enum/navigation";
@@ -227,9 +226,7 @@ export const ClientHero = ({
           >
            Sign up and suggest a song to cover. Everyone votes on the submitted cover candidates, and whichever song wins becomes the community&apos;s creative assignment - we all cover the same winning track. You&apos;ll have a clear deadline and be part of a community of musicians all tackling the same creative challenge.
           </motion.p>
-          <EmailAuthModalContextProvider>
             <JoinTheCreativeCommunity/>
-          </EmailAuthModalContextProvider>
         </div>
         <motion.div
           initial={{ x: 20, opacity: 0 }}

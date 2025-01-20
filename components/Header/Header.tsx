@@ -6,7 +6,6 @@ import { MusicIcon } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
-import { EmailAuthModalContextProvider } from "@/components/client/context/EmailAuthModalContext";
 
 interface Props {
   userId: string
@@ -14,7 +13,6 @@ interface Props {
 
   export const Header = ({userId}: Props) => {
   return (
-    <EmailAuthModalContextProvider>
     <motion.nav 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -36,7 +34,6 @@ interface Props {
           <SignupButton isLoggedIn={!!userId} />
         </div>
       </motion.nav>
-      </EmailAuthModalContextProvider>
     // <div id="header" className="backdrop-blur fixed top-0 left-0 w-full">
     //   <div className="py-4 px-4 md:px-8 flex items-center justify-center md:justify-between">
     //     <Link href={"/"}>

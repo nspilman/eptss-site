@@ -2,19 +2,16 @@
 import React, { ReactElement } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { useAuthModal } from "@/components/client/context/EmailAuthModalContext";
 import { signout } from "@/actions/actions";
 import { Button } from "../ui/button";
+import { Link } from "lucide-react";
+import { Navigation } from "@/enum/navigation";
 
 interface Props {
   isLoggedIn?: boolean;
 }
 
 export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
-  const router = useRouter();
-
-  const { setIsOpen } = useAuthModal();
-
   // const onProfile = () => {
   //   router.push("/profile");
   // };
@@ -47,9 +44,11 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
           </button>
         )
       ) : (
-        <Button variant="outline" onClick={setIsOpen} className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
+        <Link href={Navigation.Login}>
+        <Button variant="outline" className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
           Sign up / Log In!
         </Button>
+        </Link>
       )}
     </>
   );
