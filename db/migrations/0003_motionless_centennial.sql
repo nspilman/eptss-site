@@ -1,0 +1,1 @@
+ALTER TABLE "mailing_list" ALTER COLUMN "id" SET DATA TYPE bigint;
