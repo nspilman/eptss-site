@@ -18,7 +18,6 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
         key: key, display: key, sortable: true
     }));
 
-    // Dates table setup
     const datesArray = Object.entries(dates)?.map(([key, { opens, closes }]) => ({
         phase: key,
         opens: new Date(opens).toLocaleString(),
