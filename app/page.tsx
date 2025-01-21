@@ -37,8 +37,6 @@ const Homepage = async () => {
     areSubmissionsOpen ? "" : roundId - 1
   }`;
 
-  const songText =
-    song.artist && song.title ? `${song.title} by ${song.artist}` : "";
   const signupsAreOpenString = `Signups are open for round ${
     hasRoundStarted ? roundId + 1 : roundId
   }`;

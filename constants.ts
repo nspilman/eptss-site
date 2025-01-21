@@ -6,7 +6,3 @@ export const AUTH_HEADER_KEYS = {
 }
 
 export const defaultDateString = "1970/01/01";
-
-
-
-
