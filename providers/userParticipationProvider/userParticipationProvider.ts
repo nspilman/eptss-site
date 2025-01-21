@@ -1,5 +1,5 @@
 "use server";
-import { getCurrentRoundId, getRoundDataForUser } from "@/data-access";
+import { getCurrentRoundId, getRoundDataForUser, signup, submitCover, submitVotes } from "@/data-access";
 import { getAuthUser } from "@/utils/supabase/server";
 
 // Define a custom hook for easy access to the UserSessionContext
@@ -12,8 +12,10 @@ export const userParticipationProvider = async (props?: Props) => {
 
   const { userId } = getAuthUser();
 
+  const services = {signup, submitCover, submitVotes, roundDetails: undefined}
+
   if (!userId) {
-    return
+    return services
   }
 
   const roundId = await getCurrentRoundId();
@@ -22,11 +24,13 @@ export const userParticipationProvider = async (props?: Props) => {
 
   const getUserRoundDetails = async () => {
     if (!chosenRoundId) {
-      return;
+      return undefined;
     }
     const data = await getRoundDataForUser(chosenRoundId);
     return data;
   };
-  
-  return await getUserRoundDetails();
+
+  const roundDetails = await getUserRoundDetails();
+
+  return {...services, roundDetails };
 };

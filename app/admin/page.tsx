@@ -11,7 +11,6 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
     }
 
     const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
-    console.log({roundId, dates, voteOptions, roundIdParam})
     const { voteResults, outstandingVoters } = await votesProvider({ roundId })
 
     // Vote results table setup
@@ -20,6 +19,7 @@ const AdminPage = async ({ searchParams }: { searchParams: { roundId?: string } 
         key: key, display: key, sortable: true
     }));
 
+    console.log({dates})
     // Dates table setup
     const datesArray = Object.entries(dates)?.map(([key, { opens, closes }]) => ({
         phase: key,

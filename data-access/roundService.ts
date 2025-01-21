@@ -1,9 +1,9 @@
 "use server";
 
-import { PostgrestError } from "@supabase/supabase-js";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
-import { Tables, Views } from "@/types";
+import { defaultDateString } from "@/constants";
+import { db } from "@/db";
+import { roundMetadata, songs, songSelectionVotes } from "@/db/schema";
+import { eq, gte, lte, asc, desc, and, or, count, sql, avg } from "drizzle-orm";
 
 export interface Round {
   roundId: number;
@@ -16,258 +16,158 @@ export interface Round {
   song: { artist: string; title: string };
 }
 
-const defaultDateString = "1970/01/01";
-
-const getClient = async () => {
-  const client = await createClient();
-  return client;
-};
 
 export const getCurrentRoundId = async () => {
-  const client = await getClient();
-  const { data: currentRound } = await client.rpc("get_current_round");
-  return currentRound || -1;
+  const currentRound = await db.select({ id: roundMetadata.id }).from(roundMetadata)
+    .where(
+      and(
+        lte(roundMetadata.votingOpens, new Date()),
+        gte(roundMetadata.listeningParty, new Date())
+      )
+    )
+    .orderBy(desc(roundMetadata.votingOpens))
+    .limit(1);
+  return currentRound.length ? currentRound[0].id : -1;
 };
 
 export const getRoundById = async (roundId: number) => {
-  const client = await getClient();
-  const {
-    data: roundData,
-    error,
-    status,
-  } = await client
-    .from(Tables.RoundMetadata)
-    .select(
-      `id, 
-        signup_opens, 
-        voting_opens, 
-        covering_begins, 
-        covers_due, 
-        listening_party, 
-        round_type_override,
-        playlist_url,
-        song:songs(
-          title, 
-          artist
-          )`
-    )
-    .filter("id", "eq", roundId)
-    .limit(1);
+  const roundData = await db
+    .select({
+      id: roundMetadata.id,
+      signupOpens: roundMetadata.signupOpens,
+      votingOpens: roundMetadata.votingOpens,
+      coveringBegins: roundMetadata.coveringBegins,
+      coversDue: roundMetadata.coversDue,
+      listeningParty: roundMetadata.listeningParty,
+      // typeOverride: roundMetadata.roundTypeOverride,
+      playlistUrl: roundMetadata.playlistUrl,
+      song: { title: songs.title, artist: songs.artist },
+    })
+    .from(roundMetadata)
+    .where(eq(roundMetadata.id, roundId))
+    .leftJoin(songs, eq(roundMetadata.songId, songs.id));
 
-  if (roundData?.length) {
+  if (roundData.length) {
     const {
-      id: roundId,
-      signup_opens: signupOpens,
-      voting_opens: votingOpens,
-      covering_begins: coveringBegins,
-      covers_due: coversDue,
-      listening_party: listeningParty,
-      round_type_override: typeOverride,
-      playlist_url: playlistUrl,
+      id,
+      signupOpens,
+      votingOpens,
+      coveringBegins,
+      coversDue,
+      listeningParty,
+      // typeOverride,
+      playlistUrl,
       song,
     } = roundData[0];
 
-    if (Array.isArray(song)) {
-      throw new Error("Only one song can be associated with a single round");
-    }
-    const songData = song || { artist: "", title: "" };
-    if (typeof roundId === "number") {
-      return {
-        roundId,
-        signupOpens: signupOpens || defaultDateString,
-        votingOpens: votingOpens || defaultDateString,
-        coveringBegins: coveringBegins || defaultDateString,
-        coversDue: coversDue || defaultDateString,
-        listeningParty: listeningParty || defaultDateString,
-        error,
-        song: songData,
-        typeOverride: typeOverride || undefined,
-        playlistUrl: playlistUrl || "",
-      };
-    }
+    return {
+      roundId: id,
+      signupOpens: signupOpens || defaultDateString,
+      votingOpens: votingOpens || defaultDateString,
+      coveringBegins: coveringBegins || defaultDateString,
+      coversDue: coversDue || defaultDateString,
+      listeningParty: listeningParty || defaultDateString,
+      // typeOverride: typeOverride || undefined,
+      playlistUrl: playlistUrl || "",
+      song: song || { artist: "", title: "" },
+    };
   }
-
-  return;
 };
 
 export const getCurrentRound = async () => {
-  const currentRound = await getRoundById(await getCurrentRoundId());
-  if (!currentRound) {
-    throw new Error("Unable to find current round");
-  }
-  return currentRound;
+  return await getRoundById(await getCurrentRoundId());
 };
 
-const getFormattedRoundData = async (
-  roundData:
-    | {
-        id: number;
-        signup_opens: string | null;
-        voting_opens: string | null;
-        covering_begins: string | null;
-        covers_due: string | null;
-        listening_party: string | null;
-        playlist_url: string | null;
-        round_type_override: "runner_up" | null;
-        song: {
-          artist: string;
-          title: string;
-        } | null;
-      }[]
-    | null
-) => {
-  const formattedRoundData = await roundData?.map(
-    ({
-      id,
-      signup_opens,
-      voting_opens,
-      covering_begins,
-      covers_due,
-      listening_party,
-      song,
-      round_type_override,
-      playlist_url,
-    }) => ({
-      roundId: id,
-      signupOpens: signup_opens || defaultDateString,
-      votingOpens: voting_opens || defaultDateString,
-      coveringBegins: covering_begins || defaultDateString,
-      coversDue: covers_due || defaultDateString,
-      listeningParty: listening_party || defaultDateString,
-      song: song || { artist: "", title: "" },
-      typeOverride: round_type_override || undefined,
-      playlistUrl: playlist_url || "",
-    })
-  );
-  if (formattedRoundData) {
-    return formattedRoundData;
-  }
+export const getCurrentAndFutureRounds = async () => {
+  const rounds = await db
+    .select()
+    .from(roundMetadata)
+    .where(gte(roundMetadata.id, await getCurrentRoundId()))
+    .orderBy(asc(roundMetadata.id));
 
-  throw new Error("Could not find round");
-};
-
-const roundQuery = `id, 
-signup_opens, 
-voting_opens, 
-covering_begins, 
-covers_due, 
-listening_party, 
-round_type_override,
-playlist_url,
-song:songs(
-  title, 
-  artist
-  )`;
-
-export const getCurrentAndFutureRounds = async (): Promise<{
-  data: Round[];
-  error: PostgrestError | null;
-}> => {
-  const client = await getClient();
-
-  const { data: roundData, error } = await client
-    .from(Tables.RoundMetadata)
-    .select(roundQuery)
-    .filter("id", "gte", await getCurrentRoundId())
-    .order("id");
-
-  const formattedRoundData = await getFormattedRoundData(roundData);
-  return { data: formattedRoundData, error };
+    const defaultDate = new Date(defaultDateString)
+  return rounds.map(round => ({
+    roundId: round.id,
+    signupOpens: round.signupOpens || defaultDate,
+    votingOpens: round.votingOpens || defaultDate,
+    coveringBegins: round.coveringBegins ||defaultDate,
+    coversDue: round.coversDue || defaultDate,
+    listeningParty: round.listeningParty || defaultDate,
+    // typeOverride: round.roundTypeOverride || undefined,
+    playlistUrl: round.playlistUrl || "",
+    song: { artist: "", title: "" },
+  }));
 };
 
 export const getCurrentAndPastRounds = async () => {
-  const client = await getClient();
+  const rounds = await db
+    .select({
+      id: roundMetadata.id,
+      signupOpens: roundMetadata.signupOpens,
+      votingOpens: roundMetadata.votingOpens,
+      coveringBegins: roundMetadata.coveringBegins,
+      coversDue: roundMetadata.coversDue,
+      listeningParty: roundMetadata.listeningParty,
+      playlistUrl: roundMetadata.playlistUrl,
+      song: { title: songs.title, artist: songs.artist },
+    })
+    .from(roundMetadata)
+    .leftJoin(songs, eq(roundMetadata.songId, songs.id))
+    .where(
+      or(
+        lte(roundMetadata.id, await getCurrentRoundId()),
+        lte(roundMetadata.votingOpens, new Date())
+      )
+    )
+    .orderBy(desc(roundMetadata.id));
 
-  const { data: roundData, error } = await client
-    .from(Tables.RoundMetadata)
-    .select(roundQuery)
-    .filter("id", "lte", await getCurrentRoundId())
-    .filter("voting_opens", "lte", new Date().toISOString())
-    .order("id", { ascending: false });
-
-  const formattedRoundData = await getFormattedRoundData(roundData);
-  return { data: formattedRoundData, error };
-};
-
-// const getRoundMetadata = async (id: number) => {
-//   const client = await getClient();
-
-//   const { data } = await client
-//     .from(Tables.RoundMetadata)
-//     .select(
-//       `playlist_url,
-//         id,
-//         song_id,
-//         song:songs(artist, title)`
-//     )
-//     .filter("id", "eq", id);
-
-//   const roundInfo = data?.[0];
-
-//   if (!roundInfo) {
-//     return {
-//       playlistUrl: "",
-//       title: "",
-//       artist: "",
-//       submitter: "",
-//     };
-//   }
-//   // const { data: submitterInfo } = (await client
-//   //   .from(Views.Signups)
-//   //   .select("username")
-//   //   .filter("title", "eq", roundInfo.song?.title)
-//   //   .filter("artist", "eq", roundInfo.song?.artist)
-//   //   .filter("round_id", "eq", roundInfo?.id)) as {
-//   //   data: {
-//   //     username: string;
-//   //   }[];
-//   // };
-
-//   return {
-//     playlistUrl: roundInfo.playlist_url || "",
-//     title: roundInfo.song?.title || "",
-//     artist: roundInfo.song?.artist || "",
-//     // submitter: submitterInfo.length ? submitterInfo[0].username : "",
-//   };
-// };
-
-export const getVoteBreakdownBySong = async (id: number) => {
-  const dbClient = await getClient();
-
-  const { data } = await dbClient
-    .from(Views.VoteBreakdownBySong)
-    .select()
-    .filter("round_id", "eq", id);
-
-  return (
-    data?.map(
-      ({
-        title,
-        artist,
-        one_count,
-        two_count,
-        three_count,
-        four_count,
-        five_count,
-      }) => ({
-        title: title || "",
-        artist: artist || "",
-        oneCount: one_count || 0,
-        twoCount: two_count || 0,
-        threeCount: three_count || 0,
-        fourCount: four_count || 0,
-        fiveCount: five_count || 0,
-      })
-    ) || []
-  );
+  return rounds.map(round => ({
+    roundId: round.id,
+    signupOpens: round.signupOpens || defaultDateString,
+    votingOpens: round.votingOpens || defaultDateString,
+    coveringBegins: round.coveringBegins || defaultDateString,
+    coversDue: round.coversDue || defaultDateString,
+    listeningParty: round.listeningParty || defaultDateString,
+    playlistUrl: round.playlistUrl || "",
+    song: round.song || { artist: "", title: "" },
+  }));
 };
 
 export const getAllRoundIds = async () => {
-  const client = await getClient();
+  const rounds = await db
+    .select({ id: roundMetadata.id })
+    .from(roundMetadata)
+    .orderBy(asc(roundMetadata.id));
 
-  const { data: roundIds } = await client
-    .from(Tables.RoundMetadata)
-    .select("id")
-    .lt("covering_begins", new Date().toDateString());
-  return roundIds;
+    
+  return rounds.map(round => round.id);
 };
+
+export const getVoteBreakdownBySong = async (roundId: number) => {
+  const voteBreakdown = await db
+    .select({
+      title: songs.title,
+      artist: songs.artist,
+      oneCount: sql<number>`sum(case when ${songSelectionVotes.vote} = 1 then 1 else 0 end)`,
+      twoCount: sql<number>`sum(case when ${songSelectionVotes.vote} = 2 then 1 else 0 end)`,
+      threeCount: sql<number>`sum(case when ${songSelectionVotes.vote} = 3 then 1 else 0 end)`,
+      fourCount: sql<number>`sum(case when ${songSelectionVotes.vote} = 4 then 1 else 0 end)`,
+      fiveCount: sql<number>`sum(case when ${songSelectionVotes.vote} = 5 then 1 else 0 end)`,
+    })
+    .from(songSelectionVotes)
+    .leftJoin(songs, eq(songSelectionVotes.songId, songs.id))
+    .where(eq(songSelectionVotes.roundId, roundId))
+    .groupBy(songs.title, songs.artist)
+    .orderBy(desc(avg(songSelectionVotes.vote)))
+
+  return voteBreakdown.map(row => ({
+    title: row.title || "",
+    artist: row.artist || "",
+    oneCount: Number(row.oneCount) || 0,
+    twoCount: Number(row.twoCount) || 0,
+    threeCount: Number(row.threeCount) || 0,
+    fourCount: Number(row.fourCount) || 0,
+    fiveCount: Number(row.fiveCount) || 0,
+  }));
+};
+

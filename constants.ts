@@ -5,4 +5,8 @@ export const AUTH_HEADER_KEYS = {
   EMAIL: 'x-user-email'
 }
 
+export const defaultDateString = "1970/01/01";
+
+
+
 

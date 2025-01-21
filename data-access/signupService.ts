@@ -1,35 +1,86 @@
 "use server";
 
-import { Tables } from "@/types";
-import { createClient } from "@/utils/supabase/server";
+import { db } from "@/db";
+import { signUps, songs, users } from "@/db/schema";
+import { Navigation } from "@/enum/navigation";
+import { FormReturn } from "@/types";
+import { getDataToString, handleResponse } from "@/utils";
+import { getAuthUser } from "@/utils/supabase/server";
+import { eq, sql, and } from "drizzle-orm";
 
 export const getSignupsByRound = async (roundId: number) => {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from(Tables.SignUps)
-    .select(
-      `
-  round_id,
-  song_id,
-  youtube_link,
-  song:songs (
-      title,
-      artist
-  )
-`
-    )
-    .eq("round_id", roundId)
-    .order("created_at");
-
-  return data;
+  return await db
+    .select({
+      roundId: signUps.roundId,
+      songId: signUps.songId,
+      youtubeLink: signUps.youtubeLink,
+      song: {
+        title: songs.title,
+        artist: songs.artist
+      }
+    })
+    .from(signUps)
+    .leftJoin(songs, eq(signUps.songId, songs.id))
+    .where(eq(signUps.roundId, roundId))
+    .orderBy(signUps.createdAt);
 };
 
 export const getSignupUsersByRound = async (roundId: number) => {
-  const supabase = await createClient();
-  const { data } = await supabase.from(Tables.SignUps).select(
-    `user_id,
-    users:users(email, userid)
-    )`
-  ).eq("round_id", roundId)
-  return data
-} 
+  return await db
+    .select({
+      userId: signUps.userId,
+      user: {
+        email: users.email,
+        userid: users.userid
+      }
+    })
+    .from(signUps)
+    .leftJoin(users, eq(signUps.userId, users.userid))
+    .where(eq(signUps.roundId, roundId));
+};
+
+
+
+export async function signup(formData: FormData): Promise<FormReturn> {
+  "use server";
+  const getToString = (key: string) => getDataToString(formData, key);
+  const { userId } = getAuthUser();
+  
+  try {
+    // First insert or get the song
+    const songResult = await db
+      .insert(songs)
+      .values({
+        id: sql`nextval('songs_id_seq')`,
+        title: getToString("songTitle") || "",
+        artist: getToString("artist") || "",
+      })
+      .onConflictDoNothing()
+      .returning();
+    
+    // Get the song ID (either from insert or existing)
+    const songId = songResult[0]?.id || 
+      (await db
+        .select({ id: songs.id })
+        .from(songs)
+        .where(and(
+          eq(songs.title, getToString("songTitle") || ""),
+          eq(songs.artist, getToString("artist") || "")
+        ))
+      )[0].id;
+
+    // Then insert the signup
+    await db.insert(signUps).values({
+      id: sql`nextval('sign_ups_id_seq')`,
+      youtubeLink: getToString("youtubeLink") || "",
+      additionalComments: getToString("additionalComments") || "",
+      roundId: JSON.parse(getToString("roundId") || "-1"),
+      songId: songId,
+      userId: userId || "",
+    });
+
+    return handleResponse(201, Navigation.SignUp, "");
+  } catch (error) {
+    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+  }
+}
