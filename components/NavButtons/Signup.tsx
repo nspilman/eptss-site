@@ -4,8 +4,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signout } from "@/actions/actions";
 import { Button } from "../ui/button";
-import { Link } from "lucide-react";
 import { Navigation } from "@/enum/navigation";
+import Link from "next/link";
 
 interface Props {
   isLoggedIn?: boolean;
@@ -34,13 +34,14 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
           </form>
         ) : (
           <button onClick={() => console.log("profile")}>
-            <Image
+            HELLO
+            {/* <Image
               src="/profile-icon.png"
               alt="profile icon"
               width={60}
               height={50}
               className="hover:shadow-NavShadow hover:cursor-pointer"
-            />
+            /> */}
           </button>
         )
       ) : (
