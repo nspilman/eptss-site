@@ -18,6 +18,7 @@ const AdminPage = async ({
   const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
   const { voteResults, outstandingVoters } = await votesProvider({ roundId });
 
+<<<<<<< HEAD
   // Vote results table setup
   const voteResultsHeaderKeys = [
     "title",
@@ -30,6 +31,10 @@ const AdminPage = async ({
     display: key,
     sortable: true,
   }));
+=======
+    const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
+    const { voteResults, outstandingVoters } = await votesProvider({ roundId })
+>>>>>>> a09f71f (migrating to drizzle)
 
   // Dates table setup
   const datesArray = Object.entries(dates)?.map(([key, { opens, closes }]) => ({
@@ -43,6 +48,7 @@ const AdminPage = async ({
     { key: "closes", display: "Closes", sortable: true },
   ];
 
+<<<<<<< HEAD
   // Vote options table setup
   const voteOptionsArray = voteOptions.map((option, index) => ({
     label: option.label,
@@ -52,6 +58,20 @@ const AdminPage = async ({
     { key: "label", display: "Label", sortable: true },
     { key: "link", display: "Link", sortable: true },
   ];
+=======
+    console.log({dates})
+    // Dates table setup
+    const datesArray = Object.entries(dates)?.map(([key, { opens, closes }]) => ({
+        phase: key,
+        opens: new Date(opens).toLocaleString(),
+        closes: new Date(closes).toLocaleString()
+    }));
+    const dateHeaders = [
+        { key: 'phase', display: 'Phase', sortable: true },
+        { key: 'opens', display: 'Opens', sortable: true },
+        { key: 'closes', display: 'Closes', sortable: true }
+    ];
+>>>>>>> a09f71f (migrating to drizzle)
 
   const outstandingVotesHeader = [{ key: "email", display: "Email" }];
 
