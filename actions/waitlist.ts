@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { mailingList } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 type WaitlistInput = {
   email: string;
@@ -26,6 +26,7 @@ export async function addToWaitlist({ email, name }: WaitlistInput) {
     await db
       .insert(mailingList)
       .values({
+        id: sql`nextval('mailing_list_id_seq')`,
         email,
         name,
       });

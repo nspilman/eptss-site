@@ -81,14 +81,14 @@ export const userSharePermissions = pgTable("user_share_permissions", {
 
 // Mailing List Table
 export const mailingList = pgTable('mailing_list', {
-  id: serial('id').primaryKey(),
+  id: bigint("id", { mode: "number" }).primaryKey(),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
 // Voting Candidate Overrides Table
-export const votingCandidateOverrides = pgTable("voting_candidate_overrides", {
+export const votingCandidateOverrides = pgTable("round_voting_candidate_overrides", {
   id: bigint("id", { mode: "number" }).primaryKey(),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id),
   originalRoundId: bigint("original_round_id", { mode: "number" }).references(() => roundMetadata.id),

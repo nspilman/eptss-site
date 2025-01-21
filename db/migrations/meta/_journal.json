@@ -15,6 +15,20 @@
       "when": 1737398795042,
       "tag": "0001_free_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1737435446450,
+      "tag": "0002_previous_ultimates",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1737436056109,
+      "tag": "0003_motionless_centennial",
+      "breakpoints": true
     }
   ]
 }
