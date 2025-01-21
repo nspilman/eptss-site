@@ -15,7 +15,7 @@ export default async function SignUpForRound({
     song,
   } = await roundProvider(roundId);
 
-  const userRoundDetails = await userParticipationProvider({
+  const {roundDetails} = await userParticipationProvider({
     roundId,
   });
 
@@ -23,7 +23,7 @@ export default async function SignUpForRound({
     <SubmitPage
       dateStrings={{ listeningPartyLabel, coverClosesLabel }}
       roundId={roundId}
-      hasSubmitted={userRoundDetails?.hasSubmitted || false}
+      hasSubmitted={roundDetails?.hasSubmitted || false}
       song={song}
     />
   );

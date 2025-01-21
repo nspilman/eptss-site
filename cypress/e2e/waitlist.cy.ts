@@ -32,7 +32,7 @@ describe("Verify Waitlist Signup in Supabase", () => {
             .then((response) => {
               cy.log("Supabase Response:", JSON.stringify(response, null, 2));
               expect(response.data).to.have.length(1);
-              expect(response.data[0].name).to.eq(testName);
+              expect(response.data?.[0].name).to.eq(testName);
             });
         });
       });

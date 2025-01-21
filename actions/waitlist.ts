@@ -1,7 +1,8 @@
 'use server';
 
-import { createClient } from "@/utils/supabase/server";
-
+import { db } from "@/db";
+import { mailingList } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 type WaitlistInput = {
   email: string;
@@ -9,31 +10,25 @@ type WaitlistInput = {
 };
 
 export async function addToWaitlist({ email, name }: WaitlistInput) {
-  const supabase = await createClient();
-
   try {
     // Check if email already exists
-    const { data: existing } = await supabase
-      .from('mailing_list')
-      .select('email')
-      .eq('email', email)
-      .single();
+    const existing = await db
+      .select({ email: mailingList.email })
+      .from(mailingList)
+      .where(eq(mailingList.email, email))
+      .limit(1);
 
-    if (existing) {
+    if (existing.length > 0) {
       throw new Error("This email is already on our waitlist");
     }
 
     // Add to mailing list
-    const { error } = await supabase
-      .from('mailing_list')
-      .insert([
-        {
-          email,
-          name,
-        }
-      ]);
-
-    if (error) throw error;
+    await db
+      .insert(mailingList)
+      .values({
+        email,
+        name,
+      });
 
     return { success: true };
   } catch (error) {

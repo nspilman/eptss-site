@@ -8,16 +8,18 @@ import { Navigation } from "@/enum/navigation";
 import { Suspense } from "react";
 
 const Homepage = async () => {
-  const {  roundId,
+  const {
+    roundId,
     phase,
     song,
     dateLabels,
     hasRoundStarted,
-    areSubmissionsOpen } = await roundProvider();
+    areSubmissionsOpen,
+  } = await roundProvider();
 
   const isVotingPhase = phase === "voting";
 
-  const userRoundDetails  = await userParticipationProvider();
+  const { roundDetails } = await userParticipationProvider();
 
   const nextRound = await roundProvider(roundId + 1);
 
@@ -35,7 +37,6 @@ const Homepage = async () => {
     areSubmissionsOpen ? "" : roundId - 1
   }`;
 
-  const songText = song.artist && song.title ? `${song.title} by ${song.artist}` : "";
   const signupsAreOpenString = `Signups are open for round ${
     hasRoundStarted ? roundId + 1 : roundId
   }`;
@@ -45,31 +46,31 @@ const Homepage = async () => {
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <ClientHero 
-      roundInfo={{ 
-        roundId, 
-        phase, 
-        song, 
-        dateLabels, 
-        hasRoundStarted, 
-        areSubmissionsOpen,
-        isSubmissionOpen: areSubmissionsOpen,
-        isVotingOpen: phase === "voting"
-      }}
-      userRoundDetails={userRoundDetails}
-      nextRoundInfo={nextRound}
-      signedUpBlurb={signedUpBlurb}
-      signupLink={signupLink}
-      submitLink={submitLink}
-      songText={songText}
-      signupsAreOpenString={signupsAreOpenString} />
+      <ClientHero
+        roundInfo={{
+          roundId,
+          phase,
+          song,
+          dateLabels,
+          hasRoundStarted,
+          areSubmissionsOpen,
+          isSubmissionOpen: areSubmissionsOpen,
+          isVotingOpen: phase === "voting",
+        }}
+        userRoundDetails={roundDetails}
+        nextRoundInfo={nextRound}
+        signedUpBlurb={signedUpBlurb}
+        signupLink={signupLink}
+        submitLink={submitLink}
+        signupsAreOpenString={signupsAreOpenString}
+      />
       <HowItWorks />
       <Suspense fallback={null}>
-      <RoundsDisplay
-        currentRound={roundId}
-        isVotingPhase={isVotingPhase}
-        phase={phase}
-      />
+        <RoundsDisplay
+          currentRound={roundId}
+          isVotingPhase={isVotingPhase}
+          phase={phase}
+        />
       </Suspense>
     </div>
   );

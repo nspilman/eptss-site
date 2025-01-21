@@ -89,7 +89,7 @@ const RoundSummary = async ({ roundId }: Props) => {
 
   const navigation = {
     previous: roundId !== 0 ? roundId - 1 : undefined,
-    next: roundIds?.map((val) => val.id).includes(roundId + 1)
+    next: roundIds?.includes(roundId + 1)
       ? roundId + 1
       : undefined,
   };
@@ -141,7 +141,7 @@ const RoundSummary = async ({ roundId }: Props) => {
   ];
 
   const signupDataDisplay = signups.map((signup) => ({
-    youtubeLink: signup.youtube_link,
+    youtubeLink: signup.youtubeLink || "",
     title: signup.song?.title || "",
     artist: signup.song?.artist || "",
   }));

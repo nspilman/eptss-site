@@ -40,7 +40,6 @@ async function createRandomSongPost(submissions: any[]): Promise<{
 }
 
 async function main() {
-    console.log({env: process.env})
     if (!process.env.BLUESKY_USERNAME || !process.env.BLUESKY_PASSWORD) {
         throw new Error('Missing Bluesky credentials in environment variables');
     }

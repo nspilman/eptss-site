@@ -22,6 +22,17 @@ interface Props {
   playlistUrl?: string;
 }
 
+type VoteOption = {
+  roundId: number;
+  originalRoundId?: number;
+  songId: number;
+  youtubeLink?: string;
+  song: {
+    title: string;
+    artist: string;
+  };
+};
+
 const PhaseMgmtService = async ({
   votingOpens,
   coveringBegins,
@@ -103,14 +114,14 @@ const PhaseMgmtService = async ({
     },
   };
 
-  const signupsToVoteOptions = ({ song, song_id, youtube_link }: any) => {
+  const signupsToVoteOptions = ({ song, songId, youtube_link }: any) => {
     const { artist, title } = song || {};
     // if (!artist || !title) {
     //   throw new Error("artist or title is null");
     // }
     return {
       label: `${title} by ${artist}`,
-      field: song_id.toString(),
+      field: songId.toString(),
       link: youtube_link || "",
     };
   };
@@ -160,7 +171,7 @@ export const roundProvider = async (currentRoundId?: number) => {
     listeningParty,
     roundId,
     song,
-    typeOverride,
+    // typeOverride,
     playlistUrl,
   } = round;
 
@@ -173,14 +184,14 @@ export const roundProvider = async (currentRoundId?: number) => {
   };
 
   return PhaseMgmtService({
-    votingOpens: datify(votingOpens),
-    coveringBegins: datify(coveringBegins),
-    coversDue: datify(coversDue),
-    signupOpens: datify(signupOpens),
-    listeningParty: datify(listeningParty),
+    votingOpens: new Date(votingOpens),
+    coveringBegins: new Date(coveringBegins),
+    coversDue: new Date(coversDue),
+    signupOpens: new Date(signupOpens),
+    listeningParty: new Date(listeningParty),
     roundId,
     song,
-    typeOverride: typeOverride as "runner_up" | undefined,
+    // typeOverride: typeOverride as "runner_up" | undefined,
     playlistUrl,
   })
 };
@@ -213,18 +224,7 @@ const _getSubmissions = async (roundId: number) => {
 };
 
 const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
-  const resultEntities:
-    | {
-        round_id: any;
-        original_round_id?: any;
-        song_id: any;
-        youtube_link: string;
-        song: {
-          title: any;
-          artist: any;
-        };
-      }[]
-    | null = [];
+  const resultEntities: VoteOption[] = [];
   if (typeOverride === "runner_up") {
     const { data, error } = await getRoundOverrideVotes(roundId);
     //@ts-ignore
@@ -239,6 +239,6 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
   }
 
   return resultEntities?.filter(
-    (result) => result.song_id && result.song_id !== -1
+    (result) => result.songId && result.songId !== -1
   );
 };

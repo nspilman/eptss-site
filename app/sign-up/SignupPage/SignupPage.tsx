@@ -6,7 +6,7 @@ import { ClientFormWrapper } from "@/components/client/Forms/ClientFormWrapper";
 import { Form } from "@/components/Form";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { additionalComments } from "@/components/fieldValues";
-import { signup } from "@/actions/actions";
+import { userParticipationProvider } from "@/providers";
 
 interface Props {
   hasSignedUp: boolean;
@@ -69,6 +69,7 @@ export async function SignupPage({
         ? "welcome-to-round-21-blur.jpg"
         : "welcome-image-blur.png",
   };
+  const {signup} = await userParticipationProvider();
 
   return (
     <>

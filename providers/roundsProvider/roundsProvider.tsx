@@ -12,10 +12,10 @@ interface Props {
 export const roundsProvider = async ({
   excludeCurrentRound = false,
 }: Props) => {
-  const { data } = await getCurrentAndPastRounds();
-  const { roundId } = await getCurrentRound();
+  const rounds = await getCurrentAndPastRounds();
+  const { roundId } = await getCurrentRound() || {};
   const roundContent =
-    data
+  rounds
       ?.map(({ song, playlistUrl, roundId }) => {
         const { title, artist } = song || { title: null, artist: null };
         return {

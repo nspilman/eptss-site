@@ -44,7 +44,6 @@ type HeroActionsClientProps = {
   signedUpBlurb: string;
   signupLink: string;
   submitLink: string;
-  songText: string;
   signupsAreOpenString: string;
 };
 
@@ -54,7 +53,6 @@ type ButtonProps = {
 };
 
 export const ClientHero = ({
-  songText,
   userRoundDetails,
   roundInfo,
   signedUpBlurb,
