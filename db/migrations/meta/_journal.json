@@ -29,6 +29,34 @@
       "when": 1737436056109,
       "tag": "0003_motionless_centennial",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1737474704688,
+      "tag": "0004_fancy_scarecrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1737474735699,
+      "tag": "0005_thankful_stranger",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1737475068078,
+      "tag": "0006_common_luckman",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1737475139590,
+      "tag": "0007_cheerful_echo",
+      "breakpoints": true
     }
   ]
 }

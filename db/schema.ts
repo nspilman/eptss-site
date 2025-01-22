@@ -87,6 +87,13 @@ export const mailingList = pgTable('mailing_list', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+export const mailingListUnsubscription = pgTable('mailing_list_unsubscription', {
+    id: bigint("id", { mode: "number" }).primaryKey(),
+    email: text('email').notNull().unique(),
+    userId: uuid('user_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  });
+  
 // Voting Candidate Overrides Table
 export const votingCandidateOverrides = pgTable("round_voting_candidate_overrides", {
   id: bigint("id", { mode: "number" }).primaryKey(),

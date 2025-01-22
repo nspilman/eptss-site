@@ -15,7 +15,6 @@ export enum Tables {
 }
 
 export enum Views {
-  VoteResults = "vote_results",
   Submissions = "submissions_view",
   PublicSignups = "public_signups",
   Signups = "signups",
