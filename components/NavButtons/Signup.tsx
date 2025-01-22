@@ -33,7 +33,8 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
             </Button>
           </form>
         ) : (
-          <button onClick={() => console.log("profile")}>
+          // <button onClick={() => console.log("profile")}>
+          <button >
             <Image
               src="/profile-icon.png"
               alt="profile icon"

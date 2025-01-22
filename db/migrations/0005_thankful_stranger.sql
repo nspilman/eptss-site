@@ -1,0 +1,1 @@
+ALTER TABLE "mailing_list_unsubscription" ALTER COLUMN "user_id" SET DATA TYPE uuid;

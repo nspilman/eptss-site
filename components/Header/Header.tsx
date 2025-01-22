@@ -6,6 +6,7 @@ import { MusicIcon } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
+import { Navigation } from "@/enum/navigation";
 
 interface Props {
   userId: string
@@ -27,10 +28,12 @@ interface Props {
           </span>
           </Link>
         </h1>
-        <div className="space-x-2 md:space-x-4">
+        <div className="space-x-2 md:space-x-4 flex">
+          <Link href={Navigation.FAQ}>
           <Button variant="outline" className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
             FAQ
           </Button>
+          </Link>
           <SignupButton isLoggedIn={!!userId} />
         </div>
       </motion.nav>
