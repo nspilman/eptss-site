@@ -52,6 +52,7 @@ const AdminPage = async ({
     { key: "label", display: "Label", sortable: true },
     { key: "link", display: "Link", sortable: true },
   ];
+  
   const outstandingVotesHeader = [{ key: "email", display: "Email" }];
 
   return (
