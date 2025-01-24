@@ -70,7 +70,6 @@ export const ClientFormWrapper = ({
         )
       ) : (
         <form className={`space-y-4 flex ${className}`} onSubmit={handleSubmit}>
-          {/* Thank you so much for your submission. */}
           {children}
           <>
           <span className="pb-1" />

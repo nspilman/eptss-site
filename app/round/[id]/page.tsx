@@ -214,16 +214,16 @@ const RoundSummary = async ({ roundId }: Props) => {
           </div>
         )}
         <div className="flex justify-between w-full">
-          {navigation.previous && (
+          {navigation.previous ? (
             <a href={`/round/${navigation.previous}`}>
               <button className="btn-main">Round {navigation.previous}</button>
             </a>
-          )}
-          {navigation.next && (
+          ): <div/>}
+          {navigation.next ? (
             <a href={`/round/${navigation.next}`}>
               <button className="btn-main">Round {navigation.next}</button>
             </a>
-          )}
+          ): <></>}
         </div>
       </div>
     </>
