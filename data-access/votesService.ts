@@ -1,10 +1,9 @@
 "use server";
 
 import { isAdmin } from "@/utils/isAdmin";
-
 import { db } from "@/db";
 import { votingCandidateOverrides, songs, songSelectionVotes } from "@/db/schema";
-import { eq, avg, count, sql, desc } from "drizzle-orm";
+import { eq, avg, count, sql, desc, and } from "drizzle-orm";
 import { handleResponse } from "@/utils";
 import { Navigation } from "@/enum/navigation";
 import { FormReturn } from "@/types";
@@ -40,9 +39,8 @@ export const getVoteResults = async (id: number) => {
     .from(songSelectionVotes)
     .leftJoin(songs, eq(songSelectionVotes.songId, songs.id))
     .where(eq(songSelectionVotes.roundId, id))
-    .groupBy(songs.title, songs.artist).orderBy(
-      desc(avg(songSelectionVotes.vote))
-    );
+    .groupBy(songs.title, songs.artist)
+    .orderBy(desc(avg(songSelectionVotes.vote)));
 
   return voteResults.map((result) => ({
     title: result.title || "",
@@ -58,41 +56,57 @@ export const getVotingUsersByRound = async (roundId: number) => {
   }
 
   const votes = await db
-    .selectDistinct({ userId: songSelectionVotes.userId })
+    .select({
+      userId: songSelectionVotes.userId
+    })
     .from(songSelectionVotes)
-    .where(eq(songSelectionVotes.roundId, roundId));
+    .where(eq(songSelectionVotes.roundId, roundId))
+    .groupBy(songSelectionVotes.userId);
 
-  return votes.map(vote => vote.userId).filter((id): id is string => id !== null);
+  return votes.map(vote => vote.userId).filter(Boolean);
 };
-
 
 export const submitVotes = async (
   { roundId }: { roundId: number },
   formData: FormData
 ): Promise<FormReturn> => {
   const { userId } = getAuthUser();
-  const entries = formData.entries();
-  const payload = Object.fromEntries(entries);
-  const voteKeys = Object.keys(payload).filter(
-    (key) => !["name", "email"].includes(key)
-  );
+  if (!userId) {
+    return handleResponse(401, Navigation.Login, "User not found");
+  }
 
   try {
-    const votes = voteKeys
-      .filter((key) => !["userId", "roundId"].includes(key))
-      .map((key) => ({
-        id: sql`nextval('song_selection_votes_id_seq')`,
-        songId: JSON.parse(key),
-        vote: JSON.parse(formData.get(key)?.toString() || "-1"),
-        roundId: roundId,
-        userId: userId,
-        createdAt: new Date(),
-      }));
+    await db.transaction(async (trx) => {
+      // Delete existing votes for this user and round
+      await trx
+        .delete(songSelectionVotes)
+        .where(
+          and(
+            eq(songSelectionVotes.userId, userId),
+            eq(songSelectionVotes.roundId, roundId)
+          )
+        );
 
-    await db.insert(songSelectionVotes).values(votes);
-    
-    return handleResponse(201, Navigation.Voting, "");
+      // Insert new votes
+      const votes = Array.from(formData.entries())
+        .filter(([key]) => key.startsWith('song-'))
+        .map(([key, value]) => ({
+          id: sql`nextval('song_selection_votes_id_seq')`,
+          userId,
+          roundId,
+          songId: Number(key.replace('song-', '')),
+          vote: Number(value),
+          createdAt: new Date()
+        }));
+
+      if (votes.length) {
+        await trx.insert(songSelectionVotes).values(votes);
+      }
+    });
+
+    return handleResponse(201, Navigation.Home, "");
   } catch (error) {
+    console.error('Error submitting votes:', error);
     return handleResponse(500, Navigation.Voting, (error as Error).message);
   }
 };

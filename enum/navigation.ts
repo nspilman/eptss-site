@@ -6,7 +6,8 @@ export enum Navigation {
   Rounds = "#rounds",
   Voting = "/voting",
   Waitlist = "/waitlist",
-  Login = "/login"
+  Login = "/login",
+  Home = "/"
   // Profile = "/profile",
 }
 
