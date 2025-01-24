@@ -22,24 +22,13 @@ type HeroActionsClientProps = {
   };
   userRoundDetails: {
     user: {
-        userid: string;
-        song_selection_votes: {
-            round_id: number;
-            created_at: string;
-        }[];
-        submissions: {
-            round_id: number;
-            created_at: string | null;
-        }[];
-        sign_ups: {
-            round_id: number;
-            created_at: string | null;
-        }[];
+      userid: string;
+      email: string;
     };
     hasVoted: boolean;
     hasSubmitted: boolean;
     hasSignedUp: boolean;
-} | undefined;
+  } | undefined;
   nextRoundInfo: any;
   signedUpBlurb: string;
   signupLink: string;
