@@ -6,30 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import React from "react";
 import Link from "next/link";
 import { JoinTheCreativeCommunity } from "./JoinTheCreativeCommunityButton";
-import { Phase } from "@/types";
+import { Phase, RoundInfo } from "@/types/round";
+import { UserRoundParticipation } from "@/types/user";
 import { Navigation } from "@/enum/navigation";
 
 type HeroActionsClientProps = {
-  roundInfo: {
-    roundId: number;
-    phase: string;
-    song: { title: string; artist: string };
-    dateLabels: any;
-    hasRoundStarted: boolean;
-    areSubmissionsOpen: boolean;
-    isSubmissionOpen: boolean;
-    isVotingOpen: boolean;
-  };
-  userRoundDetails: {
-    user: {
-      userid: string;
-      email: string;
-    };
-    hasVoted: boolean;
-    hasSubmitted: boolean;
-    hasSignedUp: boolean;
-  } | undefined;
-  nextRoundInfo: any;
+  roundInfo: RoundInfo;
+  userRoundDetails: UserRoundParticipation | undefined;
+  nextRoundInfo: RoundInfo;
   signedUpBlurb: string;
   signupLink: string;
   submitLink: string;

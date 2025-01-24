@@ -37,9 +37,9 @@ export const signUps = pgTable("sign_ups", {
   createdAt: timestamp("created_at").defaultNow(),
   youtubeLink: text("youtube_link").notNull(),
   additionalComments: text("additional_comments"),
-  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id),
-  songId: bigint("song_id", { mode: "number" }).references(() => songs.id),
-  userId: uuid("user_id").references(() => users.userid),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  songId: bigint("song_id", { mode: "number" }).references(() => songs.id).notNull(),
+  userId: uuid("user_id").references(() => users.userid).notNull(),
 });
 
 // Submissions Table
@@ -97,8 +97,8 @@ export const mailingListUnsubscription = pgTable('mailing_list_unsubscription', 
 // Voting Candidate Overrides Table
 export const votingCandidateOverrides = pgTable("round_voting_candidate_overrides", {
   id: bigint("id", { mode: "number" }).primaryKey(),
-  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id),
-  originalRoundId: bigint("original_round_id", { mode: "number" }).references(() => roundMetadata.id),
-  songId: bigint("song_id", { mode: "number" }).references(() => songs.id),
-  createdAt: timestamp("created_at").defaultNow(),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  originalRoundId: bigint("original_round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  songId: bigint("song_id", { mode: "number" }).references(() => songs.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });

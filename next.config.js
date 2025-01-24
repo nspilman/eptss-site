@@ -2,7 +2,10 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: false,
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
   sentry: {
     hideSourceMaps: true,
   },
@@ -18,7 +21,11 @@ const nextConfig = {
 };
 
 const sentryWebpackPluginOptions = {
-  // Additional config options for the Sentry Webpack plugin
+  silent: true, // Suppresses all logs
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
 };
 
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions); 
+export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);

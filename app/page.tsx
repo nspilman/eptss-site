@@ -8,6 +8,7 @@ import { Navigation } from "@/enum/navigation";
 import { Suspense } from "react";
 
 const Homepage = async () => {
+  const currentRound = await roundProvider();
   const {
     roundId,
     phase,
@@ -15,13 +16,13 @@ const Homepage = async () => {
     dateLabels,
     hasRoundStarted,
     areSubmissionsOpen,
-  } = await roundProvider();
+  } = currentRound;
 
   const isVotingPhase = phase === "voting";
 
   const { roundDetails } = await userParticipationProvider();
 
-  const nextRound = await roundProvider(roundId + 1);
+  const nextRound = (await roundProvider(roundId + 1));
 
   const signedUpBlurb = getBlurb({
     phase,
@@ -47,16 +48,7 @@ const Homepage = async () => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <ClientHero
-        roundInfo={{
-          roundId,
-          phase,
-          song,
-          dateLabels,
-          hasRoundStarted,
-          areSubmissionsOpen,
-          isSubmissionOpen: areSubmissionsOpen,
-          isVotingOpen: phase === "voting",
-        }}
+        roundInfo={currentRound}
         userRoundDetails={roundDetails}
         nextRoundInfo={nextRound}
         signedUpBlurb={signedUpBlurb}
@@ -64,14 +56,14 @@ const Homepage = async () => {
         submitLink={submitLink}
         signupsAreOpenString={signupsAreOpenString}
       />
-      <HowItWorks />
-      <Suspense fallback={null}>
-        <RoundsDisplay
-          currentRound={roundId}
-          isVotingPhase={isVotingPhase}
-          phase={phase}
-        />
-      </Suspense>
+      <div className="container">
+        <div className="flex flex-col gap-8 py-8">
+          <Suspense>
+            <HowItWorks />
+          </Suspense>
+          <RoundsDisplay currentRoundId={currentRound.roundId} isVotingPhase={isVotingPhase} phase={phase}/>
+        </div>
+      </div>
     </div>
   );
 };

@@ -177,11 +177,11 @@ const RoundSummary = async ({ roundId }: Props) => {
                 title="Cover Submissions"
                 headers={submissionsDisplayHeaders}
                 rows={(submissions || []).map(
-                  ({ username, soundcloud_url }) => ({
+                  ({ username, soundcloudUrl }) => ({
                     username,
                     // <Link href={`/profile/${username}`},
                     // </Link>
-                    soundcloud_url: <Link href={soundcloud_url}>Link</Link>,
+                    soundcloud_url: <Link href={soundcloudUrl}>Link</Link>,
                   })
                 )}
               />

@@ -25,7 +25,13 @@ export const getRoundOverrideVotes = async (roundId: number) => {
     .where(eq(votingCandidateOverrides.roundId, roundId))
     .orderBy(votingCandidateOverrides.originalRoundId);
 
-  return { data, error: null };
+  return { data: data.map((val) => ({
+      ...val,
+      song: {
+        title: val.song?.title || "",
+        artist: val.song?.artist || ""
+      }
+    })), error: null };
 };
 
 export const getVoteResults = async (id: number) => {

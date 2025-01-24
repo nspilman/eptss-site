@@ -1,15 +1,14 @@
 import { Phase } from "types";
-import { RoundDisplay } from "./RoundDisplay";
 import { roundsProvider } from "@/providers";
 import { ClientRoundsDisplay } from "./ClientRoundsDisplay";
 
 interface Props {
-  currentRound: number;
+  currentRoundId: number;
   isVotingPhase: boolean;
   phase: Phase;
 }
 export const RoundsDisplay = async ({
-  currentRound,
+  currentRoundId,
   isVotingPhase,
   phase,
 }: Props) => {
@@ -42,7 +41,7 @@ export const RoundsDisplay = async ({
           Rounds
         </h2>
       </div>
- <ClientRoundsDisplay rounds={rounds} currentRoundId={currentRound} isVotingPhase={isVotingPhase} />
+ <ClientRoundsDisplay rounds={rounds} currentRoundId={currentRoundId} isVotingPhase={isVotingPhase} />
     </div>
   );
 };

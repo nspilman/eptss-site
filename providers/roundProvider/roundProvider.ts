@@ -1,5 +1,4 @@
 "use server";
-import { format, subDays } from "date-fns";
 import {
   getCurrentRound,
   getRoundById,
@@ -7,20 +6,11 @@ import {
   getSignupsByRound,
   getSubmissions,
 } from "@/data-access";
-import { Phase } from "@/types";
+import { Phase, RoundInfo } from "@/types/round";
 import { seededShuffle } from "@/utils/seededShuffle";
+import { formatDate, getCurrentPhase, getPhaseDates, parseDate, RoundDates } from "@/services/dateService";
 
-interface Props {
-  votingOpens: Date;
-  coveringBegins: Date;
-  coversDue: Date;
-  signupOpens: Date;
-  listeningParty: Date;
-  roundId: number;
-  song: { artist: string; title: string };
-  typeOverride?: "runner_up";
-  playlistUrl?: string;
-}
+const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
 type VoteOption = {
   roundId: number;
@@ -30,198 +20,109 @@ type VoteOption = {
   song: {
     title: string;
     artist: string;
-  };
+  }
 };
 
-const PhaseMgmtService = async ({
-  votingOpens,
-  coveringBegins,
-  coversDue,
-  signupOpens,
-  listeningParty,
-  roundId,
-  song,
-  typeOverride,
-  playlistUrl,
-}: Props) => {
-  let phase: Phase;
+// async function getVoteOptions(roundId: number, typeOverride?: "runner_up"): Promise<VoteOption[]> {
+//   const signups = await getSignupsByRound(roundId);
 
-  const now = new Date();
-  if (now < signupOpens) {
-    throw new Error(
-      "current date cannot be before signup date. Signup starts the current round"
-    );
-  }
-  if (!(votingOpens < coveringBegins && coveringBegins < coversDue)) {
-    throw new Error("dates are in incorrect order");
-  }
+//   const overrideVotes = typeOverride && await getRoundOverrideVotes(roundId);
+//   const allOptions = [...signups.map(signup => ({...signup, roundId })), ...(overrideVotes?.data || [])].map(signup => ({...signup, roundId})); 
 
-  const isBefore = (date: Date) => now < date;
+//   return seededShuffle(allOptions, roundId.toString());
+// }
 
-  switch (true) {
-    case isBefore(votingOpens):
-      phase = "signups";
-      break;
-    case isBefore(coveringBegins):
-      phase = "voting";
-      break;
-    case isBefore(coversDue):
-      phase = "covering";
-      break;
-    default:
-      phase = "celebration";
-      break;
-  }
+async function transformSubmissions(roundId: number) {
+  const rawSubmissions = await getSubmissions(roundId);
+  return rawSubmissions.map(({ round_id, soundcloud_url, ...rest }) => ({
+    ...rest,
+    roundId: round_id,
+    soundcloudUrl: soundcloud_url,
+  }));
+}
 
-  const dates = {
-    signups: {
-      opens: signupOpens,
-      closes: subDays(votingOpens, 1),
-    },
-    voting: {
-      opens: votingOpens,
-      closes: subDays(coveringBegins, 1),
-    },
-    covering: {
-      opens: coveringBegins,
-      closes: subDays(coversDue, 1),
-    },
-    celebration: {
-      opens: coversDue,
-      closes: listeningParty,
-    },
-  };
-  // use this.dates ^ as our source of truth
-  // and keeping this.dateLabels to to make sure its backwards compatible
-  // but ideally, components should use this.date values, and then format as needed
-  const formatLabel = (date: Date) => format(date, "iiii, MMM do");
-  const dateLabels = {
-    signups: {
-      opens: formatLabel(dates.signups.opens),
-      closes: formatLabel(dates.signups.closes),
-    },
-    voting: {
-      opens: formatLabel(dates.voting.opens),
-      closes: formatLabel(dates.voting.closes),
-    },
-    covering: {
-      opens: formatLabel(dates.covering.opens),
-      closes: formatLabel(dates.covering.closes),
-    },
-    celebration: {
-      opens: formatLabel(dates.celebration.opens),
-      closes: formatLabel(dates.celebration.closes),
-    },
-  };
-
-  const signupsToVoteOptions = ({ song, songId, youtube_link }: any) => {
-    const { artist, title } = song || {};
-    // if (!artist || !title) {
-    //   throw new Error("artist or title is null");
-    // }
-    return {
-      label: `${title} by ${artist}`,
-      field: songId.toString(),
-      link: youtube_link || "",
-    };
-  };
-
-  const unsortedSignups = await getVoteOptions(roundId, typeOverride);
-  const unsortedVoteOptions = unsortedSignups.map((entity) =>
-    signupsToVoteOptions(entity)
-  );
-  const signups = seededShuffle(
-    unsortedSignups,
-    JSON.stringify(unsortedVoteOptions)
-  );
-  const voteOptions = seededShuffle(
-    unsortedVoteOptions,
-    JSON.stringify(unsortedVoteOptions.map(option => option.link))
-  );
-
-  return {
-    phase,
-    roundId,
-    song,
-    typeOverride,
-    dateLabels,
-    dates,
-    playlistUrl,
-    submissions: (await _getSubmissions(roundId)) || [],
-    signups,
-    areSubmissionsOpen: hasSubmissionsOpened(phase),
-    hasRoundStarted: hasRoundStarted(phase),
-    hasRoundEnded: hasRoundEnded(phase),
-    voteOptions,
-  };
-};
-
-export const roundProvider = async (currentRoundId?: number) => {
+export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo> => {
   const round = currentRoundId
     ? await getRoundById(currentRoundId)
     : await getCurrentRound();
+
   if (!round) {
     throw new Error(`Requested round ${currentRoundId} does now exist`);
   }
+
   const {
+    roundId,
+    signupOpens,
     votingOpens,
     coveringBegins,
     coversDue,
-    signupOpens,
     listeningParty,
-    roundId,
     song,
-    // typeOverride,
     playlistUrl,
   } = round;
 
-  const datify = (dateString: string) => {
-    const date = new Date(dateString);
-    const isValidDate = date instanceof Date && !isNaN(date.getDate());
-    if (!isValidDate)
-      throw new Error(`${dateString} is an invalid date string`);
-    return date;
+  // Parse all dates at once
+  const dates: RoundDates = {
+    signupOpens: parseDate(signupOpens),
+    votingOpens: parseDate(votingOpens),
+    coveringBegins: parseDate(coveringBegins),
+    coversDue: parseDate(coversDue),
+    listeningParty: parseDate(listeningParty),
   };
 
-  return PhaseMgmtService({
-    votingOpens: new Date(votingOpens),
-    coveringBegins: new Date(coveringBegins),
-    coversDue: new Date(coversDue),
-    signupOpens: new Date(signupOpens),
-    listeningParty: new Date(listeningParty),
+  const phase = getCurrentPhase(dates);
+  const phaseDates = getPhaseDates(dates);
+
+  type DateLabel = {
+    opens: string;
+    closes: string;
+  };
+
+  const dateLabels: Record<Phase, DateLabel> = {
+    signups: {
+      opens: formatDate(phaseDates.signups.opens),
+      closes: formatDate(phaseDates.signups.closes),
+    },
+    voting: {
+      opens: formatDate(phaseDates.voting.opens),
+      closes: formatDate(phaseDates.voting.closes),
+    },
+    covering: {
+      opens: formatDate(phaseDates.covering.opens),
+      closes: formatDate(phaseDates.covering.closes),
+    },
+    celebration: {
+      opens: formatDate(phaseDates.celebration.opens),
+      closes: formatDate(phaseDates.celebration.closes),
+    },
+  };
+
+  const hasRoundStarted = phaseOrder.indexOf(phase) > 0;
+  const areSubmissionsOpen = phase === "signups";
+  const isVotingOpen = phase === "voting";
+  
+  const [voteOptions, submissions] = await Promise.all([
+    getVoteOptions(roundId),
+    transformSubmissions(roundId),
+  ]);
+
+  const signups = await getSignupsByRound(roundId);
+
+  return {
     roundId,
+    phase,
     song,
-    // typeOverride: typeOverride as "runner_up" | undefined,
+    dateLabels,
+    hasRoundStarted,
+    areSubmissionsOpen,
+    isVotingOpen,
+    voteOptions,
+    submissions,
     playlistUrl,
-  })
+    signups,
+  }
 };
 
-const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
-
-const getPhaseOrderPosition = (phase: Phase) => {
-  return phaseOrder.indexOf(phase);
-};
-
-const hasRoundStarted = (phase: Phase) => {
-  return getPhaseOrderPosition(phase) > getPhaseOrderPosition("signups");
-};
-
-const hasSubmissionsOpened = (phase: Phase) => {
-  return getPhaseOrderPosition(phase) > getPhaseOrderPosition("voting");
-};
-
-const hasRoundEnded = (phase: Phase) => {
-  return phase === "celebration";
-};
-
-const _getSubmissions = async (roundId: number) => {
-  const submissions = await getSubmissions(roundId);
-  return submissions?.map((submission) => ({
-    ...submission,
-    roundId: submission.round_id,
-    soundcloudUrl: submission.soundcloud_url,
-  }));
-};
 
 const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
   const resultEntities: VoteOption[] = [];

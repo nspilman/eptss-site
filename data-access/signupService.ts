@@ -9,9 +9,8 @@ import { getAuthUser } from "@/utils/supabase/server";
 import { eq, sql, and } from "drizzle-orm";
 
 export const getSignupsByRound = async (roundId: number) => {
-  return await db
+  const data = await db
     .select({
-      roundId: signUps.roundId,
       songId: signUps.songId,
       youtubeLink: signUps.youtubeLink,
       song: {
@@ -23,10 +22,21 @@ export const getSignupsByRound = async (roundId: number) => {
     .leftJoin(songs, eq(signUps.songId, songs.id))
     .where(eq(signUps.roundId, roundId))
     .orderBy(signUps.createdAt);
+    
+    return data.map((val) => ({
+      ...val,
+      song: {
+        title: val.song?.title || "",
+        artist: val.song?.artist || ""
+      }
+
+    }));
 };
 
+
+
 export const getSignupUsersByRound = async (roundId: number) => {
-  return await db
+  const data = await db
     .select({
       userId: signUps.userId,
       user: {

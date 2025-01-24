@@ -24,7 +24,7 @@ export default async function VotingForRound({
   return (
     <VotingPage
       roundId={roundId}
-      voteOptions={voteOptions}
+      voteOptions={voteOptions.map(option => ({...option, field: option.songId.toString(), label: option.song.title + " - " + option.song.artist}))}
       phase={phase}
       coveringStartLabel={coveringStartLabel}
       userRoundDetails={roundDetails}

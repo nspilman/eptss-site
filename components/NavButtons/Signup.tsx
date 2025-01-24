@@ -4,8 +4,8 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signout } from "@/actions/actions";
 import { Button } from "../ui/button";
-import { Link } from "lucide-react";
 import { Navigation } from "@/enum/navigation";
+import Link from "next/link";
 
 interface Props {
   isLoggedIn?: boolean;

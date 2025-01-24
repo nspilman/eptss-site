@@ -9,7 +9,7 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
     }
 
     const roundIdParam = Number(params.roundId);
-    const { roundId, dates, voteOptions } = await roundProvider(roundIdParam);
+    const { roundId, dateLabels, voteOptions } = await roundProvider(roundIdParam);
     const { voteResults, outstandingVoters } = await votesProvider({ roundId })
     
     // Vote results table setup
@@ -18,7 +18,7 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
         key: key, display: key, sortable: true
     }));
 
-    const datesArray = Object.entries(dates)?.map(([key, { opens, closes }]) => ({
+    const datesArray = Object.entries(dateLabels)?.map(([key, { opens, closes }]) => ({
         phase: key,
         opens: new Date(opens).toLocaleString(),
         closes: new Date(closes).toLocaleString()
@@ -31,8 +31,8 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
 
     // Vote options table setup
     const voteOptionsArray = voteOptions.map((option, index) => ({
-        label: option.label,
-        link: option.link
+        label: `${option.song.title} - ${option.song.artist}`,
+        link: option.youtubeLink || ''
     }));
     const voteOptionHeaders = [
         { key: 'label', display: 'Label', sortable: true },
@@ -40,7 +40,7 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
     ];
 
     const outstandingVotesHeader = [
-        {key: "email", "display": "Email"}
+        {key: "email", display: "Email", sortable: true}
     ]
 
     return (
