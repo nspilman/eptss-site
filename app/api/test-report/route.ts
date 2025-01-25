@@ -4,10 +4,14 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const testData = await request.json();
-    console.log('Received test data:', JSON.stringify(testData, null, 2));
+    const rawBody = await request.text(); // Get raw body first
+    console.log('Raw request body:', rawBody);
+    
+    const testData = JSON.parse(rawBody);
+    console.log('Parsed test data:', JSON.stringify(testData, null, 2));
+    console.log('testName type:', typeof testData.testName);
     console.log('testName value:', testData.testName);
-    console.log('testData type:', typeof testData);
+    console.log('Full testData keys:', Object.keys(testData));
     
     const result = await db.insert(testRuns).values({
       testName: testData?.testName ?? testData?.['test_name'] ?? "Placeholder",
