@@ -16,6 +16,7 @@ jobs:
       GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
       ENVIRONMENT: 'production'
       CYPRESS_ENVIRONMENT: 'production'
+      DEBUG: 'cypress:*'  # Enable Cypress debug logging
 
     steps:
       - uses: actions/checkout@v3
@@ -30,10 +31,22 @@ jobs:
         run: npm install
 
       - name: Run auth test
-        run: npm run cypress:production
+        run: |
+          mkdir -p cypress/logs
+          npm run cypress:production 2>&1 | tee cypress/logs/test-run.log
         env:
           CYPRESS_GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}
           CYPRESS_GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
           CYPRESS_GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           CYPRESS_GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
           CYPRESS_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Upload test logs
+        if: always()  # Upload logs even if tests fail
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-logs
+          path: |
+            cypress/logs/
+            cypress/screenshots/
+            cypress/videos/
