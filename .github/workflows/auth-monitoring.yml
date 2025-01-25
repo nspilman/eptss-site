@@ -10,8 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}  # Only needed if running in staging
-      ENVIRONMENT: 'production'  # This will skip the magic link test
+      GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}
+      GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+      GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+      GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+      ENVIRONMENT: 'production'
+      CYPRESS_ENVIRONMENT: 'production'
 
     steps:
       - uses: actions/checkout@v3
@@ -28,4 +32,7 @@ jobs:
       - name: Run auth test
         run: npm run cypress:production
         env:
-          CYPRESS_ENVIRONMENT: 'production'  # This ensures magic link test is skipped
+          CYPRESS_GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}
+          CYPRESS_GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          CYPRESS_GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          CYPRESS_GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
