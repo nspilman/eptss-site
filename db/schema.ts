@@ -1,4 +1,5 @@
-import { pgTable, varchar, text, timestamp, uuid, integer, boolean, primaryKey, bigint, serial } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { pgTable, text, timestamp, uuid, integer, boolean, bigint, bigserial } from "drizzle-orm/pg-core";
 
 // Users Table
 export const users = pgTable("users", {
@@ -81,19 +82,19 @@ export const userSharePermissions = pgTable("user_share_permissions", {
 
 // Mailing List Table
 export const mailingList = pgTable('mailing_list', {
-  id: bigint("id", { mode: "number" }).primaryKey(),
+  id: uuid().default(sql`gen_random_uuid()`),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
 export const mailingListUnsubscription = pgTable('mailing_list_unsubscription', {
-    id: bigint("id", { mode: "number" }).primaryKey(),
-    email: text('email').notNull().unique(),
-    userId: uuid('user_id').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  });
-  
+  id: uuid().default(sql`gen_random_uuid()`),
+  email: text('email').notNull().unique(),
+  userId: uuid('user_id').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});
+
 // Voting Candidate Overrides Table
 export const votingCandidateOverrides = pgTable("round_voting_candidate_overrides", {
   id: bigint("id", { mode: "number" }).primaryKey(),
@@ -102,3 +103,17 @@ export const votingCandidateOverrides = pgTable("round_voting_candidate_override
   songId: bigint("song_id", { mode: "number" }).references(() => songs.id).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const testRuns = pgTable("test_runs", {
+  id: uuid().default(sql`gen_random_uuid()`),
+  testName: text("test_name").notNull(),
+  status: text("status").notNull(),
+  errorMessage: text("error_message"),
+  duration: integer("duration"),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  environment: text("environment").notNull(),
+});
+
+// Relations and types
+export type TestRun = typeof testRuns.$inferSelect;
+export type NewTestRun = typeof testRuns.$inferInsert;

@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-describe('Login Flow', () => {
-
+// Smoke tests that can run in staging and production
+describe('Authentication Smoke Tests', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
@@ -13,7 +13,7 @@ describe('Login Flow', () => {
     cy.visit('/login');
     cy.get('form').should('be.visible');
 
-    const TEST_EMAIL =Cypress.env("GMAIL_USER_EMAIL");
+    const TEST_EMAIL = Cypress.env("GMAIL_USER_EMAIL");
     // Type in the email address
     cy.get('input[type="email"]').should('be.visible').type(TEST_EMAIL!);
     
