@@ -2,12 +2,15 @@ name: Auth Monitoring
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Run every 30 minutes
-  workflow_dispatch:  # Allow manual triggering
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:  # Allow manual trigger
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      start_time: ${{ env.start_time }}
+      cypress_exit_code: ${{ env.cypress_exit_code }}
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}
@@ -20,13 +23,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-
+          
       - name: Install dependencies
         run: npm install
 
@@ -64,43 +67,6 @@ jobs:
           path: |
             cypress/logs/
 
-      - name: Report test results
-        if: always()  # Run this step regardless of test outcome
-        run: |
-          # Map GitHub status to our status
-          if [ "${{ env.cypress_exit_code }}" = "0" ]; then
-            STATUS="success"
-          else
-            STATUS="failure"
-          fi
-          
-          # Get current timestamp in ISO format
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
-          # Create the request payload using the actual duration
-          REQUEST_DATA="{\"testName\":\"Auth Monitoring Test\",\"status\":\"$STATUS\",\"errorMessage\":null,\"duration\":${{ env.duration }},\"startedAt\":\"$TIMESTAMP\",\"environment\":\"production\"}"
-          
-          echo "Sending test results..."
-          echo "Request payload:"
-          echo "$REQUEST_DATA" | jq .
-          
-          echo "Full curl command:"
-          echo "curl -v -X POST -H \"Content-Type: application/json\" -d '$REQUEST_DATA' https://everyoneplaysthesamesong.com/api/test-report"
-          
-          # Create temp file for curl trace
-          TRACE_FILE=$(mktemp)
-          echo "Curl trace will be saved to: $TRACE_FILE"
-          
-          # Execute the curl command with tracing
-          curl -v -X POST \
-            -H "Content-Type: application/json" \
-            --trace-ascii "$TRACE_FILE" \
-            -d "$REQUEST_DATA" \
-            https://everyoneplaysthesamesong.com/api/test-report
-            
-          echo "Complete curl trace:"
-          cat "$TRACE_FILE"
-
       - name: Upload test screenshots and videos
         if: always()
         uses: actions/upload-artifact@v3
@@ -109,3 +75,12 @@ jobs:
           path: |
             cypress/screenshots/
             cypress/videos/
+
+  report-results:
+    needs: test
+    uses: ./.github/workflows/test-reporter.yml
+    with:
+      test-name: 'Auth Monitoring Test'
+      environment: 'production'
+      start-time: ${{ needs.test.outputs.start_time }}
+      exit-code: ${{ needs.test.outputs.cypress_exit_code }}
