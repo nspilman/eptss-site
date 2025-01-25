@@ -1,6 +1,3 @@
-import { db } from '../../db';
-import { testRuns } from '../../db/schema';
-
 console.log('Test reporter loaded!');
 
 const saveTestResult = async (testData: any) => {

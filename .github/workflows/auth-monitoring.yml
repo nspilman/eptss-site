@@ -33,8 +33,8 @@ jobs:
       - name: Run auth test
         run: |
           mkdir -p cypress/logs
-          # Filter Cypress output to only show test results and console.logs
-          npm run cypress:production 2>&1 | grep -E "console.log|Running:|✓|✖|Test reporter|Attempting to save|Error saving" | tee cypress/logs/test-run.log
+          # Filter Cypress output to show all relevant test information
+          npm run cypress:production 2>&1 | grep -E "console.log|Running:|✓|✖|Test reporter|Network or processing|Error|Failed|Test:after:run|Response received|Raw response|Preparing to send" | tee cypress/logs/test-run.log
         env:
           CYPRESS_GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}
           CYPRESS_GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
