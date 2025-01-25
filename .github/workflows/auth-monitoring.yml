@@ -65,7 +65,12 @@ jobs:
           
           echo "Sending test results..."
           
-          # Pipe JSON directly from jq to curl
+          # Create a temp file for curl trace
+          TRACE_FILE=$(mktemp)
+          echo "Curl trace will be saved to: $TRACE_FILE"
+          
+          # Show the exact JSON being sent
+          echo "JSON payload:"
           jq -n \
             --arg testName "Auth Monitoring Test" \
             --arg status "$STATUS" \
@@ -77,10 +82,15 @@ jobs:
               duration: 10000,
               startedAt: $startedAt,
               environment: "production"
-            }' | curl -v -X POST \
-                  -H "Content-Type: application/json" \
-                  --data-binary @- \
-                  https://everyoneplaysthesamesong.com/api/test-report
+            }' | tee /dev/stderr | \
+            curl -v -X POST \
+              -H "Content-Type: application/json" \
+              --trace-ascii "$TRACE_FILE" \
+              --data-binary @- \
+              https://everyoneplaysthesamesong.com/api/test-report
+          
+          echo "Complete curl trace:"
+          cat "$TRACE_FILE"
 
       - name: Upload test screenshots and videos
         if: always()
