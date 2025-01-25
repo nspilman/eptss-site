@@ -5,7 +5,7 @@ import { testRuns } from "@/db/schema";
 import { sql } from "drizzle-orm";
 import { desc } from "drizzle-orm";
 
-export const getMonitoringData = async () => {
+export async function getMonitoringData() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -19,7 +19,7 @@ export const getMonitoringData = async () => {
   // Get stats for the last 24 hours for the summary
   const twentyFourHoursAgo = new Date();
   twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
-  
+
   const dailyStats = await db
     .select({
       totalRuns: sql<number>`count(*)`,
@@ -33,8 +33,8 @@ export const getMonitoringData = async () => {
 
   return {
     runs,
-    latestRuns: runs.slice(0, 10), // Keep the latest 10 for detailed view
+    latestRuns: runs.slice(0, 5),
     successRate,
     totalRuns
   };
-};
+}
