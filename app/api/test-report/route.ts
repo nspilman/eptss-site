@@ -75,7 +75,8 @@ export async function POST(request: Request) {
       { 
         success: false, 
         error: error instanceof Error ? error.message : String(error),
-        type: error.constructor.name
+        // type: error.constructor.name,
+        request: JSON.stringify(request)
       }, 
       { status: 500 }
     );
