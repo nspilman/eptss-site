@@ -4,3 +4,4 @@ export * from "./submissionService";
 export * from "./userParticipationService";
 export * from "./userSessionService";
 export * from "./votesService";
+export * from "./monitoringService";

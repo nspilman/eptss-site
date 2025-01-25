@@ -13,7 +13,14 @@
     "test-coverage": "jest --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "post-song": "bun scripts/post-song-to-bsky.ts"
+    "post-song": "bun scripts/post-song-to-bsky.ts",
+    "cypress:local": "cypress open --config-file cypress.config.local.ts",
+    "cypress:staging": "cypress run --config-file cypress.config.staging.ts --spec \"cypress/e2e/**/*cy.ts\"",
+    "cypress:production": "cypress run --config-file cypress.config.production.ts --spec \"cypress/e2e/**/auth/*cy.ts\"",
+    "cypress:all": "cypress run --config-file cypress.config.staging.ts",
+    "test:e2e:local": "start-server-and-test dev 3000 cypress:local",
+    "test:e2e:staging": "cypress:staging",
+    "test:e2e:production": "cypress:production"
   },
   "dependencies": {
     "@atproto/api": "^0.13.22",
