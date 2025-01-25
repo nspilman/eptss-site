@@ -63,8 +63,10 @@ jobs:
           # Get current timestamp in ISO format
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           
-          # Create JSON payload using jq for proper escaping
-          JSON_DATA=$(jq -n \
+          echo "Sending test results..."
+          
+          # Pipe JSON directly from jq to curl
+          jq -n \
             --arg testName "Auth Monitoring Test" \
             --arg status "$STATUS" \
             --arg startedAt "$TIMESTAMP" \
@@ -75,16 +77,10 @@ jobs:
               duration: 10000,
               startedAt: $startedAt,
               environment: "production"
-            }')
-          
-          echo "Sending test results:"
-          echo "$JSON_DATA"
-          
-          # Send to your endpoint
-          curl -v -X POST \
-            -H "Content-Type: application/json" \
-            -d "$JSON_DATA" \
-            https://everyoneplaysthesamesong.com/api/test-report
+            }' | curl -v -X POST \
+                  -H "Content-Type: application/json" \
+                  --data-binary @- \
+                  https://everyoneplaysthesamesong.com/api/test-report
 
       - name: Upload test screenshots and videos
         if: always()
