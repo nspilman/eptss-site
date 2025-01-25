@@ -162,6 +162,13 @@
       "when": 1737787259158,
       "tag": "0022_mighty_centennial",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1737831766806,
+      "tag": "0023_absent_sway",
+      "breakpoints": true
     }
   ]
 }

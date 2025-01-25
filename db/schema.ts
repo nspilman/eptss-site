@@ -105,7 +105,7 @@ export const votingCandidateOverrides = pgTable("round_voting_candidate_override
 });
 
 export const testRuns = pgTable("test_runs", {
-  id: uuid().default(sql`gen_random_uuid()`),
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
   testName: text("test_name").notNull(),
   status: text("status").notNull(),
   errorMessage: text("error_message"),
