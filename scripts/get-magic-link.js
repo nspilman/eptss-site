@@ -8,6 +8,8 @@ const OAUTH_CONFIG = {
   refreshToken: process.env.GMAIL_REFRESH_TOKEN,
 };
 
+console.log({OAUTH_CONFIG})
+
 async function getMagicLink() {
   const oauth2Client = new google.auth.OAuth2(
     OAUTH_CONFIG.clientId,

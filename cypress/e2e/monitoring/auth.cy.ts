@@ -15,7 +15,6 @@ describe('Authentication Monitoring', () => {
   });
 
   // Only run magic link test in staging
-  if (Cypress.env('ENVIRONMENT') === 'staging') {
     it('should complete the full login flow with magic link', () => {
       cy.visit('/login');
       const TEST_EMAIL = Cypress.env("GMAIL_USER_EMAIL");
@@ -29,5 +28,4 @@ describe('Authentication Monitoring', () => {
         cy.url().should('not.include', '/login');
       });
     });
-  }
 });
