@@ -30,17 +30,31 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run auth test
-        run: |
-          mkdir -p cypress/logs
-          # Show all console output and test results
-          npm run cypress:production 2>&1 | tee cypress/logs/test-run.log
+      - name: Run Cypress tests
+        id: cypress
+        continue-on-error: true
         env:
           CYPRESS_GMAIL_USER_EMAIL: ${{ secrets.GMAIL_USER_EMAIL }}
           CYPRESS_GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
           CYPRESS_GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           CYPRESS_GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
           CYPRESS_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          # Record start time in nanoseconds
+          start_time=$(date +%s%N)
+          echo "start_time=$start_time" >> $GITHUB_ENV
+          
+          mkdir -p cypress/logs
+          # Show all console output and test results
+          npm run cypress:production 2>&1 | tee cypress/logs/test-run.log
+          
+          # Record end time and calculate duration in milliseconds
+          end_time=$(date +%s%N)
+          duration=$(( ($end_time - $start_time) / 1000000 )) # Convert nanoseconds to milliseconds
+          echo "duration=$duration" >> $GITHUB_ENV
+          
+          # Store the exit code
+          echo "cypress_exit_code=$?" >> $GITHUB_ENV
 
       - name: Upload test logs
         if: always()
@@ -54,7 +68,7 @@ jobs:
         if: always()  # Run this step regardless of test outcome
         run: |
           # Map GitHub status to our status
-          if [ "${{ job.status }}" = "success" ]; then
+          if [ "${{ env.cypress_exit_code }}" = "0" ]; then
             STATUS="success"
           else
             STATUS="failure"
@@ -63,8 +77,8 @@ jobs:
           # Get current timestamp in ISO format
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           
-          # Create the request payload
-          REQUEST_DATA="{\"testName\":\"Auth Monitoring Test\",\"status\":\"$STATUS\",\"errorMessage\":null,\"duration\":10000,\"startedAt\":\"$TIMESTAMP\",\"environment\":\"production\"}"
+          # Create the request payload using the actual duration
+          REQUEST_DATA="{\"testName\":\"Auth Monitoring Test\",\"status\":\"$STATUS\",\"errorMessage\":null,\"duration\":${{ env.duration }},\"startedAt\":\"$TIMESTAMP\",\"environment\":\"production\"}"
           
           echo "Sending test results..."
           echo "Request payload:"
