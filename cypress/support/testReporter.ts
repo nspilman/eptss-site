@@ -14,52 +14,38 @@ Cypress.on('test:after:run', async (attributes) => {
   } = attributes;
 
   const testData = {
-    title,
-    state,
+    testName: title,
+    status: state,
     duration,
-    err,
+    errorMessage: err?.message || null,
     environment: Cypress.env('ENVIRONMENT') || 'development'
   };
 
   console.log('Attempting to save test data:', testData);
 
   try {
-    const baseUrl = Cypress.config('baseUrl') || '';
-    console.log('Using base URL:', baseUrl);
+    const baseUrl = 'https://everyoneplaysthesamesong.com';
+    const reportUrl = `${baseUrl}/api/test-report`;
+    console.log('Sending test report to:', reportUrl);
     
-    const response = await fetch(`${baseUrl}/api/test-report`, {
+    const response = await fetch(reportUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
       },
       body: JSON.stringify(testData),
-      // Add these options to handle Next.js API routes properly
-      credentials: 'same-origin',
-      mode: 'cors'
     });
-
-    console.log('Response status:', response.status);
-    const responseText = await response.text();
-    console.log('Response text:', responseText);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}, body: ${responseText}`);
+      const errorText = await response.text();
+      console.error('Failed to save test data. Status:', response.status, 'Error:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = JSON.parse(responseText);
-    
-    if (!result.success) {
-      throw new Error(result.error || 'Failed to save test result');
-    }
-    
-    console.log('Successfully saved test result:', result.data);
+    const result = await response.json();
+    console.log('Successfully saved test data:', result);
   } catch (error) {
-    console.error('Failed to save test results. Error:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    });
+    console.error('Error saving test data:', error);
+    throw error; // Re-throw to make Cypress aware of the failure
   }
 });

@@ -36,3 +36,4 @@ jobs:
           CYPRESS_GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
           CYPRESS_GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           CYPRESS_GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          CYPRESS_DATABASE_URL: ${{ secrets.DATABASE_URL }}
