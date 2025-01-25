@@ -1,58 +1,68 @@
-console.log('Test reporter loaded!');
+// =================== TEST REPORTER START ===================
+console.log('\n\n');
+console.log('🔍 =============== TEST REPORTER LOADED ===============');
+console.log('Current time:', new Date().toISOString());
+console.log('\n\n');
 
 const saveTestResult = async (testData: any) => {
   const baseUrl = 'https://everyoneplaysthesamesong.com';
   const reportUrl = `${baseUrl}/api/test-report`;
   
-  console.log('Preparing to send test report to:', reportUrl);
+  console.log('\n\n');
+  console.log('📤 =============== SENDING TEST REPORT ===============');
+  console.log('URL:', reportUrl);
   console.log('Test data:', JSON.stringify(testData, null, 2));
 
   try {
-    console.log('Initiating fetch request...');
-    const response = await fetch(reportUrl, {
+    console.log('\n🚀 Making request...');
+    const requestInit = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(testData),
-    });
-
-    console.log('Response received:', {
+    };
+    console.log('Request details:', JSON.stringify(requestInit, null, 2));
+    
+    const response = await fetch(reportUrl, requestInit);
+    console.log('\n📥 Response received:', {
+      ok: response.ok,
       status: response.status,
       statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries()),
     });
 
     const responseText = await response.text();
-    console.log('Raw response:', responseText);
+    console.log('Response body:', responseText);
 
     if (!response.ok) {
+      console.log('\n❌ Request failed!');
       throw new Error(`HTTP error! status: ${response.status}, body: ${responseText}`);
     }
 
     try {
       const result = JSON.parse(responseText);
-      console.log('Parsed response:', result);
+      console.log('\n✅ Success! Response:', JSON.stringify(result, null, 2));
       return result;
     } catch (parseError) {
-      console.error('Failed to parse response as JSON:', parseError);
+      console.log('\n⚠️ Warning: Invalid JSON response');
+      console.error('Parse error:', parseError);
       return responseText;
     }
   } catch (error) {
-    console.error('Network or processing error:', error);
+    console.log('\n');
+    console.log('❌ =============== ERROR SAVING TEST RESULT ===============');
+    console.error('Error details:', error);
     if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      });
+      console.error('Stack trace:', error.stack);
     }
     throw error;
   }
 };
 
 Cypress.on('test:after:run', async (attributes) => {
-  console.log('Test:after:run event fired!', { attributes });
+  console.log('\n\n');
+  console.log('🏃 =============== TEST FINISHED ===============');
+  console.log('Test attributes:', JSON.stringify(attributes, null, 2));
   
   const {
     title,
@@ -62,21 +72,24 @@ Cypress.on('test:after:run', async (attributes) => {
   } = attributes;
 
   const testData = {
-    testName: title,
-    status: state,
+    title,
+    state,
     duration,
-    errorMessage: err?.message || null,
-    environment: Cypress.env('ENVIRONMENT') || 'production'
+    err,
+    environment: Cypress.env('ENVIRONMENT') || 'production',
+    timestamp: new Date().toISOString(),
   };
 
   try {
-    console.log('Attempting to save test result...');
+    console.log('\n📝 Preparing to save test result...');
     const result = await saveTestResult(testData);
-    console.log('Test result saved successfully:', result);
+    console.log('\n✨ Test result saved successfully!');
+    console.log('Final result:', JSON.stringify(result, null, 2));
   } catch (error) {
-    console.error('Failed to save test result:', error);
-    // Don't throw here - we don't want to fail the test if reporting fails
-    // But we do want to make it very visible in the logs
-    console.error('❌ TEST REPORTING FAILED ❌');
+    console.log('\n');
+    console.log('💥 =============== TEST REPORTING FAILED ===============');
+    console.error('Error:', error);
   }
+  console.log('\n\n');
 });
+// =================== TEST REPORTER END ===================
