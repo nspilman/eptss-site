@@ -4,13 +4,21 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    // Ensure we can parse the JSON
+    // First get the raw body
+    const rawBody = await request.text();
+    
+    // Try to parse JSON with detailed error handling
     let testData;
     try {
-      testData = await request.json();
+      testData = JSON.parse(rawBody);
     } catch (e) {
       return NextResponse.json(
-        { success: false, error: 'Invalid JSON in request body' },
+        { 
+          success: false, 
+          error: 'Invalid JSON in request body',
+          details: e instanceof Error ? e.message : String(e),
+          receivedBody: rawBody.slice(0, 500) // Show first 500 chars of what we received
+        },
         { status: 400 }
       );
     }
