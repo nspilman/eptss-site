@@ -49,5 +49,37 @@ jobs:
           name: cypress-logs
           path: |
             cypress/logs/
+
+      - name: Report test results
+        if: always()  # Run this step regardless of test outcome
+        run: |
+          # Map GitHub status to our status
+          if [ "${{ job.status }}" = "success" ]; then
+            STATUS="success"
+          else
+            STATUS="failure"
+          fi
+          
+          # Get current timestamp in ISO format
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          # Create JSON payload
+          JSON_DATA="{\"testName\":\"Auth Monitoring Test\",\"status\":\"$STATUS\",\"errorMessage\":null,\"duration\":10000,\"startedAt\":\"$TIMESTAMP\",\"environment\":\"production\"}"
+          
+          echo "Sending test results:"
+          echo "$JSON_DATA"
+          
+          # Send to your endpoint
+          curl -v -X POST \
+            -H "Content-Type: application/json" \
+            -d "$JSON_DATA" \
+            https://everyoneplaysthesamesong.com/api/test-report
+
+      - name: Upload test screenshots and videos
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots-and-videos
+          path: |
             cypress/screenshots/
             cypress/videos/
