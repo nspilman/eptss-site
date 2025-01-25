@@ -7,9 +7,9 @@ type Run = {
   testName: string;
   status: string;
   startedAt: string;
-  duration?: number;
+  duration: number | null;
   environment: string;
-  errorMessage?: string;
+  errorMessage: string | null;
 };
 
 type Props = {
@@ -58,73 +58,89 @@ export default function HealthBars({ runs }: Props) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Group runs by test name
+  const runsByTest = runs.reduce((acc, run) => {
+    if (!acc[run.testName]) {
+      acc[run.testName] = [];
+    }
+    acc[run.testName].push(run);
+    return acc;
+  }, {} as Record<string, Run[]>);
+
   return (
-    <div className="flex gap-[2px] flex-wrap justify-end mb-4" ref={barsRef}>
-      {runs.map((run) => (
-        <div
-          key={run.id}
-          id={run.id}
-          className="group relative health-bar"
-          onMouseEnter={(e) => updateTooltipPosition(run.id, e.currentTarget)}
-        >
-          <div
-            className={`w-2 h-8 rounded ${
-              run.status === 'success'
-                ? 'bg-emerald-600 hover:bg-emerald-700'
-                : 'bg-red-600 hover:bg-red-700'
-            } transition-colors`}
-          />
-          {/* Tooltip */}
-          <div className="absolute bottom-[100%] mb-2 hidden group-hover:block z-50">
-            <div className={`relative ${
-              tooltipPositions[run.id] === 'left'
-                ? 'right-2'
-                : tooltipPositions[run.id] === 'right'
-                  ? 'translate-x-[-100%] left-4'
-                  : 'translate-x-[-50%] left-[1px]'
-            }`}>
-              <div className="bg-[#0F172A] text-white text-sm rounded-xl py-3 px-4 min-w-[240px] shadow-2xl relative">
-                <div className="text-lg mb-3">{run.testName}</div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Status:</span>
-                    <span className={run.status === 'success' ? 'text-emerald-400' : 'text-red-400'}>
-                      {run.status}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Time:</span>
-                    <span className="text-white">{new Date(run.startedAt).toLocaleString()}</span>
-                  </div>
-                  {run.duration && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Duration:</span>
-                      <span className="text-white">{formatDuration(run.duration)}</span>
+    <div className="space-y-8" ref={barsRef}>
+      {Object.entries(runsByTest).map(([testName, testRuns]) => (
+        <div key={testName} className="space-y-2">
+          <h3 className="text-lg font-medium text-gray-900">{testName}</h3>
+          <div className="flex gap-[2px] flex-wrap justify-end">
+            {testRuns.map((run) => (
+              <div
+                key={run.id}
+                id={run.id}
+                className="group relative health-bar"
+                onMouseEnter={(e) => updateTooltipPosition(run.id, e.currentTarget)}
+              >
+                <div
+                  className={`w-2 h-8 rounded ${
+                    run.status === 'success'
+                      ? 'bg-emerald-600 hover:bg-emerald-700'
+                      : 'bg-red-600 hover:bg-red-700'
+                  } transition-colors`}
+                />
+                {/* Tooltip */}
+                <div className="absolute bottom-[100%] mb-2 hidden group-hover:block z-50">
+                  <div className={`relative ${
+                    tooltipPositions[run.id] === 'left'
+                      ? 'right-2'
+                      : tooltipPositions[run.id] === 'right'
+                        ? 'translate-x-[-100%] left-4'
+                        : 'translate-x-[-50%] left-[1px]'
+                  }`}>
+                    <div className="bg-[#0F172A] text-white text-sm rounded-xl py-3 px-4 min-w-[240px] shadow-2xl relative">
+                      <div className="text-lg mb-3">{run.testName}</div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Status:</span>
+                          <span className={run.status === 'success' ? 'text-emerald-400' : 'text-red-400'}>
+                            {run.status}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Time:</span>
+                          <span className="text-white">{new Date(run.startedAt).toLocaleString()}</span>
+                        </div>
+                        {run.duration && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Duration:</span>
+                            <span className="text-white">{formatDuration(run.duration)}</span>
+                          </div>
+                        )}
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Environment:</span>
+                          <span className="text-white">{run.environment}</span>
+                        </div>
+                      </div>
+                      {run.errorMessage && (
+                        <div className="mt-3 pt-2 border-t border-gray-700">
+                          <div className="text-red-400 font-medium mb-1">Error:</div>
+                          <div className="text-gray-300 break-words text-sm">
+                            {run.errorMessage}
+                          </div>
+                        </div>
+                      )}
+                      {/* Arrow */}
+                      <div className={`absolute -bottom-1 w-2 h-2 bg-[#0F172A] rotate-45 ${
+                        tooltipPositions[run.id] === 'left'
+                          ? 'left-[7px]'
+                          : tooltipPositions[run.id] === 'right'
+                            ? 'right-[7px]'
+                            : 'left-1/2 -translate-x-1/2'
+                      }`}></div>
                     </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Environment:</span>
-                    <span className="text-white">{run.environment}</span>
                   </div>
                 </div>
-                {run.errorMessage && (
-                  <div className="mt-3 pt-2 border-t border-gray-700">
-                    <div className="text-red-400 font-medium mb-1">Error:</div>
-                    <div className="text-gray-300 break-words text-sm">
-                      {run.errorMessage}
-                    </div>
-                  </div>
-                )}
-                {/* Arrow */}
-                <div className={`absolute -bottom-1 w-2 h-2 bg-[#0F172A] rotate-45 ${
-                  tooltipPositions[run.id] === 'left'
-                    ? 'left-[7px]'
-                    : tooltipPositions[run.id] === 'right'
-                      ? 'right-[7px]'
-                      : 'left-1/2 -translate-x-1/2'
-                }`}></div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       ))}
