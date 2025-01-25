@@ -26,6 +26,6 @@ jobs:
         run: npm install
 
       - name: Run auth test
-        run: npm run cypress:run -- --spec "cypress/e2e/monitoring/auth.cy.ts"
+        run: npm run cypress:production
         env:
           CYPRESS_ENVIRONMENT: 'production'  # This ensures magic link test is skipped
