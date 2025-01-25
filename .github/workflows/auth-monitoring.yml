@@ -73,11 +73,19 @@ jobs:
           echo "Full curl command:"
           echo "curl -v -X POST -H \"Content-Type: application/json\" -d '$REQUEST_DATA' https://everyoneplaysthesamesong.com/api/test-report"
           
-          # Execute the curl command directly
+          # Create temp file for curl trace
+          TRACE_FILE=$(mktemp)
+          echo "Curl trace will be saved to: $TRACE_FILE"
+          
+          # Execute the curl command with tracing
           curl -v -X POST \
             -H "Content-Type: application/json" \
+            --trace-ascii "$TRACE_FILE" \
             -d "$REQUEST_DATA" \
             https://everyoneplaysthesamesong.com/api/test-report
+            
+          echo "Complete curl trace:"
+          cat "$TRACE_FILE"
 
       - name: Upload test screenshots and videos
         if: always()

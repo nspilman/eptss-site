@@ -2,6 +2,17 @@ import { type NextRequest } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+    if (request.method === 'POST' && request.headers.get('content-type')?.includes('application/json')) {
+        // Clone the request to avoid consuming the body
+        const clonedRequest = request.clone();
+        try {
+            // Try to parse JSON to validate it
+            await clonedRequest.json();
+        } catch (e) {
+            console.error('JSON parse error in middleware:', e);
+        }
+    }
+    
     const { response } = await updateSession(request);
     return response
 }
