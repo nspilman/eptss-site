@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Smoke tests that can run in staging and production
-describe('Authentication Smoke Tests', () => {
+
+describe('Login Flow', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.clearCookies();
