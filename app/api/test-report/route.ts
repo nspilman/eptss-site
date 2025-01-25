@@ -5,10 +5,12 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const testData = await request.json();
-    console.log('Received test data:', testData);
+    console.log('Received test data:', JSON.stringify(testData, null, 2));
+    console.log('testName value:', testData.testName);
+    console.log('testData type:', typeof testData);
     
     const result = await db.insert(testRuns).values({
-      testName: testData.testName || "Placeholder",
+      testName: testData?.testName ?? testData?.['test_name'] ?? "Placeholder",
       status: testData.status,
       errorMessage: testData.errorMessage || null,
       duration: testData.duration,
