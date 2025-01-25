@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import dotenv from "dotenv";
 import fs from 'fs';
-import path from 'path';
+import fetch from 'node-fetch';
 
 dotenv.config();
 
@@ -12,24 +12,26 @@ console.error('🔵 Loading Cypress base config...');
 const execAsync = promisify(exec);
 
 const debugLog = (message: string) => {
-  fs.appendFileSync(path.join(__dirname, 'cypress-debug.log'), `${new Date().toISOString()}: ${message}\n`);
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] ${message}\n`;
+  console.log(logMessage);
+  fs.appendFileSync('cypress-debug.log', logMessage);
 };
 
 const saveTestResult = async (testData: any) => {
   debugLog('🔴 saveTestResult called with data: ' + JSON.stringify(testData, null, 2));
 
-  const baseUrl = 'https://everyoneplaysthesamesong.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://everyoneplaysthesamesong.com';
   const reportUrl = `${baseUrl}/api/test-report`;
   
   debugLog(`🚀 Sending test report to: ${reportUrl}`);
+  debugLog(`Environment variables:
+    NEXT_PUBLIC_APP_URL: ${process.env.NEXT_PUBLIC_APP_URL}
+    NEXT_PUBLIC_SUPABASE_URL: ${process.env.NEXT_PUBLIC_SUPABASE_URL}
+    NODE_ENV: ${process.env.NODE_ENV}
+  `);
 
   try {
-    // First check if fetch is available
-    if (typeof fetch === 'undefined') {
-      debugLog('❌ fetch is not available in this context!');
-      throw new Error('fetch is not available in this context');
-    }
-
     debugLog('Attempting fetch call...');
     const response = await fetch(reportUrl, {
       method: 'POST',
@@ -48,6 +50,12 @@ const saveTestResult = async (testData: any) => {
     debugLog(`Response body: ${responseText}`);
 
     if (!response.ok) {
+      debugLog(`❌ HTTP error details:
+        Status: ${response.status}
+        Status Text: ${response.statusText}
+        Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}
+        Body: ${responseText}
+      `);
       throw new Error(`HTTP error! status: ${response.status}, body: ${responseText}`);
     }
 
@@ -61,10 +69,11 @@ const saveTestResult = async (testData: any) => {
       return responseText;
     }
   } catch (error) {
+    const errorString = error instanceof Error ? error.message : error;
+    const errorStack = error instanceof Error ? error.stack : error;
     debugLog('❌ =============== ERROR SAVING TEST RESULT ===============');
-    debugLog(`Error type: ${error.constructor.name}`);
-    debugLog(`Error message: ${error.message}`);
-    debugLog(`Stack trace: ${error.stack}`);
+    debugLog(`Error message: ${errorString}`);
+    debugLog(`Stack trace: ${errorStack}`);
     
     // Try to get more error details
     if (error instanceof Error) {
@@ -72,6 +81,7 @@ const saveTestResult = async (testData: any) => {
       debugLog(`Error cause: ${error.cause}`);
       // @ts-ignore
       if (error.code) debugLog(`Error code: ${error.code}`);
+      // @ts-ignore
     }
     
     throw error;
@@ -123,7 +133,7 @@ export const setupNodeEvents = async (on: Cypress.PluginEvents, config: Cypress.
             title: test.title.join(' '),
             state: test.state,
             duration: test.duration,
-            err: test.error,
+            err: test.displayError,
             environment: config.env.environment || 'production',
             timestamp: new Date().toISOString(),
           };
