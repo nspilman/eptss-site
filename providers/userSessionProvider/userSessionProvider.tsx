@@ -4,6 +4,6 @@ export const userSessionProvider = async () => {
 
   return {
     signOut,
-    signInWithOTP: signInWithOTP,
+    signInWithOTP,
   };
 };

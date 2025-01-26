@@ -1,8 +1,8 @@
 import React from "react";
-import { LoginForm } from "@/components/client/LoginForm/LoginForm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Metadata } from 'next';
+import { LoginForm } from "@/components/client/LoginForm";
 
 export const metadata: Metadata = {
   title: "Login | Everyone Plays the Same Song",
@@ -29,7 +29,7 @@ export default function LoginPage({
           <Link href="/">
             <Button
               className="w-32 mt-4"
-              variant="secondary"
+              variant="ghost"
             >
               Go Back
             </Button>
