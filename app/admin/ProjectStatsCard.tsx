@@ -85,11 +85,11 @@ export function ProjectStatsCard({
         ],
         rows: (detailData as UserDetail[]).map(user => ({
           email: user.email,
-          lastActive: user.lastActive ? formatDate(new Date(user.lastActive)) : "Never",
+          lastActive: user.lastActive ? formatDate.full(new Date(user.lastActive)) : "Never",
           totalParticipation: user.totalParticipation,
           totalSubmissions: user.totalSubmissions,
-          lastSignup: user.lastSignup ? formatDate(new Date(user.lastSignup)) : "Never",
-          lastSubmitted: user.lastSubmitted ? formatDate(new Date(user.lastSubmitted)) : "Never",
+          lastSignup: user.lastSignup ? formatDate.full(new Date(user.lastSignup)) : "Never",
+          lastSubmitted: user.lastSubmitted ? formatDate.full(new Date(user.lastSubmitted)) : "Never",
         })),
       };
     }
