@@ -12,7 +12,7 @@ export const metadata = {
     siteName: "Everyone Plays the Same Song",
     images: [
       {
-        url: "/og-image.png", 
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`, 
         width: 1200,
         height: 630,
         alt: "Everyone Plays the Same Song",
@@ -25,7 +25,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Everyone Plays the Same Song",
     description: "A community music project where participants cover the same song in their own unique style",
-    images: ["/og-image.png"],
+    images: [`${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`],
   },
   icons: {
     icon: "/favicon.ico",

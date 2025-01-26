@@ -6,6 +6,11 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  env: {
+    NEXT_PUBLIC_SITE_URL: process.env.NODE_ENV === 'production' 
+      ? 'https://everyoneplaysthesamesong.com' // replace with your actual production domain
+      : 'http://localhost:3000'
+  },
   sentry: {
     hideSourceMaps: true,
   },

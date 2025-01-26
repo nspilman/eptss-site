@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description: "Join our unique music community where participants cover the same song in their own style. A collaborative music project bringing artists together.",
     images: [
       {
-        url: "/og-image.png",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "Everyone Plays the Same Song Community",
