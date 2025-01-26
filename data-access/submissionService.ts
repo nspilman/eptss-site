@@ -35,19 +35,17 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
   const { userId } = getAuthUser();
   
   try {
-    const data = await db
-      .select({
-        created_at: submissions.createdAt,
-        round_id: submissions.roundId,
-        soundcloud_url: submissions.soundcloudUrl,
-        username: users.username,
-      })
+    // Get the next submission ID
+    const lastSubmissionId = await db
+      .select({ id: submissions.id })
       .from(submissions)
-      .leftJoin(users, eq(submissions.userId, users.userid))
-      .where(eq(submissions.id, sql`nextval('submissions_id_seq')`));
+      .orderBy(sql`id desc`)
+      .limit(1);
+    
+    const nextSubmissionId = (lastSubmissionId[0]?.id || 0) + 1;
 
     await db.insert(submissions).values({
-      id: sql`nextval('submissions_id_seq')`,
+      id: nextSubmissionId,
       roundId: JSON.parse(getToString("roundId") || "-1"),
       soundcloudUrl: getToString("soundcloudUrl") || "",
       userId: userId || "",

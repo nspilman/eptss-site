@@ -93,26 +93,36 @@ export const submitVotes = async (
           )
         );
 
+      // Get the next vote ID
+      const lastVoteId = await trx
+        .select({ id: songSelectionVotes.id })
+        .from(songSelectionVotes)
+        .orderBy(sql`id desc`)
+        .limit(1);
+      
+      let nextVoteId = (lastVoteId[0]?.id || 0) + 1;
+
       // Insert new votes
       const votes = Array.from(formData.entries())
         .filter(([key]) => key.startsWith('song-'))
         .map(([key, value]) => ({
-          id: sql`nextval('song_selection_votes_id_seq')`,
+          id: nextVoteId++,
           userId,
           roundId,
           songId: Number(key.replace('song-', '')),
           vote: Number(value),
-          createdAt: new Date()
+          submitterEmail: null
         }));
 
-      if (votes.length) {
-        await trx.insert(songSelectionVotes).values(votes);
+      if (votes.length === 0) {
+        return handleResponse(400, Navigation.Vote, "No votes submitted");
       }
+
+      await trx.insert(songSelectionVotes).values(votes);
     });
 
-    return handleResponse(201, Navigation.Home, "");
+    return handleResponse(201, Navigation.Vote, "");
   } catch (error) {
-    console.error('Error submitting votes:', error);
-    return handleResponse(500, Navigation.Voting, (error as Error).message);
+    return handleResponse(500, Navigation.Vote, (error as Error).message);
   }
 };
