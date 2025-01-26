@@ -82,7 +82,7 @@ export const userSharePermissions = pgTable("user_share_permissions", {
 
 // Mailing List Table
 export const mailingList = pgTable('mailing_list', {
-  id: uuid().default(sql`gen_random_uuid()`),
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
   createdAt: timestamp('created_at').defaultNow(),

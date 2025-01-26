@@ -1,92 +1,143 @@
 'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { addToWaitlist } from "@/actions/waitlist";
-import { useToast } from "@/components/ui/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
+import { toast } from "@/components/ui/use-toast"
+import { FormWrapper } from "@/components/client/Forms/FormWrapper"
+import { motion } from "framer-motion"
+import { z } from "zod"
+import { addToWaitlist } from "@/actions/waitlist"
+import { mailingList } from "@/db/schema"
+import { createInsertSchema } from "drizzle-zod"
 
-type FormData = {
-  name: string;
-  email: string;
-};
+// Create Zod schema from Drizzle table
+const waitlistSchema = createInsertSchema(mailingList, {
+  // Override the defaults if needed
+  email: z.string().email("Invalid email address"),
+  name: z.string().min(1, "Name is required"),
+}).pick({
+  email: true,
+  name: true,
+})
+
+type WaitlistInput = z.infer<typeof waitlistSchema>
 
 export function WaitlistForm() {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false)
+  const form = useForm<WaitlistInput>({
+    resolver: zodResolver(waitlistSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+    }
+  })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
+  const onSubmit = async (formData: FormData) => {
+    if (isLoading) return { error: "Form submission in progress" }
+    
+    setIsLoading(true)
     try {
-      await addToWaitlist(formData);
+      const name = formData.get("name") as string
+      const email = formData.get("email") as string
+      
+      await addToWaitlist({ name, email })
+      
       toast({
         title: "Success!",
         description: "You've been added to the waitlist. We'll contact you when registration opens for the next round.",
-      });
-      setFormData({ name: "", email: "" });
+      })
+      
+      form.reset()
+      return { success: true }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "There was a problem adding you to the waitlist. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Waitlist error:", error)
+      return { 
+        error: error instanceof Error 
+          ? error.message 
+          : "There was a problem adding you to the waitlist. Please try again." 
+      }
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-200 mb-1">
-            Name
-          </label>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Your name"
-            required
-            className="w-full bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-          />
-        </div>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-1">
-            Email Address
-          </label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="your.email@example.com"
-            required
-            className="w-full bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-          />
-        </div>
-      </div>
-      <Button
-        type="submit"
-        className="w-full bg-[#e2e240] text-[#0a0a1e] hover:bg-[#f0f050] font-medium"
-        disabled={isLoading}
+    <FormWrapper
+      title="Join the Waitlist"
+      description="Sign up to be notified when registration opens for the next round"
+      onSubmit={onSubmit}
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
       >
-        {isLoading ? "Adding to waitlist..." : "Join Waitlist"}
-      </Button>
-    </form>
-  );
-} 
+        <Form {...form}>
+          <div className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Your name"
+                      {...field}
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="your.email@example.com"
+                      {...field}
+                      type="email"
+                      disabled={isLoading}
+                      autoComplete="email"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </Form>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoading}
+          variant="default"
+        >
+          {isLoading ? "Adding to waitlist..." : "Join Waitlist"}
+        </Button>
+      </motion.div>
+    </FormWrapper>
+  )
+}

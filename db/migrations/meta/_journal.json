@@ -183,6 +183,13 @@
       "when": 1737868794395,
       "tag": "0025_thick_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1737911765414,
+      "tag": "0026_breezy_swarm",
+      "breakpoints": true
     }
   ]
 }
