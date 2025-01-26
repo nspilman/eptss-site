@@ -1,8 +1,7 @@
-"use client";
 import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { LoginForm } from "@/components/client/LoginForm/LoginForm";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -14,30 +13,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LoginPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  
-  const redirectUrl = searchParams.get('redirectUrl');
-  const titleOverride = searchParams.get('titleOverride');
-
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { redirectUrl?: string; titleOverride?: string };
+}) {
   return (
     <div className="min-h-screen flex items-start justify-center pt-20 bg-black">
       <div className="w-full max-w-[500px] px-8 py-6 rounded-lg">
         <LoginForm 
-          redirectUrl={redirectUrl || undefined}
-          titleOverride={titleOverride || undefined}
+          redirectUrl={searchParams.redirectUrl}
+          titleOverride={searchParams.titleOverride}
         />
         <div className="w-full flex justify-center">
-          <Button
-            className="w-32 mt-4"
-            onClick={() => router.push("/")}
-            variant="secondary"
-          >
-            Go Back
-          </Button>
+          <Link href="/">
+            <Button
+              className="w-32 mt-4"
+              variant="secondary"
+            >
+              Go Back
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
   );
-} 
+}
