@@ -4,6 +4,7 @@ import { PageTitle } from "@/components/PageTitle";
 import { votesProvider, roundsProvider, roundProvider } from "@/providers";
 import { StackedBarChart } from "./StackedBarChart";
 import { getVoteBreakdownBySong } from "@/data-access";
+import { Metadata } from 'next';
 
 export default async function Round({ params }: { params: { id: string } }) {
   return (
@@ -274,3 +275,17 @@ const convertVoteBreakdownToBarchartFormat = (
     ],
   };
 };
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const roundId = parseInt(params.id);
+  const round = await roundProvider(roundId);
+  
+  return {
+    title: `Round ${roundId} - ${round.song} | Everyone Plays the Same Song`,
+    description: `Listen to community covers of "${round.song}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
+    openGraph: {
+      title: `Round ${roundId} - ${round.song} | Everyone Plays the Same Song`,
+      description: `Listen to community covers of "${round.song}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
+    },
+  };
+}

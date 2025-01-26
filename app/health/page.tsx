@@ -1,5 +1,15 @@
 import { getMonitoringData } from "@/data-access";
 import HealthBars from './HealthBars';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "System Health | Everyone Plays the Same Song",
+  description: "System health and monitoring dashboard for Everyone Plays the Same Song platform",
+  openGraph: {
+    title: "System Health Dashboard | Everyone Plays the Same Song",
+    description: "Real-time monitoring and health status of the Everyone Plays the Same Song platform",
+  },
+};
 
 export default async function HealthPage() {
   const { runs, latestRuns, successRate, totalRuns } = await getMonitoringData();

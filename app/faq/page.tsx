@@ -1,5 +1,15 @@
 import * as React from "react";
 import { PageTitle } from "@/components/PageTitle";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "FAQ | Everyone Plays the Same Song",
+  description: "Frequently asked questions about the Everyone Plays the Same Song project. Learn how to participate, submit your covers, and join our music community.",
+  openGraph: {
+    title: "FAQ | Everyone Plays the Same Song",
+    description: "Frequently asked questions about the Everyone Plays the Same Song project. Learn how to participate, submit your covers, and join our music community.",
+  },
+};
 
 type FAQItem = {
   question: string;

@@ -2,6 +2,16 @@ import { DataTable } from "@/components/DataTable";
 import { roundProvider, votesProvider } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard | Everyone Plays the Same Song",
+  description: "Administrative dashboard for managing Everyone Plays the Same Song rounds, participants, and submissions.",
+  openGraph: {
+    title: "Admin Dashboard | Everyone Plays the Same Song",
+    description: "Administrative dashboard for managing Everyone Plays the Same Song rounds, participants, and submissions.",
+  },
+};
 
 const AdminPage = async ({
   searchParams,

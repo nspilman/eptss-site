@@ -3,7 +3,33 @@ import { Header } from "@/components/Header";
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
-  description: "Community Covers Project",
+  description: "A community music project where participants cover the same song in their own unique style",
+  keywords: ["music", "covers", "community", "collaboration", "songs"],
+  openGraph: {
+    title: "Everyone Plays the Same Song",
+    description: "A community music project where participants cover the same song in their own unique style",
+    url: "https://everyoneplaysthesamesong.com",
+    siteName: "Everyone Plays the Same Song",
+    images: [
+      {
+        url: "/og-image.png", 
+        width: 1200,
+        height: 630,
+        alt: "Everyone Plays the Same Song",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Everyone Plays the Same Song",
+    description: "A community music project where participants cover the same song in their own unique style",
+    images: ["/og-image.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 import "../styles/globals.css";

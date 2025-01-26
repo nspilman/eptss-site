@@ -1,5 +1,15 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { SubmitPage } from "./SubmitPage";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Submit Your Cover | Everyone Plays the Same Song",
+  description: "Submit your unique cover version for the current round of Everyone Plays the Same Song. Share your musical interpretation with our community.",
+  openGraph: {
+    title: "Submit Your Cover | Everyone Plays the Same Song",
+    description: "Submit your unique cover version for the current round of Everyone Plays the Same Song. Share your musical interpretation with our community.",
+  },
+};
 
 const Submit = async () => {
   const { roundId, phase } = await roundProvider();
