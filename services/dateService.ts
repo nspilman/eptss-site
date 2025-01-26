@@ -14,14 +14,36 @@ export const parseDate = (date: string | Date): Date => {
   return typeof date === 'string' ? parseISO(date) : date;
 };
 
-export const formatDate = (date: string | Date): string => {
-  if (!date) return 'Not set';
-  try {
-    const parsedDate = parseDate(date);
-    if (isNaN(parsedDate.getTime())) return 'Not set';
-    return format(parsedDate, "MMM d, yyyy 'at' h:mm a");
-  } catch {
-    return 'Not set';
+export const formatDate = {
+  full: (date: string | Date): string => {
+    if (!date) return 'Not set';
+    try {
+      const parsedDate = parseDate(date);
+      if (isNaN(parsedDate.getTime())) return 'Not set';
+      return format(parsedDate, "MMM d, yyyy 'at' h:mm a");
+    } catch {
+      return 'Not set';
+    }
+  },
+  time: (date: string | Date): string => {
+    if (!date) return 'Not set';
+    try {
+      const parsedDate = parseDate(date);
+      if (isNaN(parsedDate.getTime())) return 'Not set';
+      return format(parsedDate, "h:mm a");
+    } catch {
+      return 'Not set';
+    }
+  },
+  compact: (date: string | Date): string => {
+    if (!date) return 'Not set';
+    try {
+      const parsedDate = parseDate(date);
+      if (isNaN(parsedDate.getTime())) return 'Not set';
+      return format(parsedDate, "MMM d, yyyy");
+    } catch {
+      return 'Not set';
+    }
   }
 };
 

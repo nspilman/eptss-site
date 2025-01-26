@@ -7,7 +7,7 @@ import {
   getSubmissions,
 } from "@/data-access";
 import { Phase, RoundInfo } from "@/types/round";
-import { getCurrentPhase, getPhaseDates, RoundDates } from "@/services/dateService";
+import { getCurrentPhase, getPhaseDates, RoundDates, formatDate } from "@/services/dateService";
 import { VoteOption } from "@/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
@@ -44,13 +44,13 @@ export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo>
   const phase = getCurrentPhase(roundDates);
   const phaseDates = getPhaseDates(roundDates);
 
-  // Convert dates to ISO strings for consistent formatting
+  // Convert dates to human-readable format for display
   const dateLabels = Object.fromEntries(
     Object.entries(phaseDates).map(([phase, dates]) => [
       phase,
       {
-        opens: dates.opens.toISOString(),
-        closes: dates.closes.toISOString(),
+        opens: formatDate.compact(dates.opens),
+        closes: formatDate.compact(dates.closes),
       },
     ])
   ) as Record<Phase, { opens: string; closes: string }>;
