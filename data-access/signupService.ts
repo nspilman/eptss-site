@@ -60,11 +60,20 @@ export async function signup(formData: FormData): Promise<FormReturn> {
   const { userId } = getAuthUser();
   
   try {
+    // Get the next song ID
+    const lastSongId = await db
+      .select({ id: songs.id })
+      .from(songs)
+      .orderBy(sql`id desc`)
+      .limit(1);
+    
+    const nextSongId = (lastSongId[0]?.id || 0) + 1;
+
     // First insert or get the song
     const songResult = await db
       .insert(songs)
       .values({
-        id: sql`nextval('songs_id_seq')`,
+        id: nextSongId,
         title: getToString("songTitle") || "",
         artist: getToString("artist") || "",
       })
@@ -82,9 +91,18 @@ export async function signup(formData: FormData): Promise<FormReturn> {
         ))
       )[0].id;
 
+    // Get the next signup ID
+    const lastSignupId = await db
+      .select({ id: signUps.id })
+      .from(signUps)
+      .orderBy(sql`id desc`)
+      .limit(1);
+    
+    const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+
     // Then insert the signup
     await db.insert(signUps).values({
-      id: sql`nextval('sign_ups_id_seq')`,
+      id: nextSignupId,
       youtubeLink: getToString("youtubeLink") || "",
       additionalComments: getToString("additionalComments") || "",
       roundId: JSON.parse(getToString("roundId") || "-1"),
