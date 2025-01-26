@@ -1,8 +1,15 @@
 import { DataTable } from "@/components/DataTable";
-import { roundProvider, votesProvider } from "@/providers";
+import { roundProvider, votesProvider, roundsProvider, adminProvider } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next';
+import { RoundScheduleCard } from "./RoundScheduleCard";
+import { SignupsCard } from "./SignupsCard";
+import { SubmissionsCard } from "./SubmissionCard";
+import { VotingCard } from "./VotingCard";
+import { ProjectStatsCard } from "./ProjectStatsCard";
+import { RoundSelector } from "./RoundSelector";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Everyone Plays the Same Song",
@@ -18,66 +25,63 @@ const AdminPage = async ({
 }: {
   searchParams: { roundId?: string };
 }) => {
-  const roundIdParam = searchParams.roundId
-    ? Number(searchParams.roundId)
-    : undefined;
   if (!(await isAdmin())) {
     return notFound();
   }
 
-  const { roundId, dateLabels, voteOptions } = await roundProvider(roundIdParam);
-  const { voteResults, outstandingVoters } = await votesProvider({ roundId });
+  // Get all rounds for the selector
+  const { allRoundIds } = await roundsProvider({});
+  const currentRoundId = searchParams.roundId 
+    ? Number(searchParams.roundId)
+    : Math.max(...allRoundIds);
 
-  // Vote results table setup
-  const voteResultsHeaderKeys = [
-    "title",
-    "artist",
-    "average",
-    "votesCount",
-  ] as const;
-  const voteHeaders = voteResultsHeaderKeys.map((key) => ({
-    key: key,
-    display: key,
-    sortable: true,
-  }));
-
-  // Dates table setup
-  const datesArray = Object.entries(dateLabels)?.map(([key, { opens, closes }]) => ({
-    phase: key,
-    opens: new Date(opens).toLocaleString(),
-    closes: new Date(closes).toLocaleString(),
-  }));
-  const dateHeaders = [
-    { key: "phase", display: "Phase", sortable: true },
-    { key: "opens", display: "Opens", sortable: true },
-    { key: "closes", display: "Closes", sortable: true },
-  ];
-
-  // Vote options table setup
-  const voteOptionsArray = voteOptions.map((option, index) => ({
-    label: option.song.title + " - " + option.song.artist,
-    link: option.youtubeLink || "",
-  }));
-  const voteOptionHeaders = [
-    { key: "label", display: "Label", sortable: true },
-    { key: "link", display: "Link", sortable: true },
-  ];
-  const outstandingVotesHeader = [{ key: "email", display: "Email" }];
+  // Get current round data
+  const { phase, dateLabels, voteOptions, signups, submissions } = 
+    await roundProvider(currentRoundId);
+  const { voteResults, outstandingVoters } = 
+    await votesProvider({ roundId: currentRoundId });
+  const stats = await adminProvider();
 
   return (
-    <>
-      <h2>Round Dates</h2>
-      <DataTable rows={datesArray} headers={dateHeaders} />
-      <h2>Vote Options</h2>
-      <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} />
-      <h2>Outstanding Voters</h2>
-      <DataTable
-        rows={outstandingVoters.map((email) => ({ email }))}
-        headers={outstandingVotesHeader}
-      />
-      <h2>Vote Results</h2>
-      <DataTable rows={voteResults} headers={voteHeaders} />
-    </>
+    <div className="container mx-auto p-4 space-y-8">
+      {/* Project Overview Section */}
+      <section>
+        <ProjectStatsCard 
+          totalUsers={stats.totalUsers}
+          totalRounds={stats.totalRounds}
+          activeUsers={stats.activeUsers}
+          completionRate={stats.completionRate}
+        />
+      </section>
+
+      {/* Round Selector */}
+      <RoundSelector currentRoundId={currentRoundId} allRoundIds={allRoundIds} />
+
+      {/* Round Details Section */}
+      <section className="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4 space-y-4">
+        {/* Schedule Card - Full Width */}
+        <RoundScheduleCard phase={phase} dateLabels={dateLabels} />
+        
+        {/* Signups Row */}
+        <div className="w-full">
+          <SignupsCard signups={signups} />
+        </div>
+
+        {/* Voting Row */}
+        <div className="w-full">
+          <VotingCard
+            voteOptions={voteOptions}
+            outstandingVoters={outstandingVoters}
+            voteResults={voteResults}
+          />
+        </div>
+
+        {/* Submissions Row */}
+        <div className="w-full">
+          <SubmissionsCard submissions={submissions} />
+        </div>
+      </section>
+    </div>
   );
 };
 

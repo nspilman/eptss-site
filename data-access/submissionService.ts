@@ -11,22 +11,20 @@ import { eq, sql } from "drizzle-orm";
 export const getSubmissions = async (id: number) => {
   const data = await db
     .select({
-      artist: submissions.additionalComments, // Note: artist seems to come from additional_comments in your schema
       created_at: submissions.createdAt,
       round_id: submissions.roundId,
       soundcloud_url: submissions.soundcloudUrl,
-      username: users.username,
+      username: users.username || "",  // Add this line to get username
     })
     .from(submissions)
-    .leftJoin(users, eq(submissions.userId, users.userid))
+    .leftJoin(users, eq(submissions.userId, users.userid))  // Add this line to join with users table
     .where(eq(submissions.roundId, id));
 
   return data.map((val) => ({
-    artist: val.artist || "",
-    created_at: val.created_at || "",
-    round_id: val.round_id || -1,
-    soundcloud_url: val.soundcloud_url || "",
-    username: val.username || "",
+    createdAt: val.created_at,
+    roundId: val.round_id,
+    soundcloudUrl: val.soundcloud_url,
+    username: val.username || "",  // Add this to the return object
   }));
 };
 
@@ -37,6 +35,17 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
   const { userId } = getAuthUser();
   
   try {
+    const data = await db
+      .select({
+        created_at: submissions.createdAt,
+        round_id: submissions.roundId,
+        soundcloud_url: submissions.soundcloudUrl,
+        username: users.username,
+      })
+      .from(submissions)
+      .leftJoin(users, eq(submissions.userId, users.userid))
+      .where(eq(submissions.id, sql`nextval('submissions_id_seq')`));
+
     await db.insert(submissions).values({
       id: sql`nextval('submissions_id_seq')`,
       roundId: JSON.parse(getToString("roundId") || "-1"),

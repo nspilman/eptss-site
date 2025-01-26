@@ -3,10 +3,10 @@ import { pgTable, text, timestamp, uuid, integer, boolean, bigint, bigserial } f
 
 // Users Table
 export const users = pgTable("users", {
-  userid: uuid("userid").primaryKey(),
+  userid: uuid("userid").primaryKey().notNull(),
   email: text("email").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow(),
-  username: text("username").unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  username: text("username").unique().notNull(),
   adminLevel: integer("admin_level"),
 });
 
@@ -45,12 +45,12 @@ export const signUps = pgTable("sign_ups", {
 
 // Submissions Table
 export const submissions = pgTable("submissions", {
-  id: bigint("id", { mode: "number" }).primaryKey(),
-  createdAt: timestamp("created_at").defaultNow(),
+  id: bigint("id", { mode: "number" }).primaryKey().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   soundcloudUrl: text("soundcloud_url").notNull(),
-  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
   additionalComments: text("additional_comments"),
-  userId: uuid("user_id").references(() => users.userid),
+  userId: uuid("user_id").references(() => users.userid).notNull(),
 });
 
 // User Roles Table

@@ -169,6 +169,20 @@
       "when": 1737831766806,
       "tag": "0023_absent_sway",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1737868716661,
+      "tag": "0024_sudden_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1737868794395,
+      "tag": "0025_thick_moon_knight",
+      "breakpoints": true
     }
   ]
 }

@@ -56,19 +56,19 @@ interface Props {
 const voteResultsHeaders = [
   {
     key: "title",
-    display: "Title",
+    label: "Title",
   },
-  { key: "artist", display: "Artist" },
-  { key: "average", display: "Average Vote" },
+  { key: "artist", label: "Artist" },
+  { key: "average", label: "Average Vote" },
 ] as const;
 
 const signupsHeaders = [
   {
     key: "title",
-    display: "Title",
+    label: "Title",
   },
-  { key: "artist", display: "Artist" },
-  { key: "youtubeLink", display: "Youtube Link" },
+  { key: "artist", label: "Artist" },
+  { key: "youtubeLink", label: "Youtube Link" },
 ] as const;
 
 const RoundSummary = async ({ roundId }: Props) => {
@@ -96,36 +96,36 @@ const RoundSummary = async ({ roundId }: Props) => {
   };
 
   const roundSummaryHeaders: {
-    display: string;
-    key: "phase" | "signupCount" | "submissionCount";
+    key: string;
+    label: string;
   }[] = [
     {
-      display: "Current Phase",
-      key: "phase" as const,
+      key: "phase",
+      label: "Current Phase",
     },
     {
-      display: "Signup Count",
-      key: "signupCount" as const,
+      key: "signupCount",
+      label: "Signup Count",
     },
   ];
 
   const submissionsDisplayHeaders: {
-    display: string;
-    key: "soundcloud_url" | "username";
+    label: string;
+    key: "soundcloudUrl" | "username";
   }[] = [
     {
-      display: "Username",
+      label: "Username",
       key: "username",
     },
     {
-      display: "Submission",
-      key: "soundcloud_url",
+      label: "Submission",
+      key: "soundcloudUrl",
     },
   ];
 
   const submissionCountHeader = {
-    display: "Submission Count",
-    key: "submissionCount" as const,
+    key: "submissionCount",
+    label: "Submission Count",
   };
   const roundIsComplete = phase === "celebration";
 
@@ -182,7 +182,7 @@ const RoundSummary = async ({ roundId }: Props) => {
                     username,
                     // <Link href={`/profile/${username}`},
                     // </Link>
-                    soundcloud_url: <Link href={soundcloudUrl}>Link</Link>,
+                    soundcloudUrl: <Link href={soundcloudUrl}>Link</Link>,
                   })
                 )}
               />

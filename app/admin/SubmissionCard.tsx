@@ -3,10 +3,8 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Music } from "lucide-react"
 import { DataTable } from "@/components/DataTable"
-
-type Submission = {
-     roundId: number; soundcloudUrl: string; artist: string; created_at: string; round_id: number; soundcloud_url: string; title: string; username: string;
-}
+import Link from "next/link"
+import type { Submission } from "@/types/round"
 
 type SubmissionsCardProps = {
   submissions: Submission[]
@@ -14,11 +12,16 @@ type SubmissionsCardProps = {
 
 export const SubmissionsCard = ({ submissions }: SubmissionsCardProps) => {
   const submissionHeaders = [
-    { key: 'username', display: 'Username', sortable: true },
-    { key: 'title', display: 'Title', sortable: true },
-    { key: 'artist', display: 'Artist', sortable: true },
-    { key: 'created_at', display: 'Submission Date', sortable: true },
+    { key: 'username', label: 'Username', sortable: true },
+    { key: 'soundcloudUrl', label: 'SoundCloud URL', sortable: true },
+    { key: 'createdAt', label: 'Submission Date', sortable: true },
   ]
+
+  const submissionRows = submissions.map(submission => ({
+    username: submission.username,
+    soundcloudUrl: <Link href={submission.soundcloudUrl} className="text-blue-400 hover:text-blue-300" target="_blank">Listen</Link>,
+    createdAt: submission.createdAt.toLocaleString(),
+  }))
 
   return (
     <motion.div
@@ -26,16 +29,22 @@ export const SubmissionsCard = ({ submissions }: SubmissionsCardProps) => {
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
-      <Card className="bg-gray-800 bg-opacity-50 backdrop-blur-md border-gray-700">
-        <CardHeader>
-          <CardTitle className="flex items-center text-[#e2e240]">
-            <Music className="mr-2" />
-            Submissions
-          </CardTitle>
+      <Card className="bg-gray-800/50 backdrop-blur-md border-gray-700/50 hover:bg-gray-800/70 transition-colors h-full">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center text-white">
+              <Music className="mr-2" />
+              Submissions
+            </CardTitle>
+            <span className="text-sm text-gray-400">
+              {submissions.length} total
+            </span>
+          </div>
         </CardHeader>
         <CardContent>
-          <p className="mb-4 text-xl">Total Submissions: {submissions.length}</p>
-          <DataTable rows={submissions} headers={submissionHeaders} />
+          <div className="h-[400px] overflow-auto rounded-lg border border-gray-700/50">
+            <DataTable rows={submissionRows} headers={submissionHeaders} />
+          </div>
         </CardContent>
       </Card>
     </motion.div>

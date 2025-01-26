@@ -11,6 +11,13 @@ export type DateLabel = {
   closes: string;
 };
 
+export interface Submission {
+  roundId: number;
+  soundcloudUrl: string;
+  username: string;
+  createdAt: Date;
+}
+
 export interface RoundInfo {
   roundId: DBRound["id"];
   phase: Phase;
@@ -25,12 +32,7 @@ export interface RoundInfo {
     youtubeLink?: string;
     song: Pick<DBSong, "title" | "artist">;
   }>;
-  submissions: Array<{
-    artist: string;
-    roundId: number;
-    soundcloudUrl: string;
-    username: string;
-  }>;
+  submissions: Submission[];
   playlistUrl?: string;
 signups: { song: { title: string; artist: string; }; songId: number; youtubeLink: string; }[]
 }

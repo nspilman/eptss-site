@@ -11,8 +11,11 @@ export const votesProvider = async ({ roundId: roundIdProp }: Props) => {
   );
 
   const votingUserIds = await getVotingUsersByRound(roundId)
-  const usersInRound = await getSignupUsersByRound(roundId) as unknown as {user_id: string, users: {userId: string, email: string}}[]
-  const outstandingVoters = usersInRound?.filter(user => !votingUserIds?.includes(user.user_id)).map(user => user.users?.email)
+  const usersInRound = await getSignupUsersByRound(roundId);
+  const outstandingVoters = usersInRound
+    ?.filter(user => !votingUserIds?.includes(user.userId))
+    .map(user => user.user?.email)
+    .filter((email): email is string => email !== undefined && email !== null);
 
-  return { voteResults, outstandingVoters };
+  return { voteResults, outstandingVoters: outstandingVoters || [] };
 };

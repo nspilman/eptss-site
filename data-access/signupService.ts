@@ -16,10 +16,13 @@ export const getSignupsByRound = async (roundId: number) => {
       song: {
         title: songs.title,
         artist: songs.artist
-      }
+      },
+      email: users.email,
+      userId: users.userid
     })
     .from(signUps)
     .leftJoin(songs, eq(signUps.songId, songs.id))
+    .leftJoin(users, eq(signUps.userId, users.userid))
     .where(eq(signUps.roundId, roundId))
     .orderBy(signUps.createdAt);
     
@@ -36,7 +39,7 @@ export const getSignupsByRound = async (roundId: number) => {
 
 
 export const getSignupUsersByRound = async (roundId: number) => {
-  const data = await db
+  return await db
     .select({
       userId: signUps.userId,
       user: {

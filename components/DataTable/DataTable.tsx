@@ -1,13 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import React from "react";
 
 interface Header<T> {
   key: T;
-  display: string;
-  className?: string;
-  sortable?: boolean;
+  label: string;
 }
 
 interface Props<T extends string> {
@@ -18,6 +15,7 @@ interface Props<T extends string> {
   subtitle?: string;
   maxHeight?: number;
   className?: string;
+  isLoading?: boolean;
 }
 
 export function DataTable<T extends string>({
@@ -27,27 +25,19 @@ export function DataTable<T extends string>({
   maxHeight,
   subtitle,
   className,
+  isLoading,
 }: Props<T>) {
-  const [sortKey, setSortKey] = useState<T>();
-  const [descSort, setDescSort] = useState(true);
-
-  const onHeaderClick = (newSortKey: T) => {
-    if (newSortKey === sortKey) {
-      setDescSort((descSort) => !descSort);
-    } else {
-      setDescSort(true);
-      setSortKey(newSortKey);
-    }
-  };
-
-  if (sortKey) {
-    rows.sort((rowA, rowB) => {
-      const evaluationByDirection = descSort
-        ? rowA[sortKey] > rowB[sortKey]
-        : rowB[sortKey] > rowA[sortKey];
-      return evaluationByDirection ? -1 : 1;
-    });
+  if (isLoading) {
+    return (
+      <div className="p-4 space-y-4">
+        <div className="h-8 bg-gray-700/20 animate-pulse rounded" />
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-12 bg-gray-700/20 animate-pulse rounded" />
+        ))}
+      </div>
+    );
   }
+
   const isEmpty = !rows?.length;
 
   return (
@@ -63,22 +53,14 @@ export function DataTable<T extends string>({
       </div>
       <div className="w-full overflow-x-auto" style={{ maxHeight }}>
         <table className="w-full">
-          <thead className="bg-gray-800 sticky top-0">
+          <thead className="bg-gray-800/50">
             <tr>
-              {headers.map(({ key, display, sortable }) => (
+              {headers.map((header) => (
                 <th
-                  key={key}
-                  className={`px-4 py-2 text-left text-sm font-medium text-gray-300 ${sortable ? 'cursor-pointer hover:bg-gray-700' : ''}`}
-                  onClick={() => sortable && onHeaderClick(key)}
+                  key={header.key}
+                  className="px-4 py-3 text-left text-sm font-medium text-gray-300"
                 >
-                  <div className="flex items-center">
-                    {display}
-                    {sortable && sortKey === key && (
-                      <span className="ml-1">
-                        {descSort ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-                      </span>
-                    )}
-                  </div>
+                  {header.label}
                 </th>
               ))}
             </tr>
@@ -86,8 +68,11 @@ export function DataTable<T extends string>({
           <tbody>
             {isEmpty ? (
               <tr>
-                <td colSpan={headers.length} className="px-4 py-8 text-center text-gray-400">
-                  No records to display
+                <td
+                  colSpan={headers.length}
+                  className="px-4 py-2 text-center text-gray-500"
+                >
+                  No data available
                 </td>
               </tr>
             ) : (
@@ -96,14 +81,11 @@ export function DataTable<T extends string>({
                   key={i}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                  className="border-b border-gray-800 hover:bg-gray-800"
+                  transition={{ duration: 0.2, delay: i * 0.05 }}
+                  className="border-t border-gray-800 hover:bg-gray-800/30"
                 >
-                  {headers.map(({ key, className }) => (
-                    <td
-                      key={key}
-                      className={`px-4 py-2 text-sm text-gray-300 ${className}`}
-                    >
+                  {headers.map(({ key }) => (
+                    <td key={key} className="px-4 py-3 text-sm text-gray-300">
                       {row[key]}
                     </td>
                   ))}

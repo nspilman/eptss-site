@@ -7,8 +7,7 @@ import {
   getSubmissions,
 } from "@/data-access";
 import { Phase, RoundInfo } from "@/types/round";
-import { seededShuffle } from "@/utils/seededShuffle";
-import { formatDate, getCurrentPhase, getPhaseDates, parseDate, RoundDates } from "@/services/dateService";
+import { getCurrentPhase, getPhaseDates, RoundDates } from "@/services/dateService";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
@@ -22,24 +21,6 @@ type VoteOption = {
     artist: string;
   }
 };
-
-// async function getVoteOptions(roundId: number, typeOverride?: "runner_up"): Promise<VoteOption[]> {
-//   const signups = await getSignupsByRound(roundId);
-
-//   const overrideVotes = typeOverride && await getRoundOverrideVotes(roundId);
-//   const allOptions = [...signups.map(signup => ({...signup, roundId })), ...(overrideVotes?.data || [])].map(signup => ({...signup, roundId})); 
-
-//   return seededShuffle(allOptions, roundId.toString());
-// }
-
-async function transformSubmissions(roundId: number) {
-  const rawSubmissions = await getSubmissions(roundId);
-  return rawSubmissions.map(({ round_id, soundcloud_url, ...rest }) => ({
-    ...rest,
-    roundId: round_id,
-    soundcloudUrl: soundcloud_url,
-  }));
-}
 
 export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo> => {
   const round = currentRoundId
@@ -61,41 +42,28 @@ export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo>
     playlistUrl,
   } = round;
 
-  // Parse all dates at once
-  const dates: RoundDates = {
-    signupOpens: parseDate(signupOpens),
-    votingOpens: parseDate(votingOpens),
-    coveringBegins: parseDate(coveringBegins),
-    coversDue: parseDate(coversDue),
-    listeningParty: parseDate(listeningParty),
+  // Convert string dates to Date objects
+  const roundDates: RoundDates = {
+    signupOpens: signupOpens ? new Date(signupOpens) : new Date(),
+    votingOpens: votingOpens ? new Date(votingOpens) : new Date(),
+    coveringBegins: coveringBegins ? new Date(coveringBegins) : new Date(),
+    coversDue: coversDue ? new Date(coversDue) : new Date(),
+    listeningParty: listeningParty ? new Date(listeningParty) : new Date(),
   };
 
-  const phase = getCurrentPhase(dates);
-  const phaseDates = getPhaseDates(dates);
+  const phase = getCurrentPhase(roundDates);
+  const phaseDates = getPhaseDates(roundDates);
 
-  type DateLabel = {
-    opens: string;
-    closes: string;
-  };
-
-  const dateLabels: Record<Phase, DateLabel> = {
-    signups: {
-      opens: formatDate(phaseDates.signups.opens),
-      closes: formatDate(phaseDates.signups.closes),
-    },
-    voting: {
-      opens: formatDate(phaseDates.voting.opens),
-      closes: formatDate(phaseDates.voting.closes),
-    },
-    covering: {
-      opens: formatDate(phaseDates.covering.opens),
-      closes: formatDate(phaseDates.covering.closes),
-    },
-    celebration: {
-      opens: formatDate(phaseDates.celebration.opens),
-      closes: formatDate(phaseDates.celebration.closes),
-    },
-  };
+  // Convert dates to ISO strings for consistent formatting
+  const dateLabels = Object.fromEntries(
+    Object.entries(phaseDates).map(([phase, dates]) => [
+      phase,
+      {
+        opens: dates.opens.toISOString(),
+        closes: dates.closes.toISOString(),
+      },
+    ])
+  ) as Record<Phase, { opens: string; closes: string }>;
 
   const hasRoundStarted = phaseOrder.indexOf(phase) > 0;
   const areSubmissionsOpen = phase === "signups";
@@ -103,7 +71,7 @@ export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo>
   
   const [voteOptions, submissions] = await Promise.all([
     getVoteOptions(roundId),
-    transformSubmissions(roundId),
+    getSubmissions(roundId)
   ]);
 
   const signups = await getSignupsByRound(roundId);

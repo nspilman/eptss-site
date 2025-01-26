@@ -15,7 +15,7 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
     // Vote results table setup
     const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;
     const voteHeaders = voteResultsHeaderKeys.map(key => ({
-        key: key, display: key, sortable: true
+        key: key, label: key, sortable: true
     }));
 
     const datesArray = Object.entries(dateLabels)?.map(([key, { opens, closes }]) => ({
@@ -24,9 +24,9 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
         closes: new Date(closes).toLocaleString()
     }));
     const dateHeaders = [
-        { key: 'phase', display: 'Phase', sortable: true },
-        { key: 'opens', display: 'Opens', sortable: true },
-        { key: 'closes', display: 'Closes', sortable: true }
+        { key: 'phase', label: 'Phase', sortable: true },
+        { key: 'opens', label: 'Opens', sortable: true },
+        { key: 'closes', label: 'Closes', sortable: true }
     ];
 
     // Vote options table setup
@@ -35,12 +35,12 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
         link: option.youtubeLink || ''
     }));
     const voteOptionHeaders = [
-        { key: 'label', display: 'Label', sortable: true },
-        { key: 'link', display: 'Link', sortable: true }
+        { key: 'label', label: 'Label', sortable: true },
+        { key: 'link', label: 'Link', sortable: true }
     ];
 
     const outstandingVotesHeader = [
-        {key: "email", display: "Email", sortable: true}
+        {key: "email", label: "Email", sortable: true}
     ]
 
     return (
@@ -50,7 +50,7 @@ const AdminRoundPage = async ({ params }: { params: { roundId: string } }) => {
             <h2>Vote Options</h2>
             <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} />
             <h2>Outstanding Voters</h2>
-            <DataTable rows={outstandingVoters.map(email => ({email}))} headers={outstandingVotesHeader}/>
+            <DataTable rows={outstandingVoters.map(email => ({email: email || ''}))} headers={outstandingVotesHeader}/>
             <h2>Vote Results</h2>
             <DataTable rows={voteResults} headers={voteHeaders} />
         </>
