@@ -2,27 +2,16 @@
 
 import { motion } from "framer-motion"
 import { ReactNode } from "react"
-import { toast } from "@/components/ui/use-toast"
+import { FormReturn } from "@/types"
 
 interface FormWrapperProps {
   title: string
-  description?: string
+  description?: string | ReactNode
   children: ReactNode
-  onSubmit: (formData: FormData) => Promise<{ error?: string; success?: boolean }>
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 }
 
 export function FormWrapper({ title, description, children, onSubmit }: FormWrapperProps) {
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const result = await onSubmit(new FormData(e.currentTarget))
-    if (result.error) {
-      toast({
-        title: "Error",
-        description: result.error,
-      })
-    }
-  }
-
   return (
     <div className="space-y-6 relative group">
       <div className="absolute -inset-2 bg-gradient-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700"></div>
@@ -37,11 +26,13 @@ export function FormWrapper({ title, description, children, onSubmit }: FormWrap
             {title}
           </h1>
           {description && (
-            <span className="text-white font-light text-sm">{description}</span>
+            <div className="text-white font-light text-sm">
+              {description}
+            </div>
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={onSubmit} className="space-y-8">
           {children}
         </form>
       </motion.div>

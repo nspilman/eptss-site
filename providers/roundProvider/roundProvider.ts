@@ -8,19 +8,9 @@ import {
 } from "@/data-access";
 import { Phase, RoundInfo } from "@/types/round";
 import { getCurrentPhase, getPhaseDates, RoundDates } from "@/services/dateService";
+import { VoteOption } from "@/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
-
-type VoteOption = {
-  roundId: number;
-  originalRoundId?: number;
-  songId: number;
-  youtubeLink?: string;
-  song: {
-    title: string;
-    artist: string;
-  }
-};
 
 export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo> => {
   const round = currentRoundId

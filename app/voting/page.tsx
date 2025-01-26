@@ -3,7 +3,7 @@ import {
   roundProvider,
   userParticipationProvider,
 } from "@/providers";
-import VotingPage from "./VotingPage";
+import {VotingPage} from "./VotingPage";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -28,17 +28,11 @@ const VotingPageHome = async () => {
 
   const {roundDetails}  = await userParticipationProvider({ roundId });
 
-  const transformedVoteOptions = voteOptions.map(option => ({
-    label: `${option.song.title} - ${option.song.artist}`,
-    field: `vote_${option.songId}`,
-    placeholder: option.youtubeLink ? 'YouTube link available' : undefined,
-  }));
-
   return (
     <VotingPage
       {...{
         roundId,
-        voteOptions: transformedVoteOptions,
+        songs: voteOptions,
         phase,
         coveringStartLabel,
         userRoundDetails: roundDetails

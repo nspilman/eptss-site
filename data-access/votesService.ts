@@ -73,7 +73,7 @@ export const getVotingUsersByRound = async (roundId: number) => {
 };
 
 export const submitVotes = async (
-  { roundId }: { roundId: number },
+  roundId: number,
   formData: FormData
 ): Promise<FormReturn> => {
   const { userId } = getAuthUser();
@@ -115,14 +115,14 @@ export const submitVotes = async (
         }));
 
       if (votes.length === 0) {
-        return handleResponse(400, Navigation.Vote, "No votes submitted");
+        return handleResponse(400, Navigation.Voting, "No votes submitted");
       }
 
       await trx.insert(songSelectionVotes).values(votes);
     });
 
-    return handleResponse(201, Navigation.Vote, "");
+    return handleResponse(201, Navigation.Voting, "");
   } catch (error) {
-    return handleResponse(500, Navigation.Vote, (error as Error).message);
+    return handleResponse(500, Navigation.Voting, (error as Error).message);
   }
 };

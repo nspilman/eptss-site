@@ -2,7 +2,11 @@ export * from "./database";
 export * from "./roundDetails";
 
 export type Status = "Success" | "Error";
-export type FormReturn = { status: Status; message: string };
+export type FormReturn = { 
+  status: Status; 
+  message: string;
+  variant?: "default" | "destructive";
+}
 
 export enum Tables {
   SignUps = "sign_ups",

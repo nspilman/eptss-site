@@ -1,5 +1,5 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
-import VotingPage from "../VotingPage";
+import {VotingPage} from "../VotingPage";
 
 export default async function VotingForRound({
   params,
@@ -24,8 +24,8 @@ export default async function VotingForRound({
   return (
     <VotingPage
       roundId={roundId}
-      voteOptions={voteOptions.map(option => ({...option, field: option.songId.toString(), label: option.song.title + " - " + option.song.artist}))}
-      phase={phase}
+      songs={voteOptions.map(option => ({...option, id: option.songId, title: option.song.title , artist: option.song.artist})) || []}
+      // phase={phase}
       coveringStartLabel={coveringStartLabel}
       userRoundDetails={roundDetails}
     />
