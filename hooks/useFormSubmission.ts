@@ -20,12 +20,15 @@ export function useFormSubmission<T extends FieldValues>({
 }: UseFormSubmissionProps<T>) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = form.handleSubmit(async (data) => {
     setIsLoading(true);
 
     try {
-      const formData = new FormData(event.currentTarget);
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value as string);
+      });
+
       const result = await onSubmit(formData);
 
       if (result.status === "Success") {
@@ -51,7 +54,7 @@ export function useFormSubmission<T extends FieldValues>({
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return {
     isLoading,
