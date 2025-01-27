@@ -27,8 +27,8 @@ export const RoundScheduleCard = ({ phase, dateLabels }: RoundScheduleProps) => 
 
   const dates = Object.entries(dateLabels).map(([phase, { opens, closes }]) => ({
     phase,
-    opens: formatDate(opens),
-    closes: formatDate(closes),
+    opens: formatDate.compact(opens),
+    closes: formatDate.compact(closes),
   }))
 
   return (
