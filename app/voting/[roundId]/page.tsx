@@ -21,6 +21,7 @@ export default async function VotingForRound({
 
   const {roundDetails} = await userParticipationProvider({ roundId });
 
+
   return (
     <VotingPage
       roundId={roundId}
