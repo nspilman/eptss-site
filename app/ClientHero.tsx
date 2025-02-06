@@ -54,12 +54,12 @@ export const ClientHero = ({
       case "signups":
         return {
           title: song.title ? `Next Up: ${song.title}` : "Song Selection in Progress",
-          subtitle: song.artist ? `Get ready to reimagine ${song.artist}'s track` : "Help us choose our next creative challenge",
+          subtitle: song.artist ? `Get ready to reimagine ${song.artist}&apos;s track` : "Help us choose our next creative challenge",
         };
       case "covering":
         return {
           title: `Now Covering: ${song.title}`,
-          subtitle: `Join the musicians creating unique versions of ${song.artist}'s track`,
+          subtitle: `Join the musicians creating unique versions of ${song.artist}&apos;s track`,
         };
       case "voting":
         return {
@@ -69,15 +69,15 @@ export const ClientHero = ({
       case "celebration":
         return {
           title: "Round ${roundId} Showcase",
-          subtitle: "Get ready to hear how everyone reimagined this quarter's song",
+          subtitle: "Get ready to hear how everyone reimagined this quarter&apos;s song",
         };
       default:
         return {
           title: song.title ? `Current Project: ${song.title}` : "Round in Progress",
-          subtitle: song.artist ? `Join our community reimagining ${song.artist}'s track` : "New creative challenge starting soon",
+          subtitle: song.artist ? `Join our community reimagining ${song.artist}&apos;s track` : "New creative challenge starting soon",
         };
     }
-  };
+  };  
 
   const heroContent = getHeroContent();
 
@@ -239,7 +239,7 @@ export const ClientHero = ({
             {song.title}
           </h2>
           <p className="text-gray-300 mb-4">
-            Join the musicians creating unique versions of {song.artist}'s track
+            Join the musicians creating unique versions of {song.artist}&apos;s track
           </p>
           <div className="text-sm text-gray-400 mb-4 flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-[#e2e240]" />
