@@ -281,11 +281,19 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const round = await roundProvider(roundId);
   
   return {
-    title: `Round ${roundId} - ${round.song.title} by ${round.song.artist} | Everyone Plays the Same Song`,
-    description: `Listen to community covers of "${round.song.title} by ${round.song.artist}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
+    title: round.song?.title 
+      ? `Round ${roundId} - ${round.song.title} by ${round.song.artist} | Everyone Plays the Same Song`
+      : `Round ${roundId} | Everyone Plays the Same Song`,
+    description: round.song?.title 
+      ? `Listen to community covers of "${round.song.title} by ${round.song.artist}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`
+      : `Join Round ${roundId} of Everyone Plays the Same Song - where our community comes together to cover the same song in their own unique style.`,
     openGraph: {
-      title: `Round ${roundId} - ${round.song.title} by ${round.song.artist} | Everyone Plays the Same Song`,
-      description: `Listen to community covers of "${round.song.title} by ${round.song.artist}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
+      title: round.song?.title 
+        ? `Round ${roundId} - ${round.song.title} by ${round.song.artist} | Everyone Plays the Same Song`
+        : `Round ${roundId} | Everyone Plays the Same Song`,
+      description: round.song?.title 
+        ? `Listen to community covers of "${round.song.title} by ${round.song.artist}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`
+        : `Join Round ${roundId} of Everyone Plays the Same Song - where our community comes together to cover the same song in their own unique style.`,
     },
   };
 }
