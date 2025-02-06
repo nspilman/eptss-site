@@ -18,9 +18,9 @@ interface Props {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="flex justify-between items-center mb-12 md:mb-20 relative z-10"
+        className="flex justify-between items-center mb-4 relative z-10"
       >
-        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center">
+        <h1 className="text-sm sm:text-2xl md:text-3xl font-extrabold tracking-tight flex items-center">
           <MusicIcon className="mr-2 h-8 w-8 text-[#e2e240]" />
           <Link href="/">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
@@ -28,9 +28,9 @@ interface Props {
           </span>
           </Link>
         </h1>
-        <div className="space-x-2 md:space-x-4 flex">
+        <div className="space-x-2 md:space-x-4 flex items-center">
           <Link href={Navigation.FAQ}>
-          <Button variant="outline" className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
+          <Button variant="outline" className="text-xs md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
             FAQ
           </Button>
           </Link>

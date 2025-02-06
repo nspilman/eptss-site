@@ -38,8 +38,8 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
             <Image
               src="/profile-icon.png"
               alt="profile icon"
-              width={60}
-              height={50}
+              width={50}
+              height={40}
               className="hover:shadow-NavShadow hover:cursor-pointer"
             />
           </button>
