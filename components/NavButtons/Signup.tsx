@@ -46,7 +46,7 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
         )
       ) : (
         <Link href={Navigation.Login}>
-        <Button variant="outline" className="text-sm md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
+        <Button variant="outline" className="hidden sm:block text-xs md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
           Sign up / Log In!
         </Button>
         </Link>
