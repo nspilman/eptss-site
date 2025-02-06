@@ -30,7 +30,7 @@ interface Props {
         </h1>
         <div className="space-x-2 md:space-x-4 flex items-center">
           <Link href={Navigation.FAQ}>
-          <Button variant="outline" className="text-xs md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
+          <Button variant="outline" className="hidden sm:block text-xs md:text-base text-gray-600 border-gray-100 hover:bg-gray-100 hover:text-[#0a0a1e] transition-colors">
             FAQ
           </Button>
           </Link>

@@ -9,11 +9,11 @@ import { Suspense } from "react";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Everyone Plays the Same Song | Community Music Project",
-  description: "Join our unique music community where participants cover the same song in their own style. A collaborative music project bringing artists together.",
+  title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
+  description: "Every quarter, our community picks one song. Everyone creates their own unique cover version. Then we celebrate with a virtual listening party! Join our next round.",
   openGraph: {
-    title: "Everyone Plays the Same Song | Community Music Project",
-    description: "Join our unique music community where participants cover the same song in their own style. A collaborative music project bringing artists together.",
+    title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
+    description: "Every quarter, our community picks one song. Everyone creates their own unique cover version. Then we celebrate with a virtual listening party! Join our next round.",
     images: [
       {
         url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`,

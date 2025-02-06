@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import React from "react";
-import Link from "next/link";
-import { JoinTheCreativeCommunity } from "./JoinTheCreativeCommunityButton";
 import { Phase, RoundInfo } from "@/types/round";
 import { UserRoundParticipation } from "@/types/user";
 import { Navigation } from "@/enum/navigation";
@@ -47,36 +45,36 @@ export const ClientHero = ({
   const getHeroContent = () => {
     if (!userId) {
       return {
-        title: "Join the next round",
-        subtitle: "Be part of our creative community",
+        title: "Everyone Plays The Same Song",
+        subtitle: "Join a community of musicians covering one song each quarter. We vote together, create together, and celebrate together.",
       };
     }
 
     switch (phase) {
       case "signups":
         return {
-          title: song.title || "Voting on next song",
-          subtitle: song.artist || "Submit your song choice",
+          title: song.title ? `Next Up: ${song.title}` : "Song Selection in Progress",
+          subtitle: song.artist ? `Get ready to reimagine ${song.artist}'s track` : "Help us choose our next creative challenge",
         };
       case "covering":
         return {
           title: `Now Covering: ${song.title}`,
-          subtitle: `by ${song.artist}`,
+          subtitle: `Join the musicians creating unique versions of ${song.artist}'s track`,
         };
       case "voting":
         return {
-          title: "Time to vote!",
-          subtitle: "Listen and choose your favorites",
+          title: "Community Listening Party",
+          subtitle: `Experience everyone's unique take on ${song.title} and cast your votes`,
         };
       case "celebration":
         return {
-          title: "Submissions are open",
-          subtitle: "Submit your cover before the listening party!",
+          title: "Round ${roundId} Showcase",
+          subtitle: "Get ready to hear how everyone reimagined this quarter's song",
         };
       default:
         return {
-          title: song.title || "Round in progress",
-          subtitle: song.artist || "Stay tuned for updates",
+          title: song.title ? `Current Project: ${song.title}` : "Round in Progress",
+          subtitle: song.artist ? `Join our community reimagining ${song.artist}'s track` : "New creative challenge starting soon",
         };
     }
   };
@@ -167,79 +165,93 @@ export const ClientHero = ({
   const buttons = getButtonProps();
 
   return (
-    <main className="flex flex-col space-y-16 relative z-10">
+    <main className="flex flex-col space-y-6 relative z-10">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="flex flex-col md:flex-row md:items-center md:justify-between"
+        className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mt-8"
       >
-        <div className="max-w-2xl mb-8 md:mb-0">
-          <motion.h2
+        <div className="max-w-2xl md:mb-0 flex flex-col items-center md:items-start">
+          <motion.h1
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-4xl md:text-5xl font-bold mb-6 leading-tight"
+            className="font-bold mb-4 leading-tight"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
+            <span className="text-3xl sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
               creative fulfillment
             </span>
             <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#40e2e2] to-[#e2e240]">
+            <span className="text-2xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-[#40e2e2] to-[#e2e240]">
               with fewer decisions
             </span>
-          </motion.h2>
-          <motion.p
+          </motion.h1>
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-lg md:text-xl mb-8 leading-relaxed text-gray-300"
+            className="space-y-6 text-xl leading-relaxed text-gray-300"
           >
-           Sign up and suggest a song to cover. Everyone votes on the submitted cover candidates, and whichever song wins becomes the community&apos;s creative assignment - we all cover the same winning track. You&apos;ll have a clear deadline and be part of a community of musicians all tackling the same creative challenge.
-          </motion.p>
-            <JoinTheCreativeCommunity/>
+            <ol className="list-none space-y-2">
+              <li className="text-sm md:text-xl flex items-center gap-4">
+                <div className="flex items-center justify-center w-4 h-4 md:w-8 md:h-8 rounded-full border-2 border-[#e2e240]">
+                  <span className="text-[#e2e240] text-xs md:text-sm">1</span>
+                </div>
+                Suggest and vote on songs to cover
+              </li>
+              <li className="text-sm md:text-xl flex items-center gap-4">
+                <div className="flex items-center justify-center w-4 h-4 md:w-8 md:h-8 rounded-full border-2 border-[#e2e240]">
+                  <span className="text-[#e2e240] text-xs md:text-sm">2</span>
+                </div>
+                Create your version of the winning track
+              </li>
+              <li className="text-sm md:text-xl flex items-center gap-4">
+                <div className="flex items-center justify-center w-4 h-4 md:w-8 md:h-8 rounded-full border-2 border-[#e2e240]">
+                  <span className="text-[#e2e240] text-xs md:text-sm">3</span>
+                </div>
+                Share and celebrate with the community
+              </li>
+            </ol>
+          </motion.div>
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="mt-10"
+          >
+            <Button className="w-fit bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90 px-6 mb-2">
+              Get notified about the next round
+            </Button>
+            <div className="text-sm text-gray-300">No commitment required</div>
+          </motion.div>
         </div>
         <motion.div
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="bg-gray-800 bg-opacity-50 backdrop-blur-md rounded-lg p-6 border border-gray-700 shadow-lg hover:shadow-xl transition-all transform hover:scale-105 max-w-sm w-full"
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="w-full md:w-[380px] bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-800"
         >
-          <Badge
-            variant="secondary"
-            className="bg-[#e2e240] text-[#0a0a1e] mb-3"
-          >
-            {phase === "celebration" 
-              ? "Next Round Signups Open"
-              : phase === "covering" 
-                ? "Now Covering" 
-                : phase.charAt(0).toUpperCase() + phase.slice(1)}
+          <Badge className="mb-4 bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]">
+            Now Covering
           </Badge>
-          <h3 className="text-2xl font-semibold text-gray-100 mb-2">
-            {heroContent.title}
-          </h3>
-          <p className="text-lg text-gray-300 mb-4">
-            {heroContent.subtitle}
+          <h2 className="text-2xl font-bold mb-2 text-[#e2e240]">
+            {song.title}
+          </h2>
+          <p className="text-gray-300 mb-4">
+            Join the musicians creating unique versions of {song.artist}'s track
           </p>
-          <p className="text-sm text-gray-400 mb-4">
-            {userRoundDetails?.hasSignedUp
-              ? signedUpBlurb
-              : signupsAreOpenString}
-          </p>
-          <div className="flex flex-col space-y-2">
-            {buttons.map((button, index) => (
-              <Link key={index} href={button.href} passHref>
-                <Button
-                  className={`w-full ${
-                    index === 0 
-                      ? "bg-[#e2e240] text-[#0a0a1e] hover:bg-[#f0f050]"
-                      : "bg-gray-700 text-gray-100 hover:bg-gray-600"
-                  }`}
-                >
-                  {button.text}
-                </Button>
-              </Link>
-            ))}
+          <div className="text-sm text-gray-400 mb-4 flex items-center gap-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-[#e2e240]" />
+            Round {roundId} - covers are due {new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString()}
+          </div>
+          <div className="space-y-3">
+            <Button className="w-full bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90">
+              Submit Cover
+            </Button>
+            <Button variant="secondary" className="w-full">
+              Sign up for Next Round
+            </Button>
           </div>
         </motion.div>
       </motion.div>

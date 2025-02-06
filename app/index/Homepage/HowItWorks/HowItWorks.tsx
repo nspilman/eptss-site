@@ -61,7 +61,7 @@ export const HowItWorks = () => {
             Transform Songs, Together
           </h2>
           <p className="text-xl text-gray-100">
-            Ever wondered how dozens of musicians would interpret the same song?
+            Ever wondered how other musicians would interpret the same song?
           </p>
         </motion.div>
 
