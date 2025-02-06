@@ -33,34 +33,28 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
       </h2>
       <div className="space-y-4">
         {displayedRounds.map((round, index) => (
-          <motion.div
+            <Link href={`round/${round.roundId}`}
             key={round.roundId}
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
             className={`bg-gray-800 bg-opacity-50 backdrop-blur-md rounded-lg p-4 border ${
               round.roundId === currentRoundId
                 ? "border-[#e2e240] ring-2 ring-[#e2e240]"
                 : "border-gray-700"
             } flex justify-between items-center hover:bg-opacity-70 transition-all group`}
+            >
+          <motion.div
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
+            
           >
-            <Link href={`round/${round.roundId}`}>
               <span className="text-xl font-semibold text-gray-100 flex items-center">
                 <Mic2 className="mr-2 h-5 w-5 text-[#e2e240]" />
                 {round.roundId === currentRoundId ? "Current Round: " : ""}
                 {round.roundId}. 
                 {round.roundId === currentRoundId && isVotingPhase ? " Song selection underway" : <>{round.title} by {round.artist}</>}
               </span>
-            </Link>
-            <Button
-              variant="ghost"
-              className="text-[#e2e240] hover:text-gray-100 hover:bg-[#e2e24040] flex items-center opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => window.open(round.playlistUrl, "_blank")} // Open playlistUrl in a new tab
-            >
-              {round.roundId === currentRoundId && isVotingPhase ? "Vote" : "Listen"}
-              <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
           </motion.div>
+          </Link>
         ))}
       </div>
       {!showAllRounds && rounds.length > 5 && (

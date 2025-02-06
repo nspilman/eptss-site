@@ -281,11 +281,11 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const round = await roundProvider(roundId);
   
   return {
-    title: `Round ${roundId} - ${round.song} | Everyone Plays the Same Song`,
-    description: `Listen to community covers of "${round.song}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
+    title: `Round ${roundId} - ${round.song.title} by ${round.song.artist} | Everyone Plays the Same Song`,
+    description: `Listen to community covers of "${round.song.title} by ${round.song.artist}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
     openGraph: {
-      title: `Round ${roundId} - ${round.song} | Everyone Plays the Same Song`,
-      description: `Listen to community covers of "${round.song}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
+      title: `Round ${roundId} - ${round.song.title} by ${round.song.artist} | Everyone Plays the Same Song`,
+      description: `Listen to community covers of "${round.song.title} by ${round.song.artist}" in Round ${roundId} of Everyone Plays the Same Song. Experience unique interpretations from our talented participants.`,
     },
   };
 }
