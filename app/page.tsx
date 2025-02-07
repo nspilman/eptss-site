@@ -74,14 +74,12 @@ const Homepage = async () => {
         submitLink={submitLink}
         signupsAreOpenString={signupsAreOpenString}
       />
-      <div className="container">
         <div className="flex flex-col gap-8 py-8">
           <Suspense>
             <HowItWorks />
           </Suspense>
           <RoundsDisplay currentRoundId={currentRound.roundId} isVotingPhase={isVotingPhase} phase={phase}/>
         </div>
-      </div>
     </div>
   );
 };

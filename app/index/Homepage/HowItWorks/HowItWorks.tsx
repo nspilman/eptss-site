@@ -40,9 +40,9 @@ export const HowItWorks = () => {
   return (
     <div className="relative mt-16">
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gray-900 opacity-95 backdrop-blur-md rounded-lg border border-gray-800"></div>
+        <div className="absolute inset-0 bg-gray-900 opacity-95 backdrop-blur-sm rounded-lg border border-gray-800"></div>
         
-        <div className="absolute -inset-1 bg-gradient-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur opacity-15 pointer-events-none group-hover:opacity-25 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur opacity-50 pointer-events-none group-hover:opacity-25 transition duration-1000 group-hover:duration-200"></div>
       </div>
       
       <motion.div 
@@ -57,10 +57,10 @@ export const HowItWorks = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-100">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-black">
             Transform Songs, Together
           </h2>
-          <p className="text-xl text-gray-100">
+          <p className="text-xl text-gray-800">
             Ever wondered how other musicians would interpret the same song?
           </p>
         </motion.div>
@@ -81,8 +81,8 @@ export const HowItWorks = () => {
             >
               <div className="text-2xl">{feature.icon}</div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-100 mb-2">{feature.title}</h3>
-                <p className="text-gray-300">{feature.description}</p>
+                <h3 className="text-lg font-semibold text-black mb-2">{feature.title}</h3>
+                <p className="text-gray-800">{feature.description}</p>
               </div>
             </motion.div>
           ))}
@@ -92,7 +92,7 @@ export const HowItWorks = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="text-2xl font-bold mb-6 text-gray-100"
+          className="text-2xl font-bold mb-6 text-black"
         >
           How It Works
         </motion.h3>
@@ -114,7 +114,7 @@ export const HowItWorks = () => {
               <div className="w-8 h-8 bg-[#e2e240] text-[#0a0a1e] rounded-full flex items-center justify-center mr-4 font-bold">
                 {index + 1}
               </div>
-              <p className="text-lg text-gray-300">{step}</p>
+              <p className="text-lg text-gray-800">{step}</p>
             </motion.div>
           ))}
         </motion.div>
@@ -123,7 +123,7 @@ export const HowItWorks = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 1.0 }}
-          className="space-y-4 text-gray-300"
+          className="space-y-4 text-gray-800"
         >
           <p>
             Tired of putting off your musical goals? Join our community where quarterly deadlines and peer accountability keep you moving forward. Create your free account and help choose our next challenge song through community voting.
@@ -143,13 +143,13 @@ export const HowItWorks = () => {
           className="mt-8 space-x-4 flex flex-col items-center md:flex-row"
         >
           <Link href="/faq" passHref>
-            <Button variant="outline" className="text-gray-900 hover:text-gray-100 hover:bg-[#e2e24040] flex items-center">
+            <Button variant="outline" className="text-gray-700 hover:text-gray-100 hover:bg-[#e2e24040] flex items-center">
               FAQ
               <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </Link>
           <Link href="/rounds" passHref>
-            <Button variant="outline" className="text-gray-800 hover:text-gray-100 hover:bg-[#e2e24040] flex items-center">
+            <Button variant="outline" className="text-gray-700 hover:text-gray-100 hover:bg-[#e2e24040] flex items-center">
               Past Rounds
               <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
