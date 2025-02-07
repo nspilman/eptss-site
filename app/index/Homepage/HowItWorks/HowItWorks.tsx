@@ -18,7 +18,7 @@ export const HowItWorks = () => {
     {
       icon: "🎵",
       title: "Growth Through Practice",
-      description: "Push your musical boundaries with monthly challenges and supportive feedback"
+      description: "Push your musical boundaries with quarterly projects and supportive feedback"
     },
     {
       icon: "🎸",
@@ -129,7 +129,7 @@ export const HowItWorks = () => {
             Tired of putting off your musical goals? Join our community where quarterly deadlines and peer accountability keep you moving forward. Create your free account and help choose our next challenge song through community voting.
           </p>
           <p>
-            Each round gives you one month to push your limits and create your cover. No more endless perfectionism - our deadline-driven approach helps you finish what you start, while our supportive community keeps you accountable and growing.
+            Each round gives you three months to push your limits and create your cover. No more endless perfectionism - our deadline-driven approach helps you finish what you start, while our supportive community keeps you accountable and growing.
           </p>
           <p>
             New round starting soon - join now to transform your musical someday into today!
@@ -140,10 +140,10 @@ export const HowItWorks = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 1.1 }}
-          className="mt-8 space-x-4 flex"
+          className="mt-8 space-x-4 flex flex-col items-center md:flex-row"
         >
           <Link href="/faq" passHref>
-            <Button variant="outline" className="text-gray-200 hover:text-gray-100 hover:bg-[#e2e24040] flex items-center">
+            <Button variant="outline" className="text-gray-900 hover:text-gray-100 hover:bg-[#e2e24040] flex items-center">
               FAQ
               <ChevronRight className="ml-1 h-4 w-4" />
             </Button>

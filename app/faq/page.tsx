@@ -40,7 +40,7 @@ const FAQPage = async () => {
     {
       question: "How and when do I submit my song cover?",
       answer:
-        "You will need to submit a link to your song cover on SoundCloud by the submission deadline, which is set a little over a month from the voting close date. The covers will then be compiled into a playlist and shared at a post-submission listening party.",
+        "You will need to submit a link to your song cover on SoundCloud by the submission deadline at the end of the quarter. The covers will then be compiled into a playlist and shared at a post-submission listening party.",
     },
     {
       question: "What is the voting rubric for song selection?",
