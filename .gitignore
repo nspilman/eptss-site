@@ -37,3 +37,5 @@ yarn-error.log*
 .env
 # Sentry
 .sentryclirc
+
+backup.sql

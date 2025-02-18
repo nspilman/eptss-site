@@ -1,4 +1,4 @@
-CREATE TABLE "round_metadata" (
+CREATE TABLE IF NOT EXISTS "round_metadata" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"playlist_url" text,
 	"song_id" bigint,
@@ -10,7 +10,7 @@ CREATE TABLE "round_metadata" (
 	"listening_party" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE "sign_ups" (
+CREATE TABLE IF NOT EXISTS "sign_ups" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"youtube_link" text NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "sign_ups" (
 	"user_id" uuid
 );
 --> statement-breakpoint
-CREATE TABLE "song_selection_votes" (
+CREATE TABLE IF NOT EXISTS "song_selection_votes" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"song_id" bigint,
@@ -30,14 +30,14 @@ CREATE TABLE "song_selection_votes" (
 	"user_id" uuid
 );
 --> statement-breakpoint
-CREATE TABLE "songs" (
+CREATE TABLE IF NOT EXISTS "songs" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"title" text NOT NULL,
 	"artist" text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "submissions" (
+CREATE TABLE IF NOT EXISTS "submissions" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"soundcloud_url" text NOT NULL,
@@ -46,21 +46,21 @@ CREATE TABLE "submissions" (
 	"user_id" uuid
 );
 --> statement-breakpoint
-CREATE TABLE "user_roles" (
+CREATE TABLE IF NOT EXISTS "user_roles" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"user_id" uuid,
 	"admin_level" integer NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "user_share_permissions" (
+CREATE TABLE IF NOT EXISTS "user_share_permissions" (
 	"id" bigint PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"user_id" uuid,
 	"can_share_bsky" boolean NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "users" (
+CREATE TABLE IF NOT EXISTS "users" (
 	"userid" uuid PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"created_at" timestamp DEFAULT now(),
@@ -70,14 +70,58 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_username_unique" UNIQUE("username")
 );
 --> statement-breakpoint
-ALTER TABLE "round_metadata" ADD CONSTRAINT "round_metadata_song_id_songs_id_fk" FOREIGN KEY ("song_id") REFERENCES "public"."songs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "sign_ups" ADD CONSTRAINT "sign_ups_round_id_round_metadata_id_fk" FOREIGN KEY ("round_id") REFERENCES "public"."round_metadata"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "sign_ups" ADD CONSTRAINT "sign_ups_song_id_songs_id_fk" FOREIGN KEY ("song_id") REFERENCES "public"."songs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "sign_ups" ADD CONSTRAINT "sign_ups_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "song_selection_votes" ADD CONSTRAINT "song_selection_votes_song_id_songs_id_fk" FOREIGN KEY ("song_id") REFERENCES "public"."songs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "song_selection_votes" ADD CONSTRAINT "song_selection_votes_round_id_round_metadata_id_fk" FOREIGN KEY ("round_id") REFERENCES "public"."round_metadata"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "song_selection_votes" ADD CONSTRAINT "song_selection_votes_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "submissions" ADD CONSTRAINT "submissions_round_id_round_metadata_id_fk" FOREIGN KEY ("round_id") REFERENCES "public"."round_metadata"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "submissions" ADD CONSTRAINT "submissions_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "user_share_permissions" ADD CONSTRAINT "user_share_permissions_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE cascade ON UPDATE cascade;
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'round_metadata_song_id_songs_id_fk') THEN
+ ALTER TABLE "round_metadata" ADD CONSTRAINT "round_metadata_song_id_songs_id_fk" FOREIGN KEY ("song_id") REFERENCES "public"."songs"("id") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'sign_ups_round_id_round_metadata_id_fk') THEN
+ ALTER TABLE "sign_ups" ADD CONSTRAINT "sign_ups_round_id_round_metadata_id_fk" FOREIGN KEY ("round_id") REFERENCES "public"."round_metadata"("id") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'sign_ups_song_id_songs_id_fk') THEN
+ ALTER TABLE "sign_ups" ADD CONSTRAINT "sign_ups_song_id_songs_id_fk" FOREIGN KEY ("song_id") REFERENCES "public"."songs"("id") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'sign_ups_user_id_users_userid_fk') THEN
+ ALTER TABLE "sign_ups" ADD CONSTRAINT "sign_ups_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'song_selection_votes_song_id_songs_id_fk') THEN
+ ALTER TABLE "song_selection_votes" ADD CONSTRAINT "song_selection_votes_song_id_songs_id_fk" FOREIGN KEY ("song_id") REFERENCES "public"."songs"("id") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'song_selection_votes_round_id_round_metadata_id_fk') THEN
+ ALTER TABLE "song_selection_votes" ADD CONSTRAINT "song_selection_votes_round_id_round_metadata_id_fk" FOREIGN KEY ("round_id") REFERENCES "public"."round_metadata"("id") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'song_selection_votes_user_id_users_userid_fk') THEN
+ ALTER TABLE "song_selection_votes" ADD CONSTRAINT "song_selection_votes_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'submissions_round_id_round_metadata_id_fk') THEN
+ ALTER TABLE "submissions" ADD CONSTRAINT "submissions_round_id_round_metadata_id_fk" FOREIGN KEY ("round_id") REFERENCES "public"."round_metadata"("id") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'submissions_user_id_users_userid_fk') THEN
+ ALTER TABLE "submissions" ADD CONSTRAINT "submissions_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'user_roles_user_id_users_userid_fk') THEN
+ ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE no action ON UPDATE no action;
+ END IF;
+END $$;--> statement-breakpoint
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'user_share_permissions_user_id_users_userid_fk') THEN
+ ALTER TABLE "user_share_permissions" ADD CONSTRAINT "user_share_permissions_user_id_users_userid_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("userid") ON DELETE cascade ON UPDATE cascade;
+ END IF;
+END $$;
