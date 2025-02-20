@@ -12,14 +12,17 @@ import { VoteOption } from "@/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
-export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo> => {
-  const round = currentRoundId
+export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo | null> => {
+  const roundResult = currentRoundId
     ? await getRoundById(currentRoundId)
     : await getCurrentRound();
 
-  if (!round) {
-    throw new Error(`Requested round ${currentRoundId} does now exist`);
+
+  if (roundResult.status !== 'success') {
+    return null;
   }
+
+  const round = roundResult.data;
 
   const {
     roundId,

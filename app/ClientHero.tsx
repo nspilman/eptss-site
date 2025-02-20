@@ -9,9 +9,9 @@ import { UserRoundParticipation } from "@/types/user";
 import { Navigation } from "@/enum/navigation";
 
 type HeroActionsClientProps = {
-  roundInfo: RoundInfo;
+  roundInfo: RoundInfo | null;
   userRoundDetails: UserRoundParticipation | undefined;
-  nextRoundInfo: RoundInfo;
+  nextRoundInfo: RoundInfo | null;
   signedUpBlurb: string;
   signupLink: string;
   submitLink: string;
@@ -31,7 +31,11 @@ export const ClientHero = ({
   signupLink,
   submitLink,
 }: HeroActionsClientProps) => {
-  const { song, roundId, phase } = roundInfo;
+  const { song, roundId, phase } = roundInfo || {
+    song: { title: '', artist: '' },
+    roundId: null,
+    phase: 'signups' as Phase
+  };
 
   const completedCheckByPhase: { [key in Phase]: boolean } = {
     signups: userRoundDetails?.hasSignedUp || false,
@@ -43,10 +47,10 @@ export const ClientHero = ({
   const userId = userRoundDetails?.user.userid
 
   const getHeroContent = () => {
-    if (!userId) {
+    if (!userId || !roundInfo) {
       return {
-        title: "Everyone Plays The Same Song",
-        subtitle: "Join a community of musicians covering one song each quarter. We vote together, create together, and celebrate together.",
+        title: "Welcome to Everyone Plays The Same Song",
+        subtitle: "Join our vibrant community of musicians! We're between rounds right now, but a new round is coming soon. Sign up to be notified when our next round begins.",
       };
     }
 
@@ -58,8 +62,8 @@ export const ClientHero = ({
         };
       case "covering":
         return {
-          title: `Now Covering: ${song.title}`,
-          subtitle: `Join the musicians creating unique versions of ${song.artist}&apos;s track`,
+          title: song.title ? `Now Covering: ${song.title}` : 'Get Ready to Create',
+          subtitle: song.artist ? `Be part of our community reimagining ${song.artist}&apos;s track` : 'New creative challenge starting soon',
         };
       case "voting":
         return {
@@ -239,11 +243,11 @@ export const ClientHero = ({
             {song.title}
           </h2>
           <p className="text-gray-300 mb-4">
-            Join the musicians creating unique versions of {song.artist}&apos;s track
+            {song.artist ? `Ready to create your unique version of ${song.artist}'s track?` : 'Get ready for our next creative challenge!'}
           </p>
           <div className="text-sm text-gray-400 mb-4 flex items-center gap-2">
             <span className="inline-block w-2 h-2 rounded-full bg-[#e2e240]" />
-            Round {roundId} - covers are due {new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString()}
+            {roundInfo ? `Round ${roundId} - covers are due ${new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString()}` : 'Next round dates to be announced'}
           </div>
           <div className="space-y-3">
             <Button className="w-full bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90">

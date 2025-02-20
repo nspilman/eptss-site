@@ -12,23 +12,26 @@ interface Props {
 export const roundsProvider = async ({
   excludeCurrentRound = false,
 }: Props) => {
-  const rounds = await getCurrentAndPastRounds();
-  const { roundId } = await getCurrentRound() || {};
-  const roundContent =
-  rounds
-      ?.map(({ song, playlistUrl, roundId }) => {
-        const { title, artist } = song || { title: null, artist: null };
-        return {
-          title,
-          artist,
-          roundId,
-          playlistUrl,
-        };
-      })
-      .filter((round) => !(round.roundId === roundId && excludeCurrentRound)) ||
-    [];
+  const roundsResult = await getCurrentAndPastRounds();
+  const currentRoundResult = await getCurrentRound();
+  
+  const currentRoundId = currentRoundResult.status === 'success' ? currentRoundResult.data.roundId : null;
+  
+  const rounds = roundsResult.status === 'success' ? roundsResult.data : [];
+  const roundContent = rounds
+    .map(({ song, playlistUrl, roundId }) => {
+      const { title, artist } = song || { title: '', artist: '' };
+      return {
+        title,
+        artist,
+        roundId,
+        playlistUrl: playlistUrl || '',
+      };
+    })
+    .filter((round) => !(round.roundId === currentRoundId && excludeCurrentRound));
 
-  const allRoundIds = await getAllRoundIds();
+  const allRoundIdsResult = await getAllRoundIds();
+  const allRoundIds = allRoundIdsResult.status === 'success' ? allRoundIdsResult.data : [];
 
   return { roundContent, allRoundIds };
 };
