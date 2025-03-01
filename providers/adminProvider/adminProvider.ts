@@ -31,9 +31,13 @@ export type RoundDetail = {
 export const adminProvider = async (): Promise<AdminStats> => {
   const totalUsers = await getUserCount();
   const rounds = await getCurrentAndPastRounds();
-  const totalRounds = rounds.length;
+  
+  if (rounds.status !== 'success') {
+    throw new Error('Failed to fetch rounds');
+  }
 
-  const lastThreeRounds = rounds.slice(-3);
+  const totalRounds = rounds.data.length;
+  const lastThreeRounds = rounds.data.slice(-3);
   const activeUserIds = new Set<string>();
   
   for (const round of lastThreeRounds) {
@@ -45,7 +49,7 @@ export const adminProvider = async (): Promise<AdminStats> => {
   let totalSignups = 0;
   let totalSubmissions = 0;
 
-  for (const round of rounds) {
+  for (const round of rounds.data) {
     const signups = await getSignupsByRound(round.roundId);
     const submissions = await getSubmissions(round.roundId);
     totalSignups += signups.length;
@@ -139,7 +143,7 @@ export const getRoundDetails = async (): Promise<RoundDetail[]> => {
   const rounds = await getCurrentAndPastRounds();
   const details: RoundDetail[] = [];
 
-  for (const round of rounds) {
+  for (const round of rounds.data || []) {
     const signups = await getSignupsByRound(round.roundId);
     const submissions = await getSubmissions(round.roundId);
     const completionRate = signups.length > 0 ? submissions.length / signups.length : 0;

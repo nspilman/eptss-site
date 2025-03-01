@@ -21,6 +21,12 @@ export default async function VotingForRound({
 
   const {roundDetails} = await userParticipationProvider({ roundId });
 
+  // Provide default values when roundDetails is null
+  const userRoundDetails = roundDetails ? {
+    hasSubmitted: roundDetails.hasSubmitted,
+    hasVoted: roundDetails.hasVoted,
+    hasSignedUp: roundDetails.hasSignedUp
+  } : undefined;
 
   return (
     <VotingPage
@@ -28,7 +34,7 @@ export default async function VotingForRound({
       songs={voteOptions.map(option => ({...option, id: option.songId, title: option.song.title , artist: option.song.artist})) || []}
       // phase={phase}
       coveringStartLabel={coveringStartLabel}
-      userRoundDetails={roundDetails}
+      userRoundDetails={userRoundDetails}
     />
   );
 }

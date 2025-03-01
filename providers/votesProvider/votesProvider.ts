@@ -5,12 +5,18 @@ interface Props {
 }
 
 export const votesProvider = async ({ roundId: roundIdProp }: Props) => {
-  const roundId = roundIdProp || await getCurrentRoundId();
-  const voteResults = await getVoteResults(
-    roundId
-  );
+  let roundId = roundIdProp;
+  
+  if (!roundId) {
+    const currentRoundResult = await getCurrentRoundId();
+    if (currentRoundResult.status !== 'success') {
+      throw new Error('Failed to get current round ID');
+    }
+    roundId = currentRoundResult.data;
+  }
 
-  const votingUserIds = await getVotingUsersByRound(roundId)
+  const voteResults = await getVoteResults(roundId);
+  const votingUserIds = await getVotingUsersByRound(roundId);
   const usersInRound = await getSignupUsersByRound(roundId);
   const outstandingVoters = usersInRound
     ?.filter(user => !votingUserIds?.includes(user.userId))

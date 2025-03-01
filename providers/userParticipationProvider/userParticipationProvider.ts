@@ -11,7 +11,7 @@ interface UserParticipationData {
   signup: typeof signup;
   submitCover: typeof submitCover;
   submitVotes: typeof submitVotes;
-  roundDetails: Awaited<ReturnType<typeof getRoundDataForUser>> | null;
+  roundDetails?: Awaited<ReturnType<typeof getRoundDataForUser>> ;
 }
 
 export const userParticipationProvider = async (props?: Props): Promise<UserParticipationData> => {
@@ -22,7 +22,6 @@ export const userParticipationProvider = async (props?: Props): Promise<UserPart
     signup,
     submitCover,
     submitVotes,
-    roundDetails: null
   };
 
   if (!userId) {

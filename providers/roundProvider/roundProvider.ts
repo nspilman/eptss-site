@@ -12,14 +12,31 @@ import { VoteOption } from "@/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
-export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo | null> => {
+export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo> => {
   const roundResult = currentRoundId
     ? await getRoundById(currentRoundId)
     : await getCurrentRound();
 
 
   if (roundResult.status !== 'success') {
-    return null;
+    // Return default empty round info
+    return {
+      roundId: 0,
+      phase: 'signups' as Phase,
+      song: { title: '', artist: '' },
+      dateLabels: {
+        signups: { opens: '', closes: '' },
+        voting: { opens: '', closes: '' },
+        covering: { opens: '', closes: '' },
+        celebration: { opens: '', closes: '' }
+      },
+      hasRoundStarted: false,
+      areSubmissionsOpen: false,
+      isVotingOpen: false,
+      voteOptions: [],
+      submissions: [],
+      signups: []
+    };
   }
 
   const round = roundResult.data;
