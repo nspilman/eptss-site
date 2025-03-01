@@ -10,11 +10,9 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next");
   
-  // If next is a full URL, use it as is, otherwise prepend the base URL
-  const redirectUrl = next?.startsWith('http') 
-    ? next 
-    : `${process.env.NEXT_PUBLIC_BASE_URL}${next ?? '/'}`;
-
+  // Clean the target URL of any auth parameters
+  const targetUrl = new URL(next ?? '/', process.env.NEXT_PUBLIC_BASE_URL);
+  
   try {
     if (token_hash && type) {
       const supabase = await createClient();
@@ -24,22 +22,19 @@ export async function GET(request: NextRequest) {
         token_hash,
       });
 
-      Sentry.captureMessage(redirectUrl);
-
       if (!error) {
-        return NextResponse.redirect(redirectUrl);
+        return NextResponse.redirect(targetUrl.toString());
       }
     }
   } catch (e) {
     // return the user to an error page with some instructions
-    return NextResponse.redirect(
-      redirectUrl + `?${TOAST_REDIRECT_KEY}=${(e as Error).message}`
-    );
+    targetUrl.searchParams.set(TOAST_REDIRECT_KEY, (e as Error).message);
+    return NextResponse.redirect(targetUrl.toString());
   }
+  
   Sentry.captureException(
     "Login error occurred - no exception thrown. url:" + request.url
   );
-  return NextResponse.redirect(
-    redirectUrl + `?${TOAST_REDIRECT_KEY}="An error has occured"`
-  );
+  targetUrl.searchParams.set(TOAST_REDIRECT_KEY, "An error has occurred");
+  return NextResponse.redirect(targetUrl.toString());
 }
