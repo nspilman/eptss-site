@@ -7,30 +7,40 @@ interface Props {
   roundId?: number;
 }
 
-export const userParticipationProvider = async (props?: Props) => {
-  const roundIdOverride = props?.roundId;
+interface UserParticipationData {
+  signup: typeof signup;
+  submitCover: typeof submitCover;
+  submitVotes: typeof submitVotes;
+  roundDetails: Awaited<ReturnType<typeof getRoundDataForUser>> | null;
+}
 
+export const userParticipationProvider = async (props?: Props): Promise<UserParticipationData> => {
+  const roundIdOverride = props?.roundId;
   const { userId } = getAuthUser();
 
-  const services = {signup, submitCover, submitVotes, roundDetails: undefined}
-
-  if (!userId) {
-    return services
-  }
-
-  const roundId = await getCurrentRoundId();
-
-  const chosenRoundId = roundIdOverride || roundId;
-
-  const getUserRoundDetails = async () => {
-    if (!chosenRoundId) {
-      return undefined;
-    }
-    const data = await getRoundDataForUser(chosenRoundId);
-    return data;
+  const services = {
+    signup,
+    submitCover,
+    submitVotes,
+    roundDetails: null
   };
 
-  const roundDetails = await getUserRoundDetails();
+  if (!userId) {
+    return services;
+  }
 
-  return {...services, roundDetails };
+  const roundIdResult = await getCurrentRoundId();
+  // Only proceed if we have a successful result with data
+  if (roundIdResult.status !== 'success') {
+    return services;
+  }
+
+  const roundId = roundIdOverride ?? roundIdResult.data;
+
+  if (typeof roundId !== 'number') {
+    return services;
+  }
+
+  const roundDetails = await getRoundDataForUser(roundId);
+  return { ...services, roundDetails };
 };

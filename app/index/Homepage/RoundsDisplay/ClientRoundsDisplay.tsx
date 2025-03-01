@@ -12,13 +12,15 @@ interface Props {
     roundId: number;
     playlistUrl: string;
   }[];
-  currentRoundId: number;
+  currentRoundId: number | null;
   isVotingPhase: boolean;
 }
 
 export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: Props) => {
   const [showAllRounds, setShowAllRounds] = useState(false);
-  const displayedRounds = showAllRounds ? rounds : rounds.filter(round => round.roundId > currentRoundId - 5)
+  const displayedRounds = showAllRounds 
+    ? rounds 
+    : rounds.filter(round => currentRoundId ? round.roundId > currentRoundId - 5 : true)
 
   return (
     <motion.div
@@ -36,7 +38,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
             <Link href={`round/${round.roundId}`}
             key={round.roundId}
             className={`bg-gray-800 bg-opacity-50 backdrop-blur-md rounded-lg p-4 border ${
-              round.roundId === currentRoundId
+              currentRoundId && round.roundId === currentRoundId
                 ? "border-[#e2e240] ring-2 ring-[#e2e240]"
                 : "border-gray-700"
             } flex justify-between items-center hover:bg-opacity-70 transition-all group`}

@@ -3,7 +3,7 @@ import { roundsProvider } from "@/providers";
 import { ClientRoundsDisplay } from "./ClientRoundsDisplay";
 
 interface Props {
-  currentRoundId: number;
+  currentRoundId: number | null;
   isVotingPhase: boolean;
   phase: Phase;
 }
