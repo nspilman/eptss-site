@@ -185,7 +185,7 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
       .where(
         or(
           sql`${roundMetadata.id} <= ${currentRoundResult.data}`,
-          sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now}::timestamp`
+          sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now.toISOString()}::timestamp`
         )
       )
       .orderBy(desc(roundMetadata.id));
