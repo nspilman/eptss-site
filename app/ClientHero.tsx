@@ -7,15 +7,11 @@ import React from "react";
 import { Phase, RoundInfo } from "@/types/round";
 import { UserRoundParticipation } from "@/types/user";
 import { Navigation } from "@/enum/navigation";
+import Link from "next/link";
 
 type HeroActionsClientProps = {
   roundInfo: RoundInfo | null;
   userRoundDetails: UserRoundParticipation | undefined;
-  nextRoundInfo: RoundInfo | null;
-  signedUpBlurb: string;
-  signupLink: string;
-  submitLink: string;
-  signupsAreOpenString: string;
 };
 
 type ButtonProps = {
@@ -26,10 +22,6 @@ type ButtonProps = {
 export const ClientHero = ({
   userRoundDetails,
   roundInfo,
-  signedUpBlurb,
-  signupsAreOpenString,
-  signupLink,
-  submitLink,
 }: HeroActionsClientProps) => {
   const { song, roundId, phase } = roundInfo || {
     song: { title: '', artist: '' },
@@ -99,7 +91,7 @@ export const ClientHero = ({
         if (phase === "covering") {
           buttons.push({
             text: "Sign Up to Cover",
-            href: signupLink,
+            href: Navigation.SignUp,
           });
         }
         
@@ -107,7 +99,7 @@ export const ClientHero = ({
       }
       return [{
         text: "Sign up for the next round",
-        href: signupLink,
+        href: Navigation.SignUp,
       }];
     }
 
@@ -120,11 +112,11 @@ export const ClientHero = ({
           return [
             {
               text: completedCheckByPhase.covering ? "Update Submission" : "Submit Cover",
-              href: submitLink,
+              href: Navigation.Submit,
             },
             {
               text: "Sign up for Next Round",
-              href: signupLink,
+              href: Navigation.SignUp,
             },
           ];
         case "voting":
@@ -152,7 +144,7 @@ export const ClientHero = ({
       if (phase === "covering") {
         buttons.push({
           text: "Sign Up to Cover",
-          href: signupLink,
+          href: Navigation.SignUp,
         });
       }
       
@@ -166,7 +158,9 @@ export const ClientHero = ({
     }];
   };
 
-  const buttons = getButtonProps();
+  const buttonProps = getButtonProps();
+  const primaryButton = buttonProps[0];
+  const secondaryButton = buttonProps.length > 1 && buttonProps[1];
 
   return (
     <main className="flex flex-col space-y-6 relative z-10">
@@ -250,12 +244,16 @@ export const ClientHero = ({
             {roundInfo ? `Round ${roundId} - covers are due ${new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString()}` : 'Next round dates to be announced'}
           </div>
           <div className="space-y-3">
-            <Button className="w-full bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90">
-              Submit Cover
-            </Button>
-            <Button variant="secondary" className="w-full">
-              Sign up for Next Round
-            </Button>
+            <Link href={primaryButton.href}>
+              <Button className="w-full bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90">
+                {primaryButton.text}
+              </Button>
+            </Link>
+            {secondaryButton && (
+              <Button variant="secondary" className="w-full">
+                {secondaryButton.text}
+              </Button>
+            )}
           </div>
         </motion.div>
       </motion.div>
