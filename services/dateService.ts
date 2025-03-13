@@ -1,4 +1,4 @@
-import { format, subDays, isBefore, parseISO } from "date-fns";
+import { format, subDays, isBefore, parseISO, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { Phase } from "@/types/round";
 
 export interface RoundDates {
@@ -11,7 +11,16 @@ export interface RoundDates {
 
 export const parseDate = (date: string | Date): Date => {
   if (!date) return new Date();
-  return typeof date === 'string' ? parseISO(date) : date;
+  if (typeof date !== 'string') return date;
+  
+  // Handle "MMM dd, yyyy" format (e.g., "Mar 24, 2025")
+  const parsed = new Date(date);
+  if (!isNaN(parsed.getTime())) {
+    return parsed;
+  }
+  
+  // Fallback to parseISO for ISO format dates
+  return parseISO(date);
 };
 
 export const formatDate = {
@@ -44,6 +53,16 @@ export const formatDate = {
     } catch {
       return 'Not set';
     }
+  },
+  v: (date: string | Date): string => {
+    if (!date) return 'Not set';
+    try {
+      const parsedDate = parseDate(date);
+      if (isNaN(parsedDate.getTime())) return 'Not set';
+      return format(parsedDate, "MMMM d, yyyy");
+    } catch {
+      return 'Not set';
+    }
   }
 };
 
@@ -59,6 +78,31 @@ export const getCurrentPhase = (dates: RoundDates): Phase => {
   if (isBefore(now, dates.coveringBegins)) return "voting";
   if (isBefore(now, dates.coversDue)) return "covering";
   return "celebration";
+};
+
+export const formatTimeRemaining = (targetDate: string | Date): string => {
+  try {
+    // If the date is in "MMM dd, yyyy" format, append midnight time
+    const dateStr = typeof targetDate === 'string' && !targetDate.includes(':') 
+      ? `${targetDate} 23:59:59` 
+      : targetDate;
+
+    const target = parseDate(dateStr);
+    const now = new Date();
+
+    if (isBefore(target, now)) {
+      return '0d 0h 0m';
+    }
+
+    const days = differenceInDays(target, now);
+    const remainingHours = differenceInHours(target, now) % 24;
+    const remainingMinutes = differenceInMinutes(target, now) % 60;
+
+    return `${days}d ${remainingHours}h ${remainingMinutes}m`;
+  } catch (error) {
+    console.error('Error formatting time remaining:', error, targetDate);
+    return 'Invalid date';
+  }
 };
 
 export const getPhaseDates = (dates: RoundDates) => ({

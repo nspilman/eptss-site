@@ -3,16 +3,23 @@ export enum Navigation {
   HowItWorks = "/#how-it-works",
   SignUp = "/sign-up",
   Submit = "/submit",
-  Rounds = "#rounds",
+  Rounds = "/rounds",
   Voting = "/voting",
   Waitlist = "/waitlist",
   Login = "/login",
-  Home = "/"
-  // Profile = "/profile",
+  Home = "/",
+  Dashboard = "/dashboard",
+  Profile = "/profile",
+  Tasks = "/tasks",
+  CurrentRound = "/round/current"
 }
 
 export const protectedRoutes = [
   Navigation.SignUp,
-  Navigation.SignUp,
-  Navigation.Voting
+  Navigation.Submit,
+  Navigation.Voting,
+  Navigation.Dashboard,
+  Navigation.Profile,
+  Navigation.Tasks,
+  Navigation.CurrentRound
 ]
