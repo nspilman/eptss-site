@@ -1,6 +1,7 @@
 import { Navigation } from "@/enum/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Card, CardHeader, CardTitle, CardContent, Button } from "@/components/ui/primitives";
 
 interface Props {
   text: {
@@ -24,29 +25,35 @@ export const ActionSuccessPanel = ({
   roundId,
 }: Props) => {
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="font-fraunces text-white font-bold text-center">
-        {header}
-      </h1>
-      <span className="text-md font-light font-roboto text-white text-center my-4">
-        {body}
-      </span>
-      <Image
-        src={src}
-        alt={alt}
-        width={875}
-        height={500}
-        placeholder={"blur"}
-        blurDataURL={blurSrc}
-      />
-      <span className="text-md font-light font-roboto text-white text-center my-4">
-        {thankyou}
-      </span>
-      <Link href={action === "signups" ? Navigation.Voting : "/#rounds"}>
-        <button className="btn-main">
-          {action === "signups" && roundId === 21 ? "Voting" : "Home"}
-        </button>
-      </Link>
-    </div>
+    <Card gradient className="max-w-4xl mx-auto">
+      <CardHeader>
+        <CardTitle>{header}</CardTitle>
+        <p className="text-md font-light text-gray-300 text-center">
+          {body}
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            className="object-cover"
+            placeholder={"blur"}
+            blurDataURL={blurSrc}
+          />
+        </div>
+        <p className="text-md font-light text-gray-300 text-center">
+          {thankyou}
+        </p>
+        <div className="flex justify-center">
+          <Link href={action === "signups" ? Navigation.Voting : "/#rounds"}>
+            <Button>
+              {action === "signups" && roundId === 21 ? "Voting" : "Home"}
+            </Button>
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

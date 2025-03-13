@@ -1,6 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
 import React from "react";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/primitives";
 
 interface Header<T> {
   key: T;
@@ -51,30 +59,25 @@ export function DataTable<T extends string>({
         <h2 className="text-2xl font-bold text-gray-100 mb-2">{title}</h2>
         <p className="text-sm text-gray-300">{subtitle}</p>
       </div>
-      <div className="w-full overflow-x-auto" style={{ maxHeight }}>
-        <table className="w-full">
-          <thead className="bg-gray-800/50">
-            <tr>
+      <div style={{ maxHeight }} className="overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
               {headers.map((header) => (
-                <th
-                  key={header.key}
-                  className="px-4 py-3 text-left text-sm font-medium text-gray-300"
-                >
-                  {header.label}
-                </th>
+                <TableHead key={header.key}>{header.label}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {isEmpty ? (
-              <tr>
-                <td
+              <TableRow>
+                <TableCell 
                   colSpan={headers.length}
-                  className="px-4 py-2 text-center text-gray-500"
+                  className="text-center text-gray-500"
                 >
                   No data available
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               rows.map((row, i) => (
                 <motion.tr 
@@ -85,15 +88,13 @@ export function DataTable<T extends string>({
                   className="border-t border-gray-800 hover:bg-gray-800/30"
                 >
                   {headers.map(({ key }) => (
-                    <td key={key} className="px-4 py-3 text-sm text-gray-300">
-                      {row[key]}
-                    </td>
+                    <TableCell key={key}>{row[key]}</TableCell>
                   ))}
                 </motion.tr>
               ))
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </motion.div>
   );

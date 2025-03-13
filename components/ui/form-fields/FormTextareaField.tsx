@@ -8,8 +8,8 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+  Textarea,
+} from "@/components/ui/primitives";
 
 interface FormTextareaFieldProps {
   name: string;

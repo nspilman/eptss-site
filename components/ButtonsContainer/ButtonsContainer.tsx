@@ -1,11 +1,22 @@
+import * as React from 'react'
+import { Toolbar, ToolbarButtonGroup } from '../ui/primitives'
+
+interface ButtonsContainerProps {
+  children: React.ReactNode
+  orientation?: 'horizontal' | 'vertical'
+  className?: string
+}
+
 export const ButtonsContainer = ({
   children,
-}: {
-  children: React.ReactElement[];
-}) => {
+  orientation = 'horizontal',
+  className,
+}: ButtonsContainerProps) => {
   return (
-    <div className="flex flex-col md:flex-row justify-center items-center">
-      {children}
-    </div>
-  );
-};
+    <Toolbar className={className}>
+      <ToolbarButtonGroup orientation={orientation}>
+        {children}
+      </ToolbarButtonGroup>
+    </Toolbar>
+  )
+}

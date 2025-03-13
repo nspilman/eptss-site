@@ -3,8 +3,6 @@ import { roundProvider, userParticipationProvider } from "@/providers";
 import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
 import { ClientHero } from "./ClientHero";
-import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
-import { Navigation } from "@/enum/navigation";
 import { Suspense } from "react";
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
@@ -51,40 +49,12 @@ const Homepage = async () => {
   };
 
   const {
-    roundId,
     phase,
-    song,
-    dateLabels,
-    hasRoundStarted,
-    areSubmissionsOpen,
   } = currentRound || defaultRoundInfo;
 
   const isVotingPhase = phase === "voting";
 
   const { roundDetails } = await userParticipationProvider();
-  // Only try to get next round if we have a valid roundId
-  const nextRound = typeof roundId === 'number' 
-    ? await roundProvider(roundId + 1)
-    : null;
-
-  const signedUpBlurb = roundId ? getBlurb({
-    phase,
-    roundId,
-    phaseEndsDatelabel: dateLabels[phase].closes,
-  }) : '';
-
-  const nextRoundId = typeof roundId === 'number' && hasRoundStarted ? roundId + 1 : '';
-  const signupLink = `${Navigation.SignUp}/${nextRoundId
-  }`;
-
-  const submitRoundId = typeof roundId === 'number' ? roundId : '';
-  const submissionRoundId = typeof roundId === 'number' && !areSubmissionsOpen ? roundId - 1 : '';
-  const submitLink = `${Navigation.Submit}/${submissionRoundId}`;
-
-  const displayRoundId = typeof roundId === 'number' ? (hasRoundStarted ? roundId + 1 : roundId) : 'the next';
-  const signupsAreOpenString = `Signups are open for round ${displayRoundId
-  }`;
-
   return (
     <div className="">
       <Head>

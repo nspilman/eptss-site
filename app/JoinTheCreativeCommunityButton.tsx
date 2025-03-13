@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/primitives"
 import { Navigation } from "@/enum/navigation"
 import { motion } from "framer-motion"
 import Link from "next/link"

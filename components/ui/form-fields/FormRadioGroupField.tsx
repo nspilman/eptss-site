@@ -9,10 +9,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+  RadioGroup,
+  RadioGroupItem,
+  RadioGroupLabel,
+} from "@/components/ui/primitives"
 
 interface FormRadioGroupFieldProps {
   control: Control<any>
@@ -52,10 +52,7 @@ export function FormRadioGroupField({
             <RadioGroup
               onValueChange={field.onChange}
               value={field.value}
-              className={cn(
-                "radio-group",
-                orientation === "vertical" ? "flex-col" : "flex-row"
-              )}
+              className={orientation === "vertical" ? "flex flex-col gap-4" : "flex flex-row gap-8"}
               disabled={disabled}
             >
               {options.map((option) => (
@@ -63,21 +60,13 @@ export function FormRadioGroupField({
                   <RadioGroupItem
                     value={option.value}
                     id={`${name}-${option.value}`}
-                    className={cn(
-                      "radio-item peer",
-                      field.value === option.value && "selected"
-                    )}
                   />
-                  <Label
+                  <RadioGroupLabel
                     htmlFor={`${name}-${option.value}`}
-                    className={cn(
-                      "radio-label text-sm tracking-wide transition-all duration-300",
-                      "peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-                      field.value === option.value && "selected"
-                    )}
+                    selected={field.value === option.value}
                   >
                     {option.label}
-                  </Label>
+                  </RadioGroupLabel>
                 </div>
               ))}
             </RadioGroup>

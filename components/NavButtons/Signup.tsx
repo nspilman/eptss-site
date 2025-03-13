@@ -3,7 +3,7 @@ import React, { ReactElement } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signout } from "@/actions/actions";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/primitives";
 import { Navigation } from "@/enum/navigation";
 import Link from "next/link";
 

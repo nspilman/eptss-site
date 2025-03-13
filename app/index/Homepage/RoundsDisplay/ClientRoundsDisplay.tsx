@@ -1,8 +1,8 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
+import { RoundCard, Button } from "@/components/ui/primitives";
 import { motion } from "framer-motion";
-import { Disc, Mic2, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import { Disc, Mic2 } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -34,29 +34,22 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
         Rounds
       </h2>
       <div className="space-y-4">
-        {displayedRounds.map((round, index) => (
-            <Link href={`round/${round.roundId}`}
+        {displayedRounds.map((round) => (
+          <RoundCard
             key={round.roundId}
-            className={`bg-gray-800 bg-opacity-50 backdrop-blur-md rounded-lg p-4 border ${
-              currentRoundId && round.roundId === currentRoundId
-                ? "border-[#e2e240] ring-2 ring-[#e2e240]"
-                : "border-gray-700"
-            } flex justify-between items-center hover:bg-opacity-70 transition-all group`}
-            >
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-            
+            href={`round/${round.roundId}`}
+            isActive={currentRoundId === round.roundId}
+            className="flex justify-between items-center"
           >
-              <span className="text-xl font-semibold text-gray-100 flex items-center">
-                <Mic2 className="mr-2 h-5 w-5 text-[#e2e240]" />
-                {round.roundId === currentRoundId ? "Current Round: " : ""}
-                {round.roundId}. 
-                {round.roundId === currentRoundId && isVotingPhase ? " Song selection underway" : <>{round.title} by {round.artist}</>}
-              </span>
-          </motion.div>
-          </Link>
+            <span className="text-xl font-semibold text-gray-100 flex items-center">
+              <Mic2 className="mr-2 h-5 w-5 text-[#e2e240]" />
+              {round.roundId === currentRoundId ? "Current Round: " : ""}
+              {round.roundId}. 
+              {round.roundId === currentRoundId && isVotingPhase 
+                ? " Song selection underway" 
+                : <>{round.title} by {round.artist}</>}
+            </span>
+          </RoundCard>
         ))}
       </div>
       {!showAllRounds && rounds.length > 5 && (

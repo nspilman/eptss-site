@@ -1,7 +1,7 @@
 "use client";
 
 import { LoadingSpinner } from "../../LoadingSpinner";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/primatives";
 
 export const SubmitButton = ({
   label,
