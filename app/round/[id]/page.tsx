@@ -62,7 +62,7 @@ export default async function Round({ params }: { params: { id: string } }) {
     return (
       <div className="flex flex-col items-center p-8">
         <h1 className="text-2xl font-bold text-red-500">Error Loading Round</h1>
-        <p className="text-white mt-4">There was a problem loading this round's data. Please try again later.</p>
+        <p className="text-white mt-4">There was a problem loading this round&apos;s data. Please try again later.</p>
       </div>
     );
   }
