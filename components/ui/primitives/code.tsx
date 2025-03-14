@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import { cn } from "./utils"
-import { Button } from "./button"
+import Button from "./button"
 
-interface CodeProps extends React.HTMLAttributes<HTMLPreElement> {
+interface CodeProps extends React.HTMLAttributes<HTMLDivElement> {
   code: string
   title?: string
 }

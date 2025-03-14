@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button, Card } from "@/components/ui/primitives";
 import Link from "next/link";
 import { Navigation } from "@/enum/navigation";
 import { Phase, RoundInfo } from "@/types/round";
@@ -162,42 +161,39 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
         </div>
       )}
 
-      <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
-        {/* Current Round Status */}
-        <Card className="col-span-3 p-6 bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-sm">
-
-          <div>
-            <h2 className="text-xl font-semibold mb-6 text-gray-300">Current Round Progress</h2>
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[#e2e240] mb-1">Phase</p>
-                  <p className="text-md text-gray-300">{getPhaseTitle(phase)}</p>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[#e2e240] mb-1">Deadline</p>
-                  <p className="text-md text-gray-300">
-                    {currentPhaseEndDate ? formatDate.v(currentPhaseEndDate) : "TBD"}
-                  </p>
-                </div>
+      {/* Current Round Status */}
+      <Card className="w-full p-8 bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-sm mb-8">
+        <div>
+          <h2 className="text-2xl font-semibold mb-8 text-gray-300">Current Round Progress</h2>
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-2">
+            <div className="space-y-4">
+              <div>
+                <p className="text-[#e2e240] mb-2 text-lg">Phase</p>
+                <p className="text-xl text-gray-300 font-medium">{getPhaseTitle(phase)}</p>
               </div>
             </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-[#e2e240] mb-2 text-lg">Deadline</p>
+                <p className="text-xl text-gray-300 font-medium">
+                  {currentPhaseEndDate ? formatDate.v(currentPhaseEndDate) : "TBD"}
+                </p>
+              </div>
+            </div>
+          </div>
 
-            <div className="mt-8 flex flex-col items-center p-8 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
+            <div className="mt-12 flex flex-col items-center p-10 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
               <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
-              <div className="relative z-10 flex flex-col items-center">
+              <div className="relative z-10 flex flex-col items-center w-full max-w-md">
                 {/* <h3 className="text-lg font-medium text-gray-300 mb-4">Ready to participate?</h3> */}
                 {isParticipating && (() => {
                   // Cache the action button to avoid multiple function calls
                   const actionButton = getActionButton(phase, hasCompletedCurrentPhase, roundId);
                   return actionButton && (
                     <Button
-                      size="xl"
+                      size="lg"
                       variant="default"
-                      className="w-full sm:w-auto px-8 py-6 text-lg font-bold bg-[#e2e240] hover:bg-[#e2e240]/90 text-gray-900 border-none shadow-lg shadow-[#e2e240]/20 hover:shadow-[#e2e240]/30 transition-all !bg-none"
-                      style={{ background: '#e2e240' }}
+                      className="w-full sm:w-auto px-8 py-6 text-lg font-bold bg-[#e2e240] hover:bg-[#e2e240]/90 text-gray-900 border-none shadow-lg shadow-[#e2e240]/20 hover:shadow-[#e2e240]/30 transition-all"
                       asChild
                     >
                       <Link href={actionButton.href}>
@@ -210,8 +206,8 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
 
                 {(!isParticipating && phase === "signups") && (
                   <Button
-                    size="xl"
-                    variant="gradient"
+                    size="lg"
+                    variant="default"
                     className="w-full sm:w-auto bg-[#e2e240] hover:bg-[#e2e240]/90 text-gray-900 border-none shadow-lg shadow-[#e2e240]/20 hover:shadow-[#e2e240]/30 transition-all"
                     asChild
                   >
@@ -224,7 +220,6 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
             </div>
           </div>
         </Card>
-      </div>
     </div>
   );
 }
