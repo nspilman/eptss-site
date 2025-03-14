@@ -10,24 +10,31 @@ export default async function RoundsPage() {
 
   const roundsForTimeline: RoundInfo[] = [...rounds]
     .sort((a, b) => b.roundId - a.roundId)
-    .map((round: Round) => ({
-    roundId: round.roundId,
-    phase: "celebration",
-    song: round.song,
-    dateLabels: {
-      signups: { opens: "", closes: "" },
-      voting: { opens: "", closes: "" },
-      covering: { opens: "", closes: "" },
-      celebration: { opens: "", closes: "" }
-    },
-    hasRoundStarted: true,
-    areSubmissionsOpen: false,
-    isVotingOpen: false,
-    voteOptions: [],
-    submissions: [],
-    signups: [],
-    playlistUrl: round.playlistUrl
-  }));
+    .map((round: Round) => {
+
+      
+      return {
+        roundId: round.roundId,
+        phase: "celebration",
+        song: round.song,
+        dateLabels: {
+          signups: { opens: "", closes: "" },
+          voting: { opens: "", closes: "" },
+          covering: { opens: "", closes: "" },
+          celebration: { opens: "", closes: "" }
+        },
+        hasRoundStarted: true,
+        areSubmissionsOpen: false,
+        isVotingOpen: false,
+        voteOptions: [],
+        submissions: [],
+        signups: [],
+        playlistUrl: round.playlistUrl,
+        // Add the counts to the RoundInfo object
+        signupCount: round.signupCount,
+        submissionCount: round.submissionCount
+      };
+    });
   
   if (!roundsForTimeline.length) {
     return (

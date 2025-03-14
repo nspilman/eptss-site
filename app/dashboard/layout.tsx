@@ -55,7 +55,7 @@ export default function DashboardLayout({
               icon={<HistoryIcon className="w-5 h-5" />}
               label="Past Rounds"
             />
-            <SidebarItem 
+            {/* <SidebarItem 
               href="/tasks" 
               icon={<ChecklistIcon className="w-5 h-5" />}
               label="Tasks"
@@ -64,7 +64,7 @@ export default function DashboardLayout({
               href="/profile" 
               icon={<UserIcon className="w-5 h-5" />}
               label="Profile"
-            />
+            /> */}
           </nav>
         </aside>
 

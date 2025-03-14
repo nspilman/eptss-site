@@ -34,5 +34,8 @@ export interface RoundInfo {
   }>;
   submissions: Submission[];
   playlistUrl?: string;
-signups: { song: { title: string; artist: string; }; songId: number; youtubeLink: string; }[]
+  signups: { song: { title: string; artist: string; }; songId: number; youtubeLink: string; }[];
+  // Add count properties
+  signupCount?: number;
+  submissionCount?: number;
 }
