@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="gradient">
+            <stop stop-color="#FFFFFF" stop-opacity="0.1" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0.05" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(0.000000, 0.000000)" fill="url(#gradient)">
+            <!-- Musical note patterns -->
+            <path d="M200,200 C300,150 400,250 500,200 S700,250 800,200 V800 H0 V200 C100,150 100,250 200,200Z"></path>
+            <path d="M0,400 C100,350 200,450 300,400 S500,450 600,400 S800,450 800,400 V800 H0 V400Z"></path>
+            <path d="M0,600 C100,550 200,650 300,600 S500,650 600,600 S800,650 800,600 V800 H0 V600Z"></path>
+            <!-- Circular elements -->
+            <circle cx="150" cy="150" r="40"></circle>
+            <circle cx="650" cy="250" r="30"></circle>
+            <circle cx="350" cy="450" r="35"></circle>
+            <circle cx="750" cy="550" r="25"></circle>
+            <!-- Abstract musical symbols -->
+            <path d="M250,300 Q300,250 350,300 T450,300"></path>
+            <path d="M550,400 Q600,350 650,400 T750,400"></path>
+            <path d="M150,500 Q200,450 250,500 T350,500"></path>
+        </g>
+    </g>
+</svg>

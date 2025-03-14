@@ -2,7 +2,7 @@
 
 import { defaultDateString } from "@/constants";
 import { db } from "@/db";
-import { roundMetadata, songs, songSelectionVotes } from "@/db/schema";
+import { roundMetadata, songs, songSelectionVotes, signUps, submissions } from "@/db/schema";
 import { eq, gte, asc, desc, and, or, sql, avg } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '@/types/asyncResult';
 
@@ -16,6 +16,8 @@ export interface Round {
   typeOverride?: string;
   playlistUrl: string;
   song: { artist: string; title: string };
+  signupCount?: number;
+  submissionCount?: number;
 }
 
 export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
@@ -55,6 +57,10 @@ export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
 
 export const getRoundById = async (roundId: number): Promise<AsyncResult<Round>> => {
   try {
+    // Validate roundId is a valid number
+    if (isNaN(roundId) || !Number.isFinite(roundId)) {
+      return createErrorResult(new Error(`Invalid round ID: ${roundId}`));
+    }
 
     const query = db
       .select({
@@ -169,6 +175,7 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
     }
 
     const now = new Date();
+    // Get all rounds first
     const rounds = await db
       .select({
         id: roundMetadata.id,
@@ -199,7 +206,34 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
       return new Date(value);
     };
 
-    const mappedRounds = rounds.map(round => ({
+    // Now get counts for each round
+    const roundsWithCounts = await Promise.all(
+      rounds.map(async (round) => {
+        // Get signup count
+        const signupResult = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(signUps)
+          .where(eq(signUps.roundId, round.id));
+        
+        // Get submission count
+        const submissionResult = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(submissions)
+          .where(eq(submissions.roundId, round.id));
+        
+        // Convert to number to ensure proper serialization
+        const signupCount = Number(signupResult[0]?.count || 0);
+        const submissionCount = Number(submissionResult[0]?.count || 0);
+        
+        return {
+          ...round,
+          signupCount,
+          submissionCount,
+        };
+      })
+    );
+
+    const mappedRounds = roundsWithCounts.map(round => ({
       roundId: round.id,
       signupOpens: toDate(round.signupOpens),
       votingOpens: toDate(round.votingOpens),
@@ -211,6 +245,9 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
         artist: round.song?.artist ?? "",
         title: round.song?.title ?? "",
       },
+      // Ensure these are serialized as numbers
+      signupCount: Number(round.signupCount || 0),
+      submissionCount: Number(round.submissionCount || 0),
     }));
 
     return createSuccessResult(mappedRounds);
@@ -237,6 +274,12 @@ export const getAllRoundIds = async (): Promise<AsyncResult<number[]>> => {
 };
 
 export const getVoteBreakdownBySong = async (roundId: number) => {
+  // Validate roundId is a valid number
+  if (isNaN(roundId) || !Number.isFinite(roundId)) {
+    console.error(`Invalid round ID passed to getVoteBreakdownBySong: ${roundId}`);
+    return [];
+  }
+  
   const voteBreakdown = await db
     .select({
       title: songs.title,

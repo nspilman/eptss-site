@@ -7,6 +7,7 @@ import { getBlurb } from "./index/Homepage/HowItWorks/getBlurb";
 import { Navigation } from "@/enum/navigation";
 import { Suspense } from "react";
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { Phase } from "@/types";
 
 export const metadata: Metadata = {
@@ -27,6 +28,12 @@ export const metadata: Metadata = {
 };
 
 const Homepage = async () => {
+  const { roundDetails: userDetails } = await userParticipationProvider();
+  
+  // If user is logged in, redirect to dashboard
+  if (userDetails?.user.userid) {
+    redirect('/dashboard');
+  }
   const currentRound = await roundProvider();
   // Default values when no round is active
   const defaultRoundInfo = {
@@ -86,11 +93,6 @@ const Homepage = async () => {
       <ClientHero
         roundInfo={currentRound}
         userRoundDetails={roundDetails ?? undefined}
-        nextRoundInfo={nextRound}
-        signedUpBlurb={signedUpBlurb}
-        signupLink={signupLink}
-        submitLink={submitLink}
-        signupsAreOpenString={signupsAreOpenString}
       />
         <div className="flex flex-col gap-8 py-8">
           <Suspense>
