@@ -16,7 +16,7 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
       <motion.div
         ref={ref}
         className={cn(
-          "flex items-start space-x-4 p-4 rounded-lg bg-gray-800/30 border border-gray-700/50 backdrop-blur-sm",
+          "flex items-start space-x-4 p-4 rounded-lg bg-gray-800/30 border border-gray-700/50 backdrop-blur-xs",
           className
         )}
         initial={{ opacity: 0, x: -20 }}

@@ -10,7 +10,7 @@ const navigationButtonVariants = cva(
       intent: {
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        main: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
+        main: 'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
       },
       size: {
         default: 'h-9 px-4 py-2',

@@ -15,7 +15,7 @@ export const SubmitButton = ({
   return (
     <Button
       type="submit"
-      className={`w-full bg-gradient-to-r from-[#e2e240] to-[#40e2e2] text-gray-900 hover:from-[#f0f050] hover:to-[#50f0f0] transition-all duration-300 ${
+      className={`w-full bg-linear-to-r from-[#e2e240] to-[#40e2e2] text-gray-900 hover:from-[#f0f050] hover:to-[#50f0f0] transition-all duration-300 ${
         pending ? "text-gray-400" : "white"
       }`}
       disabled={disabled}

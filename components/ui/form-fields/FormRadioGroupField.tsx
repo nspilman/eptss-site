@@ -45,7 +45,7 @@ export function FormRadioGroupField({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className="text-lg font-medium tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
+          <FormLabel className="text-lg font-medium tracking-wide bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
             {label}
           </FormLabel>
           <FormControl>

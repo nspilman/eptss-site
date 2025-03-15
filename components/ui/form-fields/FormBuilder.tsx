@@ -72,7 +72,7 @@ export function FormBuilder({ fields, control, disabled }: FormBuilderProps) {
                 options={field.options}
                 orientation={field.orientation || "horizontal"}
                 className={cn(
-                  "p-6 rounded-xl bg-gradient-to-b from-black/80 to-black/40 backdrop-blur-sm border border-gray-800/50",
+                  "p-6 rounded-xl bg-linear-to-b from-black/80 to-black/40 backdrop-blur-xs border border-gray-800/50",
                   "hover:border-gray-700/50 transition-all duration-300",
                   field.className
                 )}

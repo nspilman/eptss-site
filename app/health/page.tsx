@@ -28,7 +28,7 @@ export default async function HealthPage() {
         {/* Summary Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {/* Success Rate */}
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             <div className="flex items-baseline gap-3">
               <h3 className="text-xl font-semibold text-gray-900">24h Success Rate:</h3>
               <span className="text-2xl font-bold text-gray-900">{successRate.toFixed(1)}%</span>
@@ -37,7 +37,7 @@ export default async function HealthPage() {
           </div>
           
           {/* Recent Runs */}
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
+          <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Recent Test Runs</h3>
             <div className="space-y-1">
               {latestRuns.slice(0, 3).map((run) => (

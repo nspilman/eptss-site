@@ -9,7 +9,7 @@ const Card = React.forwardRef<
 >(({ className, gradient = false, ...props }, ref) => (
   <div className="space-y-6 relative group">
     {gradient && (
-      <div className="absolute -inset-2 bg-gradient-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
+      <div className="absolute -inset-2 bg-linear-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur-sm opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
     )}
     <div
       ref={ref}
@@ -42,7 +42,7 @@ const CardTitle = React.forwardRef<
   <h1
     ref={ref}
     className={cn(
-      "text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2] pb-1",
+      "text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2] pb-1",
       className
     )}
     {...props}

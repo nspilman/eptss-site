@@ -50,7 +50,7 @@ export default async function RoundsPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
+        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
           All Rounds
         </h1>
         <p className="text-purple-200">{roundsForTimeline.length} rounds total</p>

@@ -23,7 +23,7 @@ interface Props {
         <h1 className="text-sm sm:text-2xl md:text-3xl font-extrabold tracking-tight flex items-center">
           <MusicIcon className="mr-2 h-8 w-8 text-[#e2e240]" />
           <Link href="/">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
             everyone plays the same song
           </span>
           </Link>
@@ -37,7 +37,7 @@ interface Props {
           <SignupButton isLoggedIn={!!userId} />
         </div>
       </motion.nav>
-    // <div id="header" className="backdrop-blur fixed top-0 left-0 w-full">
+    // <div id="header" className="backdrop-blur-sm fixed top-0 left-0 w-full">
     //   <div className="py-4 px-4 md:px-8 flex items-center justify-center md:justify-between">
     //     <Link href={"/"}>
     //       <span className="md:text-xl font-fraunces font-semibold text-white cursor-pointer hover:text-themeYellow">

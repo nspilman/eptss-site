@@ -17,12 +17,12 @@ export default function Custom404() {
       >
         <MusicIcon className="mx-auto mb-6 h-16 w-16 text-[#e2e240]" />
         <h1 className="text-6xl md:text-8xl font-extrabold mb-4">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
             404
           </span>
         </h1>
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#40e2e2] to-[#e2e240]">
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-[#40e2e2] to-[#e2e240]">
             Page Not Found
           </span>
         </h2>

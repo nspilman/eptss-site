@@ -19,7 +19,7 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
       {/* Timeline Content */}
       <div className="relative flex flex-row-reverse items-center gap-8 py-8 overflow-x-auto px-8 min-w-full">
         {rounds.map((round) => (
-          <div key={round.roundId} className="flex-shrink-0">
+          <div key={round.roundId} className="shrink-0">
             <button
               onClick={() => setSelectedRound(round)}
               className={`relative flex flex-col items-center transition-all ${

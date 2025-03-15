@@ -137,11 +137,11 @@ export const ClientHero = ({
             transition={{ duration: 0.5, delay: 0.3 }}
             className="font-bold mb-4 leading-tight"
           >
-            <span className="text-3xl sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
+            <span className="text-3xl sm:text-5xl bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
               creative fulfillment
             </span>
             <br />
-            <span className="text-2xl sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-[#40e2e2] to-[#e2e240]">
+            <span className="text-2xl sm:text-4xl bg-clip-text text-transparent bg-linear-to-r from-[#40e2e2] to-[#e2e240]">
               with fewer decisions
             </span>
           </motion.h1>
@@ -188,7 +188,7 @@ export const ClientHero = ({
           initial={{ x: 20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="w-full md:w-[380px] bg-gray-900/50 rounded-xl p-6 backdrop-blur-sm border border-gray-800"
+          className="w-full md:w-[380px] bg-gray-900/50 rounded-xl p-6 backdrop-blur-xs border border-gray-800"
         >
           <Badge className="mb-4 bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]">
             Now Covering
