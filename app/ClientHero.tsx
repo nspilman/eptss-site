@@ -16,6 +16,7 @@ type HeroActionsClientProps = {
 type ButtonProps = {
   text: string;
   href: string;
+  variant?: "primary" | "secondary";
 };
 
 export const ClientHero = ({
@@ -45,21 +46,24 @@ export const ClientHero = ({
           {
             text: "Join Waitlist",
             href: Navigation.Waitlist,
+            variant: "secondary"
           }
         ];
         
         if (phase === "covering") {
-          buttons.push({
+          buttons.unshift({
             text: "Sign Up to Cover",
             href: Navigation.SignUp,
+            variant: "primary"
           });
         }
         
         return buttons;
       }
       return [{
-        text: "Sign up for the next round",
+        text: "Join Next Round",
         href: Navigation.SignUp,
+        variant: "primary"
       }];
     }
 
@@ -73,21 +77,25 @@ export const ClientHero = ({
             {
               text: completedCheckByPhase.covering ? "Update Submission" : "Submit Cover",
               href: Navigation.Submit,
+              variant: "primary"
             },
             {
-              text: "Sign up for Next Round",
+              text: "Invite Others",
               href: Navigation.SignUp,
+              variant: "secondary"
             },
           ];
         case "voting":
           return [{
             text: completedCheckByPhase.voting ? "Update Vote" : "Vote Now",
             href: Navigation.Voting,
+            variant: "primary"
           }];
         default:
           return [{
             text: "Round Details",
             href: `/round/${roundId}`,
+            variant: "primary"
           }];
       }
     }
@@ -98,13 +106,15 @@ export const ClientHero = ({
         {
           text: "Join Waitlist",
           href: Navigation.Waitlist,
+          variant: "secondary"
         }
       ];
       
       if (phase === "covering") {
-        buttons.push({
+        buttons.unshift({
           text: "Sign Up to Cover",
           href: Navigation.SignUp,
+          variant: "primary"
         });
       }
       
@@ -115,104 +125,106 @@ export const ClientHero = ({
     return [{
       text: "Round Details",
       href: `/round/${roundId}`,
+      variant: "primary"
     }];
   };
 
   const buttonProps = getButtonProps();
-  const primaryButton = buttonProps[0];
-  const secondaryButton = buttonProps.length > 1 && buttonProps[1];
+  const primaryButton = buttonProps.find(btn => btn.variant === "primary") || buttonProps[0];
+  const secondaryButton = buttonProps.find(btn => btn.variant === "secondary");
 
   return (
     <main className="flex flex-col space-y-6 relative z-10">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mt-8"
+        transition={{ duration: 0.6 }}
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 mt-12 mb-16"
       >
         <div className="max-w-2xl md:mb-0 flex flex-col items-center md:items-start">
           <motion.h1
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="font-bold mb-4 leading-tight"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="font-bold mb-6 leading-tight text-center md:text-left"
           >
-            <span className="text-3xl sm:text-5xl bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
-              creative fulfillment
-            </span>
-            <br />
-            <span className="text-2xl sm:text-4xl bg-clip-text text-transparent bg-linear-to-r from-[#40e2e2] to-[#e2e240]">
-              with fewer decisions
+            <span className="text-4xl sm:text-6xl text-white">
+              Make Music <span className="text-[#e2e240]">Together</span>
             </span>
           </motion.h1>
+          
+          <motion.p 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-xl md:text-2xl text-gray-300 mb-8 text-center md:text-left"
+          >
+            One song. Your unique version. A community of musicians.
+          </motion.p>
+          
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="space-y-6 text-xl leading-relaxed text-gray-300"
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mb-8 w-full md:w-auto"
           >
-            <ol className="list-none space-y-2">
-              <li className="text-sm md:text-xl flex items-center gap-4">
-                <div className="flex items-center justify-center w-4 h-4 md:w-8 md:h-8 rounded-full border-2 border-[#e2e240]">
-                  <span className="text-[#e2e240] text-xs md:text-sm">1</span>
-                </div>
-                Suggest and vote on songs to cover
-              </li>
-              <li className="text-sm md:text-xl flex items-center gap-4">
-                <div className="flex items-center justify-center w-4 h-4 md:w-8 md:h-8 rounded-full border-2 border-[#e2e240]">
-                  <span className="text-[#e2e240] text-xs md:text-sm">2</span>
-                </div>
-                Create your version of the winning track
-              </li>
-              <li className="text-sm md:text-xl flex items-center gap-4">
-                <div className="flex items-center justify-center w-4 h-4 md:w-8 md:h-8 rounded-full border-2 border-[#e2e240]">
-                  <span className="text-[#e2e240] text-xs md:text-sm">3</span>
-                </div>
-                Share and celebrate with the community
-              </li>
-            </ol>
-          </motion.div>
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mt-10"
-          >
-            <Button className="w-fit bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90 px-6 mb-2">
-              Get notified about the next round
-            </Button>
-            <div className="text-sm text-gray-300">No commitment required</div>
+            <Link href={Navigation.SignUp}>
+              <Button className="w-full md:w-auto bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90 px-8 py-3 text-lg font-medium">
+                Join Next Round
+              </Button>
+            </Link>
+            <div className="text-sm text-gray-400 mt-2 text-center md:text-left">No commitment required</div>
           </motion.div>
         </div>
+        
         <motion.div
-          initial={{ x: 20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="w-full md:w-[380px] bg-gray-900/50 rounded-xl p-6 backdrop-blur-xs border border-gray-800"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full md:w-[420px] bg-gray-900/60 rounded-xl p-8 backdrop-blur-sm border border-gray-800 shadow-xl"
         >
-          <Badge className="mb-4 bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]">
-            Now Covering
-          </Badge>
-          <h2 className="text-2xl font-bold mb-2 text-[#e2e240]">
-            {song.title}
-          </h2>
-          <p className="text-gray-300 mb-4">
-            {song.artist ? `Ready to create your unique version of ${song.artist}'s track?` : 'Get ready for our next creative challenge!'}
-          </p>
-          <div className="text-sm text-gray-400 mb-4 flex items-center gap-2">
-            <span className="inline-block w-2 h-2 rounded-full bg-[#e2e240]" />
-            {roundInfo ? `Round ${roundId} - covers are due ${new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString()}` : 'Next round dates to be announced'}
-          </div>
+          {song.title ? (
+            <>
+              <Badge className="mb-4 bg-[#e2e240] text-gray-900 hover:bg-[#e2e240] px-3 py-1 text-sm font-medium">
+                Now Covering
+              </Badge>
+              <h2 className="text-3xl font-bold mb-3 text-white">
+                {song.title}
+              </h2>
+              <p className="text-xl text-gray-300 mb-4">
+                by <span className="text-[#e2e240]">{song.artist}</span>
+              </p>
+              <div className="text-sm text-gray-400 mb-6 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-[#e2e240]" />
+                {roundInfo ? `Round ${roundId} - covers due ${new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString()}` : 'Next round dates to be announced'}
+              </div>
+            </>
+          ) : (
+            <>
+              <Badge className="mb-4 bg-[#e2e240] text-gray-900 hover:bg-[#e2e240] px-3 py-1 text-sm font-medium">
+                Coming Soon
+              </Badge>
+              <h2 className="text-3xl font-bold mb-3 text-white">
+                Next Round
+              </h2>
+              <p className="text-xl text-gray-300 mb-6">
+                Join us for our next creative challenge!
+              </p>
+            </>
+          )}
+          
           <div className="space-y-3">
             <Link href={primaryButton.href}>
-              <Button className="w-full bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90">
+              <Button className="w-full bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90 py-3 text-lg font-medium">
                 {primaryButton.text}
               </Button>
             </Link>
             {secondaryButton && (
-              <Button variant="secondary" className="w-full">
-                {secondaryButton.text}
-              </Button>
+              <Link href={secondaryButton.href}>
+                <Button variant="outline" className="w-full border-gray-700 text-gray-200 hover:bg-gray-800 py-3">
+                  {secondaryButton.text}
+                </Button>
+              </Link>
             )}
           </div>
         </motion.div>

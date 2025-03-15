@@ -17,16 +17,12 @@ export const RoundsDisplay = async ({
   });
 
   return (
-    <div className="flex flex-col pt-8 pb-32 relative">
-      <div>
-        <h2
-          id="rounds"
-          className="text-white font-fraunces text-xl pb-8 font-bold"
-        >
-          Rounds
-        </h2>
-      </div>
- <ClientRoundsDisplay rounds={rounds} currentRoundId={currentRoundId} isVotingPhase={isVotingPhase} />
-    </div>
+    <section id="rounds">
+      <ClientRoundsDisplay 
+        rounds={rounds} 
+        currentRoundId={currentRoundId} 
+        isVotingPhase={isVotingPhase} 
+      />
+    </section>
   );
 };

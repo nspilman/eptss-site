@@ -1,5 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Header } from "@/components/Header";
+import { Header } from "@/components/Header/Header";
+import { Footer } from "@/components/Footer/Footer";
+import BackgroundPattern from "@/components/BackgroundPattern";
 import AuthStateListener from "@/components/AuthStateListener";
 
 export const metadata = {
@@ -55,11 +57,14 @@ export default async function RootLayout({
       </head>
       <body>
         <AuthStateListener>
-          <div className="min-h-screen bg-[#0a0a1e] text-gray-100 p-6 md:p-12 relative overflow-hidden font-sans">
+          <div className="min-h-screen bg-[#0a0a1e] text-gray-100 relative overflow-hidden font-sans">
+            <BackgroundPattern />
             <Header userId={userId} />
-            {children}
+            <main className="pt-24 px-4 md:px-8 lg:px-12">
+              {children}
+            </main>
+            <Footer />
             <Toaster />
-            <div id="footer" className="flex py-2 justify-center" />
           </div>
         </AuthStateListener>
       </body>

@@ -56,7 +56,7 @@ const Homepage = async () => {
 
   const { roundDetails } = await userParticipationProvider();
   return (
-    <div className="">
+    <div className="max-w-7xl mx-auto">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
@@ -64,16 +64,18 @@ const Homepage = async () => {
         roundInfo={currentRound}
         userRoundDetails={roundDetails ?? undefined}
       />
-        <div className="flex flex-col gap-8 py-8">
-          <Suspense>
-            <HowItWorks />
-          </Suspense>
+      <div className="space-y-24 mt-16 md:mt-24">
+        <Suspense fallback={<div className="h-40 flex items-center justify-center">Loading...</div>}>
+          <HowItWorks />
+        </Suspense>
+        <Suspense fallback={<div className="h-40 flex items-center justify-center">Loading...</div>}>
           <RoundsDisplay 
-          currentRoundId={currentRound?.roundId ?? null} 
-          isVotingPhase={isVotingPhase} 
-          phase={phase}
-        />
-        </div>
+            currentRoundId={currentRound?.roundId ?? null} 
+            isVotingPhase={isVotingPhase} 
+            phase={phase}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 };
