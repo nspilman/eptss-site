@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, Badge } from "@/components/ui/primitives";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 import React from "react";
 import { Phase, RoundInfo } from "@/types/round";
 import { UserRoundParticipation } from "@/types/user";
@@ -37,45 +36,6 @@ export const ClientHero = ({
   };
 
   const userId = userRoundDetails?.user.userid
-
-  const getHeroContent = () => {
-    if (!userId || !roundInfo) {
-      return {
-        title: "Welcome to Everyone Plays The Same Song",
-        subtitle: "Join our vibrant community of musicians! We're between rounds right now, but a new round is coming soon. Sign up to be notified when our next round begins.",
-      };
-    }
-
-    switch (phase) {
-      case "signups":
-        return {
-          title: song.title ? `Next Up: ${song.title}` : "Song Selection in Progress",
-          subtitle: song.artist ? `Get ready to reimagine ${song.artist}&apos;s track` : "Help us choose our next creative challenge",
-        };
-      case "covering":
-        return {
-          title: song.title ? `Now Covering: ${song.title}` : 'Get Ready to Create',
-          subtitle: song.artist ? `Be part of our community reimagining ${song.artist}&apos;s track` : 'New creative challenge starting soon',
-        };
-      case "voting":
-        return {
-          title: "Community Listening Party",
-          subtitle: `Experience everyone's unique take on ${song.title} and cast your votes`,
-        };
-      case "celebration":
-        return {
-          title: "Round ${roundId} Showcase",
-          subtitle: "Get ready to hear how everyone reimagined this quarter&apos;s song",
-        };
-      default:
-        return {
-          title: song.title ? `Current Project: ${song.title}` : "Round in Progress",
-          subtitle: song.artist ? `Join our community reimagining ${song.artist}&apos;s track` : "New creative challenge starting soon",
-        };
-    }
-  };  
-
-  const heroContent = getHeroContent();
 
   const getButtonProps = (): ButtonProps[] => {
     if (!userId) {

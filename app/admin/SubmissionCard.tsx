@@ -1,6 +1,6 @@
 "use client"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/primitives"
 import { Music } from "lucide-react"
 import { DataTable } from "@/components/DataTable"
 import Link from "next/link"

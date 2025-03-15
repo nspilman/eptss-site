@@ -1,9 +1,11 @@
+import { Skeleton } from "@/components/ui/primitives";
+
 export function Loading() {
   return (
     <div className="space-y-4">
-      <div className="h-72 animate-pulse bg-gray-800 rounded-lg" />
-      <div className="h-96 animate-pulse bg-gray-800 rounded-lg" />
-      <div className="h-64 animate-pulse bg-gray-800 rounded-lg" />
+      <Skeleton className="h-72" />
+      <Skeleton className="h-96" />
+      <Skeleton className="h-64" />
     </div>
   );
 }

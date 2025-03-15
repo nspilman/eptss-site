@@ -1,7 +1,8 @@
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from '@/enum/navigation'
+import { NavigationButton } from '../ui/navigation-button'
 
 export const HowItWorksButton = () => (
-  <button>
-    <a href={Navigation.HowItWorks}>How It Works</a>
-  </button>
-);
+  <NavigationButton href={Navigation.HowItWorks} intent="ghost">
+    How It Works
+  </NavigationButton>
+)

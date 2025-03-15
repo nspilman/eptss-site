@@ -8,8 +8,8 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+  Input,
+} from "@/components/ui/primitives";
 
 interface FormInputFieldProps {
   name: string;

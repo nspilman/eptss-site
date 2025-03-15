@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { MusicIcon } from "lucide-react"
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/primitives";
 import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
 import { Navigation } from "@/enum/navigation";

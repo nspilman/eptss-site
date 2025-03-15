@@ -1,8 +1,6 @@
 import * as React from "react"
-import { CheckIcon } from "@radix-ui/react-icons"
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
-
-import { cn } from "lib/utils"
+import { cn } from "./utils"
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
@@ -10,7 +8,7 @@ const RadioGroup = React.forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Root
-      className={cn("grid gap-2", className)}
+      className={cn("radio-group", className)}
       {...props}
       ref={ref}
     />
@@ -26,17 +24,36 @@ const RadioGroupItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        "aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "radio-item peer aspect-square h-4 w-4 rounded-full border border-gray-300 text-primary focus:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <CheckIcon className="h-3.5 w-3.5 fill-primary" />
+        <div className="h-2 w-2 rounded-full bg-gradient-to-r from-[#e2e240] to-[#40e2e2]" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )
 })
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
 
-export { RadioGroup, RadioGroupItem }
+const RadioGroupLabel = React.forwardRef<
+  HTMLLabelElement,
+  React.LabelHTMLAttributes<HTMLLabelElement> & {
+    selected?: boolean
+  }
+>(({ className, selected, ...props }, ref) => (
+  <label
+    ref={ref}
+    className={cn(
+      "radio-label text-sm tracking-wide transition-all duration-300",
+      "peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      selected && "selected",
+      className
+    )}
+    {...props}
+  />
+))
+RadioGroupLabel.displayName = "RadioGroupLabel"
+
+export { RadioGroup, RadioGroupItem, RadioGroupLabel }

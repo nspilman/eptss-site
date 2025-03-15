@@ -3,31 +3,27 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission } from "@/hooks/useFormSubmission"
-import { Button } from "@/components/ui/button"
-import { Form } from "@/components/ui/form"
 import { loginSchema, type LoginInput } from "@/lib/schemas/user"
 import { userSessionProvider } from "@/providers"
 import { FormWrapper } from "../Forms/FormWrapper"
 import { motion } from "framer-motion"
 import { FormReturn } from "@/types"
-import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder"
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Input,
+  Button
+} from "@/components/ui/primitives"
 
 interface LoginFormProps {
   redirectUrl?: string
   titleOverride?: string
   onSuccess?: () => void
 }
-
-const formFields: FieldConfig[] = [
-  {
-    type: "input",
-    name: "email",
-    label: "Email",
-    placeholder: "email@example.com",
-    inputType: "email",
-    autoComplete: "email",
-  },
-];
 
 export function LoginForm({ redirectUrl = "/", titleOverride, onSuccess }: LoginFormProps) {
   const form = useForm<LoginInput>({
@@ -70,10 +66,24 @@ export function LoginForm({ redirectUrl = "/", titleOverride, onSuccess }: Login
           className="space-y-4"
         >
           <input type="hidden" name="redirectUrl" value={redirectUrl} />
-          <FormBuilder
-            fields={formFields}
+          <FormField
             control={form.control}
-            disabled={isLoading}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="email@example.com"
+                    autoComplete="email"
+                    disabled={isLoading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? "Sending..." : "Send Login Link"}

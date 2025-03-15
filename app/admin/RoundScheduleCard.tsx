@@ -1,7 +1,6 @@
 "use client"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/primitives"
 import { CalendarDays } from "lucide-react"
 import { DataTable } from "@/components/DataTable"
 import { Phase } from "@/types/round"

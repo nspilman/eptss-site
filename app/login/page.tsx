@@ -1,17 +1,11 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Metadata } from 'next';
-import { LoginForm } from "@/components/client/LoginForm";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Login | Everyone Plays the Same Song",
-  description: "Sign in to your Everyone Plays the Same Song account to participate in the current round, submit covers, and vote.",
-  openGraph: {
-    title: "Login | Everyone Plays the Same Song",
-    description: "Sign in to your Everyone Plays the Same Song account to participate in the current round, submit covers, and vote.",
-  },
-};
+import React from "react";
+import { Button } from "@/components/ui/primitives";
+import Link from "next/link";
+import { LoginForm } from "@/components/client/LoginForm/LoginForm";
+
+
 
 export default function LoginPage({
   searchParams,

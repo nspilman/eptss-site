@@ -1,7 +1,6 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, Button } from "@/components/ui/primitives";
 import { RoundInfo } from "@/types/round";
 import { useState } from "react";
 import Link from "next/link";
