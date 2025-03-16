@@ -1,10 +1,9 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { Navigation } from "@/enum/navigation";
-import { MusicIcon, Github, Twitter, Youtube, Heart } from "lucide-react";
+import { MusicIcon, Github,, Heart } from "lucide-react";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -28,28 +27,12 @@ export const Footer = () => {
             
             <div className="flex items-center gap-4 mt-6">
               <a 
-                href="https://github.com/nspilman/everyone-plays-the-same-song" 
+                href="https://github.com/nspilman/eptss-site" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-[#e2e240] transition-colors"
               >
                 <Github className="h-5 w-5" />
-              </a>
-              <a 
-                href="https://twitter.com/everyonesamesong" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#e2e240] transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a 
-                href="https://www.youtube.com/@everyoneplaysthesamesong" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#e2e240] transition-colors"
-              >
-                <Youtube className="h-5 w-5" />
               </a>
             </div>
           </div>

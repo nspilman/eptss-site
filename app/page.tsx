@@ -6,6 +6,8 @@ import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "./RoundInfoDisplay";
 import { roundProvider } from "@/providers";
+import { redirect } from 'next/navigation';
+import { getAuthUser } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
@@ -25,8 +27,13 @@ export const metadata: Metadata = {
 };
 
 const Homepage = async () => {
-const roundInfo  = await roundProvider()
-console.log({roundInfo})
+  // Check if user is logged in and redirect to dashboard if they are
+  const { userId } = getAuthUser();
+  if (userId) {
+    redirect('/dashboard');
+  }
+
+  const roundInfo = await roundProvider()
   return (
     <div className="max-w-7xl mx-auto">
       <Head>
