@@ -9,12 +9,12 @@ const Card = React.forwardRef<
 >(({ className, gradient = false, ...props }, ref) => (
   <div className="space-y-6 relative group">
     {gradient && (
-      <div className="absolute -inset-2 bg-linear-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur-sm opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
+      <div className="absolute -inset-2 bg-[var(--color-gradient-primary)] rounded-lg blur-sm opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
     )}
     <div
       ref={ref}
       className={cn(
-        "relative space-y-6 bg-black rounded-lg p-6",
+        "relative space-y-6 bg-[var(--color-background-primary)] rounded-lg p-6",
         className
       )}
       {...props}
@@ -42,7 +42,7 @@ const CardTitle = React.forwardRef<
   <h1
     ref={ref}
     className={cn(
-      "text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2] pb-1",
+      "text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-[var(--color-gradient-primary)] pb-1",
       className
     )}
     {...props}
@@ -56,7 +56,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("text-white font-light text-sm", className)}
+    className={cn("text-[var(--color-white)] font-light text-sm", className)}
     {...props}
   />
 ))

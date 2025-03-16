@@ -53,7 +53,7 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
             transition={{ duration: 0.4, delay: 0.4 }}
             className="text-xl text-gray-300 mb-5 relative z-10"
           >
-            by <span className="text-accent-primary font-medium">{roundInfo?.song?.artist || 'Loading artist...'}</span>
+            by <span className="text-[var(--color-accent-primary)] font-medium">{roundInfo?.song?.artist || 'Loading artist...'}</span>
           </motion.p>
           
           <motion.div

@@ -27,7 +27,6 @@ export const metadata: Metadata = {
 };
 
 const Homepage = async () => {
-  // Check if user is logged in and redirect to dashboard if they are
   const { userId } = getAuthUser();
   if (userId) {
     redirect('/dashboard');
@@ -40,12 +39,7 @@ const Homepage = async () => {
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-16">
-        {/* Static content that loads immediately */}
-        <div>
-          <StaticHero />
-        </div>
-        
-        {/* Direct round information display */}
+        <StaticHero />
         <div className="flex justify-center md:justify-end">
           <RoundInfoDisplay roundInfo={roundInfo} />
         </div>

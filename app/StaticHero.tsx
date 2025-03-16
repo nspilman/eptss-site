@@ -14,7 +14,7 @@ export const StaticHero = () => {
         transition={{ duration: 0.5, delay: 0.01 }}
         className="text-center md:text-left mb-6"
       >
-        <span className="text-4xl sm:text-6xl text-white">
+        <span className="text-4xl sm:text-6xl text-[var(--color-white)]">
           Make Music <span className="text-[var(--color-accent-primary)]">Together</span>
         </span>
       </motion.h1>
@@ -23,7 +23,7 @@ export const StaticHero = () => {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.02 }}
-        className="text-xl text-gray-300 mb-8 text-center md:text-left"
+        className="text-xl text-[var(--color-gray-300)] mb-8 text-center md:text-left"
       >
         One song, every quarter. Your unique version. A community of musicians.
       </motion.p>
@@ -39,7 +39,7 @@ export const StaticHero = () => {
             Join Next Round
           </Button>
         </Link>
-        <div className="text-sm text-gray-400 mt-2 text-center md:text-left">No commitment required</div>
+        <div className="text-sm text-[var(--color-gray-400)] mt-2 text-center md:text-left">No commitment required</div>
       </motion.div>
     </div>
   );

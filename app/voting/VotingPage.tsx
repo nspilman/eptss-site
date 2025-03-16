@@ -116,7 +116,7 @@ export function VotingPage({
         transition={{ duration: 0.5 }}
         className="text-center space-y-4"
       >
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
           Thanks for voting!
         </h1>
         <div className="space-y-2 text-gray-300">
@@ -135,7 +135,7 @@ export function VotingPage({
         transition={{ duration: 0.5 }}
         className="text-center space-y-4"
       >
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
+        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
           No songs to vote on yet
         </h1>
         <div className="space-y-2 text-gray-300">
@@ -184,7 +184,7 @@ export function VotingPage({
             type="submit" 
             disabled={isLoading} 
             className={cn(
-              "w-full bg-linear-to-r from-[#e2e240] to-[#40e2e2] text-black font-bold",
+              "w-full bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black font-bold",
               "hover:opacity-90 transition-opacity disabled:opacity-50"
             )}
           >

@@ -18,8 +18,14 @@
     /* Brand Colors */
     --color-accent-primary: #e2e240;
     --color-accent-primary-rgb: 226, 226, 64;
+    --color-accent-secondary: #40e2e2;
+    --color-accent-secondary-rgb: 64, 226, 226;
     --color-background-primary: #0a0a14; /* Primary background color */
     --color-background-primary-rgb: 10, 10, 20;
+    --color-background-secondary: rgba(17, 24, 39, 0.3); /* Secondary background color (gray-900 with 30% opacity) */
+    --color-background-secondary-rgb: 17, 24, 39;
+    --color-background-tertiary: rgba(17, 24, 39, 0.4); /* Tertiary background color (gray-900 with 40% opacity) */
+    --color-background-tertiary-rgb: 17, 24, 39;
     --color-primary: #f8f9fa; /* Primary color (barely-off-white) */
     --color-primary-rgb: 248, 249, 250;
     --color-secondary: rgba(17, 24, 39, 0.7); /* Secondary background color (gray-900 with 70% opacity) */
@@ -35,14 +41,22 @@
     
     /* Gray Scale */
     --color-gray-300: #d1d5db;
+    --color-gray-300-rgb: 209, 213, 219;
     --color-gray-400: #9ca3af;
+    --color-gray-400-rgb: 156, 163, 175;
     --color-gray-700: #374151;
+    --color-gray-700-rgb: 55, 65, 81;
     --color-gray-800: #1f2937;
+    --color-gray-800-rgb: 31, 41, 55;
     --color-gray-900: #111827;
+    --color-gray-900-rgb: 17, 24, 39;
+    --color-gray-900-30: rgba(17, 24, 39, 0.3);
+    --color-gray-900-40: rgba(17, 24, 39, 0.4);
     --color-gray-900-60: rgba(17, 24, 39, 0.6);
     
     /* Transparent Colors */
     --color-bg-transparent: hsla(0, 0%, 100%, 0.05);
+    --color-gradient-primary: linear-gradient(to right, var(--color-accent-secondary), var(--color-accent-primary));
     
     /* Shadows */
     --shadow-nav-shadow: 0px 0px 3px 3px #f6e05e;

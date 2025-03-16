@@ -134,7 +134,7 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
         <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10" />
         <div className="relative z-10">
           <h1 className="text-4xl font-bold">
-            <span className="bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
               Round {roundId}: {song.title ? `${song.title} by ${song.artist}` : "Song Selection in Progress"}
             </span>
           </h1>
@@ -152,7 +152,7 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
                 return (
                   <div key={index} className="px-2 py-1 rounded bg-gray-800 border border-gray-700">
                     <span className="text-lg font-bold text-gray-300">{value}</span>
-                    <span className="text-sm text-[#e2e240] ml-1">{unit}</span>
+                    <span className="text-sm text-[var(--color-accent-primary)] ml-1">{unit}</span>
                   </div>
                 );
               })}
@@ -168,13 +168,13 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-2">
             <div className="space-y-4">
               <div>
-                <p className="text-[#e2e240] mb-2 text-lg">Phase</p>
+                <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Phase</p>
                 <p className="text-xl text-gray-300 font-medium">{getPhaseTitle(phase)}</p>
               </div>
             </div>
             <div className="space-y-4">
               <div>
-                <p className="text-[#e2e240] mb-2 text-lg">Deadline</p>
+                <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Deadline</p>
                 <p className="text-xl text-gray-300 font-medium">
                   {currentPhaseEndDate ? formatDate.v(currentPhaseEndDate) : "TBD"}
                 </p>
@@ -193,7 +193,7 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
                     <Button
                       size="lg"
                       variant="default"
-                      className="w-full sm:w-auto px-8 py-6 text-lg font-bold bg-[#e2e240] hover:bg-[#e2e240]/90 text-gray-900 border-none shadow-lg shadow-[#e2e240]/20 hover:shadow-[#e2e240]/30 transition-all"
+                      className="w-full sm:w-auto px-8 py-6 text-lg font-bold bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
                       asChild
                     >
                       <Link href={actionButton.href}>
@@ -208,7 +208,7 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
                   <Button
                     size="lg"
                     variant="default"
-                    className="w-full sm:w-auto bg-[#e2e240] hover:bg-[#e2e240]/90 text-gray-900 border-none shadow-lg shadow-[#e2e240]/20 hover:shadow-[#e2e240]/30 transition-all"
+                    className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
                     asChild
                   >
                     <Link href={Navigation.SignUp}>

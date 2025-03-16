@@ -16,7 +16,7 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
       <motion.div
         ref={ref}
         className={cn(
-          "flex items-start space-x-4 p-4 rounded-lg bg-gray-800/30 border border-gray-700/50 backdrop-blur-xs",
+          "flex items-start space-x-4 p-4 rounded-lg bg-[var(--color-gray-800)]/30 border border-[var(--color-gray-700)]/50 backdrop-blur-xs",
           className
         )}
         initial={{ opacity: 0, x: -20 }}
@@ -26,8 +26,8 @@ const FeatureCard = React.forwardRef<HTMLDivElement, FeatureCardProps>(
       >
         <div className="text-2xl">{icon}</div>
         <div>
-          <h3 className="text-lg font-semibold text-gray-200 mb-2">{title}</h3>
-          <p className="text-gray-300">{description}</p>
+          <h3 className="text-lg font-semibold text-[var(--color-gray-200)] mb-2">{title}</h3>
+          <p className="text-[var(--color-gray-300)]">{description}</p>
         </div>
       </motion.div>
     )

@@ -42,7 +42,7 @@ export const RoundsDisplay = () => {
 
   if (isLoading) {
     return (
-      <section id="rounds" className="py-16 bg-gray-900/20 rounded-xl">
+      <section id="rounds" className="py-16 bg-[var(--color-background-secondary)] rounded-xl">
         <div className="max-w-5xl mx-auto px-4 flex justify-center items-center h-40">
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 border-t-2 border-[var(--color-accent-primary)] rounded-full animate-spin mb-4"></div>

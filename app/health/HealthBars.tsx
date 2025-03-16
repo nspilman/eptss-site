@@ -64,7 +64,7 @@ export default function HealthBars({ runs }: Props) {
                   <TooltipContent 
                     side="top" 
                     align="center" 
-                    className="bg-[#0F172A] text-white text-sm rounded-xl py-3 px-4 min-w-[240px] shadow-2xl z-50"
+                    className="bg-[var(--color-gray-900)] text-[var(--color-white)] text-sm rounded-xl py-3 px-4 min-w-[240px] shadow-2xl z-50"
                     sideOffset={5}
                   >
                     <div className="text-lg mb-3">{run.testName}</div>

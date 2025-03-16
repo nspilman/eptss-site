@@ -33,7 +33,7 @@ export const Header = ({userId}: Props) => {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 ${isScrolled ? 'bg-gray-900/95 backdrop-blur-md shadow-lg' : 'bg-transparent'} transition-all duration-300`}
+      className={`fixed top-0 left-0 right-0 z-50 ${isScrolled ? 'bg-[var(--color-gray-900)]/95 backdrop-blur-md shadow-lg' : 'bg-transparent'} transition-all duration-300`}
     >
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
@@ -44,10 +44,10 @@ export const Header = ({userId}: Props) => {
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               className="relative"
             >
-              <MusicIcon className="h-8 w-8 text-[#e2e240] group-hover:text-[#f0f050] transition-colors" />
+              <MusicIcon className="h-8 w-8 text-[var(--color-accent-primary)] group-hover:text-[var(--color-accent-primary)]/90 transition-colors" />
             </motion.div>
             <h1 className="text-sm sm:text-xl md:text-2xl font-extrabold tracking-tight">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e2e240] to-[#40e2e2]">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
                 everyone plays the same song
               </span>
             </h1>
@@ -74,14 +74,14 @@ export const Header = ({userId}: Props) => {
               />
             </nav>
             
-            <div className="pl-2 border-l border-gray-700">
+            <div className="pl-2 border-l border-[var(--color-gray-700)]">
               <SignupButton isLoggedIn={!!userId} />
             </div>
           </div>
           
           {/* Mobile Menu Button */}
           <button 
-            className="md:hidden text-gray-300 hover:text-[#e2e240] transition-colors"
+            className="md:hidden text-gray-300 hover:text-[var(--color-accent-primary)] transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -100,7 +100,7 @@ export const Header = ({userId}: Props) => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden mt-4 py-4 border-t border-gray-800"
+            className="md:hidden mt-4 py-4 border-t border-[var(--color-gray-800)]"
           >
             <nav className="flex flex-col gap-2">
               <NavLink 
@@ -122,7 +122,7 @@ export const Header = ({userId}: Props) => {
                 icon={<Info className="h-4 w-4" />}
                 onClick={() => setMobileMenuOpen(false)}
               />
-              <div className="mt-4 pt-4 border-t border-gray-800">
+              <div className="mt-4 pt-4 border-t border-[var(--color-gray-800)]">
                 <div className="block md:hidden">
                   <SignupButton isLoggedIn={!!userId} />
                 </div>
