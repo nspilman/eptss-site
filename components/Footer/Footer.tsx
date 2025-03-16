@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Navigation } from "@/enum/navigation";
-import { MusicIcon, Github,, Heart } from "lucide-react";
+import { MusicIcon, Github, Heart } from "lucide-react";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
