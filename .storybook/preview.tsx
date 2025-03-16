@@ -1,7 +1,5 @@
 import type { Preview } from "@storybook/react";
 import React from "react";
-import { UserSessionProvider } from "../components/context/UserSessionContext";
-import { RoundProvider } from "../components/context/RoundContext";
 import "../styles/globals.css";
 
 const preview: Preview = {
@@ -13,17 +11,31 @@ const preview: Preview = {
         date: /Date$/,
       },
     },
+    // backgrounds: {
+    //   default: 'dark',
+    //   values: [
+    //     {
+    //       name: 'dark',
+    //       value: , // --color-primary
+    //     },
+    //     {
+    //       name: 'light',
+    //       value: '#ffffff', // --color-white
+    //     },
+    //   ],
+    // },
+    docs: {
+      theme: 'dark',
+    },
   },
 };
 
 export const decorators = [
   (Story) => {
     return (
-      <RoundProvider>
-        <UserSessionProvider>
-          <Story />
-        </UserSessionProvider>
-      </RoundProvider>
+      <div className="min-h-screen p-4 bg-background-primary text-primary">
+        <Story />
+      </div>
     );
   },
 ];

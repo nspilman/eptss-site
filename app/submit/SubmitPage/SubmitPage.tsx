@@ -134,7 +134,7 @@ export const SubmitPage = ({
             control={form.control}
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button type="submit" disabled={isLoading} size="full">
             {isLoading ? "Submitting..." : "Submit Cover"}
           </Button>
         </motion.div>

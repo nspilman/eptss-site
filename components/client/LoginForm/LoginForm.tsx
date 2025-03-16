@@ -85,7 +85,7 @@ export function LoginForm({ redirectUrl = "/", titleOverride, onSuccess }: Login
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button type="submit" disabled={isLoading} size="full">
             {isLoading ? "Sending..." : "Send Login Link"}
           </Button>
         </motion.div>

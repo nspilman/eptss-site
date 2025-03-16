@@ -48,7 +48,7 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
               </h3>
               <p className="text-[#B4B0C5] relative z-10">by {selectedRound.song.artist}</p>
             </div>
-            <Button variant="secondary" size="sm" asChild className="bg-[#2D2A3E] hover:bg-[#3B3852] text-[#B4B0C5] border-[#3B3852] relative z-10">
+            <Button variant="secondary" size="sm" asChild>
               <Link href={`/round/${selectedRound.roundId}`}>
                 View Details
               </Link>

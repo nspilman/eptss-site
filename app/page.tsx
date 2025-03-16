@@ -1,12 +1,11 @@
 import Head from "next/head";
-import { roundProvider, userParticipationProvider } from "@/providers";
 import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
-import { ClientHero } from "./ClientHero";
 import { Suspense } from "react";
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { Phase } from "@/types";
+import { StaticHero } from "./StaticHero";
+import { RoundInfoDisplay } from "./RoundInfoDisplay";
+import { roundProvider } from "@/providers";
 
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
@@ -26,54 +25,30 @@ export const metadata: Metadata = {
 };
 
 const Homepage = async () => {
-  const { roundDetails: userDetails } = await userParticipationProvider();
-  
-  // If user is logged in, redirect to dashboard
-  if (userDetails?.user.userid) {
-    redirect('/dashboard');
-  }
-  const currentRound = await roundProvider();
-  // Default values when no round is active
-  const defaultRoundInfo = {
-    roundId: null,
-    phase: 'signups' as Phase,
-    song: { artist: '', title: '' },
-    dateLabels: {
-      signups: { opens: '', closes: '' },
-      voting: { opens: '', closes: '' },
-      covering: { opens: '', closes: '' },
-      celebration: { opens: '', closes: '' }
-    },
-    hasRoundStarted: false,
-    areSubmissionsOpen: false
-  };
-
-  const {
-    phase,
-  } = currentRound || defaultRoundInfo;
-
-  const isVotingPhase = phase === "voting";
-
-  const { roundDetails } = await userParticipationProvider();
+const roundInfo  = await roundProvider()
+console.log({roundInfo})
   return (
-    <div className="">
+    <div className="max-w-7xl mx-auto">
       <Head>
         <title>Home | Everyone Plays the Same Song</title>
       </Head>
-      <ClientHero
-        roundInfo={currentRound}
-        userRoundDetails={roundDetails ?? undefined}
-      />
-        <div className="flex flex-col gap-8 py-8">
-          <Suspense>
-            <HowItWorks />
-          </Suspense>
-          <RoundsDisplay 
-          currentRoundId={currentRound?.roundId ?? null} 
-          isVotingPhase={isVotingPhase} 
-          phase={phase}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-16">
+        {/* Static content that loads immediately */}
+        <div>
+          <StaticHero />
         </div>
+        
+        {/* Direct round information display */}
+        <div className="flex justify-center md:justify-end">
+          <RoundInfoDisplay roundInfo={roundInfo} />
+        </div>
+      </div>
+      <div className="space-y-24 mt-16 md:mt-24">
+        <HowItWorks />
+        <Suspense fallback={<div className="h-40 flex items-center justify-center">Loading rounds...</div>}>
+          <RoundsDisplay />
+        </Suspense>
+      </div>
     </div>
   );
 };

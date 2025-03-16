@@ -38,7 +38,7 @@ export const RoundDisplay = ({
             target="_blank"
             rel="noreferrer"
           >
-            <span className="text-md font-bold font-roboto text-themeYellow hover:text-white py-1 cursor-pointer">
+            <span className="text-md font-bold font-roboto text-accentPrimary hover:text-white py-1 cursor-pointer">
               Listen
             </span>
           </Link>

@@ -19,13 +19,17 @@ export const roundsProvider = async ({
   
   const rounds = roundsResult.status === 'success' ? roundsResult.data : [];
   const roundContent = rounds
-    .map(({ song, playlistUrl, roundId }) => {
+    .map(({ song, playlistUrl, roundId, signupCount, submissionCount, signupOpens, coversDue }) => {
       const { title, artist } = song || { title: '', artist: '' };
       return {
         title,
         artist,
         roundId,
         playlistUrl: playlistUrl || '',
+        signupCount,
+        submissionCount,
+        startDate: signupOpens?.toISOString(),
+        endDate: coversDue?.toISOString(),
       };
     })
     .filter((round) => !(round.roundId === currentRoundId && excludeCurrentRound));
