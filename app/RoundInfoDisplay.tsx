@@ -42,7 +42,7 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.3 }}
-            className="text-3xl font-bold mb-3 text-primary relative z-10 uppercase"
+            className="text-3xl font-bold text-primary relative z-10 uppercase"
           >
             {roundInfo?.song?.title || 'Loading song title...'}
           </motion.h2>

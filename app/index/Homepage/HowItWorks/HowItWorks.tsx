@@ -11,7 +11,7 @@ export const HowItWorks = () => {
     {
       icon: <Music className="w-5 h-5" />,
       title: "Choose a Song",
-      description: "Suggest songs and vote on what we'll cover next"
+      description: "Suggest songs and vote on what we&apos;ll cover next"
     },
     {
       icon: <Calendar className="w-5 h-5" />,
@@ -110,7 +110,7 @@ export const HowItWorks = () => {
           className="bg-gray-900/30 p-8 rounded-lg border border-gray-800 max-w-3xl mx-auto text-center"
         >
           <p className="text-xl italic text-gray-300 mb-4">
-          "Everyone Plays the Same Song provides the community and direction I've needed to consistently make music and improve for the last two years."
+          &quot;Everyone Plays the Same Song provides the community and direction I&apos;ve needed to consistently make music and improve for the last two years.&quot;
           </p>
           <p className="text-[#e2e240] font-medium">— David, Participant</p>
         </motion.div>

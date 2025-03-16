@@ -17,7 +17,7 @@ export default function AuthStateListener({ children }: { children: React.ReactN
       try {
         const { data } = await supabase.auth.getSession();
         // If we have a session but are coming from a magic link, force a refresh
-        if (data.session && (pathname === '/' || pathname.includes('/auth/callback'))) {
+        if (data.session && (pathname === '/' || pathname?.includes('/auth/callback'))) {
           router.refresh();
         }
       } catch (error) {
