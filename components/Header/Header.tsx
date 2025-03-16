@@ -3,31 +3,17 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { MusicIcon, Menu, X, Info, Music, Users } from "lucide-react"
-import { Button } from "@/components/ui/primitives";
 import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
 import { Navigation } from "@/enum/navigation";
 import { useState, useEffect } from "react";
+import { NavLink } from "@/components/ui/nav-link";
 
 interface Props {
   userId: string
 }
 
-interface NavLinkProps {
-  href: string;
-  label: string;
-  icon?: React.ReactNode;
-  onClick?: () => void;
-}
 
-const NavLink = ({ href, label, icon, onClick }: NavLinkProps) => (
-  <Link href={href} onClick={onClick}>
-    <div className="flex items-center gap-2 px-3 py-2 text-gray-300 hover:text-[#e2e240] transition-colors rounded-md hover:bg-gray-800/50">
-      {icon}
-      <span>{label}</span>
-    </div>
-  </Link>
-);
 
 export const Header = ({userId}: Props) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -74,6 +60,7 @@ export const Header = ({userId}: Props) => {
                 href={Navigation.HowItWorks} 
                 label="How It Works" 
                 icon={<Info className="h-4 w-4" />}
+                variant="glowing"
               />
               <NavLink 
                 href={Navigation.Rounds} 
@@ -120,6 +107,7 @@ export const Header = ({userId}: Props) => {
                 href={Navigation.HowItWorks} 
                 label="How It Works" 
                 icon={<Info className="h-4 w-4" />}
+                variant="glowing"
                 onClick={() => setMobileMenuOpen(false)}
               />
               <NavLink 

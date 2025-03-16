@@ -119,7 +119,7 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess }: Signup
             control={form.control}
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button type="submit" disabled={isLoading} size="full">
             {isLoading ? "Signing up..." : "Sign Up"}
           </Button>
         </motion.div>

@@ -84,7 +84,7 @@ export function WaitlistForm() {
             control={form.control}
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading} className="w-full">
+          <Button type="submit" disabled={isLoading} size="full">
             {isLoading ? "Adding to waitlist..." : "Join Waitlist"}
           </Button>
         </motion.div>

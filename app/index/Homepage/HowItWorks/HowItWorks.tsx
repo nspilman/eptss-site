@@ -44,17 +44,19 @@ export const HowItWorks = () => {
   ];
 
   return (
-    <div className="py-16">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-          How It Works
-        </h2>
-        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-          A simple process designed to spark your creativity
-        </p>
-      </div>
-      
-      <motion.div 
+    <div id="how-it-works" className="py-16 relative group">
+      <div className="absolute -inset-2 bg-gradient-to-r from-[#40e2e2] to-[#e2e240] rounded-lg blur opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700"></div>
+      <div className="relative">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            How It Works
+          </h2>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            A simple process designed to spark your creativity
+          </p>
+        </div>
+        
+        <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
@@ -108,15 +110,15 @@ export const HowItWorks = () => {
           className="bg-gray-900/30 p-8 rounded-lg border border-gray-800 max-w-3xl mx-auto text-center"
         >
           <p className="text-xl italic text-gray-300 mb-4">
-            "This project gave me the structure I needed to finally finish a recording. The community feedback was incredibly supportive!"
+          "Everyone Plays the Same Song provides the community and direction I've needed to consistently make music and improve for the last two years."
           </p>
-          <p className="text-[#e2e240] font-medium">— Jamie, Round 23 Participant</p>
+          <p className="text-[#e2e240] font-medium">— David, Participant</p>
         </motion.div>
 
         {/* CTA */}
         <div className="text-center pt-4">
           <Link href="/sign-up" passHref>
-            <Button className="bg-[#e2e240] text-gray-900 hover:bg-[#e2e240]/90 px-8 py-3 text-lg font-medium">
+            <Button variant="secondary" size="lg">
               Join Our Next Round
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
@@ -131,6 +133,7 @@ export const HowItWorks = () => {
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 };

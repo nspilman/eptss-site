@@ -104,7 +104,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
                             </div>
                           )}
                           
-                          {round.submissionCount !== undefined && (
+                          {round.submissionCount !== undefined && !isCurrent && (
                             <div className="flex flex-col items-center px-3 py-2 bg-gray-800/50 rounded">
                               <div className="flex items-center gap-1 text-gray-300 text-sm">
                                 <Mic2 className="h-4 w-4 text-[#e2e240]" />

@@ -58,7 +58,7 @@ export default async function RootLayout({
       <body>
         <AuthStateListener>
           <div className="min-h-screen bg-[#0a0a1e] text-gray-100 relative overflow-hidden font-sans">
-            <BackgroundPattern />
+            {/* <BackgroundPattern /> */}
             <Header userId={userId} />
             <main className="pt-24 px-4 md:px-8 lg:px-12">
               {children}
