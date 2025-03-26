@@ -21,5 +21,4 @@ export const protectedRoutes = [
   Navigation.Dashboard,
   Navigation.Profile,
   Navigation.Tasks,
-  Navigation.CurrentRound
 ]
