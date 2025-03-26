@@ -7,6 +7,8 @@ import { FormReturn } from "@/types";
 import { getDataToString, handleResponse } from "@/utils";
 import { getAuthUser } from "@/utils/supabase/server";
 import { eq, sql, and } from "drizzle-orm";
+import { z } from "zod";
+import { createInsertSchema } from "drizzle-zod";
 
 export const getSignupsByRound = async (roundId: number) => {
   const data = await db
@@ -54,12 +56,44 @@ export const getSignupUsersByRound = async (roundId: number) => {
 
 
 
+// Create a schema for the form fields directly
+const signupSchema = z.object({
+  songTitle: z.string().min(1, "Song title is required"),
+  artist: z.string().min(1, "Artist is required"),
+  youtubeLink: z.string().min(1, "Youtube link is required")
+    .regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/, "Must be a valid YouTube URL"),
+  additionalComments: z.string().optional(),
+  roundId: z.number(),
+});
+
 export async function signup(formData: FormData): Promise<FormReturn> {
   "use server";
-  const getToString = (key: string) => getDataToString(formData, key);
   const { userId } = getAuthUser();
   
   try {
+    // Extract and validate form data
+    const formDataObj = {
+      songTitle: formData.get("songTitle")?.toString() || "",
+      artist: formData.get("artist")?.toString() || "",
+      youtubeLink: formData.get("youtubeLink")?.toString() || "",
+      additionalComments: formData.get("additionalComments")?.toString() || "",
+      roundId: Number(formData.get("roundId")?.toString() || "-1"),
+    };
+    
+    // Validate with Zod
+    const validationResult = signupSchema.safeParse(formDataObj);
+    
+    if (!validationResult.success) {
+      // Format Zod errors into a readable message
+      const errorMessages = validationResult.error.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
+      
+      return handleResponse(400, Navigation.SignUp, errorMessages);
+    }
+    
+    const validData = validationResult.data;
+    
     // Get the next song ID
     const lastSongId = await db
       .select({ id: songs.id })
@@ -74,8 +108,8 @@ export async function signup(formData: FormData): Promise<FormReturn> {
       .insert(songs)
       .values({
         id: nextSongId,
-        title: getToString("songTitle") || "",
-        artist: getToString("artist") || "",
+        title: validData.songTitle,
+        artist: validData.artist,
       })
       .onConflictDoNothing()
       .returning();
@@ -86,8 +120,8 @@ export async function signup(formData: FormData): Promise<FormReturn> {
         .select({ id: songs.id })
         .from(songs)
         .where(and(
-          eq(songs.title, getToString("songTitle") || ""),
-          eq(songs.artist, getToString("artist") || "")
+          eq(songs.title, validData.songTitle),
+          eq(songs.artist, validData.artist)
         ))
       )[0].id;
 
@@ -103,9 +137,9 @@ export async function signup(formData: FormData): Promise<FormReturn> {
     // Then insert the signup
     await db.insert(signUps).values({
       id: nextSignupId,
-      youtubeLink: getToString("youtubeLink") || "",
-      additionalComments: getToString("additionalComments") || "",
-      roundId: JSON.parse(getToString("roundId") || "-1"),
+      youtubeLink: validData.youtubeLink,
+      additionalComments: validData.additionalComments,
+      roundId: validData.roundId,
       songId: songId,
       userId: userId || "",
     });

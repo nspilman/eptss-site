@@ -7,6 +7,7 @@ import { FormReturn } from "@/types";
 import { getDataToString, handleResponse } from "@/utils";
 import { getAuthUser } from "@/utils/supabase/server";
 import { eq, sql } from "drizzle-orm";
+import { submissionFormSchema } from "@/lib/schemas/submission";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
@@ -31,10 +32,33 @@ export const getSubmissions = async (id: number) => {
 
 export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
-  const getToString = (key: string) => getDataToString(formData, key);
   const { userId } = getAuthUser();
   
   try {
+    // Extract form data
+    const formDataObj = {
+      roundId: Number(formData.get("roundId")?.toString() || "-1"),
+      soundcloudUrl: formData.get("soundcloudUrl")?.toString() || "",
+      coolThingsLearned: formData.get("coolThingsLearned")?.toString() || "",
+      toolsUsed: formData.get("toolsUsed")?.toString() || "",
+      happyAccidents: formData.get("happyAccidents")?.toString() || "",
+      didntWork: formData.get("didntWork")?.toString() || ""
+    };
+    
+    // Validate with Zod
+    const validationResult = submissionFormSchema.safeParse(formDataObj);
+    
+    if (!validationResult.success) {
+      // Format Zod errors into a readable message
+      const errorMessages = validationResult.error.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
+      
+      return handleResponse(400, Navigation.Submit, errorMessages);
+    }
+    
+    const validData = validationResult.data;
+    
     // Get the next submission ID
     const lastSubmissionId = await db
       .select({ id: submissions.id })
@@ -46,14 +70,14 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     await db.insert(submissions).values({
       id: nextSubmissionId,
-      roundId: JSON.parse(getToString("roundId") || "-1"),
-      soundcloudUrl: getToString("soundcloudUrl") || "",
+      roundId: validData.roundId,
+      soundcloudUrl: validData.soundcloudUrl,
       userId: userId || "",
       additionalComments: JSON.stringify({
-        coolThingsLearned: getToString("coolThingsLearned") || "",
-        toolsUsed: getToString("toolsUsed") || "",
-        happyAccidents: getToString("happyAccidents") || "",
-        didntWork: getToString("didntWork") || "",
+        coolThingsLearned: validData.coolThingsLearned || "",
+        toolsUsed: validData.toolsUsed || "",
+        happyAccidents: validData.happyAccidents || "",
+        didntWork: validData.didntWork || "",
       }),
     });
     

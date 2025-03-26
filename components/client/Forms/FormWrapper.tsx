@@ -15,10 +15,15 @@ interface FormWrapperProps {
   title: string
   description?: string | ReactNode
   children: ReactNode
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>
 }
 
 export function FormWrapper({ title, description, children, onSubmit }: FormWrapperProps) {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    onSubmit(e)
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,7 +36,7 @@ export function FormWrapper({ title, description, children, onSubmit }: FormWrap
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             {children}
           </form>
         </CardContent>

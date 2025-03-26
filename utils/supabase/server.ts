@@ -31,8 +31,9 @@ export async function createClient() {
 }
 
 export function getAuthUser() {
-  const userId = cookies().get('x-user-id')?.value || '';
-  const email = cookies().get(AUTH_HEADER_KEYS.EMAIL)?.value || '';
+  const cookieStore = cookies();
+  const userId = cookieStore.get('x-user-id')?.value || '';
+  const email = cookieStore.get(AUTH_HEADER_KEYS.EMAIL)?.value || '';
   return { userId, email };
 }
 

@@ -1,12 +1,8 @@
 import { z } from "zod"
-import { createInsertSchema } from "drizzle-zod"
-import { submissions } from "@/db/schema"
 
-const baseSubmissionSchema = createInsertSchema(submissions, {
+// Define the submission schema directly as an object
+export const submissionSchema = z.object({
   soundcloudUrl: z.string().url("Please enter a valid Soundcloud URL"),
-})
-
-export const submissionSchema = baseSubmissionSchema.extend({
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),
@@ -14,4 +10,8 @@ export const submissionSchema = baseSubmissionSchema.extend({
   roundId: z.number()
 })
 
-export type SubmissionInput = z.infer<typeof submissionSchema>
+// Use the same schema for the form
+export const submissionFormSchema = submissionSchema
+
+// Use the client-side form schema for input validation
+export type SubmissionInput = z.infer<typeof submissionFormSchema>

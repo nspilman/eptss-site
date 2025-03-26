@@ -13,29 +13,15 @@ import { userParticipationProvider } from "@/providers"
 import { FormReturn } from "@/types"
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder"
 
-// Create schema from songs table
-const songSchema = createInsertSchema(songs, {
-  title: z.string().min(1, "Song title is required"),
+// Create a schema for the form fields directly
+const signupSchema = z.object({
+  songTitle: z.string().min(1, "Song title is required"),
   artist: z.string().min(1, "Artist is required"),
-}).pick({
-  title: true,
-  artist: true,
-})
-
-// Create schema from signUps table and merge with song schema
-const signupSchema = createInsertSchema(signUps, {
   youtubeLink: z.string().min(1, "Youtube link is required")
     .regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/, "Must be a valid YouTube URL"),
   additionalComments: z.string().optional(),
   roundId: z.number(),
-}).pick({
-  youtubeLink: true,
-  additionalComments: true,
-  roundId: true,
-}).merge(songSchema.extend({
-  songTitle: songSchema.shape.title,
-  artist: songSchema.shape.artist,
-}))
+})
 
 type SignupInput = z.infer<typeof signupSchema>
 
@@ -84,7 +70,9 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess }: Signup
       youtubeLink: "",
       additionalComments: "",
       roundId,
-    }
+    },
+    mode: "onChange",
+    reValidateMode: "onChange"
   })
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {

@@ -80,7 +80,9 @@ export const SubmitPage = ({
       happyAccidents: "",
       didntWork: "",
       roundId
-    }
+    },
+    mode: "onChange",
+    reValidateMode: "onChange"
   })
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { FormReturn } from "@/types";
@@ -19,18 +19,54 @@ export function useFormSubmission<T extends FieldValues>({
   onSuccess,
 }: UseFormSubmissionProps<T>) {
   const [isLoading, setIsLoading] = useState(false);
+  const { formState } = form;
+  
+  // This effect will run when formState.errors changes
+  useEffect(() => {
+    // If there are errors and the form has been submitted or fields touched
+    if (Object.keys(formState.errors).length > 0 && 
+        (formState.isSubmitted || Object.keys(formState.touchedFields).length > 0)) {
+      // Get all error messages
+      const errorMessages = Object.entries(formState.errors)
+        .map(([field, error]) => `${field}: ${error?.message}`)
+        .join('\n');
+      
+      if (errorMessages) {
+        toast({
+          variant: "destructive",
+          title: "Validation Error",
+          description: errorMessages,
+        });
+      }
+    }
+  }, [formState.errors, formState.isSubmitted]);
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // Trigger validation manually
+    const isValid = await form.trigger();
+    
+    if (!isValid) {
+      // Don't proceed if validation fails - errors will be shown by the useEffect above
+      return;
+    }
+    
     setIsLoading(true);
-
+    
     try {
+      // Get form values
+      const values = form.getValues();
+      
+      // Create FormData object
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
+      Object.entries(values).forEach(([key, value]) => {
         formData.append(key, value as string);
       });
-
+      
+      // Submit the form
       const result = await onSubmit(formData);
-
+      
       if (result.status === "Success") {
         form.reset();
         toast({
@@ -45,7 +81,6 @@ export function useFormSubmission<T extends FieldValues>({
         });
       }
     } catch (error) {
-      console.error("Form submission error:", error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -54,7 +89,7 @@ export function useFormSubmission<T extends FieldValues>({
     } finally {
       setIsLoading(false);
     }
-  });
+  };
 
   return {
     isLoading,
