@@ -11,7 +11,7 @@ import { formatDate, formatTimeRemaining } from '@/services/dateService';
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;
-  userRoundDetails: UserRoundParticipation | null;
+  userRoundDetails?: UserRoundParticipation;
 }
 
 // Helper functions for phase management
