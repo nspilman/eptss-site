@@ -28,13 +28,13 @@ export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
     const query = db.select({ id: roundMetadata.id }).from(roundMetadata)
       .where(
         and(
-          sql`${roundMetadata.votingOpens} IS NOT NULL`,
+          sql`${roundMetadata.signupOpens} IS NOT NULL`,
           sql`${roundMetadata.listeningParty} IS NOT NULL`,
-          sql`${roundMetadata.votingOpens} <= ${nowStr}`,
+          sql`${roundMetadata.signupOpens} <= ${nowStr}`,
           sql`${roundMetadata.listeningParty} >= ${nowStr}`
         )
       )
-      .orderBy(desc(roundMetadata.votingOpens))
+      .orderBy(desc(roundMetadata.signupOpens))
       .limit(1);
 
     const currentRound = await query;
