@@ -5,6 +5,67 @@ import React from "react";
 import { RoundInfo } from "@/types/round";
 
 export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null }) => {
+  if (!roundInfo) {
+    return (
+      <div className="relative z-10 w-full max-w-md">
+        <div className="w-full bg-background-primary/60 rounded-xl p-8 backdrop-blur-sm border border-gray-800 shadow-xl relative overflow-hidden">
+          <div className="mb-4 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium shadow-sm"
+            style={{ 
+              backgroundColor: 'var(--color-accent-primary)',
+              border: '1px solid rgba(var(--color-accent-primary-rgb), 0.2)',
+              color: 'var(--color-background-primary)'
+            }}>
+            Loading...
+          </div>
+          <h2 className="text-3xl font-bold text-primary relative z-10 uppercase">Loading...</h2>
+          <p className="text-xl text-gray-300 mb-5 relative z-10">Please wait</p>
+        </div>
+      </div>
+    );
+  }
+
+  const getPhaseContent = () => {
+    switch (roundInfo.phase) {
+      case "signups":
+        return {
+          badge: "Signups Open",
+          title: `Round ${roundInfo.roundId} Signups`,
+          subtitle: "Join our next round",
+          info: `Signups close ${roundInfo.dateLabels?.signups?.closes ? new Date(roundInfo.dateLabels.signups.closes).toLocaleDateString() : ''}`
+        };
+      case "voting":
+        return {
+          badge: "Voting Open",
+          title: "Vote for the Next Song",
+          subtitle: "Help choose our next cover",
+          info: `Voting closes ${roundInfo.dateLabels?.voting?.closes ? new Date(roundInfo.dateLabels.voting.closes).toLocaleDateString() : ''}`
+        };
+      case "covering":
+        return {
+          badge: "Now Covering",
+          title: roundInfo.song?.title || "Song Selected",
+          subtitle: roundInfo.song?.artist ? `by ${roundInfo.song.artist}` : "",
+          info: `Covers due ${roundInfo.dateLabels?.covering?.closes ? new Date(roundInfo.dateLabels.covering.closes).toLocaleDateString() : ''}`
+        };
+      case "celebration":
+        return {
+          badge: "Celebration Phase",
+          title: roundInfo.song?.title || "Covers Complete",
+          subtitle: roundInfo.song?.artist ? `by ${roundInfo.song.artist}` : "",
+          info: `Celebration ends ${roundInfo.dateLabels?.celebration?.closes ? new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString() : ''}`
+        };
+      default:
+        return {
+          badge: "Round Info",
+          title: `Round ${roundInfo.roundId}`,
+          subtitle: "",
+          info: ""
+        };
+    }
+  };
+
+  const content = getPhaseContent();
+
   return (
     <div className="relative z-10 w-full max-w-md">
       <motion.div
@@ -34,7 +95,7 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
                 border: '1px solid rgba(var(--color-accent-primary-rgb), 0.2)',
                 color: 'var(--color-background-primary)'
               }}>
-              {roundInfo ? 'Now Covering' : 'Loading...'}
+              {content.badge}
             </div>
           </motion.div>
           
@@ -44,27 +105,35 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
             transition={{ duration: 0.4, delay: 0.3 }}
             className="text-3xl font-bold text-primary relative z-10 uppercase"
           >
-            {roundInfo?.song?.title || 'Loading song title...'}
+            {content.title}
           </motion.h2>
           
-          <motion.p
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.4 }}
-            className="text-xl text-gray-300 mb-5 relative z-10"
-          >
-            by <span className="text-[var(--color-accent-primary)] font-medium">{roundInfo?.song?.artist || 'Loading artist...'}</span>
-          </motion.p>
+          {content.subtitle && (
+            <motion.p
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.4 }}
+              className="text-xl text-gray-300 mb-5 relative z-10"
+            >
+              {content.subtitle.includes('by ') ? (
+                <>by <span className="text-[var(--color-accent-primary)] font-medium">{content.subtitle.replace('by ', '')}</span></>
+              ) : (
+                content.subtitle
+              )}
+            </motion.p>
+          )}
           
-          <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 0.5 }}
-            className="text-sm text-gray-400 flex items-center gap-2 relative z-10"
-          >
-            <span className="inline-block w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-accent-primary)' }} />
-            {roundInfo ? `Round ${roundInfo.roundId} - covers due ${roundInfo.dateLabels?.celebration?.closes ? new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString() : ''}` : 'Loading round information...'}
-          </motion.div>
+          {content.info && (
+            <motion.div
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.5 }}
+              className="text-sm text-gray-400 flex items-center gap-2 relative z-10"
+            >
+              <span className="inline-block w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: 'var(--color-accent-primary)' }} />
+              {content.info}
+            </motion.div>
+          )}
         </motion.div>
       </motion.div>
     </div>
