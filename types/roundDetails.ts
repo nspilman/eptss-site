@@ -3,6 +3,7 @@ export interface RoundDetails {
   roundId: number;
   title: string;
   artist: string;
+  slug: string;
 }
 
 

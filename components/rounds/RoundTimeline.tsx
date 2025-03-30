@@ -49,7 +49,7 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
               <p className="text-[#B4B0C5] relative z-10">by {selectedRound.song.artist}</p>
             </div>
             <Button variant="secondary" size="sm" asChild>
-              <Link href={`/round/${selectedRound.roundId}`}>
+              <Link href={`/round/${selectedRound.slug || selectedRound.roundId}`}>
                 View Details
               </Link>
             </Button>

@@ -21,6 +21,7 @@ export const songs = pgTable("songs", {
 // Round Metadata Table
 export const roundMetadata = pgTable("round_metadata", {
   id: bigint("id", { mode: "number" }).primaryKey(),
+  slug: text("slug").unique(),
   playlistUrl: text("playlist_url"),
   songId: bigint("song_id", { mode: "number" }).references(() => songs.id),
   createdAt: timestamp("created_at").defaultNow(),

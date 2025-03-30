@@ -15,6 +15,7 @@ export default async function RoundsPage() {
       
       return {
         roundId: round.roundId,
+        slug: round.slug || round.roundId.toString(),
         phase: "celebration",
         song: round.song,
         dateLabels: {

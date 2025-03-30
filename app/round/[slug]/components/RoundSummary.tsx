@@ -101,6 +101,9 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], round
       next: roundIds?.includes(roundId + 1)
         ? roundId + 1
         : undefined,
+      // Include slug information for navigation
+      previousSlug: roundData.slug,
+      nextSlug: roundData.slug,
     };
 
     const roundSummaryHeaders: {

@@ -1,18 +1,18 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
-import { SignupPage } from "../SignupPage";
+import { SignupPage } from "../SignupPage/SignupPage";
 
 export default async function SignUpForRound({
   params,
 }: {
-  params: { roundId: string };
+  params: { slug: string };
 }) {
-  const { roundId, dateLabels } = await roundProvider(parseInt(params.roundId));
+  const { roundId, dateLabels } = await roundProvider(params.slug);
 
   if (!roundId) {
     return <div>Round not found</div>;
   }
 
-  const {roundDetails}  = await userParticipationProvider({
+  const { roundDetails } = await userParticipationProvider({
     roundId,
   });
   const signupsCloseDateLabel = dateLabels?.signups.closes;
@@ -21,6 +21,7 @@ export default async function SignUpForRound({
     <SignupPage
       signupsCloseDateLabel={signupsCloseDateLabel}
       roundId={roundId}
+      slug={params.slug}
       hasSignedUp={roundDetails?.hasSignedUp || false}
     />
   );

@@ -19,4 +19,6 @@ export interface VoteResults {
 export interface Navigation {
   previous?: number;
   next?: number;
+  previousSlug?: string;
+  nextSlug?: string;
 }
