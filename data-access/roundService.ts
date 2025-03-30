@@ -80,7 +80,11 @@ const mapToRound = (dbRound: any): Round => {
 
 export interface Round {
   roundId: number;
+<<<<<<< HEAD
   slug: string;
+=======
+  slug?: string;
+>>>>>>> 88de1ea (referencing rounds by slug)
   signupOpens: Date;
   votingOpens: Date;
   coveringBegins: Date;
