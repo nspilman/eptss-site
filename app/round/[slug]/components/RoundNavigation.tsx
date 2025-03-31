@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 
 interface NavigationProps {
   navigation: {
@@ -15,16 +16,16 @@ export const RoundNavigation: React.FC<NavigationProps> = ({ navigation }) => {
   return (
     <div className="flex justify-between w-full">
       {navigation.previous ? (
-        <a href={`/round/${navigation.previousSlug || navigation.previous}`}>
-          <button className="btn-main">Round {navigation.previous}</button>
-        </a>
+        <Link href={`/round/${navigation.previousSlug || navigation.previous}`}>
+          <button className="btn-main">Previous Round</button>
+        </Link>
       ) : <div/>}
       
       {navigation.next ? (
-        <a href={`/round/${navigation.nextSlug || navigation.next}`}>
-          <button className="btn-main">Round {navigation.next}</button>
-        </a>
-      ) : <></>}
+        <Link href={`/round/${navigation.nextSlug || navigation.next}`}>
+          <button className="btn-main">Next Round</button>
+        </Link>
+      ) : <div/>}
     </div>
   );
 };

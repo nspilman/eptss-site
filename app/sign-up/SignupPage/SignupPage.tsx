@@ -8,7 +8,7 @@ interface Props {
   hasSignedUp: boolean;
   roundId: number;
   signupsCloseDateLabel: string;
-  slug?: string;
+  slug: string;
 }
 
 export function SignupPage({

@@ -4,7 +4,7 @@ import {VotingPage} from "../VotingPage";
 export default async function VotingForRound({
   params,
 }: {
-  params: { roundId: string };
+  params: { slug: string };
 }) {
   const {
     roundId,
@@ -13,10 +13,14 @@ export default async function VotingForRound({
     },
     voteOptions,
     phase,
-  } = await roundProvider(parseInt(params.roundId));
+  } = await roundProvider(params.slug);
 
   if (!roundId) {
     return <div>Round not found</div>;
+  }
+
+  if(phase !== "voting") {
+    return <div>Round is not in voting phase</div>;
   }
 
   const {roundDetails} = await userParticipationProvider({ roundId });

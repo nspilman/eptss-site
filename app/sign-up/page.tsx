@@ -5,7 +5,7 @@ import { SignupPage } from "./SignupPage/SignupPage";
 import { redirect } from "next/navigation";
 
 const SignUp = async () => {
-  const { roundId, dateLabels, hasRoundStarted } = await roundProvider();
+  const { roundId, dateLabels, hasRoundStarted, slug } = await roundProvider();
   const  {roundDetails}  = await userParticipationProvider();
   const signupsCloseDateLabel = dateLabels?.signups.closes;
 
@@ -22,6 +22,7 @@ const SignUp = async () => {
         signupsCloseDateLabel={signupsCloseDateLabel}
         roundId={roundId}
         hasSignedUp={roundDetails?.hasSignedUp || false}
+        slug={slug}
       />
     </>
   );

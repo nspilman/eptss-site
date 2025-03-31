@@ -1,6 +1,6 @@
 "use server";
 import {
-  getAllRoundIds,
+  getAllRoundSlugs,
   getCurrentAndPastRounds,
   getCurrentRound,
 } from "@/data-access/roundService";
@@ -36,8 +36,8 @@ export const roundsProvider = async ({
     })
     .filter((round) => !(round.roundId === currentRoundId && excludeCurrentRound));
 
-  const allRoundIdsResult = await getAllRoundIds();
-  const allRoundIds = allRoundIdsResult.status === 'success' ? allRoundIdsResult.data : [];
+  const allRoundSlugsResult = await getAllRoundSlugs();
+  const allRoundSlugs = allRoundSlugsResult.status === 'success' ? allRoundSlugsResult.data : [];
 
-  return { roundContent, allRoundIds };
+  return { roundContent, allRoundSlugs };
 };

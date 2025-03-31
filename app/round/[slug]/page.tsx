@@ -22,8 +22,8 @@ export default async function Round({ params }: { params: { slug: string } }) {
     
     // Only fetch additional data if we're past the signup phase
     if (roundData.phase !== "signups") {
-      const { voteResults } = await votesProvider({ roundId: roundData.roundId });
-      const { allRoundIds, roundContent } = await roundsProvider({ excludeCurrentRound: true });
+      const { voteResults } = await votesProvider({ roundSlug: slug });
+      const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false });
       const voteBreakdown = await getVoteBreakdownBySong(roundData.roundId);
       
       return (
@@ -33,7 +33,7 @@ export default async function Round({ params }: { params: { slug: string } }) {
             roundId={roundData.roundId} 
             roundData={roundData} 
             voteResults={voteResults} 
-            roundIds={allRoundIds} 
+            roundIds={allRoundSlugs} 
             voteBreakdown={voteBreakdown}
             allRounds={roundContent}
           />
@@ -56,7 +56,7 @@ export default async function Round({ params }: { params: { slug: string } }) {
     return (
       <div className="container mx-auto py-8">
         <h1 className="text-2xl font-bold mb-4">Round Not Found</h1>
-        <p>Sorry, we couldn't find the round you're looking for.</p>
+        <p>Sorry, we couldn&apos;t find the round you&apos;re looking for.</p>
       </div>
     );
   }
