@@ -19,16 +19,18 @@ export const roundsProvider = async ({
   
   const rounds = roundsResult.status === 'success' ? roundsResult.data : [];
   const roundContent = rounds
-    .map(({ song, playlistUrl, roundId, signupCount, submissionCount, signupOpens, coversDue }) => {
+    .map(({ song, playlistUrl, roundId, slug, signupCount, submissionCount, signupOpens, coversDue, listeningParty }) => {
       const { title, artist } = song || { title: '', artist: '' };
       return {
         title,
         artist,
         roundId,
+        slug: slug || roundId.toString(),
         playlistUrl: playlistUrl || '',
         signupCount,
         submissionCount,
         startDate: signupOpens?.toISOString(),
+        listeningPartyDate: listeningParty?.toISOString(),
         endDate: coversDue?.toISOString(),
       };
     })

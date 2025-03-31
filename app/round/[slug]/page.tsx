@@ -23,7 +23,7 @@ export default async function Round({ params }: { params: { slug: string } }) {
     // Only fetch additional data if we're past the signup phase
     if (roundData.phase !== "signups") {
       const { voteResults } = await votesProvider({ roundId: roundData.roundId });
-      const { allRoundIds } = await roundsProvider({ excludeCurrentRound: true });
+      const { allRoundIds, roundContent } = await roundsProvider({ excludeCurrentRound: true });
       const voteBreakdown = await getVoteBreakdownBySong(roundData.roundId);
       
       return (
@@ -34,7 +34,8 @@ export default async function Round({ params }: { params: { slug: string } }) {
             roundData={roundData} 
             voteResults={voteResults} 
             roundIds={allRoundIds} 
-            voteBreakdown={voteBreakdown} 
+            voteBreakdown={voteBreakdown}
+            allRounds={roundContent}
           />
         </>
       );
