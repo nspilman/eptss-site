@@ -60,9 +60,21 @@ interface Props {
   roundId: number;
   roundData: RoundInfo;
   voteResults?: VoteResults[];
-  roundIds?: number[];
+  roundIds?: string[];
   voteBreakdown?: VoteBreakdown[];
-}
+  allRounds?: {
+    title: string;
+    artist: string;
+    roundId: number;
+    slug: string;
+    playlistUrl: string;
+    signupCount?: number;
+    submissionCount?: number;
+    startDate?: string;
+    listeningPartyDate?: string;
+    endDate?: string;
+  }[];
+} 
 
 const voteResultsHeaders = [
   { key: "title", label: "Title" },
@@ -84,7 +96,7 @@ const ClientStackedBarChart = ({ data, title }: { data: any, title: string }) =>
   );
 };
 
-export const RoundSummary = async ({ roundId, roundData, voteResults = [], roundIds = [], voteBreakdown = [] }: Props) => {
+export const RoundSummary = async ({ roundId, roundData, voteResults = [], voteBreakdown = [], allRounds = [] }: Props) => {
   try {
     // Extract data from props instead of fetching
     const { phase, song, playlistUrl, submissions, signups } = roundData;
@@ -96,11 +108,39 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], round
     const signupCount = signups?.length || 0;
     const chartData = convertVoteBreakdownToBarchartFormat(voteBreakdown);
 
+    // Find the most recent round where the listening party has happened
+    let previousRound;
+    let nextRound;
+    
+    if (allRounds && allRounds.length > 0) {
+      // Filter rounds that have a listening party date
+      const roundsWithListeningParty = allRounds.filter(round => round.listeningPartyDate);
+      
+      // Sort rounds by listening party date in descending order (most recent first)
+      const sortedRounds = [...roundsWithListeningParty].sort((a, b) => {
+        if (!a.listeningPartyDate) return 1;
+        if (!b.listeningPartyDate) return -1;
+        return new Date(b.listeningPartyDate).getTime() - new Date(a.listeningPartyDate).getTime();
+      });
+      
+      // Find the current round index
+      const currentRoundIndex = sortedRounds.findIndex(round => round.roundId === roundId);
+      
+      if (currentRoundIndex !== -1) {
+        // Find the previous round (the next one in the sorted array since we're sorting by date in descending order)
+        previousRound = sortedRounds[currentRoundIndex + 1];
+        
+        // Find the next round (the previous one in the sorted array)
+        nextRound = currentRoundIndex > 0 ? sortedRounds[currentRoundIndex - 1] : undefined;
+      }
+    }
+    
     const navigation = {
-      previous: roundId !== 0 ? roundId - 1 : undefined,
-      next: roundIds?.includes(roundId + 1)
-        ? roundId + 1
-        : undefined,
+      previous: previousRound?.roundId,
+      next: nextRound?.roundId,
+      // Include slug information for navigation
+      previousSlug: previousRound?.slug,
+      nextSlug: nextRound?.slug,
     };
 
     const roundSummaryHeaders: {

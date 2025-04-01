@@ -6,8 +6,81 @@ import { roundMetadata, songs, songSelectionVotes, signUps, submissions } from "
 import { eq, gte, asc, desc, and, or, sql, avg } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '@/types/asyncResult';
 
+// Helper function to safely convert to Date
+const toDate = (value: Date | string | null) => {
+  if (!value) return new Date(defaultDateString);
+  return new Date(value);
+};
+
+// Base query builder for round data
+const createBaseRoundQuery = () => {
+  return db
+    .select({
+      id: roundMetadata.id,
+      slug: roundMetadata.slug,
+      signupOpens: roundMetadata.signupOpens,
+      votingOpens: roundMetadata.votingOpens,
+      coveringBegins: roundMetadata.coveringBegins,
+      coversDue: roundMetadata.coversDue,
+      listeningParty: roundMetadata.listeningParty,
+      playlistUrl: roundMetadata.playlistUrl,
+      song: { title: songs.title, artist: songs.artist },
+    })
+    .from(roundMetadata)
+    .leftJoin(songs, eq(roundMetadata.songId, songs.id));
+};
+
+// Query by ID
+const queryRoundById = (roundId: number) => {
+  return createBaseRoundQuery()
+    .where(eq(roundMetadata.id, roundId));
+};
+
+// Query by slug
+const queryRoundBySlug = (slug: string) => {
+  return createBaseRoundQuery()
+    .where(eq(roundMetadata.slug, slug));
+};
+
+// Query current round
+const queryCurrentRound = () => {
+  const now = new Date();
+  return createBaseRoundQuery()
+    .where(
+      and(
+        sql`${roundMetadata.signupOpens} IS NOT NULL`,
+        sql`${roundMetadata.listeningParty} IS NOT NULL`,
+        sql`${roundMetadata.signupOpens} <= ${now.toISOString()}`,
+        sql`${roundMetadata.listeningParty} >= ${now.toISOString()}`
+      )
+    )
+    .orderBy(desc(roundMetadata.signupOpens))
+    .limit(1);
+};
+
+// Helper function to map database round data to Round objects
+const mapToRound = (dbRound: any): Round => {
+  return {
+    roundId: dbRound.id,
+    slug: dbRound.slug ?? "",
+    signupOpens: toDate(dbRound.signupOpens),
+    votingOpens: toDate(dbRound.votingOpens),
+    coveringBegins: toDate(dbRound.coveringBegins),
+    coversDue: toDate(dbRound.coversDue),
+    listeningParty: toDate(dbRound.listeningParty),
+    playlistUrl: dbRound.playlistUrl ?? "",
+    song: {
+      artist: dbRound.song?.artist ?? "",
+      title: dbRound.song?.title ?? "",
+    },
+    signupCount: typeof dbRound.signupCount === 'number' ? Number(dbRound.signupCount) : undefined,
+    submissionCount: typeof dbRound.submissionCount === 'number' ? Number(dbRound.submissionCount) : undefined,
+  };
+};
+
 export interface Round {
   roundId: number;
+  slug: string;
   signupOpens: Date;
   votingOpens: Date;
   coveringBegins: Date;
@@ -22,22 +95,7 @@ export interface Round {
 
 export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
   try {
-    const now = new Date();
-    const nowStr = now.toISOString();
-
-    const query = db.select({ id: roundMetadata.id }).from(roundMetadata)
-      .where(
-        and(
-          sql`${roundMetadata.signupOpens} IS NOT NULL`,
-          sql`${roundMetadata.listeningParty} IS NOT NULL`,
-          sql`${roundMetadata.signupOpens} <= ${nowStr}`,
-          sql`${roundMetadata.listeningParty} >= ${nowStr}`
-        )
-      )
-      .orderBy(desc(roundMetadata.signupOpens))
-      .limit(1);
-
-    const currentRound = await query;
+    const currentRound = await queryCurrentRound();
 
     if (!currentRound?.length) {
       return createEmptyResult('No current round found');
@@ -48,8 +106,7 @@ export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
       return createErrorResult(new Error('Invalid round ID type'));
     }
 
-    const result = createSuccessResult(roundId);
-    return result;
+    return createSuccessResult(roundId);
   } catch (error) {
     return createErrorResult(error instanceof Error ? error : new Error('Failed to get current round ID'));
   }
@@ -62,74 +119,52 @@ export const getRoundById = async (roundId: number): Promise<AsyncResult<Round>>
       return createErrorResult(new Error(`Invalid round ID: ${roundId}`));
     }
 
-    const query = db
-      .select({
-        id: roundMetadata.id,
-        signupOpens: roundMetadata.signupOpens,
-        votingOpens: roundMetadata.votingOpens,
-        coveringBegins: roundMetadata.coveringBegins,
-        coversDue: roundMetadata.coversDue,
-        listeningParty: roundMetadata.listeningParty,
-        playlistUrl: roundMetadata.playlistUrl,
-        song: { title: songs.title, artist: songs.artist },
-      })
-      .from(roundMetadata)
-      .where(sql`${roundMetadata.id} = ${roundId}`)
-      .leftJoin(songs, sql`${roundMetadata.songId} = ${songs.id}`);
-
-    const roundData = await query;
+    const roundData = await queryRoundById(roundId);
 
     if (!roundData.length) {
       return createEmptyResult(`No round found with ID ${roundId}`);
     }
 
-    const {
-      id,
-      signupOpens,
-      votingOpens,
-      coveringBegins,
-      coversDue,
-      listeningParty,
-      playlistUrl,
-      song,
-    } = roundData[0];
-
-    // Helper function to safely convert to Date
-    const toDate = (value: Date | string | null) => {
-      if (!value) return new Date(defaultDateString);
-      return new Date(value);
-    };
-
-    const round: Round = {
-      roundId: id,
-      signupOpens: toDate(signupOpens),
-      votingOpens: toDate(votingOpens),
-      coveringBegins: toDate(coveringBegins),
-      coversDue: toDate(coversDue),
-      listeningParty: toDate(listeningParty),
-      playlistUrl: playlistUrl ?? "",
-      song: {
-        artist: song?.artist ?? "",
-        title: song?.title ?? "",
-      },
-    };
-
-    const result = createSuccessResult(round);
-    return result;
+    const round = mapToRound(roundData[0]);
+    return createSuccessResult(round);
   } catch (error) {
     return createErrorResult(error instanceof Error ? error : new Error(`Failed to get round ${roundId}`));
   }
 };
 
-export const getCurrentRound = async (): Promise<AsyncResult<Round>> => {
-  const currentRoundResult = await getCurrentRoundId();
+export const getRoundBySlug = async (slug: string): Promise<AsyncResult<Round>> => {
+  try {
+    // Validate slug is not empty
+    if (!slug || typeof slug !== 'string') {
+      return createErrorResult(new Error(`Invalid slug: ${slug}`));
+    }
 
-  if (currentRoundResult.status !== 'success') {
-    return createEmptyResult('No current round available');
+    const roundData = await queryRoundBySlug(slug);
+
+    if (!roundData.length) {
+      return createEmptyResult(`No round found with slug ${slug}`);
+    }
+
+    const round = mapToRound(roundData[0]);
+    return createSuccessResult(round);
+  } catch (error) {
+    return createErrorResult(error instanceof Error ? error : new Error(`Failed to get round with slug ${slug}`));
   }
+};
 
-  const roundResult = await getRoundById(currentRoundResult.data);
-  return roundResult;
+export const getCurrentRound = async (): Promise<AsyncResult<Round>> => {
+  try {
+    const roundData = await queryCurrentRound();
+
+    if (!roundData.length) {
+      return createEmptyResult('No current round found');
+    }
+
+    const round = mapToRound(roundData[0]);
+    return createSuccessResult(round);
+  } catch (error) {
+    return createErrorResult(error instanceof Error ? error : new Error('Failed to get current round'));
+  }
 };
 
 export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
@@ -149,16 +184,9 @@ export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>>
       return createEmptyResult('No future rounds found');
     }
 
-    const defaultDate = new Date(defaultDateString);
-    const mappedRounds = rounds.map(round => ({
-      roundId: round.id,
-      signupOpens: new Date(round.signupOpens || defaultDate),
-      votingOpens: new Date(round.votingOpens || defaultDate),
-      coveringBegins: new Date(round.coveringBegins || defaultDate),
-      coversDue: new Date(round.coversDue || defaultDate),
-      listeningParty: new Date(round.listeningParty || defaultDate),
-      playlistUrl: round.playlistUrl || "",
-      song: { artist: "", title: "" },
+    const mappedRounds = rounds.map(round => mapToRound({
+      ...round,
+      song: { artist: "", title: "" }
     }));
 
     return createSuccessResult(mappedRounds);
@@ -179,6 +207,7 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
     const rounds = await db
       .select({
         id: roundMetadata.id,
+        slug: roundMetadata.slug,
         signupOpens: roundMetadata.signupOpens,
         votingOpens: roundMetadata.votingOpens,
         coveringBegins: roundMetadata.coveringBegins,
@@ -200,11 +229,6 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
     if (!rounds.length) {
       return createEmptyResult('No past rounds found');
     }
-
-    const toDate = (value: Date | string | null) => {
-      if (!value) return new Date(defaultDateString);
-      return new Date(value);
-    };
 
     // Now get counts for each round
     const roundsWithCounts = await Promise.all(
@@ -233,22 +257,8 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
       })
     );
 
-    const mappedRounds = roundsWithCounts.map(round => ({
-      roundId: round.id,
-      signupOpens: toDate(round.signupOpens),
-      votingOpens: toDate(round.votingOpens),
-      coveringBegins: toDate(round.coveringBegins),
-      coversDue: toDate(round.coversDue),
-      listeningParty: toDate(round.listeningParty),
-      playlistUrl: round.playlistUrl ?? "",
-      song: {
-        artist: round.song?.artist ?? "",
-        title: round.song?.title ?? "",
-      },
-      // Ensure these are serialized as numbers
-      signupCount: Number(round.signupCount || 0),
-      submissionCount: Number(round.submissionCount || 0),
-    }));
+    // Map database results to Round objects using our helper function
+    const mappedRounds = roundsWithCounts.map(round => mapToRound(round));
 
     return createSuccessResult(mappedRounds);
   } catch (error) {
@@ -256,6 +266,27 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
   }
 };
 
+export const getAllRoundSlugs = async (): Promise<AsyncResult<string[]>> => {
+  try {
+    const rounds = await db
+      .select({ 
+        id: roundMetadata.id,
+        slug: roundMetadata.slug 
+      })
+      .from(roundMetadata)
+      .orderBy(sql`${roundMetadata.id} ASC`);
+
+    if (!rounds.length) {
+      return createEmptyResult('No rounds found');
+    }
+
+    return createSuccessResult(rounds.map(round => round.slug || round.id.toString()));
+  } catch (error) {
+    return createErrorResult(error instanceof Error ? error : new Error('Failed to get round slugs'));
+  }
+};
+
+// Keep the original function for backward compatibility
 export const getAllRoundIds = async (): Promise<AsyncResult<number[]>> => {
   try {
     const rounds = await db

@@ -4,21 +4,16 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url)
-        const roundIdParam = searchParams.get('roundId')
+        const slugParam = searchParams.get('slug')
         
-        let roundId: number | undefined;
-        if (roundIdParam) {
-            const parsed = parseInt(roundIdParam, 10)
-            if (isNaN(parsed)) {
-                return NextResponse.json(
-                    { error: 'Invalid roundId parameter' },
-                    { status: 400 }
-                )
-            }
-            roundId = parsed
+        // If slug is provided, use it as the identifier
+        if (slugParam) {
+            const round = await roundProvider(slugParam)
+            return NextResponse.json(round)
         }
         
-        const round = await roundProvider(roundId)
+        // If no slug is provided, get the current round
+        const round = await roundProvider()
         return NextResponse.json(round)
         
     } catch (error) {

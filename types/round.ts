@@ -20,6 +20,7 @@ export interface Submission {
 
 export interface RoundInfo {
   roundId: DBRound["id"];
+  slug: string;
   phase: Phase;
   song: Pick<DBSong, "title" | "artist">;
   dateLabels: Record<Phase, DateLabel>;

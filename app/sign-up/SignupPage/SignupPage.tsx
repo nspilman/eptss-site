@@ -8,12 +8,14 @@ interface Props {
   hasSignedUp: boolean;
   roundId: number;
   signupsCloseDateLabel: string;
+  slug: string;
 }
 
 export function SignupPage({
   hasSignedUp,
   roundId,
   signupsCloseDateLabel,
+  slug,
 }: Props) {
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 

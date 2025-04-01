@@ -2,6 +2,7 @@
 import {
   getCurrentRound,
   getRoundById,
+  getRoundBySlug,
   getRoundOverrideVotes,
   getSignupsByRound,
   getSubmissions,
@@ -12,16 +13,23 @@ import { VoteOption } from "@/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
-export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo> => {
-  const roundResult = currentRoundId
-    ? await getRoundById(currentRoundId)
-    : await getCurrentRound();
+export const roundProvider = async (slug?: string): Promise<RoundInfo> => {
+  let roundResult;
+  
+  if (slug) {
+    // If slug is provided, use it to fetch the round
+    roundResult = await getRoundBySlug(slug);
+  } else {
+    // Get the current round if no slug is provided
+    roundResult = await getCurrentRound();
+  }
 
 
   if (roundResult.status !== 'success') {
     // Return default empty round info
     return {
       roundId: 0,
+      slug: '',
       phase: 'signups' as Phase,
       song: { title: '', artist: '' },
       dateLabels: {
@@ -88,6 +96,7 @@ export const roundProvider = async (currentRoundId?: number): Promise<RoundInfo>
 
   return {
     roundId,
+    slug: round.slug || '',
     phase,
     song,
     dateLabels,

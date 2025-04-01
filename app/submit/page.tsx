@@ -1,6 +1,7 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { SubmitPage } from "./SubmitPage";
 import { Metadata } from 'next';
+import { getRoundBySlug } from "@/data-access";
 
 export const metadata: Metadata = {
   title: "Submit Your Cover | Everyone Plays the Same Song",
@@ -12,11 +13,7 @@ export const metadata: Metadata = {
 };
 
 const Submit = async () => {
-  const { roundId, phase } = await roundProvider();
-
-  const roundToReference = ["celebration", "covering"].includes(phase)
-    ? roundId
-    : roundId - 1;
+  const { slug } = await roundProvider();
 
   const {
     dateLabels: {
@@ -24,15 +21,21 @@ const Submit = async () => {
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider(roundToReference);
+  } = await roundProvider(slug);
 
+  const {data: round} = await getRoundBySlug(slug);
+
+  if (!round?.roundId) {
+    return <div>Round not found</div>;
+  }
+  
   const {roundDetails}  = await userParticipationProvider({
-    roundId: roundToReference,
+    roundId: round.roundId,
   });
 
   return (
     <SubmitPage
-      roundId={roundToReference}
+      roundId={round.roundId}
       hasSubmitted={roundDetails?.hasSubmitted || false}
       song={song}
       dateStrings={{

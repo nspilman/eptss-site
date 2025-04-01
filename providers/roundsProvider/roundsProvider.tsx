@@ -1,6 +1,6 @@
 "use server";
 import {
-  getAllRoundIds,
+  getAllRoundSlugs,
   getCurrentAndPastRounds,
   getCurrentRound,
 } from "@/data-access/roundService";
@@ -19,23 +19,25 @@ export const roundsProvider = async ({
   
   const rounds = roundsResult.status === 'success' ? roundsResult.data : [];
   const roundContent = rounds
-    .map(({ song, playlistUrl, roundId, signupCount, submissionCount, signupOpens, coversDue }) => {
+    .map(({ song, playlistUrl, roundId, slug, signupCount, submissionCount, signupOpens, coversDue, listeningParty }) => {
       const { title, artist } = song || { title: '', artist: '' };
       return {
         title,
         artist,
         roundId,
+        slug: slug || roundId.toString(),
         playlistUrl: playlistUrl || '',
         signupCount,
         submissionCount,
         startDate: signupOpens?.toISOString(),
+        listeningPartyDate: listeningParty?.toISOString(),
         endDate: coversDue?.toISOString(),
       };
     })
     .filter((round) => !(round.roundId === currentRoundId && excludeCurrentRound));
 
-  const allRoundIdsResult = await getAllRoundIds();
-  const allRoundIds = allRoundIdsResult.status === 'success' ? allRoundIdsResult.data : [];
+  const allRoundSlugsResult = await getAllRoundSlugs();
+  const allRoundSlugs = allRoundSlugsResult.status === 'success' ? allRoundSlugsResult.data : [];
 
-  return { roundContent, allRoundIds };
+  return { roundContent, allRoundSlugs };
 };

@@ -9,16 +9,16 @@ import {
 } from "@/components/ui/primitives";
 
 type RoundSelectorProps = {
-  currentRoundId: number;
-  allRoundIds: number[];
+  currentRoundSlug: string;
+  allRoundSlugs: string[];
 };
 
-export const RoundSelector = ({ currentRoundId, allRoundIds }: RoundSelectorProps) => {
+export const RoundSelector = ({ currentRoundSlug, allRoundSlugs }: RoundSelectorProps) => {
   return (
     <section className="flex items-center space-x-4 mb-8">
       <h2 className="text-2xl font-bold text-white">Round Details</h2>
       <Select
-        defaultValue={currentRoundId.toString()}
+        defaultValue={currentRoundSlug}
         onValueChange={(value) => {
           window.location.href = `/admin?roundId=${value}`;
         }}
@@ -27,9 +27,9 @@ export const RoundSelector = ({ currentRoundId, allRoundIds }: RoundSelectorProp
           <SelectValue placeholder="Select a round" />
         </SelectTrigger>
         <SelectContent>
-          {allRoundIds.map(id => (
-            <SelectItem key={id} value={id.toString()}>
-              Round {id}
+          {allRoundSlugs.map(slug => (
+            <SelectItem key={slug} value={slug}>
+              {slug}
             </SelectItem>
           ))}
         </SelectContent>

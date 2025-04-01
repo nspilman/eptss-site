@@ -1,16 +1,19 @@
 import React from "react";
 
 import { roundProvider, userParticipationProvider } from "@/providers";
-import { SignupPage } from "./SignupPage";
+import { SignupPage } from "./SignupPage/SignupPage";
 import { redirect } from "next/navigation";
 
 const SignUp = async () => {
-  const { roundId, dateLabels, hasRoundStarted } = await roundProvider();
+  const { roundId, dateLabels, hasRoundStarted, slug } = await roundProvider();
   const  {roundDetails}  = await userParticipationProvider();
   const signupsCloseDateLabel = dateLabels?.signups.closes;
 
   if (hasRoundStarted) {
-    redirect(`/sign-up/${roundId + 1}`);
+    // For the next round, we'll use the roundId + 1 as the slug if no specific slug is available
+    // This assumes that the slug for the next round follows the same pattern or is the same as the roundId
+    const nextRoundSlug = (roundId + 1).toString();
+    redirect(`/sign-up/${nextRoundSlug}`);
   }
 
   return (
@@ -19,6 +22,7 @@ const SignUp = async () => {
         signupsCloseDateLabel={signupsCloseDateLabel}
         roundId={roundId}
         hasSignedUp={roundDetails?.hasSignedUp || false}
+        slug={slug}
       />
     </>
   );

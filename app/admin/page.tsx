@@ -10,6 +10,7 @@ import { VotingCard } from "./VotingCard";
 import { ProjectStatsCard } from "./ProjectStatsCard";
 import { RoundSelector } from "./RoundSelector";
 import Link from "next/link";
+import { getCurrentRound } from "@/data-access";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Everyone Plays the Same Song",
@@ -23,23 +24,29 @@ export const metadata: Metadata = {
 const AdminPage = async ({
   searchParams,
 }: {
-  searchParams: { roundId?: string };
+  searchParams: { slug: string };
 }) => {
   if (!(await isAdmin())) {
     return notFound();
   }
 
   // Get all rounds for the selector
-  const { allRoundIds } = await roundsProvider({});
-  const currentRoundId = searchParams.roundId 
-    ? Number(searchParams.roundId)
-    : Math.max(...allRoundIds);
+  const { allRoundSlugs } = await roundsProvider({});
+  const currentRound = await getCurrentRound()
+
+  if (!currentRound.data) {
+    return notFound();
+  }
+  
+  const currentRoundSlug = searchParams.slug 
+    ? searchParams.slug
+    : currentRound.data.slug;
 
   // Get current round data
   const { phase, dateLabels, voteOptions, signups, submissions } = 
-    await roundProvider(currentRoundId);
+    await roundProvider(currentRoundSlug);
   const { voteResults, outstandingVoters } = 
-    await votesProvider({ roundId: currentRoundId });
+    await votesProvider({ roundSlug: currentRoundSlug });
   const stats = await adminProvider();
 
   return (
@@ -55,7 +62,7 @@ const AdminPage = async ({
       </section>
 
       {/* Round Selector */}
-      <RoundSelector currentRoundId={currentRoundId} allRoundIds={allRoundIds} />
+      <RoundSelector currentRoundSlug={currentRoundSlug} allRoundSlugs={allRoundSlugs} />
 
       {/* Round Details Section */}
       <section className="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4 space-y-4">
