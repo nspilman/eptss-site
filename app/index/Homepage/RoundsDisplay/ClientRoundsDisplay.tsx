@@ -63,7 +63,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link href={`round/${round.slug || round.roundId}`}>
+                  <Link href={`round/${round.slug}`}>
                     <div className={`p-6 rounded-lg border ${isCurrent ? 'bg-[var(--color-gray-800)]/60 border-[var(--color-accent-primary)]' : 'bg-[var(--color-background-tertiary)] border-[var(--color-gray-800)] hover:border-[var(--color-gray-700)]'} transition-all duration-200`}>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>

@@ -286,24 +286,6 @@ export const getAllRoundSlugs = async (): Promise<AsyncResult<string[]>> => {
   }
 };
 
-// Keep the original function for backward compatibility
-export const getAllRoundIds = async (): Promise<AsyncResult<number[]>> => {
-  try {
-    const rounds = await db
-      .select({ id: roundMetadata.id })
-      .from(roundMetadata)
-      .orderBy(sql`${roundMetadata.id} ASC`);
-
-    if (!rounds.length) {
-      return createEmptyResult('No rounds found');
-    }
-
-    return createSuccessResult(rounds.map(round => round.id));
-  } catch (error) {
-    return createErrorResult(error instanceof Error ? error : new Error('Failed to get all round IDs'));
-  }
-};
-
 export const getVoteBreakdownBySong = async (roundId: number) => {
   // Validate roundId is a valid number
   if (isNaN(roundId) || !Number.isFinite(roundId)) {
