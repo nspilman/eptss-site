@@ -80,15 +80,7 @@ const mapToRound = (dbRound: any): Round => {
 
 export interface Round {
   roundId: number;
-<<<<<<< HEAD
-<<<<<<< HEAD
   slug: string;
-=======
-  slug?: string;
->>>>>>> 88de1ea (referencing rounds by slug)
-=======
-  slug: string;
->>>>>>> 0628312 (wiring it all through)
   signupOpens: Date;
   votingOpens: Date;
   coveringBegins: Date;
@@ -291,24 +283,6 @@ export const getAllRoundSlugs = async (): Promise<AsyncResult<string[]>> => {
     return createSuccessResult(rounds.map(round => round.slug || round.id.toString()));
   } catch (error) {
     return createErrorResult(error instanceof Error ? error : new Error('Failed to get round slugs'));
-  }
-};
-
-// Keep the original function for backward compatibility
-export const getAllRoundIds = async (): Promise<AsyncResult<number[]>> => {
-  try {
-    const rounds = await db
-      .select({ id: roundMetadata.id })
-      .from(roundMetadata)
-      .orderBy(sql`${roundMetadata.id} ASC`);
-
-    if (!rounds.length) {
-      return createEmptyResult('No rounds found');
-    }
-
-    return createSuccessResult(rounds.map(round => round.id));
-  } catch (error) {
-    return createErrorResult(error instanceof Error ? error : new Error('Failed to get all round IDs'));
   }
 };
 
