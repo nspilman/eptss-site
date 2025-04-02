@@ -42,6 +42,7 @@ export const signUps = pgTable("sign_ups", {
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
   songId: bigint("song_id", { mode: "number" }).references(() => songs.id).notNull(),
   userId: uuid("user_id").references(() => users.userid).notNull(),
+  isVerified: boolean("is_verified").notNull().default(false),
 });
 
 // Submissions Table

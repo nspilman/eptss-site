@@ -1,6 +1,6 @@
 {
-  "id": "08fb8cbf-0864-47b1-9f5b-f1a399e546c0",
-  "prevId": "ba2c959b-ae36-4fc7-bac4-9e6a5e75264d",
+  "id": "45e93d7c-9b25-440a-b3aa-72d311aef0ca",
+  "prevId": "08fb8cbf-0864-47b1-9f5b-f1a399e546c0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -108,6 +108,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "playlist_url": {
           "name": "playlist_url",
           "type": "text",
@@ -175,7 +181,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "round_metadata_slug_unique": {
+          "name": "round_metadata_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -226,6 +240,13 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
+        },
+        "is_verified": {
+          "name": "is_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
