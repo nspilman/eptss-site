@@ -7,7 +7,6 @@ import { Phase, RoundInfo } from "@/types/round";
 import { UserRoundParticipation } from "@/types/user";
 import { useEffect, useState } from "react";
 import { formatDate, formatTimeRemaining } from '@/services/dateService';
-import { VerifySignup } from './VerifySignup';
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;

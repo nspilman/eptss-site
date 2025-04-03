@@ -36,7 +36,7 @@ export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScr
           
           <div className="mb-6 max-w-lg">
             <p className="mb-4 text-accent-primary">
-              We've sent a verification link to <span className="font-semibold">{email}</span>
+              We&apos;ve sent a verification link to <span className="font-semibold">{email}</span>
             </p>
             <p className="text-accent-primary opacity-90">
               Please click the link in the email to complete your signup for Round {roundId} of Everyone Plays the Same Song.
@@ -48,7 +48,7 @@ export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScr
             <ol className="ml-5 list-decimal text-left text-accent-primary opacity-90">
               <li className="mb-2">Check your inbox for the verification email</li>
               <li className="mb-2">Click the link in the email to verify your signup</li>
-              <li>You'll be redirected to your dashboard where you can see your signup status</li>
+              <li>You&apos;ll be redirected to your dashboard where you can see your signup status</li>
             </ol>
           </div>
           
@@ -73,7 +73,7 @@ export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScr
           </div>
           
           <p className="mt-6 text-sm text-accent-primary opacity-70">
-            Didn't receive the email? Check your spam folder or{" "}
+            Didn&apos;t receive the email? Check your spam folder or{" "}
             <Link href="/sign-up" className="text-accent-primary underline hover:text-accent-secondary">
               try signing up again
             </Link>

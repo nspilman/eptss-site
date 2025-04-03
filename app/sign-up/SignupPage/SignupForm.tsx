@@ -158,7 +158,7 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLogged
             <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
               <div className="mb-6 border-l-4 border-accent-primary pl-4">
                 <h3 className="text-xl font-medium font-fraunces text-primary">Your Information</h3>
-                <p className="mt-1 text-sm text-accent-primary opacity-90">We'll send you a verification link to complete your signup</p>
+                <p className="mt-1 text-sm text-accent-primary opacity-90">We&lsquo;ll send you a verification link to complete your signup</p>
               </div>
               <div className="space-y-5">
                 <FormBuilder
@@ -173,7 +173,7 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLogged
           <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
             <div className="mb-6 border-l-4 border-accent-secondary pl-4">
               <h3 className="text-xl font-medium font-fraunces text-primary">Round Signup</h3>
-              <p className="mt-1 text-sm text-accent-primary opacity-90">Enter the song you'd like to cover for this round</p>
+              <p className="mt-1 text-sm text-accent-primary opacity-90">Enter the song you&lsquo;d like to cover for this round</p>
             </div>
             <div className="space-y-5">
               <FormBuilder

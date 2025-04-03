@@ -366,7 +366,6 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       roundId: validData.roundId,
       songId: songId,
       userId: userId,
-      isVerified: !!providedUserId, // Mark as verified if userId was provided (came from OTP flow)
     });
 
     return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
