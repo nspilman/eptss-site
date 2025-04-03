@@ -1,6 +1,6 @@
 {
-  "id": "45e93d7c-9b25-440a-b3aa-72d311aef0ca",
-  "prevId": "08fb8cbf-0864-47b1-9f5b-f1a399e546c0",
+  "id": "b3f6a7ce-a2f8-4662-b1bf-5f41d61bc0bd",
+  "prevId": "02666791-a928-4130-bbe3-a8a99cda7c5e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -240,13 +240,6 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
-        },
-        "is_verified": {
-          "name": "is_verified",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
         }
       },
       "indexes": {},
@@ -559,6 +552,82 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.unverified_signups": {
+      "name": "unverified_signups",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "song_title": {
+          "name": "song_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "artist": {
+          "name": "artist",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "youtube_link": {
+          "name": "youtube_link",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "additional_comments": {
+          "name": "additional_comments",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "round_id": {
+          "name": "round_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "unverified_signups_round_id_round_metadata_id_fk": {
+          "name": "unverified_signups_round_id_round_metadata_id_fk",
+          "tableFrom": "unverified_signups",
+          "tableTo": "round_metadata",
+          "columnsFrom": [
+            "round_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},

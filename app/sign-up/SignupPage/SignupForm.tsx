@@ -6,32 +6,23 @@ import { useFormSubmission } from "@/hooks/useFormSubmission"
 import { Button, Form } from "@/components/ui/primitives"
 import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
-import { z } from "zod"
-import { createInsertSchema } from "drizzle-zod"
-import { signUps, songs } from "@/db/schema"
 import { userParticipationProvider } from "@/providers"
 import { FormReturn } from "@/types"
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder"
+import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@/schemas/signupSchemas"
+import { useState } from "react"
+import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 
-// Create a schema for the form fields directly
-const signupSchema = z.object({
-  songTitle: z.string().min(1, "Song title is required"),
-  artist: z.string().min(1, "Artist is required"),
-  youtubeLink: z.string().min(1, "Youtube link is required")
-    .regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/, "Must be a valid YouTube URL"),
-  additionalComments: z.string().optional(),
-  roundId: z.number(),
-})
-
-type SignupInput = z.infer<typeof signupSchema>
 
 interface SignupFormProps {
   roundId: number;
   signupsCloseDateLabel: string;
   onSuccess?: () => void;
+  isLoggedIn?: boolean;
 }
 
-const formFields: FieldConfig[] = [
+// Base fields for all users
+const baseFormFields: FieldConfig[] = [
   {
     type: "input",
     name: "songTitle",
@@ -61,14 +52,50 @@ const formFields: FieldConfig[] = [
   },
 ];
 
-export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess }: SignupFormProps) {
-  const form = useForm<SignupInput>({
-    resolver: zodResolver(signupSchema),
+// Additional fields for non-logged in users
+const nonLoggedInFields: FieldConfig[] = [
+  {
+    type: "input",
+    name: "email",
+    label: "Email",
+    placeholder: "Enter your email address",
+    inputType: "email",
+    description: "We'll send you a verification link",
+  },
+  {
+    type: "input",
+    name: "name",
+    label: "Name",
+    placeholder: "Enter your name",
+  },
+  {
+    type: "input",
+    name: "location",
+    label: "Location",
+    placeholder: "Enter your location (optional)",
+    description: "City, State, Country",
+  },
+];
+
+export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLoggedIn = false }: SignupFormProps) {
+  // State to track if the form has been submitted (for non-logged in users)
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  
+  // Determine which schema and fields to use based on login status
+  const schema = isLoggedIn ? signupSchema : nonLoggedInSchema;
+  const formFields = isLoggedIn ? baseFormFields : [...nonLoggedInFields, ...baseFormFields];
+  
+  const form = useForm({
+    resolver: zodResolver(schema),
     defaultValues: {
       songTitle: "",
       artist: "",
       youtubeLink: "",
       additionalComments: "",
+      email: "",
+      name: "",
+      location: "",
       roundId,
     },
     mode: "onChange",
@@ -76,22 +103,46 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess }: Signup
   })
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {
-    const { signup } = await userParticipationProvider();
-    const result = await signup(formData);
-    return result;
+    const { signup, signupWithOTP } = await userParticipationProvider();
+    
+    // Use the appropriate signup method based on login status
+    if (isLoggedIn) {
+      return await signup(formData);
+    } else {
+      // Save the email for the confirmation screen
+      const email = formData.get("email") as string;
+      if (email) {
+        setSubmittedEmail(email);
+      }
+      return await signupWithOTP(formData);
+    }
   }
 
   const { isLoading, handleSubmit } = useFormSubmission({
     onSubmit,
     form,
-    onSuccess,
-    successMessage: "You've successfully signed up for Everyone Plays the Same Song!",
+    onSuccess: () => {
+      if (!isLoggedIn) {
+        setIsSubmitted(true);
+      }
+      if (onSuccess) {
+        onSuccess();
+      }
+    },
+    successMessage: isLoggedIn 
+      ? "You've successfully signed up for Everyone Plays the Same Song!" 
+      : "Please check your email for a verification link to complete your signup.",
   })
 
+  // If the form has been submitted and the user is not logged in, show the confirmation screen
+  if (isSubmitted && !isLoggedIn) {
+    return <EmailConfirmationScreen email={submittedEmail} roundId={roundId} />;
+  }
+  
   return (
     <FormWrapper 
       title={`Sign Up for Everyone Plays the Same Song round ${roundId}`}
-      description={`Signups close ${signupsCloseDateLabel}`}
+      description={`Signups close ${signupsCloseDateLabel}${!isLoggedIn ? ' - Please provide your email to sign up' : ''}`}
       onSubmit={handleSubmit}
     >
       <Form {...form}>
@@ -99,15 +150,46 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess }: Signup
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-4"
+          className="space-y-10"
         >
           <input type="hidden" name="roundId" value={roundId} />
-          <FormBuilder
-            fields={formFields}
-            control={form.control}
-            disabled={isLoading}
-          />
-          <Button type="submit" disabled={isLoading} size="full">
+          
+          {!isLoggedIn && (
+            <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
+              <div className="mb-6 border-l-4 border-accent-primary pl-4">
+                <h3 className="text-xl font-medium font-fraunces text-primary">Your Information</h3>
+                <p className="mt-1 text-sm text-accent-primary opacity-90">We'll send you a verification link to complete your signup</p>
+              </div>
+              <div className="space-y-5">
+                <FormBuilder
+                  fields={nonLoggedInFields}
+                  control={form.control}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          )}
+          
+          <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
+            <div className="mb-6 border-l-4 border-accent-secondary pl-4">
+              <h3 className="text-xl font-medium font-fraunces text-primary">Round Signup</h3>
+              <p className="mt-1 text-sm text-accent-primary opacity-90">Enter the song you'd like to cover for this round</p>
+            </div>
+            <div className="space-y-5">
+              <FormBuilder
+                fields={baseFormFields}
+                control={form.control}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+          
+          <Button 
+            type="submit" 
+            disabled={isLoading} 
+            size="full"
+            className="mt-4 py-3 text-lg font-medium shadow-md transition-all hover:shadow-lg focus:ring-2 focus:ring-accent-primary"
+          >
             {isLoading ? "Signing up..." : "Sign Up"}
           </Button>
         </motion.div>

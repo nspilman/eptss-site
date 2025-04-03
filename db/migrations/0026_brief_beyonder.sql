@@ -1,1 +1,0 @@
-ALTER TABLE "sign_ups" ADD COLUMN "is_verified" boolean DEFAULT false NOT NULL;--> statement-breakpoint

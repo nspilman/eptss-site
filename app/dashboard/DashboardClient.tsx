@@ -6,12 +6,16 @@ import { Navigation } from "@/enum/navigation";
 import { Phase, RoundInfo } from "@/types/round";
 import { UserRoundParticipation } from "@/types/user";
 import { useEffect, useState } from "react";
-
 import { formatDate, formatTimeRemaining } from '@/services/dateService';
+import { VerifySignup } from './VerifySignup';
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;
   userRoundDetails?: UserRoundParticipation;
+  verificationStatus?: {
+    verified: boolean;
+    message?: string;
+  };
 }
 
 // Helper functions for phase management
@@ -89,7 +93,7 @@ const getActionButton = (
   }
 };
 
-export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClientProps) {
+export function DashboardClient({ roundInfo, userRoundDetails, verificationStatus }: DashboardClientProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
   useEffect(() => {
     if (!roundInfo?.dateLabels[roundInfo.phase]?.closes) {
@@ -107,6 +111,8 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
 
     return () => clearInterval(interval);
   }, [roundInfo]);
+
+  console.log({ roundInfo, userRoundDetails })
 
   if (!roundInfo || !userRoundDetails) {
     return <div>Loading...</div>;
@@ -140,6 +146,20 @@ export function DashboardClient({ roundInfo, userRoundDetails }: DashboardClient
           </h1>
         </div>
       </div>
+      
+      {/* Verification Status Notification */}
+      {verificationStatus?.message && (
+        <div className={`mb-8 rounded-lg p-6 backdrop-blur-sm ${verificationStatus.verified ? 'bg-background-tertiary' : 'bg-background-error'}`}>
+          <div className={`border-l-4 pl-4 ${verificationStatus.verified ? 'border-accent-primary' : 'border-accent-error'}`}>
+            <h3 className="text-xl font-medium font-fraunces text-primary">
+              {verificationStatus.verified ? 'Signup Verified' : 'Verification Issue'}
+            </h3>
+            <p className="mt-1 text-sm text-accent-primary opacity-90">
+              {verificationStatus.message}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Time Remaining Display */}
       {currentPhaseEndDate && (
