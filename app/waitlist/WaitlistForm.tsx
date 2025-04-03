@@ -12,6 +12,7 @@ import { mailingList } from "@/db/schema"
 import { createInsertSchema } from "drizzle-zod"
 import { FormReturn } from "@/types";
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder";
+import { useState } from "react";
 
 // Create Zod schema from Drizzle table
 const waitlistSchema = createInsertSchema(mailingList, {
@@ -39,7 +40,11 @@ const formFields: FieldConfig[] = [
   },
 ];
 
-export function WaitlistForm() {
+interface WaitlistFormProps {
+  onSuccess?: () => void;
+}
+
+export function WaitlistForm({ onSuccess }: WaitlistFormProps) {
   const form = useForm<WaitlistInput>({
     resolver: zodResolver(waitlistSchema),
     defaultValues: {
@@ -64,6 +69,7 @@ export function WaitlistForm() {
     onSubmit,
     form,
     successMessage: "You've been added to the waitlist. We'll contact you when registration opens for the next round.",
+    onSuccess,
   })
 
   return (
