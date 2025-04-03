@@ -1,5 +1,5 @@
 "use server";
-import { getCurrentRoundId, getRoundDataForUser, signup, submitCover, submitVotes } from "@/data-access";
+import { getCurrentRoundId, getRoundDataForUser, signup, submitCover, submitVotes, signupWithOTP, completeSignupAfterVerification, verifySignupByEmail } from "@/data-access";
 import { getAuthUser } from "@/utils/supabase/server";
 
 // Define a custom hook for easy access to the UserSessionContext
@@ -9,6 +9,9 @@ interface Props {
 
 interface UserParticipationData {
   signup: typeof signup;
+  signupWithOTP: typeof signupWithOTP;
+  completeSignupAfterVerification: typeof completeSignupAfterVerification;
+  verifySignupByEmail: typeof verifySignupByEmail;
   submitCover: typeof submitCover;
   submitVotes: typeof submitVotes;
   roundDetails?: Awaited<ReturnType<typeof getRoundDataForUser>> ;
@@ -20,6 +23,9 @@ export const userParticipationProvider = async (props?: Props): Promise<UserPart
 
   const services = {
     signup,
+    signupWithOTP,
+    completeSignupAfterVerification,
+    verifySignupByEmail,
     submitCover,
     submitVotes,
   };

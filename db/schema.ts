@@ -44,6 +44,18 @@ export const signUps = pgTable("sign_ups", {
   userId: uuid("user_id").references(() => users.userid).notNull(),
 });
 
+// Unverified Sign-ups Table
+export const unverifiedSignups = pgTable("unverified_signups", {
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  createdAt: timestamp("created_at").defaultNow(),
+  email: text("email").notNull(),
+  songTitle: text("song_title").notNull(),
+  artist: text("artist").notNull(),
+  youtubeLink: text("youtube_link").notNull(),
+  additionalComments: text("additional_comments"),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+});
+
 // Submissions Table
 export const submissions = pgTable("submissions", {
   id: bigint("id", { mode: "number" }).primaryKey().notNull(),

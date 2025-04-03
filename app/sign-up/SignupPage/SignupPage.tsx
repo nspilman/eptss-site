@@ -9,6 +9,7 @@ interface Props {
   roundId: number;
   signupsCloseDateLabel: string;
   slug: string;
+  isLoggedIn?: boolean;
 }
 
 export function SignupPage({
@@ -16,6 +17,7 @@ export function SignupPage({
   roundId,
   signupsCloseDateLabel,
   slug,
+  isLoggedIn = false,
 }: Props) {
   const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
@@ -47,6 +49,7 @@ export function SignupPage({
         <SignupForm
           roundId={roundId}
           signupsCloseDateLabel={signupsCloseDateLabel}
+          isLoggedIn={isLoggedIn}
         />
       )}
     </>

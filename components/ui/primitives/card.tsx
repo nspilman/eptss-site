@@ -42,7 +42,7 @@ const CardTitle = React.forwardRef<
   <h1
     ref={ref}
     className={cn(
-      "text-3xl font-bold mb-6 text-center bg-clip-text text-transparent bg-[var(--color-gradient-primary)] pb-1",
+      "text-3xl text-[var(--color-white)] font-bold mb-6 text-center bg-clip-text bg-[var(--color-gradient-primary)] pb-1",
       className
     )}
     {...props}
@@ -54,7 +54,7 @@ const CardDescription = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <h1
     ref={ref}
     className={cn("text-[var(--color-white)] font-light text-sm", className)}
     {...props}

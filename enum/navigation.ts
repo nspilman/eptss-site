@@ -15,7 +15,6 @@ export enum Navigation {
 }
 
 export const protectedRoutes = [
-  Navigation.SignUp,
   Navigation.Submit,
   Navigation.Voting,
   Navigation.Dashboard,
