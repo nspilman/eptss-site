@@ -46,6 +46,13 @@ export {
   TableCaption,
 } from './table'
 export {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from './tabs'
+
+export {
   Card,
   CardHeader,
   CardTitle,
