@@ -284,6 +284,99 @@ export async function completeSignupAfterVerification(params: {
   }
 }
 
+export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
+  "use server";
+  
+  try {
+    // Extract and validate form data
+    const userId = formData.get("userId")?.toString() || "";
+    const roundId = Number(formData.get("roundId")?.toString() || "-1");
+    const songTitle = formData.get("songTitle")?.toString() || "";
+    const artist = formData.get("artist")?.toString() || "";
+    const youtubeLink = formData.get("youtubeLink")?.toString() || "";
+    const additionalComments = formData.get("additionalComments")?.toString() || "";
+    
+    if (!userId) {
+      return { status: "Error", message: "User ID is required" };
+    }
+    
+    if (roundId < 0) {
+      return { status: "Error", message: "Valid Round ID is required" };
+    }
+    
+    if (!songTitle || !artist || !youtubeLink) {
+      return { status: "Error", message: "Song title, artist, and YouTube link are required" };
+    }
+    
+    // Get the next song ID
+    const lastSongId = await db
+      .select({ id: songs.id })
+      .from(songs)
+      .orderBy(sql`id desc`)
+      .limit(1);
+    
+    const nextSongId = (lastSongId[0]?.id || 0) + 1;
+
+    // First insert or get the song
+    const songResult = await db
+      .insert(songs)
+      .values({
+        id: nextSongId,
+        title: songTitle,
+        artist: artist,
+      })
+      .onConflictDoNothing()
+      .returning();
+    
+    // Get the song ID (either from insert or existing)
+    const songId = songResult[0]?.id || 
+      (await db
+        .select({ id: songs.id })
+        .from(songs)
+        .where(and(
+          eq(songs.title, songTitle),
+          eq(songs.artist, artist)
+        ))
+      )[0].id;
+
+    // Check if user is already signed up for this round
+    const existingSignup = await db
+      .select()
+      .from(signUps)
+      .where(and(
+        eq(signUps.userId, userId),
+        eq(signUps.roundId, roundId)
+      ));
+      
+    if (existingSignup.length > 0) {
+      return { status: "Error", message: "User is already signed up for this round" };
+    }
+
+    // Get the next signup ID
+    const lastSignupId = await db
+      .select({ id: signUps.id })
+      .from(signUps)
+      .orderBy(sql`id desc`)
+      .limit(1);
+    
+    const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+
+    // Then insert the signup
+    await db.insert(signUps).values({
+      id: nextSignupId,
+      youtubeLink: youtubeLink,
+      additionalComments: additionalComments,
+      roundId: roundId,
+      songId: songId,
+      userId: userId,
+    });
+
+    return { status: "Success", message: "User has been successfully signed up for the round!" };
+  } catch (error) {
+    return { status: "Error", message: (error as Error).message };
+  }
+}
+
 export async function signup(formData: FormData, providedUserId?: string): Promise<FormReturn> {
   "use server";
   // Use provided userId if available, otherwise get from auth

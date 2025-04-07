@@ -11,7 +11,8 @@ export enum Navigation {
   Dashboard = "/dashboard",
   Profile = "/profile",
   Tasks = "/tasks",
-  CurrentRound = "/round/current"
+  CurrentRound = "/round/current",
+  Admin = "/admin"
 }
 
 export const protectedRoutes = [

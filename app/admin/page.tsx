@@ -9,8 +9,9 @@ import { SubmissionsCard } from "./SubmissionCard";
 import { VotingCard } from "./VotingCard";
 import { ProjectStatsCard } from "./ProjectStatsCard";
 import { RoundSelector } from "./RoundSelector";
-import Link from "next/link";
-import { getCurrentRound } from "@/data-access";
+import { AdminSignupForm } from "./AdminSignupForm";
+import { AdminSubmissionForm } from "./AdminSubmissionForm";
+import { getCurrentRound, getAllUsers } from "@/data-access";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Everyone Plays the Same Song",
@@ -43,11 +44,16 @@ const AdminPage = async ({
     : currentRound.data.slug;
 
   // Get current round data
-  const { phase, dateLabels, voteOptions, signups, submissions } = 
+  const { phase, dateLabels, voteOptions, signups, submissions, roundId } = 
     await roundProvider(currentRoundSlug);
+
+
   const { voteResults, outstandingVoters } = 
     await votesProvider({ roundSlug: currentRoundSlug });
   const stats = await adminProvider();
+  
+  // Get all users for the signup form
+  const users = await getAllUsers();
 
   return (
     <div className="container mx-auto p-4 space-y-8">
@@ -63,6 +69,19 @@ const AdminPage = async ({
 
       {/* Round Selector */}
       <RoundSelector currentRoundSlug={currentRoundSlug} allRoundSlugs={allRoundSlugs} />
+
+      {/* Admin Tools Section */}
+      <section className="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4 space-y-4">
+        <h2 className="text-xl font-semibold text-primary mb-4">Admin Tools</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <AdminSignupForm roundId={roundId} users={users} />
+          </div>
+          <div>
+            <AdminSubmissionForm roundId={roundId} users={users} />
+          </div>
+        </div>
+      </section>
 
       {/* Round Details Section */}
       <section className="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4 space-y-4">

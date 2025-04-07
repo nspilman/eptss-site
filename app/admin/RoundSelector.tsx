@@ -20,13 +20,13 @@ export const RoundSelector = ({ currentRoundSlug, allRoundSlugs }: RoundSelector
       <Select
         defaultValue={currentRoundSlug}
         onValueChange={(value) => {
-          window.location.href = `/admin?roundId=${value}`;
+          window.location.href = `/admin?slug=${value}`;
         }}
       >
         <SelectTrigger className="w-[180px] bg-gray-800/50 border-gray-700/50 text-white">
           <SelectValue placeholder="Select a round" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[200px] overflow-y-auto bg-secondary">
           {allRoundSlugs.map(slug => (
             <SelectItem key={slug} value={slug}>
               {slug}
