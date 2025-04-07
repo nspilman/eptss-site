@@ -99,15 +99,8 @@ const ClientStackedBarChart = ({ data, title }: { data: any, title: string }) =>
 export const RoundSummary = async ({ roundId, roundData, voteResults = [], voteBreakdown = [], allRounds = [] }: Props) => {
   try {
     // Extract data from props instead of fetching
-    const { phase, song, playlistUrl, submissions, signups } = roundData;
-
-    if (phase === "signups") {
-      return <></>;
-    }
+    const { phase, song, playlistUrl, submissions, signups, dateLabels } = roundData;
     
-    const signupCount = signups?.length || 0;
-    const chartData = convertVoteBreakdownToBarchartFormat(voteBreakdown);
-
     // Find the most recent round where the listening party has happened
     let previousRound;
     let nextRound;
@@ -142,6 +135,66 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], voteB
       previousSlug: previousRound?.slug,
       nextSlug: nextRound?.slug,
     };
+    
+    const signupCount = signups?.length || 0;
+    const signupDataDisplay = signups.map((signup) => ({
+      youtubeLink: signup.youtubeLink || "",
+      title: signup.song?.title || "",
+      artist: signup.song?.artist || "",
+    }));
+    
+    // Handle signup phase
+    if (phase === "signups") {
+      // Get the signup deadline from dateLabels
+      const signupDeadline = dateLabels?.signups?.closes ? new Date(dateLabels.signups.closes).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }) : 'TBD';
+      
+      return (
+        <>
+          <PageTitle title={`Round ${roundId} Signups`} />
+          <div className="flex flex-col items-center">
+            <div className="pb-8 text-center">
+              <h1 className="font-fraunces text-primary font-bold text-3xl">
+                Round {roundId} Signups
+              </h1>
+            </div>
+            
+            <div className="w-full max-w-2xl p-8 my-6 rounded-xl bg-background-secondary shadow-lg">
+              <h3 className="font-fraunces text-primary text-2xl mb-6 text-center">Signup Information</h3>
+              
+              <div className="space-y-8">
+                <div className="flex flex-col items-center p-4 bg-background-primary rounded-lg">
+                  <p className="text-primary font-medium mb-2">Current Signups</p>
+                  <p className="text-primary text-3xl font-bold">{signupCount} participants</p>
+                </div>
+                
+                <div className="flex flex-col items-center p-4 bg-background-primary rounded-lg">
+                  <p className="text-primary font-medium mb-2">Signup Deadline</p>
+                  <p className="text-primary text-2xl font-bold">{signupDeadline}</p>
+                </div>
+                
+                <div className="mt-8 flex justify-center">
+                  <Link 
+                    href="/signup" 
+                    className="btn-main text-lg"
+                  >
+                    Sign Up for This Round
+                  </Link>
+                </div>
+              </div>
+            </div>
+            
+            <RoundNavigation navigation={navigation} />
+          </div>
+        </>
+      );
+    }
+    
+    const chartData = convertVoteBreakdownToBarchartFormat(voteBreakdown);
 
     const roundSummaryHeaders: {
       key: string;
@@ -189,12 +242,7 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], voteB
       },
     ];
 
-    const signupDataDisplay = signups.map((signup) => ({
-      youtubeLink: signup.youtubeLink || "",
-      title: signup.song?.title || "",
-      artist: signup.song?.artist || "",
-    }));
-
+    // Only need to create this once since we already defined it above
     const isVotingPhase = phase === "voting";
   
     return (
