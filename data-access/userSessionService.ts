@@ -38,7 +38,7 @@ export const signInWithPassword = async ({
   const { data: userData, error: userError } = await supabaseClient
     .from("users")
     .select("email")
-    .eq("email", username)
+    .eq("username", username)
     .single();
 
   if (userError || !userData) {
@@ -65,30 +65,49 @@ export const signUpWithPassword = async ({
 }) => {
   const supabaseClient = await createClient();
   
-  // Check if username already exists
-  const { data: existingUser, error: checkError } = await supabaseClient
-    .from("users")
-    .select("userid")
-    .eq("username", username)
-    .single();
+  try {
+    // Check if username already exists
+    const { data: existingUserByUsername } = await supabaseClient
+      .from("users")
+      .select("userid")
+      .eq("username", username)
+      .single();
+      
+    if (existingUserByUsername) {
+      return { error: { message: "Username already exists" } };
+    }
     
-  if (existingUser) {
-    return { error: { message: "Username already exists" } };
-  }
-  
-  // Sign up with email and password
-  const { data, error } = await supabaseClient.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        username,
+    // Check if email already exists
+    const { data: existingUserByEmail } = await supabaseClient
+      .from("users")
+      .select("userid")
+      .eq("email", email)
+      .single();
+      
+    if (existingUserByEmail) {
+      return { error: { message: "Email already in use" } };
+    }
+    
+    // Sign up with email and password
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username,
+        },
       },
-    },
-  });
-  
-  // If successful, create the user record in the users table
-  if (data?.user && !error) {
+    });
+    
+    if (error) {
+      return { error };
+    }
+    
+    if (!data?.user) {
+      return { error: { message: "Failed to create user account" } };
+    }
+    
+    // Create the user record in the users table
     const { error: insertError } = await supabaseClient
       .from("users")
       .insert({
@@ -100,9 +119,12 @@ export const signUpWithPassword = async ({
     if (insertError) {
       // If there was an error creating the user record, delete the auth user
       await supabaseClient.auth.admin.deleteUser(data.user.id);
-      return { error: insertError };
+      return { error: { message: "Failed to create user profile. Please try again." } };
     }
+    
+    return { data, error: null };
+  } catch (err) {
+    console.error("Registration error:", err);
+    return { error: { message: "An unexpected error occurred during registration" } };
   }
-  
-  return { data, error };
 };
