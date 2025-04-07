@@ -40,7 +40,7 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
       {/* Selected Round Details */}
       {selectedRound && (
         <Card className="mt-8 p-6 bg-[#1E1B2E] border-[#2D2A3E] shadow-xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10" />
+          <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10 pointer-events-none" />
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-2xl font-bold mb-2 text-[#8B7EF8] relative z-10">
