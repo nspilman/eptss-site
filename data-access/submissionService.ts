@@ -15,17 +15,19 @@ export const getSubmissions = async (id: number) => {
       created_at: submissions.createdAt,
       round_id: submissions.roundId,
       soundcloud_url: submissions.soundcloudUrl,
-      username: users.username || "",  // Add this line to get username
+      username: users.username || "",
+      user_id: submissions.userId,  // Add userId to the selection
     })
     .from(submissions)
-    .leftJoin(users, eq(submissions.userId, users.userid))  // Add this line to join with users table
+    .leftJoin(users, eq(submissions.userId, users.userid))
     .where(eq(submissions.roundId, id));
 
   return data.map((val) => ({
     createdAt: val.created_at,
     roundId: val.round_id,
     soundcloudUrl: val.soundcloud_url,
-    username: val.username || "",  // Add this to the return object
+    username: val.username || "",
+    userId: val.user_id,  // Include userId in the returned object
   }));
 };
 

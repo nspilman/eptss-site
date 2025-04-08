@@ -1,5 +1,4 @@
-import { DataTable } from "@/components/DataTable";
-import { roundProvider, votesProvider, roundsProvider, adminProvider } from "@/providers";
+import { roundProvider, votesProvider, roundsProvider, adminProvider, getActiveUsers } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next';
@@ -11,6 +10,7 @@ import { ProjectStatsCard } from "./ProjectStatsCard";
 import { RoundSelector } from "./RoundSelector";
 import { AdminSignupForm } from "./AdminSignupForm";
 import { AdminSubmissionForm } from "./AdminSubmissionForm";
+import { ActiveUsersCard } from "./ActiveUsersCard";
 import { getCurrentRound, getAllUsers } from "@/data-access";
 
 export const metadata: Metadata = {
@@ -54,6 +54,9 @@ const AdminPage = async ({
   
   // Get all users for the signup form
   const users = await getAllUsers();
+  
+  // Get active users with their last signup and submission rounds
+  const activeUsers = await getActiveUsers();
 
   return (
     <div className="container mx-auto p-4 space-y-8">
@@ -65,6 +68,11 @@ const AdminPage = async ({
           activeUsers={stats.activeUsers}
           completionRate={stats.completionRate}
         />
+      </section>
+      
+      {/* Active Users Section */}
+      <section>
+        <ActiveUsersCard users={activeUsers} />
       </section>
 
       {/* Round Selector */}

@@ -28,6 +28,13 @@ export type RoundDetail = {
   completionRate: number;
 };
 
+export type ActiveUserDetail = {
+  email: string;
+  userId: string;
+  lastSignupRound: number | null;
+  lastSubmissionRound: number | null;
+};
+
 export const adminProvider = async (): Promise<AdminStats> => {
   const totalUsers = await getUserCount();
   const rounds = await getCurrentAndPastRounds();
@@ -72,7 +79,7 @@ export const getUserDetails = async (): Promise<UserDetail[]> => {
     email: users.email,
     userid: users.userid,
     lastActive: users.createdAt, // Using createdAt as lastActive for now
-  }).from(users);
+  }).from(users)
 
   // Get all signups with user IDs
   const signupsByUser = await Promise.all(
@@ -129,7 +136,7 @@ export const getUserDetails = async (): Promise<UserDetail[]> => {
       lastSubmitted: lastSubmission?.toISOString() || null,
       lastSignup: lastSignup?.toISOString() || null,
     };
-  });
+  }).filter(user => user.lastSignup !== null);
 
   // Sort by lastActive date, with most recent first
   return userDetails.sort((a, b) => {
@@ -157,4 +164,70 @@ export const getRoundDetails = async (): Promise<RoundDetail[]> => {
   }
 
   return details;
+};
+
+export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
+  // Get all users
+  const allUsers = await db.select({
+    email: users.email,
+    userid: users.userid,
+  }).from(users);
+
+  // Get all rounds
+  const rounds = await getCurrentAndPastRounds();
+  if (rounds.status !== 'success') {
+    return [];
+  }
+
+  // Create a map of user details
+  const userDetailsMap = new Map<string, ActiveUserDetail>();
+  
+  // Initialize the map with all users
+  allUsers.forEach(user => {
+    userDetailsMap.set(user.userid, {
+      email: user.email,
+      userId: user.userid,
+      lastSignupRound: null,
+      lastSubmissionRound: null,
+    });
+  });
+
+  // Process all rounds to find the last signup and submission for each user
+  for (const round of rounds.data) {
+    const roundId = round.roundId;
+    
+    // Get signups for this round
+    const signups = await getSignupsByRound(roundId);
+    
+    // Update last signup round for each user
+    signups.forEach(signup => {
+      if (signup.userId) {
+        const userDetail = userDetailsMap.get(signup.userId);
+        if (userDetail) {
+          if (userDetail.lastSignupRound === null || roundId > userDetail.lastSignupRound) {
+            userDetail.lastSignupRound = roundId;
+          }
+        }
+      }
+    });
+    
+    // Get submissions for this round
+    const submissions = await getSubmissions(roundId);
+    
+    // Update last submission round for each user
+    submissions.forEach(submission => {
+      if (submission.userId) {
+        const userDetail = userDetailsMap.get(submission.userId);
+        if (userDetail) {
+          if (userDetail.lastSubmissionRound === null || roundId > userDetail.lastSubmissionRound) {
+            userDetail.lastSubmissionRound = roundId;
+          }
+        }
+      }
+    });
+  }
+
+  // Convert map to array and filter out users who have never participated
+  return Array.from(userDetailsMap.values())
+    .filter(user => user.lastSignupRound !== null || user.lastSubmissionRound !== null);
 };
