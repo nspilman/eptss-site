@@ -6,6 +6,7 @@ import { getAuthUser } from "@/utils/supabase/server";
 import { db } from "@/db";
 import { signUps, songs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { UserSignupData } from "@/types/signup";
 
 interface SharedSignupPageWrapperProps {
   slug?: string;
@@ -39,7 +40,7 @@ export const SharedSignupPageWrapper = async ({
   });
   
   // Fetch the user's existing signup data if they've already signed up
-  let userSignup = undefined;
+  let userSignup: UserSignupData | undefined = undefined;
   if (isLoggedIn && userId && roundDetails?.hasSignedUp) {
     const existingSignup = await db
       .select({

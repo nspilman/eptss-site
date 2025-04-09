@@ -4,6 +4,7 @@ import { Button, Card } from "@/components/ui/primitives";
 import Link from "next/link";
 import { Navigation } from "@/enum/navigation";
 import { Phase, RoundInfo } from "@/types/round";
+import { SignupData } from "@/types/signup";
 import { UserRoundParticipation } from "@/types/user";
 import { useEffect, useState } from "react";
 import { formatDate, formatTimeRemaining } from '@/services/dateService';
@@ -132,7 +133,9 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
   
   // Find the user's signup song if they've signed up
   const userSignup = isParticipating && phase === "signups" && roundInfo.signups ? 
-    roundInfo.signups.find((signup: any) => signup.userId === userRoundDetails.user.userid) : null;
+    roundInfo.signups.find((signup: SignupData) => 
+      signup.userId === userRoundDetails.user.userid
+    ) : null;
 
   const nextPhaseStartDate = dateLabels[nextPhase]?.opens;
 
@@ -221,7 +224,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                 </p>
               ) : (
                 <p className="text-secondary">
-                  You've signed up, but we couldn't find your song details. You may want to update your submission.
+                  You&apos;ve signed up, but we couldn&apos;t find your song details. You may want to update your submission.
                 </p>
               )}
             </div>
@@ -230,9 +233,9 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
           {/* Explanation about voting responsibility */}
           {phase === "signups" && (
             <div className="mt-6 p-4 rounded-lg bg-background-tertiary border border-accent-tertiary">
-              <h3 className="text-lg font-medium text-primary mb-2">What's Next?</h3>
+              <h3 className="text-lg font-medium text-primary mb-2">What&apos;s Next?</h3>
               <p className="text-secondary">
-                Once the signup phase ends, you'll be responsible for voting on the cover options. 
+                Once the signup phase ends, you&apos;ll be responsible for voting on the cover options. 
                 Your vote helps determine which song will be selected for the round!
               </p>
             </div>

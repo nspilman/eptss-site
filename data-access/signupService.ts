@@ -14,6 +14,7 @@ export const getSignupsByRound = async (roundId: number) => {
     .select({
       songId: signUps.songId,
       youtubeLink: signUps.youtubeLink,
+      additionalComments: signUps.additionalComments,
       song: {
         title: songs.title,
         artist: songs.artist
@@ -27,14 +28,20 @@ export const getSignupsByRound = async (roundId: number) => {
     .where(eq(signUps.roundId, roundId))
     .orderBy(signUps.createdAt);
     
-    return data.map((val) => ({
-      ...val,
-      song: {
-        title: val.song?.title || "",
-        artist: val.song?.artist || ""
-      }
-
-    }));
+    // Filter out entries with null userId or email and ensure all required fields are present
+    return data
+      .filter(val => val.userId !== null && val.email !== null)
+      .map(val => ({
+        songId: val.songId,
+        youtubeLink: val.youtubeLink,
+        userId: val.userId as string, // Type assertion since we've filtered out nulls
+        email: val.email as string, // Type assertion since we've filtered out nulls
+        additionalComments: val.additionalComments || undefined,
+        song: {
+          title: val.song?.title || "",
+          artist: val.song?.artist || ""
+        }
+      }));
 };
 
 

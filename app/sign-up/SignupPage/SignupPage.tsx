@@ -4,6 +4,7 @@ import { PageTitle } from "@/components/PageTitle";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { SignupForm } from "./SignupForm";
 import { useSearchParams } from "next/navigation";
+import { UserSignupData } from "@/types/signup";
 
 interface Props {
   hasSignedUp: boolean;
@@ -11,12 +12,7 @@ interface Props {
   signupsCloseDateLabel: string;
   slug: string;
   isLoggedIn?: boolean;
-  userSignup?: {
-    songTitle?: string;
-    artist?: string;
-    youtubeLink?: string;
-    additionalComments?: string;
-  };
+  userSignup?: UserSignupData;
 }
 
 export function SignupPage({

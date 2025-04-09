@@ -13,6 +13,7 @@ import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedI
 import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter } from "next/navigation"
+import { UserSignupData } from "@/types/signup"
 
 
 interface SignupFormProps {
@@ -21,12 +22,7 @@ interface SignupFormProps {
   onSuccess?: () => void;
   isLoggedIn?: boolean;
   isUpdate?: boolean;
-  existingSignup?: {
-    songTitle?: string;
-    artist?: string;
-    youtubeLink?: string;
-    additionalComments?: string;
-  };
+  existingSignup?: UserSignupData;
 }
 
 // Base fields for all users
