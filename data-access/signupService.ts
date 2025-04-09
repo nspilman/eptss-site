@@ -28,20 +28,27 @@ export const getSignupsByRound = async (roundId: number) => {
     .where(eq(signUps.roundId, roundId))
     .orderBy(signUps.createdAt);
     
-    // Filter out entries with null userId or email and ensure all required fields are present
-    return data
-      .filter(val => val.userId !== null && val.email !== null)
-      .map(val => ({
+    // Process the data and throw errors for invalid entries
+    return data.map(val => {
+      if (!val.userId) {
+        throw new Error(`Signup for round ${roundId} has missing userId`);
+      }
+      if (!val.email) {
+        throw new Error(`Signup for round ${roundId} has missing email`);
+      }
+      
+      return {
         songId: val.songId,
         youtubeLink: val.youtubeLink,
-        userId: val.userId as string, // Type assertion since we've filtered out nulls
-        email: val.email as string, // Type assertion since we've filtered out nulls
+        userId: val.userId,
+        email: val.email,
         additionalComments: val.additionalComments || undefined,
         song: {
           title: val.song?.title || "",
           artist: val.song?.artist || ""
         }
-      }));
+      };
+    });
 };
 
 
