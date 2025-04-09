@@ -12,6 +12,8 @@ import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilde
 import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@/schemas/signupSchemas"
 import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
+import { useRouter } from "next/navigation"
+import { UserSignupData } from "@/types/signup"
 
 
 interface SignupFormProps {
@@ -19,6 +21,8 @@ interface SignupFormProps {
   signupsCloseDateLabel: string;
   onSuccess?: () => void;
   isLoggedIn?: boolean;
+  isUpdate?: boolean;
+  existingSignup?: UserSignupData;
 }
 
 // Base fields for all users
@@ -77,10 +81,18 @@ const nonLoggedInFields: FieldConfig[] = [
   },
 ];
 
-export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLoggedIn = false }: SignupFormProps) {
+export function SignupForm({ 
+  roundId, 
+  signupsCloseDateLabel, 
+  onSuccess, 
+  isLoggedIn = false,
+  isUpdate = false,
+  existingSignup
+}: SignupFormProps) {
   // State to track if the form has been submitted (for non-logged in users)
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const router = useRouter();
   
   // Determine which schema and fields to use based on login status
   const schema = isLoggedIn ? signupSchema : nonLoggedInSchema;
@@ -89,10 +101,10 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLogged
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      songTitle: "",
-      artist: "",
-      youtubeLink: "",
-      additionalComments: "",
+      songTitle: existingSignup?.songTitle || "",
+      artist: existingSignup?.artist || "",
+      youtubeLink: existingSignup?.youtubeLink || "",
+      additionalComments: existingSignup?.additionalComments || "",
       email: "",
       name: "",
       location: "",
@@ -124,13 +136,17 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLogged
     onSuccess: () => {
       if (!isLoggedIn) {
         setIsSubmitted(true);
-      }
-      if (onSuccess) {
+      } else if (isUpdate) {
+        // For updates, redirect to the success page
+        router.push(`/sign-up?success=true`);
+      } else if (onSuccess) {
         onSuccess();
       }
     },
     successMessage: isLoggedIn 
-      ? "You've successfully signed up for Everyone Plays the Same Song!" 
+      ? isUpdate 
+        ? "You've successfully updated your song for this round!" 
+        : "You've successfully signed up for Everyone Plays the Same Song!" 
       : "Please check your email for a verification link to complete your signup.",
   })
 
@@ -141,7 +157,9 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLogged
   
   return (
     <FormWrapper 
-      title={`Sign Up for Everyone Plays the Same Song round ${roundId}`}
+      title={isUpdate 
+        ? `Update Your Song for Round ${roundId}` 
+        : `Sign Up for Everyone Plays the Same Song round ${roundId}`}
       description={`Signups close ${signupsCloseDateLabel}${!isLoggedIn ? ' - Please provide your email to sign up' : ''}`}
       onSubmit={handleSubmit}
     >
@@ -190,7 +208,7 @@ export function SignupForm({ roundId, signupsCloseDateLabel, onSuccess, isLogged
             size="full"
             className="mt-4 py-3 text-lg font-medium shadow-md transition-all hover:shadow-lg focus:ring-2 focus:ring-accent-primary"
           >
-            {isLoading ? "Signing up..." : "Sign Up"}
+            {isLoading ? (isUpdate ? "Updating..." : "Signing up...") : (isUpdate ? "Update Song" : "Sign Up")}
           </Button>
         </motion.div>
       </Form>

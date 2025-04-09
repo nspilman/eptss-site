@@ -14,6 +14,7 @@ export const getSignupsByRound = async (roundId: number) => {
     .select({
       songId: signUps.songId,
       youtubeLink: signUps.youtubeLink,
+      additionalComments: signUps.additionalComments,
       song: {
         title: songs.title,
         artist: songs.artist
@@ -27,14 +28,27 @@ export const getSignupsByRound = async (roundId: number) => {
     .where(eq(signUps.roundId, roundId))
     .orderBy(signUps.createdAt);
     
-    return data.map((val) => ({
-      ...val,
-      song: {
-        title: val.song?.title || "",
-        artist: val.song?.artist || ""
+    // Process the data and throw errors for invalid entries
+    return data.map(val => {
+      if (!val.userId) {
+        throw new Error(`Signup for round ${roundId} has missing userId`);
       }
-
-    }));
+      if (!val.email) {
+        throw new Error(`Signup for round ${roundId} has missing email`);
+      }
+      
+      return {
+        songId: val.songId,
+        youtubeLink: val.youtubeLink,
+        userId: val.userId,
+        email: val.email,
+        additionalComments: val.additionalComments || undefined,
+        song: {
+          title: val.song?.title || "",
+          artist: val.song?.artist || ""
+        }
+      };
+    });
 };
 
 
@@ -411,6 +425,18 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
     
     const validData = validationResult.data;
     
+    // Check if user has already signed up for this round
+    const existingSignup = await db
+      .select({ id: signUps.id })
+      .from(signUps)
+      .where(
+        and(
+          eq(signUps.userId, userId),
+          eq(signUps.roundId, validData.roundId)
+        )
+      )
+      .limit(1);
+    
     // Get the next song ID
     const lastSongId = await db
       .select({ id: songs.id })
@@ -442,26 +468,42 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         ))
       )[0].id;
 
-    // Get the next signup ID
-    const lastSignupId = await db
-      .select({ id: signUps.id })
-      .from(signUps)
-      .orderBy(sql`id desc`)
-      .limit(1);
-    
-    const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+    // If user has already signed up, update their signup
+    if (existingSignup.length > 0) {
+      await db.update(signUps)
+        .set({
+          youtubeLink: validData.youtubeLink,
+          additionalComments: validData.additionalComments,
+          songId: songId,
+        })
+        .where(
+          eq(signUps.id, existingSignup[0].id)
+        );
+      
+      // Redirect back to the dashboard with success message
+      return handleResponse(200, Navigation.Dashboard, "Your song has been updated successfully!");
+    } else {
+      // Get the next signup ID for a new signup
+      const lastSignupId = await db
+        .select({ id: signUps.id })
+        .from(signUps)
+        .orderBy(sql`id desc`)
+        .limit(1);
+      
+      const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
 
-    // Then insert the signup
-    await db.insert(signUps).values({
-      id: nextSignupId,
-      youtubeLink: validData.youtubeLink,
-      additionalComments: validData.additionalComments,
-      roundId: validData.roundId,
-      songId: songId,
-      userId: userId,
-    });
+      // Then insert the new signup
+      await db.insert(signUps).values({
+        id: nextSignupId,
+        youtubeLink: validData.youtubeLink,
+        additionalComments: validData.additionalComments,
+        roundId: validData.roundId,
+        songId: songId,
+        userId: userId,
+      });
 
-    return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
+      return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
+    }
   } catch (error) {
     return handleResponse(500, Navigation.SignUp, (error as Error).message);
   }

@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { SignupPage } from "./SignupPage/SignupPage";
 import { getAuthUser } from "@/utils/supabase/server";
+import { db } from "@/db";
+import { signUps, songs } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
+import { UserSignupData } from "@/types/signup";
 
 interface SharedSignupPageWrapperProps {
   slug?: string;
@@ -35,6 +39,46 @@ export const SharedSignupPageWrapper = async ({
     roundId,
   });
   
+  // Fetch the user's existing signup data if they've already signed up
+  let userSignup: UserSignupData | undefined = undefined;
+  if (isLoggedIn && userId && roundDetails?.hasSignedUp) {
+    const existingSignup = await db
+      .select({
+        songId: signUps.songId,
+        youtubeLink: signUps.youtubeLink,
+        additionalComments: signUps.additionalComments,
+      })
+      .from(signUps)
+      .where(
+        and(
+          eq(signUps.userId, userId),
+          eq(signUps.roundId, roundId)
+        )
+      )
+      .limit(1);
+
+    if (existingSignup.length > 0) {
+      // Get the song details
+      const songDetails = await db
+        .select({
+          title: songs.title,
+          artist: songs.artist,
+        })
+        .from(songs)
+        .where(eq(songs.id, existingSignup[0].songId))
+        .limit(1);
+
+      if (songDetails.length > 0) {
+        userSignup = {
+          songTitle: songDetails[0].title,
+          artist: songDetails[0].artist,
+          youtubeLink: existingSignup[0].youtubeLink,
+          additionalComments: existingSignup[0].additionalComments || undefined,
+        };
+      }
+    }
+  }
+  
   const signupsCloseDateLabel = dateLabels?.signups.closes;
 
   return (
@@ -44,6 +88,7 @@ export const SharedSignupPageWrapper = async ({
       hasSignedUp={roundDetails?.hasSignedUp || false}
       slug={slug || currentSlug}
       isLoggedIn={isLoggedIn}
+      userSignup={userSignup}
     />
   );
 };

@@ -3,6 +3,8 @@
 import { PageTitle } from "@/components/PageTitle";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { SignupForm } from "./SignupForm";
+import { useSearchParams } from "next/navigation";
+import { UserSignupData } from "@/types/signup";
 
 interface Props {
   hasSignedUp: boolean;
@@ -10,6 +12,7 @@ interface Props {
   signupsCloseDateLabel: string;
   slug: string;
   isLoggedIn?: boolean;
+  userSignup?: UserSignupData;
 }
 
 export function SignupPage({
@@ -18,8 +21,16 @@ export function SignupPage({
   signupsCloseDateLabel,
   slug,
   isLoggedIn = false,
+  userSignup,
 }: Props) {
-  const title = `Sign Up for Everyone Plays the Same Song round ${roundId}`;
+  // Check URL parameters
+  const searchParams = useSearchParams();
+  const isUpdate = searchParams?.get("update") === "true";
+  const showSuccess = searchParams?.get("success") === "true";
+  
+  const title = isUpdate 
+    ? `Update Your Song for Round ${roundId}` 
+    : `Sign Up for Everyone Plays the Same Song round ${roundId}`;
 
   const signupSuccessText = {
     header: `Thank you for signing up for round ${roundId} of Everyone Plays the Same Song!`,
@@ -39,7 +50,7 @@ export function SignupPage({
   return (
     <>
       <PageTitle title={title} />
-      {hasSignedUp ? (
+      {(hasSignedUp && !isUpdate) || showSuccess ? (
         <ActionSuccessPanel
           text={signupSuccessText}
           image={signupSuccessImage}
@@ -50,6 +61,8 @@ export function SignupPage({
           roundId={roundId}
           signupsCloseDateLabel={signupsCloseDateLabel}
           isLoggedIn={isLoggedIn}
+          isUpdate={hasSignedUp && isUpdate}
+          existingSignup={userSignup}
         />
       )}
     </>

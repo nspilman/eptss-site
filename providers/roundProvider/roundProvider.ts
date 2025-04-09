@@ -1,7 +1,6 @@
 "use server";
 import {
   getCurrentRound,
-  getRoundById,
   getRoundBySlug,
   getRoundOverrideVotes,
   getSignupsByRound,

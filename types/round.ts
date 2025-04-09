@@ -1,5 +1,6 @@
 import { songs, roundMetadata, signUps } from "@/db/schema";
 import { InferSelectModel } from "drizzle-orm";
+import { SignupData } from "./signup";
 
 export type DBSong = InferSelectModel<typeof songs>;
 export type DBRound = InferSelectModel<typeof roundMetadata>;
@@ -18,6 +19,8 @@ export interface Submission {
   createdAt: Date;
 }
 
+// SignupData is now imported from ./signup
+
 export interface RoundInfo {
   roundId: DBRound["id"];
   slug: string;
@@ -35,7 +38,7 @@ export interface RoundInfo {
   }>;
   submissions: Submission[];
   playlistUrl?: string;
-  signups: { song: { title: string; artist: string; }; songId: number; youtubeLink: string; }[];
+  signups: SignupData[];
   // Add count properties
   signupCount?: number;
   submissionCount?: number;
