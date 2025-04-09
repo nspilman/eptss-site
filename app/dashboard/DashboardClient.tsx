@@ -70,7 +70,7 @@ const getActionButton = (
     case "signups":
       return {
         text: hasCompleted ? "Update Song Suggestion" : "Suggest a Song",
-        href: Navigation.SignUp,
+        href: hasCompleted ? `${Navigation.SignUp}?update=true` : Navigation.SignUp,
       };
     case "covering":
       return {
@@ -129,6 +129,10 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
 
   const currentPhaseEndDate = dateLabels[phase]?.closes;
   const nextPhase = getNextPhase(phase);
+  
+  // Find the user's signup song if they've signed up
+  const userSignup = isParticipating && phase === "signups" && roundInfo.signups ? 
+    roundInfo.signups.find((signup: any) => signup.userId === userRoundDetails.user.userid) : null;
 
   const nextPhaseStartDate = dateLabels[nextPhase]?.opens;
 
@@ -183,23 +187,56 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
       {/* Current Round Status */}
       <Card className="w-full p-8 bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-xs mb-8">
         <div>
-          <h2 className="text-2xl font-semibold mb-8 text-gray-300">Current Round Progress</h2>
+          <h2 className="text-2xl font-semibold mb-8 text-primary">Current Round Progress</h2>
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-2">
             <div className="space-y-4">
               <div>
                 <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Phase</p>
-                <p className="text-xl text-gray-300 font-medium">{getPhaseTitle(phase)}</p>
+                <p className="text-xl text-primary font-medium">{getPhaseTitle(phase)}</p>
               </div>
+              {phase === "signups" && (
+                <div>
+                  <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Current Signups</p>
+                  <p className="text-xl text-primary font-medium">{roundInfo.signups?.length || 0}</p>
+                </div>
+              )}
             </div>
             <div className="space-y-4">
               <div>
                 <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Deadline</p>
-                <p className="text-xl text-gray-300 font-medium">
+                <p className="text-xl text-primary font-medium">
                   {currentPhaseEndDate ? formatDate.v(currentPhaseEndDate) : "TBD"}
                 </p>
               </div>
             </div>
           </div>
+          
+          {/* Show user's signup song if they've signed up during signup phase */}
+          {phase === "signups" && isParticipating && (
+            <div className="mt-6 p-4 rounded-lg bg-background-secondary border border-accent-secondary">
+              <h3 className="text-lg font-medium text-primary mb-2">Your Song Suggestion</h3>
+              {userSignup ? (
+                <p className="text-accent-primary">
+                  {userSignup.song?.title || 'Unknown'} by {userSignup.song?.artist || 'Unknown'}
+                </p>
+              ) : (
+                <p className="text-secondary">
+                  You've signed up, but we couldn't find your song details. You may want to update your submission.
+                </p>
+              )}
+            </div>
+          )}
+          
+          {/* Explanation about voting responsibility */}
+          {phase === "signups" && (
+            <div className="mt-6 p-4 rounded-lg bg-background-tertiary border border-accent-tertiary">
+              <h3 className="text-lg font-medium text-primary mb-2">What's Next?</h3>
+              <p className="text-secondary">
+                Once the signup phase ends, you'll be responsible for voting on the cover options. 
+                Your vote helps determine which song will be selected for the round!
+              </p>
+            </div>
+          )}
 
             <div className="mt-12 flex flex-col items-center p-10 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
               <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
