@@ -9,7 +9,7 @@ import { eq } from "drizzle-orm";
 export default async function DashboardPage() {
   // Check auth first
   const { email } = getAuthUser();
-  const { roundDetails: userRoundDetails, verifySignupByEmail } = await userParticipationProvider();
+  const {  verifySignupByEmail } = await userParticipationProvider();
 
   let verificationStatus: { verified: boolean; message?: string } = { verified: false };
 
@@ -50,9 +50,11 @@ export default async function DashboardPage() {
   // Only fetch round data if user is authenticated
   const currentRound = await roundProvider();
 
+  const { roundDetails } = await userParticipationProvider();
+
   return <DashboardClient 
     roundInfo={currentRound} 
-    userRoundDetails={userRoundDetails}
+    userRoundDetails={roundDetails}
     verificationStatus={verificationStatus}
   />;
 }
