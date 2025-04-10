@@ -26,13 +26,10 @@ export const metadata: Metadata = {
   },
 };
 
-const Homepage = async () => {
-  const { userId } = getAuthUser();
-  if (userId) {
-    redirect('/dashboard');
-  }
-
-  const roundInfo = await roundProvider()
+// Shared homepage content component that can be reused
+export const HomepageContent = async () => {
+  const roundInfo = await roundProvider();
+  
   return (
     <div className="max-w-7xl mx-auto">
       <Head>
@@ -52,6 +49,16 @@ const Homepage = async () => {
       </div>
     </div>
   );
+};
+
+// Root page component that redirects to dashboard if logged in
+const Homepage = async () => {
+  const { userId } = getAuthUser();
+  if (userId) {
+    redirect('/dashboard');
+  }
+
+  return <HomepageContent />;
 };
 
 export default Homepage;
