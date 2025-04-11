@@ -38,6 +38,8 @@ export type ActiveUserDetail = {
 export const adminProvider = async (): Promise<AdminStats> => {
   const totalUsers = await getUserCount();
   const rounds = await getCurrentAndPastRounds();
+
+  console.log({rounds})
   
   if (rounds.status !== 'success') {
     throw new Error('Failed to fetch rounds');

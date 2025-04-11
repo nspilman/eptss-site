@@ -46,7 +46,9 @@ export function useFormSubmission<T extends FieldValues>({
     
     // Trigger validation manually
     const isValid = await form.trigger();
-    
+
+    const formValues = form.getValues();
+    console.log({isValid, formValues})
     if (!isValid) {
       // Don't proceed if validation fails - errors will be shown by the useEffect above
       return;
@@ -63,9 +65,20 @@ export function useFormSubmission<T extends FieldValues>({
       Object.entries(values).forEach(([key, value]) => {
         formData.append(key, value as string);
       });
+
+      console.log({values})
       
       // Submit the form
-      const result = await onSubmit(formData);
+      const rawResult = await onSubmit(formData);
+      
+      // Ensure we have a serializable result
+      const result: FormReturn = {
+        status: rawResult.status,
+        message: rawResult.message || "",
+        variant: rawResult.variant
+      };
+      
+      console.log({result});
       
       if (result.status === "Success") {
         form.reset();
@@ -81,6 +94,7 @@ export function useFormSubmission<T extends FieldValues>({
         });
       }
     } catch (error) {
+      console.log({error});
       toast({
         variant: "destructive",
         title: "Error",

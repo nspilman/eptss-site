@@ -24,7 +24,7 @@ const Input = ({ id, value, onChange, required, placeholder, className }: { id: 
     onChange={onChange}
     required={required}
     placeholder={placeholder}
-    className={`w-full p-2 rounded-md bg-gray-900/50 border border-gray-700/50 ${className || ''}`}
+    className={`w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 ${className || ''}`}
   />
 );
 
@@ -38,7 +38,7 @@ const Textarea = ({ id, value, onChange, placeholder, className }: { id: string,
     value={value}
     onChange={onChange}
     placeholder={placeholder}
-    className={`w-full p-2 rounded-md bg-gray-900/50 border border-gray-700/50 min-h-[100px] ${className || ''}`}
+    className={`w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 min-h-[100px] ${className || ''}`}
   />
 );
 
@@ -101,7 +101,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="bg-gray-800/50 backdrop-blur-md border-gray-700/50 hover:bg-gray-800/70 transition-colors">
+      <Card className="bg-background-secondary/50 backdrop-blur-md border-background-tertiary/50 hover:bg-background-secondary/70 transition-colors">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center text-primary">
             <Music className="mr-2" />
@@ -117,7 +117,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by email or username"
-                className="bg-gray-900/50 border-gray-700/50 text-primary mb-2"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary mb-2"
               />
               
               <Label htmlFor="userId" className="text-primary">Select User</Label>
@@ -126,7 +126,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
                 required
-                className="w-full p-2 rounded-md bg-gray-900/50 border border-gray-700/50 text-primary"
+                className="w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 text-primary"
                 size={searchTerm ? Math.min(8, filteredUsers.length + 1) : 1}
               >
                 <option value="">Select a user</option>
@@ -149,7 +149,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
                 onChange={(e) => setSoundcloudUrl(e.target.value)}
                 required
                 placeholder="Enter SoundCloud URL"
-                className="bg-gray-900/50 border-gray-700/50 text-primary"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
               />
             </div>
 
@@ -160,7 +160,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
                 value={additionalComments}
                 onChange={(e) => setAdditionalComments(e.target.value)}
                 placeholder="Any additional comments (optional)"
-                className="bg-gray-900/50 border-gray-700/50 text-primary"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
               />
             </div>
 
