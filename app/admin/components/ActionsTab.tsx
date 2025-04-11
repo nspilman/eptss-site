@@ -5,12 +5,11 @@ import { AdminSignupForm } from "../AdminSignupForm";
 import { AdminSubmissionForm } from "../AdminSubmissionForm";
 import { CreateRoundForm } from "../CreateRoundForm";
 import { SetRoundSongForm } from "../SetRoundSongForm";
-import { getRoundBySlug } from "@/data-access/roundService";
-import { useEffect, useState } from "react";
+import { UserDetails } from "@/types/user";
 
 type ActionsTabProps = {
   roundId: number;
-  users: any[];
+  users: UserDetails[];
   roundSlug: string;
 };
 

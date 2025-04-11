@@ -475,12 +475,18 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
         }
       }
 
-      // Now create the round
-      const roundTimestamp = Date.now() + 1;
+      // Get the highest round ID and increment by 1 for the new round
+      const maxRoundResult = await tx
+        .select({ maxId: sql`MAX(${roundMetadata.id})` })
+        .from(roundMetadata);
+      
+      const nextRoundId = maxRoundResult.length > 0 && maxRoundResult[0].maxId ? Number(maxRoundResult[0].maxId) + 1 : 1;
+      
+      // Now create the round with incremental ID
       const newRound = await tx
         .insert(roundMetadata)
         .values({
-          id: roundTimestamp, // Use number directly
+          id: nextRoundId, // Use incremental ID
           slug: input.slug,
           songId: songId, // This will be null if no song was provided
           signupOpens: input.signupOpens,

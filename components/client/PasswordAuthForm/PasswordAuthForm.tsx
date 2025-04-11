@@ -158,7 +158,7 @@ export function PasswordAuthForm({ redirectUrl = "/", titleOverride, onSuccess }
                     <FormControl>
                       <Input
                         {...field}
-                        // type="password"
+                        type="password"
                         placeholder="••••••••"
                         autoComplete="current-password"
                         disabled={isLoginLoading}

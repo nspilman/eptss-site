@@ -105,8 +105,6 @@ export function VotingPage({
     return result
   }
 
-  console.log({form})
-
   const { isLoading, handleSubmit } = useFormSubmission({
     onSubmit,
     form,

@@ -7,7 +7,17 @@ import { RoundScheduleCard } from "../RoundScheduleCard";
 import { SignupsCard } from "../SignupsCard";
 import { SubmissionsCard } from "../SubmissionCard";
 import { VotingCard } from "../VotingCard";
-import { Phase } from "@/types/round";
+import { Phase, DateLabel, Submission } from "@/types/round";
+import { ActiveUserDetail } from "@/providers/adminProvider/adminProvider";
+import { VoteOption } from "@/types/vote";
+import { SignupData } from "@/types/signup";
+
+type VoteResult = {
+  title: string;
+  artist: string;
+  average: number;
+  votesCount: number;
+};
 
 type ReportsTabProps = {
   stats: {
@@ -16,14 +26,17 @@ type ReportsTabProps = {
     activeUsers: number;
     completionRate: number;
   };
-  activeUsers: any[];
+  activeUsers: ActiveUserDetail[];
   phase: Phase;
-  dateLabels: Record<Phase, { opens: string; closes: string }>;
-  signups: any[];
-  submissions: any[];
-  voteOptions: any[];
-  outstandingVoters: any[];
-  voteResults: any;
+  dateLabels: Record<Phase, DateLabel>;
+  signups: Array<Pick<SignupData, 'songId' | 'youtubeLink' | 'song' | 'additionalComments'> & {
+    userId?: string;
+    email?: string | null;
+  }>;
+  submissions: Submission[];
+  voteOptions: VoteOption[];
+  outstandingVoters: string[];
+  voteResults: VoteResult[];
 };
 
 export function ReportsTab({

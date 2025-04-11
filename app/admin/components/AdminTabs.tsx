@@ -4,21 +4,42 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ReportsTab } from "./ReportsTab";
 import { ActionsTab } from "./ActionsTab";
+import { UserDetails } from "@/types/user";
+
+import { Phase, DateLabel, Submission } from "@/types/round";
+import { ActiveUserDetail } from "@/providers/adminProvider/adminProvider";
+import { SignupData } from "@/types/signup";
+import { VoteOption } from "@/types/vote";
+
+type VoteResult = {
+  title: string;
+  artist: string;
+  average: number;
+  votesCount: number;
+};
 
 type AdminTabsProps = {
   initialTab: string;
-  stats: any;
-  activeUsers: any[];
-  phase: any;
-  dateLabels: any;
-  signups: any[];
-  submissions: any[];
-  voteOptions: any[];
-  outstandingVoters: any[];
-  voteResults: any;
+  stats: {
+    totalUsers: number;
+    totalRounds: number;
+    activeUsers: number;
+    completionRate: number;
+  };
+  activeUsers: ActiveUserDetail[];
+  phase: Phase;
+  dateLabels: Record<Phase, DateLabel>;
+  signups: Array<Pick<SignupData, 'songId' | 'youtubeLink' | 'song' | 'additionalComments'> & {
+    userId?: string;
+    email?: string | null;
+  }>;
+  submissions: Submission[];
+  voteOptions: VoteOption[];
+  outstandingVoters: string[];
+  voteResults: VoteResult[];
   roundId: number;
   roundSlug: string;
-  users: any[];
+  users: UserDetails[];
 };
 
 export function AdminTabs({
