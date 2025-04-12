@@ -48,7 +48,6 @@ export function useFormSubmission<T extends FieldValues>({
     const isValid = await form.trigger();
 
     const formValues = form.getValues();
-    console.log({isValid, formValues})
     if (!isValid) {
       // Don't proceed if validation fails - errors will be shown by the useEffect above
       return;
@@ -66,8 +65,6 @@ export function useFormSubmission<T extends FieldValues>({
         formData.append(key, value as string);
       });
 
-      console.log({values})
-      
       // Submit the form
       const rawResult = await onSubmit(formData);
       
@@ -77,8 +74,6 @@ export function useFormSubmission<T extends FieldValues>({
         message: rawResult.message || "",
         variant: rawResult.variant
       };
-      
-      console.log({result});
       
       if (result.status === "Success") {
         form.reset();
