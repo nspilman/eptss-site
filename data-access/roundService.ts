@@ -171,7 +171,7 @@ export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>>
   try {
     const currentRoundResult = await getCurrentRoundId();
     if (currentRoundResult.status !== 'success') {
-      return createEmptyResult('No current round available');
+      return createSuccessResult([]);
     }
 
     const rounds = await db
@@ -181,7 +181,7 @@ export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>>
       .orderBy(asc(roundMetadata.id));
 
     if (!rounds.length) {
-      return createEmptyResult('No future rounds found');
+      return createSuccessResult([]);
     }
 
     const mappedRounds = rounds.map(round => mapToRound({
@@ -199,7 +199,7 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
   try {
     const currentRoundResult = await getCurrentRoundId();
     if (currentRoundResult.status !== 'success') {
-      return createEmptyResult('No current round available');
+      return createSuccessResult([]);
     }
 
     const now = new Date();
@@ -227,7 +227,7 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
       .orderBy(desc(roundMetadata.id));
 
     if (!rounds.length) {
-      return createEmptyResult('No past rounds found');
+      return createSuccessResult([]);
     }
 
     // Now get counts for each round
@@ -318,5 +318,207 @@ export const getVoteBreakdownBySong = async (roundId: number) => {
     fourCount: Number(row.fourCount) || 0,
     fiveCount: Number(row.fiveCount) || 0,
   }));
+};
+
+// Get all songs from signups for a specific round
+export const getSignupSongsForRound = async (roundId: number): Promise<AsyncResult<{ id: number; title: string; artist: string; }[]>> => {
+  try {
+    // Validate roundId is a valid number
+    if (isNaN(roundId) || !Number.isFinite(roundId)) {
+      return createErrorResult(new Error(`Invalid round ID: ${roundId}`));
+    }
+
+    const signupSongs = await db
+      .select({
+        id: songs.id,
+        title: songs.title,
+        artist: songs.artist,
+      })
+      .from(signUps)
+      .innerJoin(songs, eq(signUps.songId, songs.id))
+      .where(eq(signUps.roundId, roundId))
+      .groupBy(songs.id, songs.title, songs.artist)
+      .orderBy(songs.title, songs.artist);
+
+    return createSuccessResult(signupSongs);
+  } catch (error) {
+    console.error('Error getting signup songs for round:', error);
+    return createErrorResult(error instanceof Error ? error : new Error(`Failed to get signup songs for round ${roundId}`));
+  }
+};
+
+// Set the song for a round
+export const setRoundSong = async (roundId: number, songId: number): Promise<AsyncResult<Round>> => {
+  try {
+    // Validate inputs
+    if (isNaN(roundId) || !Number.isFinite(roundId)) {
+      return createErrorResult(new Error(`Invalid round ID: ${roundId}`));
+    }
+
+    if (isNaN(songId) || !Number.isFinite(songId)) {
+      return createErrorResult(new Error(`Invalid song ID: ${songId}`));
+    }
+
+    // Check if round exists
+    const existingRound = await db
+      .select({ id: roundMetadata.id })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId));
+
+    if (existingRound.length === 0) {
+      return createErrorResult(new Error(`Round with ID ${roundId} not found`));
+    }
+
+    // Check if song exists
+    const existingSong = await db
+      .select({ id: songs.id })
+      .from(songs)
+      .where(eq(songs.id, songId));
+
+    if (existingSong.length === 0) {
+      return createErrorResult(new Error(`Song with ID ${songId} not found`));
+    }
+
+    // Update the round with the selected song
+    await db
+      .update(roundMetadata)
+      .set({ songId: songId })
+      .where(eq(roundMetadata.id, roundId));
+
+    // Get the updated round
+    const updatedRound = await queryRoundById(roundId);
+
+    if (!updatedRound.length) {
+      return createErrorResult(new Error(`Failed to retrieve updated round ${roundId}`));
+    }
+
+    return createSuccessResult(mapToRound(updatedRound[0]));
+  } catch (error) {
+    console.error('Error setting round song:', error);
+    return createErrorResult(error instanceof Error ? error : new Error(`Failed to set song for round ${roundId}`));
+  }
+};
+
+type CreateRoundInput = {
+  slug: string;
+  song?: {
+    title: string;
+    artist: string;
+  };
+  signupOpens: Date;
+  votingOpens: Date;
+  coveringBegins: Date;
+  coversDue: Date;
+  listeningParty: Date;
+  playlistUrl?: string;
+};
+
+export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<Round>> => {
+  try {
+    // Validate input
+    if (!input.slug) {
+      return createErrorResult(new Error('Missing required field: slug is required'));
+    }
+    
+    // Validate song if provided
+    if (input.song && (!input.song.title || !input.song.artist)) {
+      return createErrorResult(new Error('If song is provided, both title and artist are required'));
+    }
+
+    // Check if slug already exists
+    const existingRound = await db
+      .select({ id: roundMetadata.id })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.slug, input.slug));
+
+    if (existingRound.length > 0) {
+      return createErrorResult(new Error(`A round with slug "${input.slug}" already exists`));
+    }
+
+    // Start a transaction
+    return await db.transaction(async (tx) => {
+      // Handle song if provided
+      let songId: number | null = null;
+      
+      if (input.song) {
+        // First, create or find the song
+        const existingSong = await tx
+          .select({ id: songs.id })
+          .from(songs)
+          .where(
+            and(
+              eq(songs.title, input.song.title),
+              eq(songs.artist, input.song.artist)
+            )
+          );
+
+        if (existingSong.length > 0) {
+          // Use existing song
+          songId = existingSong[0].id;
+        } else {
+          // Create new song
+          const songTimestamp = Date.now();
+          const newSong = await tx
+            .insert(songs)
+            .values({
+              id: songTimestamp, // Use number directly
+              title: input.song.title,
+              artist: input.song.artist,
+            })
+            .returning({ id: songs.id });
+
+          if (!newSong.length) {
+            throw new Error('Failed to create song');
+          }
+
+          songId = newSong[0].id;
+        }
+      }
+
+      // Get the highest round ID and increment by 1 for the new round
+      const maxRoundResult = await tx
+        .select({ maxId: sql`MAX(${roundMetadata.id})` })
+        .from(roundMetadata);
+      
+      const nextRoundId = maxRoundResult.length > 0 && maxRoundResult[0].maxId ? Number(maxRoundResult[0].maxId) + 1 : 1;
+      
+      // Now create the round with incremental ID
+      const newRound = await tx
+        .insert(roundMetadata)
+        .values({
+          id: nextRoundId, // Use incremental ID
+          slug: input.slug,
+          songId: songId, // This will be null if no song was provided
+          signupOpens: input.signupOpens,
+          votingOpens: input.votingOpens,
+          coveringBegins: input.coveringBegins,
+          coversDue: input.coversDue,
+          listeningParty: input.listeningParty,
+          playlistUrl: input.playlistUrl || null,
+        })
+        .returning();
+
+      if (!newRound.length) {
+        throw new Error('Failed to create round');
+      }
+
+      // Map to our Round type
+      const createdRound = mapToRound({
+        ...newRound[0],
+        song: input.song ? {
+          title: input.song.title,
+          artist: input.song.artist,
+        } : {
+          title: "",
+          artist: "",
+        },
+      });
+
+      return createSuccessResult(createdRound);
+    });
+  } catch (error) {
+    console.error('Error creating round:', error);
+    return createErrorResult(error instanceof Error ? error : new Error('Failed to create round'));
+  }
 };
 

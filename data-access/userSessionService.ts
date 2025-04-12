@@ -33,7 +33,7 @@ export const signInWithPassword = async ({
   password: string;
 }) => {
   const supabaseClient = await createClient();
-  
+  console.log({username, password})
   // First, find the user's email by username
   const { data: userData, error: userError } = await supabaseClient
     .from("users")
@@ -51,7 +51,19 @@ export const signInWithPassword = async ({
     password,
   });
   
-  return { data, error };
+  if (error) {
+    return { error: { message: error.message } };
+  }
+  
+  // Return a serializable response object
+  return { 
+    data: data?.user ? {
+      id: data.user.id,
+      email: data.user.email,
+      username: username
+    } : null, 
+    error: null 
+  };
 };
 
 export const signUpWithPassword = async ({
@@ -100,7 +112,7 @@ export const signUpWithPassword = async ({
     });
     
     if (error) {
-      return { error };
+      return { error: { message: error.message } };
     }
     
     if (!data?.user) {
@@ -122,7 +134,15 @@ export const signUpWithPassword = async ({
       return { error: { message: "Failed to create user profile. Please try again." } };
     }
     
-    return { data, error: null };
+    // Return a serializable response object
+    return { 
+      data: { 
+        userId: data.user.id,
+        email: data.user.email,
+        username: username
+      }, 
+      error: null 
+    };
   } catch (err) {
     console.error("Registration error:", err);
     return { error: { message: "An unexpected error occurred during registration" } };

@@ -7,8 +7,6 @@ import { Button, Form } from "@/components/ui/primitives"
 import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
 import { z } from "zod"
-import { createInsertSchema } from "drizzle-zod"
-import { songSelectionVotes } from "@/db/schema"
 import { userParticipationProvider } from "@/providers"
 import { FormReturn } from "@/types"
 import { VoteOption } from "@/types/vote"
@@ -27,14 +25,7 @@ interface Props {
   };
 }
 
-// Create schema from votes table
-const voteSchema = createInsertSchema(songSelectionVotes, {
-  songId: z.number(),
-  vote: z.number().min(1).max(5),
-  roundId: z.number(),
-})
-
-type VoteInput = z.infer<typeof voteSchema>
+type VoteInput = Record<string, string>
 
 function createVoteFields(songs: VoteOption[] = []): FieldConfig[] {
   return songs.map((song) => ({
@@ -61,6 +52,18 @@ export function VotingPage({
   coveringStartLabel,
   userRoundDetails,
 }: Props) {
+  // Create schema dynamically based on available songs
+  const voteSchema = z.object({
+    ...Object.fromEntries(
+      songs.map(song => [
+        `song-${song.songId}`, 
+        z.string().refine(val => parseInt(val) >= 1 && parseInt(val) <= 5, {
+          message: "Vote must be between 1 and 5"
+        })
+      ])
+    )
+  })
+
   const form = useForm<VoteInput>({
     resolver: zodResolver(voteSchema),
     defaultValues: Object.fromEntries(

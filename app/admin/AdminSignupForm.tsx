@@ -24,7 +24,7 @@ const Input = ({ id, value, onChange, required, placeholder, className }: { id: 
     onChange={onChange}
     required={required}
     placeholder={placeholder}
-    className={`w-full p-2 rounded-md bg-gray-900/50 border border-gray-700/50 ${className || ''}`}
+    className={`w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 ${className || ''}`}
   />
 );
 
@@ -38,7 +38,7 @@ const Textarea = ({ id, value, onChange, placeholder, className }: { id: string,
     value={value}
     onChange={onChange}
     placeholder={placeholder}
-    className={`w-full p-2 rounded-md bg-gray-900/50 border border-gray-700/50 min-h-[100px] ${className || ''}`}
+    className={`w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 min-h-[100px] ${className || ''}`}
   />
 );
 
@@ -129,7 +129,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="bg-gray-800/50 backdrop-blur-md border-gray-700/50 hover:bg-gray-800/70 transition-colors">
+      <Card className="bg-background-secondary/50 backdrop-blur-md border-background-tertiary/50 hover:bg-background-secondary/70 transition-colors">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center text-primary">
             <UserPlus className="mr-2" />
@@ -145,7 +145,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by email or username"
-                className="bg-gray-900/50 border-gray-700/50 text-primary mb-2"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary mb-2"
               />
               
               <Label htmlFor="userId" className="text-primary">Select User</Label>
@@ -154,7 +154,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
                 required
-                className="w-full p-2 rounded-md bg-gray-900/50 border border-gray-700/50 text-primary"
+                className="w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 text-primary"
                 size={searchTerm ? Math.min(8, filteredUsers.length + 1) : 1}
               >
                 <option value="">Select a user</option>
@@ -177,7 +177,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 onChange={(e) => setSongTitle(e.target.value)}
                 required
                 placeholder="Enter song title"
-                className="bg-gray-900/50 border-gray-700/50 text-primary"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
               />
             </div>
 
@@ -189,7 +189,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 onChange={(e) => setArtist(e.target.value)}
                 required
                 placeholder="Enter artist name"
-                className="bg-gray-900/50 border-gray-700/50 text-primary"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
               />
             </div>
 
@@ -201,7 +201,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 onChange={(e) => setYoutubeLink(e.target.value)}
                 required
                 placeholder="Enter YouTube link"
-                className="bg-gray-900/50 border-gray-700/50 text-primary"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
               />
             </div>
 
@@ -212,7 +212,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 value={additionalComments}
                 onChange={(e) => setAdditionalComments(e.target.value)}
                 placeholder="Any additional comments (optional)"
-                className="bg-gray-900/50 border-gray-700/50 text-primary"
+                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
               />
             </div>
 
