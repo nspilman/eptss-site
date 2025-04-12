@@ -100,12 +100,14 @@ const run = async() => {
 
 async function createPlaylist(client: SpotifyWebApi) {
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("sign_ups")
-      .select(`youtube_link, song:songs(title, artist)`)
+      .select(`youtube_link, song:songs!sign_ups_song_id_fkey(title, artist)`)
       .filter("round_id", "eq", roundId)
       .filter('song_id', 'neq', -1)
       .order("created_at");
+
+      console.log({data, error: JSON.stringify(error)})
 
     const sortedData = seededShuffle(data || [], JSON.stringify(data?.map(val => val.youtube_link)));
     const songs = await sortedData.map((field) => field.song) || [];

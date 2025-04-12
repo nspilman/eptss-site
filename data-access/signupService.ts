@@ -27,9 +27,13 @@ export const getSignupsByRound = async (roundId: number) => {
     .leftJoin(users, eq(signUps.userId, users.userid))
     .where(eq(signUps.roundId, roundId))
     .orderBy(signUps.createdAt);
+
+    const unsortedUrls = data?.map(field => field.youtubeLink) || [];
+    const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
+    
     
     // Process the data and throw errors for invalid entries
-    return data.map(val => {
+    return sortedData.map(val => {
       if (!val.userId) {
         throw new Error(`Signup for round ${roundId} has missing userId`);
       }
@@ -71,6 +75,7 @@ export const getSignupUsersByRound = async (roundId: number) => {
 
 // Import shared schemas
 import { signupSchema, nonLoggedInSchema } from "@/schemas/signupSchemas";
+import { seededShuffle } from "@/utils/seededShuffle";
 
 // Alias for backward compatibility
 const nonAuthSignupSchema = nonLoggedInSchema;
