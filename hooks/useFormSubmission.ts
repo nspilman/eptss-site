@@ -47,7 +47,6 @@ export function useFormSubmission<T extends FieldValues>({
     // Trigger validation manually
     const isValid = await form.trigger();
 
-    const formValues = form.getValues();
     if (!isValid) {
       // Don't proceed if validation fails - errors will be shown by the useEffect above
       return;
