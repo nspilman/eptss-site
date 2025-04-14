@@ -7,7 +7,7 @@ import { FormReturn } from "@/types";
 import { handleResponse } from "@/utils";
 import { getAuthUser } from "@/utils/supabase/server";
 import { createClient } from "@/utils/supabase/server";
-import { eq, sql, and } from "drizzle-orm";
+import { eq, sql, and, ne } from "drizzle-orm";
 
 export const getSignupsByRound = async (roundId: number) => {
   const data = await db
@@ -25,12 +25,13 @@ export const getSignupsByRound = async (roundId: number) => {
     .from(signUps)
     .leftJoin(songs, eq(signUps.songId, songs.id))
     .leftJoin(users, eq(signUps.userId, users.userid))
-    .where(eq(signUps.roundId, roundId))
+    .where(
+      and(eq(signUps.roundId, roundId), ne(signUps.songId, -1))
+    )
     .orderBy(signUps.createdAt);
 
     const unsortedUrls = data?.map(field => field.youtubeLink) || [];
     const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
-    
     
     // Process the data and throw errors for invalid entries
     return sortedData.map(val => {

@@ -9,7 +9,7 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/primitives";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown, Clipboard, Check } from "lucide-react";
 
 export interface Header<T> {
   key: T;
@@ -51,9 +51,43 @@ export function DataTable<T extends string>({
   // Always declare hooks at the top level
   const [sortKey, setSortKey] = useState<T | null>(defaultSortKey || null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(defaultSortDirection);
+  const [isCopied, setIsCopied] = useState(false);
   
   // Define isEmpty outside of any conditional
   const isEmpty = !rows?.length;
+  
+  // Function to convert table data to markdown and copy to clipboard
+  const copyTableAsMarkdown = (headers: Readonly<Header<T>[]>, rows: Record<T, string | number | React.ReactElement>[]) => {
+    // Create header row
+    const headerRow = headers.map(header => header.label).join(' | ');
+    // Create separator row
+    const separatorRow = headers.map(() => '---').join(' | ');
+    
+    // Create data rows
+    const dataRows = rows.map(row => {
+      return headers.map(header => {
+        const value = row[header.displayKey || header.key];
+        // Convert React elements to string or use empty string
+        if (React.isValidElement(value)) {
+          return '';
+        }
+        return String(value);
+      }).join(' | ');
+    }).join('\n');
+    
+    // Combine all parts
+    const markdownTable = `| ${headerRow} |\n| ${separatorRow} |\n| ${dataRows.split('\n').join(' |\n| ')} |`;
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(markdownTable)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy table to clipboard:', err);
+      });
+  };
   
   const handleSort = (key: T, sortable = true) => {
     if (!sortable) return;
@@ -159,9 +193,30 @@ export function DataTable<T extends string>({
       transition={{ duration: 0.5 }}
       className={`bg-background-primary backdrop-blur-md rounded-lg border border-background-secondary p-6 ${className}`}
     >
-      <div className="pb-4">
-        <h2 className="text-2xl font-bold text-primary mb-2">{title}</h2>
-        <p className="text-sm text-secondary">{subtitle}</p>
+      <div className="pb-4 flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl font-bold text-primary mb-2">{title}</h2>
+          <p className="text-sm text-secondary">{subtitle}</p>
+        </div>
+        {!isEmpty && (
+          <button
+            onClick={() => copyTableAsMarkdown(headers, sortedRows)}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-background-secondary hover:bg-background-secondary/80 text-primary text-sm transition-colors"
+            title="Copy table as markdown"
+          >
+            {isCopied ? (
+              <>
+                <Check className="h-4 w-4" />
+                <span>Copied!</span>
+              </>
+            ) : (
+              <>
+                <Clipboard className="h-4 w-4" />
+                <span>Copy as Markdown</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
       <div style={{ maxHeight }} className="overflow-hidden">
         <Table>
