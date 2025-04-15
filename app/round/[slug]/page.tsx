@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
-import { roundProvider, votesProvider, roundsProvider } from "@/providers";
+import { roundProvider, votesProvider, roundsProvider, userParticipationProvider } from "@/providers";
 import { getVoteBreakdownBySong } from "@/data-access";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
@@ -16,13 +16,22 @@ export default async function Round({ params }: { params: { slug: string } }) {
   try {
     // Use the slug parameter directly
     const slug = params.slug;
-    
     // Fetch all data at the page level
     const roundData = await roundProvider(slug);
-    
+
+    // Fetch user participation for this round
+    let hasVoted = false;
+    try {
+      const participation = await userParticipationProvider({ roundId: roundData.roundId });
+      hasVoted = participation?.roundDetails?.hasVoted ?? false;
+    } catch (e) {
+      // Not signed in or error, treat as not voted
+      hasVoted = false;
+    }
+
     // Only fetch additional data if we're past the signup phase
     if (roundData.phase !== "signups") {
-      const { voteResults } = await votesProvider({ roundSlug: slug });
+      const { voteResults, outstandingVoters } = await votesProvider({ roundSlug: slug });
       const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false });
       const voteBreakdown = await getVoteBreakdownBySong(roundData.roundId);
       
@@ -33,9 +42,11 @@ export default async function Round({ params }: { params: { slug: string } }) {
             roundId={roundData.roundId} 
             roundData={roundData} 
             voteResults={voteResults} 
+            outstandingVoters={outstandingVoters}
             roundIds={allRoundSlugs} 
             voteBreakdown={voteBreakdown}
             allRounds={roundContent}
+            hasVoted={hasVoted}
           />
         </>
       );
@@ -48,6 +59,7 @@ export default async function Round({ params }: { params: { slug: string } }) {
         <RoundSummary 
           roundId={roundData.roundId} 
           roundData={roundData} 
+          hasVoted={hasVoted}
         />
       </>
     );
