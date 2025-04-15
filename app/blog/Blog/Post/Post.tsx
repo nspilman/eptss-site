@@ -34,7 +34,7 @@ const newTheme = {
 export const Post = ({ post: { content, frontmatter } }: Props) => {
   return (
     <div className="flex flex-col">
-      <h2 className="font-fraunces text-white font-bold text-4xl underline pb-4">
+      <h2 className="font-fraunces text-white font-bold text-4xl pb-4">
         {frontmatter.title}
       </h2>
       <ReactMarkdown components={newTheme}>{content}</ReactMarkdown>
