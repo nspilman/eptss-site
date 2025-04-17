@@ -10,10 +10,11 @@ export function GoogleSignInButton({ redirectUrl = "/dashboard" }: { redirectUrl
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/auth/google/callback` : redirectUrl;
     try {
       await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : redirectUrl }
+        options: { redirectTo }
       });
     } finally {
       setLoading(false);
