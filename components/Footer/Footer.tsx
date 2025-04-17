@@ -101,9 +101,18 @@ export const Footer = () => {
           <p className="text-[var(--color-gray-400)] text-sm">
             &copy; {currentYear} Everyone Plays The Same Song. All rights reserved.
           </p>
-          <div className="mt-4 md:mt-0 flex items-center text-[var(--color-gray-400)] text-sm">
+          <div className="mt-4 md:mt-0 flex flex-col md:flex-row items-center text-[var(--color-gray-400)] text-sm gap-2 md:gap-6">
             <span className="flex items-center">
               Made with <Heart className="h-3 w-3 mx-1 text-[var(--color-accent-primary)]" /> by musicians, for musicians
+            </span>
+            <span className="flex items-center gap-4 md:ml-6">
+              <Link href="/privacy-policy" className="hover:text-[var(--color-accent-primary)] transition-colors underline underline-offset-2">
+                Privacy Policy
+              </Link>
+              <span className="mx-1">|</span>
+              <Link href="/terms-of-service" className="hover:text-[var(--color-accent-primary)] transition-colors underline underline-offset-2">
+                Terms of Service
+              </Link>
             </span>
           </div>
         </div>
