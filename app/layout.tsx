@@ -31,7 +31,7 @@ export const metadata = {
     images: [`${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/eptss-logo.png",
   },
 };
 

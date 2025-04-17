@@ -18,6 +18,6 @@ export const config = {
      * - verify-signup (signup verification page)
      * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico|auth|verify-signup|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|eptss-logo.png|auth|verify-signup|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

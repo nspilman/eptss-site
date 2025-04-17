@@ -44,7 +44,8 @@ export const Header = ({userId}: Props) => {
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               className="relative"
             >
-              <MusicIcon className="h-8 w-8 text-[var(--color-accent-primary)] group-hover:text-[var(--color-accent-primary)]/90 transition-colors" />
+              <img src="/eptss-logo.png" alt="EPTSS Logo" width={32} height={32} />
+              {/* <MusicIcon className="h-8 w-8 text-[var(--color-accent-primary)] group-hover:text-[var(--color-accent-primary)]/90 transition-colors" /> */}
             </motion.div>
             <h1 className="text-sm sm:text-xl md:text-2xl font-extrabold tracking-tight">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
