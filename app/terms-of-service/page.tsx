@@ -9,7 +9,7 @@ export default function TermsOfServicePage() {
           Effective date: April 16, 2025
         </p>
         <p>
-          Please read these Terms of Service ("Terms") carefully before using our website and services. By accessing or using our services, you agree to be bound by these Terms.
+          Please read these Terms of Service (&quot;Terms&quot;) carefully before using our website and services. By accessing or using our services, you agree to be bound by these Terms.
         </p>
         <h2 className="text-xl font-semibold mt-8 mb-2 text-primary">1. Acceptance of Terms</h2>
         <p>
@@ -37,7 +37,7 @@ export default function TermsOfServicePage() {
         </p>
         <h2 className="text-xl font-semibold mt-8 mb-2 text-primary">6. Disclaimer and Limitation of Liability</h2>
         <p>
-          The service is provided on an "as is" and "as available" basis. We disclaim all warranties and are not liable for any damages arising from your use of the service.
+          The service is provided on an &quot;as is&quot; and &quot;as available&quot; basis. We disclaim all warranties and are not liable for any damages arising from your use of the service.
         </p>
         <h2 className="text-xl font-semibold mt-8 mb-2 text-primary">7. Changes to Terms</h2>
         <p>
