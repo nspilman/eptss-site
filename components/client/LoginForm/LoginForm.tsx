@@ -18,6 +18,7 @@ import {
   Input,
   Button
 } from "@/components/ui/primitives"
+import { GoogleSignInButton } from "./GoogleSignInButton"
 
 interface LoginFormProps {
   redirectUrl?: string
@@ -89,6 +90,7 @@ export function LoginForm({ redirectUrl = "/", titleOverride, onSuccess }: Login
             {isLoading ? "Sending..." : "Send Login Link"}
           </Button>
         </motion.div>
+        <GoogleSignInButton />
       </Form>
     </FormWrapper>
   )
