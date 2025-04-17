@@ -39,14 +39,7 @@ export const Header = ({userId}: Props) => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <motion.div 
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="relative"
-            >
-              <img src="/eptss-logo.png" alt="EPTSS Logo" width={32} height={32} />
-              {/* <MusicIcon className="h-8 w-8 text-[var(--color-accent-primary)] group-hover:text-[var(--color-accent-primary)]/90 transition-colors" /> */}
-            </motion.div>
+            <img src="/eptss-logo.png" alt="EPTSS Logo" width={32} height={32} />
             <h1 className="text-sm sm:text-xl md:text-2xl font-extrabold tracking-tight">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
                 everyone plays the same song
