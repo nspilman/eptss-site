@@ -12,7 +12,6 @@ import { mailingList } from "@/db/schema"
 import { createInsertSchema } from "drizzle-zod"
 import { FormReturn } from "@/types";
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder";
-import { useState } from "react";
 
 // Create Zod schema from Drizzle table
 const waitlistSchema = createInsertSchema(mailingList, {

@@ -23,6 +23,8 @@ interface Props {
     hasVoted: boolean;
     hasSignedUp: boolean;
   };
+  userVotes?: { songId: number; vote: number }[];
+  showUpdateView?: boolean;
 }
 
 type VoteInput = Record<string, string>
@@ -51,6 +53,8 @@ export function VotingPage({
   songs = [],
   coveringStartLabel,
   userRoundDetails,
+  userVotes = [],
+  showUpdateView = false,
 }: Props) {
   // Create schema dynamically based on available songs
   const voteSchema = z.object({
@@ -67,15 +71,16 @@ export function VotingPage({
   const form = useForm<VoteInput>({
     resolver: zodResolver(voteSchema),
     defaultValues: Object.fromEntries(
-      songs.map(song => [`song-${song.songId}`, undefined])
+      songs.map(song => {
+        const found = userVotes.find(v => v.songId === song.songId);
+        return [`song-${song.songId}`, found ? String(found.vote) : undefined];
+      })
     )
   })
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {
     // Get the form values
     const formValues = form.getValues()
-    console.log('Form values:', formValues)
-
     // Validate that all songs have been voted on
     const votes = Object.entries(formValues).map(([key, value]) => {
       const songId = key.replace('song-', '')
@@ -84,7 +89,6 @@ export function VotingPage({
         vote: value
       }
     })
-    console.log('Votes:', votes)
     
     if (votes.some(vote => !vote.vote)) {
       return {
@@ -111,7 +115,7 @@ export function VotingPage({
     successMessage: "Your votes have been recorded!",
   });
 
-  if (userRoundDetails?.hasVoted || hasVoted) {
+  if ((userRoundDetails?.hasVoted || hasVoted) && !showUpdateView) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}
