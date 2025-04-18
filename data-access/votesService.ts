@@ -72,6 +72,21 @@ export const getVotingUsersByRound = async (roundId: number) => {
   return votes.map(vote => vote.userId).filter(Boolean);
 };
 
+export const getVotesByUserForRound = async (roundId: number) => {
+  const { userId } = getAuthUser();
+  if (!userId) return [];
+  const votes = await db
+    .select({ songId: songSelectionVotes.songId, vote: songSelectionVotes.vote })
+    .from(songSelectionVotes)
+    .where(
+      and(
+        eq(songSelectionVotes.userId, userId),
+        eq(songSelectionVotes.roundId, roundId)
+      )
+    );
+  return votes;
+};
+
 export const submitVotes = async (
   roundId: number,
   formData: FormData

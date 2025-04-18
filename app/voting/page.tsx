@@ -15,30 +15,14 @@ export const metadata: Metadata = {
   },
 };
 
-const VotingPageHome = async () => {
-  const {
-    roundId,
-    dateLabels: {
-      covering: { opens: coveringStartLabel },
-    },
-    voteOptions,
-    phase,
-  } = await roundProvider();
+import VotingPageWrapper from "./VotingPageWrapper";
 
+interface Props {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
 
-  const {roundDetails}  = await userParticipationProvider({ roundId });
-
-  return (
-    <VotingPage
-      {...{
-        roundId,
-        songs: voteOptions,
-        phase,
-        coveringStartLabel,
-        userRoundDetails: roundDetails
-      }}
-    />
-  );
+const VotingPageHome = async ({ searchParams }: Props) => {
+  return <VotingPageWrapper searchParams={searchParams} />;
 };
 
 export default VotingPageHome;

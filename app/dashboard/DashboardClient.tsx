@@ -81,7 +81,7 @@ const getActionButton = (
     case "voting":
       return {
         text: hasCompleted ? "Update Votes" : "Cast Votes",
-        href: Navigation.Voting,
+        href: `${Navigation.Voting}?update=true`,
       };
     case "celebration":
       return {
