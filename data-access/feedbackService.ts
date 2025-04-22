@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { feedback, feedbackTypeEnum } from "@/db/schema";
 import { eq, desc, and, or, sql } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '@/types/asyncResult';
+import { sanitizeHtml } from "@/utils/sanitize";
 
 export interface Feedback {
   id: string;
@@ -36,14 +37,18 @@ const mapToFeedback = (dbFeedback: any): Feedback => {
 };
 
 /**
- * Get all feedback entries
+ * Get all feedback entries with pagination
+ * @param limit Maximum number of entries to return (default: 50)
+ * @param offset Number of entries to skip (default: 0)
  */
-export const getAllFeedback = async (): Promise<AsyncResult<Feedback[]>> => {
+export const getAllFeedback = async (limit = 50, offset = 0): Promise<AsyncResult<Feedback[]>> => {
   try {
     const result = await db
       .select()
       .from(feedback)
-      .orderBy(desc(feedback.createdAt));
+      .orderBy(desc(feedback.createdAt))
+      .limit(limit)
+      .offset(offset);
     
     if (!result.length) {
       return createEmptyResult('No feedback found');
@@ -57,15 +62,19 @@ export const getAllFeedback = async (): Promise<AsyncResult<Feedback[]>> => {
 };
 
 /**
- * Get public feedback entries
+ * Get public feedback entries with pagination
+ * @param limit Maximum number of entries to return (default: 50)
+ * @param offset Number of entries to skip (default: 0)
  */
-export const getPublicFeedback = async (): Promise<AsyncResult<Feedback[]>> => {
+export const getPublicFeedback = async (limit = 50, offset = 0): Promise<AsyncResult<Feedback[]>> => {
   try {
     const result = await db
       .select()
       .from(feedback)
       .where(eq(feedback.isPublic, true))
-      .orderBy(desc(feedback.createdAt));
+      .orderBy(desc(feedback.createdAt))
+      .limit(limit)
+      .offset(offset);
     
     if (!result.length) {
       return createEmptyResult('No public feedback found');
@@ -170,9 +179,12 @@ export const createFeedback = async (input: CreateFeedbackInput): Promise<AsyncR
       return createErrorResult(new Error(`Invalid feedback type: ${input.type}`));
     }
 
+    // Sanitize content to prevent XSS attacks
+    const sanitizedContent = sanitizeHtml(input.content);
+
     const result = await db.insert(feedback).values({
       type: input.type,
-      content: input.content,
+      content: sanitizedContent,
       userId: input.userId || null,
       isPublic: input.isPublic || false,
     }).returning();
