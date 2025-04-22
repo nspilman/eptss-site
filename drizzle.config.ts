@@ -1,8 +1,8 @@
 import { defineConfig } from "drizzle-kit";
 
 // Always use session pooler (5432) for schema operations
-const MIGRATION_DATABASE_URL = process.env.DATABASE_URL?.replace(':6543', ':5432');
-
+// const MIGRATION_DATABASE_URL = process.env.DATABASE_URL?.replace(':6543', ':5432');
+const MIGRATION_DATABASE_URL = 'postgresql://postgres:postgres@localhost:54322/postgres';
 export default defineConfig({
   schema: "./db/schema.ts",
   out: "./db/migrations",
