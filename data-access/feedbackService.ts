@@ -179,7 +179,8 @@ export const createFeedback = async (input: CreateFeedbackInput): Promise<AsyncR
       return createErrorResult(new Error(`Invalid feedback type: ${input.type}`));
     }
 
-    // Sanitize content to prevent XSS attacks
+    // Sanitize content to prevent XSS attacks using DOMPurify
+    // This completely removes any potentially dangerous HTML
     const sanitizedContent = sanitizeHtml(input.content);
 
     const result = await db.insert(feedback).values({

@@ -103,30 +103,40 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
   return (
     <div className="w-full max-w-md mx-auto">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form 
+          onSubmit={form.handleSubmit(onSubmit)} 
+          className="space-y-6"
+          aria-label="Feedback submission form"
+          role="form"
+        >
           <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-primary">Feedback Type</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormLabel className="text-primary" htmlFor="feedback-type">Feedback Type</FormLabel>
+                <Select 
+                  onValueChange={field.onChange} 
+                  defaultValue={field.value}
+                  aria-required="true"
+                  aria-describedby="feedback-type-description"
+                >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger id="feedback-type">
                       <SelectValue placeholder="Select a feedback type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="review">Review</SelectItem>
-                    <SelectItem value="bug_report">Bug Report</SelectItem>
-                    <SelectItem value="feature_request">Feature Request</SelectItem>
-                    <SelectItem value="general">General Feedback</SelectItem>
+                    <SelectItem value="review" aria-label="Review">Review</SelectItem>
+                    <SelectItem value="bug_report" aria-label="Bug Report">Bug Report</SelectItem>
+                    <SelectItem value="feature_request" aria-label="Feature Request">Feature Request</SelectItem>
+                    <SelectItem value="general" aria-label="General Feedback">General Feedback</SelectItem>
                   </SelectContent>
                 </Select>
-                <FormDescription className="text-secondary">
+                <FormDescription className="text-secondary" id="feedback-type-description">
                   Select the type of feedback you&apos;d like to provide.
                 </FormDescription>
-                <FormMessage />
+                <FormMessage aria-live="polite" />
               </FormItem>
             )}
           />
@@ -136,18 +146,21 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
             name="content"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-primary">Your Feedback</FormLabel>
+                <FormLabel className="text-primary" htmlFor="feedback-content">Your Feedback</FormLabel>
                 <FormControl>
                   <Textarea
+                    id="feedback-content"
                     placeholder="Tell us what you think..."
                     className="min-h-32 resize-y"
+                    aria-required="true"
+                    aria-describedby="feedback-content-description"
                     {...field}
                   />
                 </FormControl>
-                <FormDescription className="text-secondary">
+                <FormDescription className="text-secondary" id="feedback-content-description">
                   Please provide as much detail as possible.
                 </FormDescription>
-                <FormMessage />
+                <FormMessage aria-live="polite" />
               </FormItem>
             )}
           />
@@ -159,15 +172,17 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                 <FormControl>
                   <input
+                    id="feedback-public"
                     type="checkbox"
                     checked={field.value}
                     onChange={field.onChange}
                     className="h-4 w-4 mt-1"
+                    aria-describedby="feedback-public-description"
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel className="text-primary">Make Public</FormLabel>
-                  <FormDescription className="text-secondary">
+                  <FormLabel className="text-primary" htmlFor="feedback-public">Make Public</FormLabel>
+                  <FormDescription className="text-secondary" id="feedback-public-description">
                     Allow your feedback to be displayed publicly on our site.
                   </FormDescription>
                 </div>
@@ -180,6 +195,8 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
             variant="secondary"
             size="full"
             disabled={isSubmitting}
+            aria-disabled={isSubmitting}
+            aria-label={isSubmitting ? "Submitting feedback" : "Submit feedback"}
           >
             {isSubmitting ? "Submitting..." : "Submit Feedback"}
           </Button>
