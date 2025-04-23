@@ -3,7 +3,7 @@
 import { Navigation } from "@/enum/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { HomeIcon, HistoryIcon, ChecklistIcon, UserIcon, MusicNoteIcon } from "../../components/ui/icons";
+import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "../../components/ui/icons";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -137,6 +137,13 @@ export default function DashboardLayout({
               icon={<UserIcon className="w-5 h-5" />}
               label="Profile"
               isActive={pathname === "/profile"}
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            <SidebarItem 
+              href="/feedback" 
+              icon={<ChatBubbleLeftEllipsisIcon className="w-5 h-5" />}
+              label="Feedback"
+              isActive={pathname === "/feedback"}
               onClick={() => setIsSidebarOpen(false)}
             />
           </nav>

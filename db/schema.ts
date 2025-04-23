@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, timestamp, uuid, integer, boolean, bigint, bigserial } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, boolean, bigint, bigserial, pgEnum } from "drizzle-orm/pg-core";
 
 // Users Table
 export const users = pgTable("users", {
@@ -128,5 +128,20 @@ export const testRuns = pgTable("test_runs", {
 });
 
 // Relations and types
+// Feedback Type Enum
+export const feedbackTypeEnum = pgEnum('feedback_type', ['review', 'bug_report', 'feature_request', 'general']);
+
+// Feedback Table
+export const feedback = pgTable("feedback", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  type: feedbackTypeEnum("type").notNull(),
+  content: text("content").notNull(),
+  userId: uuid("user_id").references(() => users.userid),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  isPublic: boolean("is_public").notNull().default(false),
+});
+
 export type TestRun = typeof testRuns.$inferSelect;
 export type NewTestRun = typeof testRuns.$inferInsert;
+export type Feedback = typeof feedback.$inferSelect;
+export type NewFeedback = typeof feedback.$inferInsert;

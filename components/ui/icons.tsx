@@ -30,6 +30,15 @@ export const UserIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+export const ChatBubbleLeftEllipsisIcon = ({ className }: IconProps) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path fillRule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97-1.94.284-3.554.535-5.152.535-.71 0-1.414-.03-2.113-.085a1.828 1.828 0 00-1.853 2.187c.24 1.125.572 2.87.572 2.87.2.498.686.795 1.225.694a57.436 57.436 0 01-3.343-3.14c-.215-.207-.386-.47-.485-.758a49.115 49.115 0 01-3.155-.311c-1.978-.292-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97z" clipRule="evenodd" />
+    <circle cx="8" cy="10" r="1.5" fill="currentColor" />
+    <circle cx="12" cy="10" r="1.5" fill="currentColor" />
+    <circle cx="16" cy="10" r="1.5" fill="currentColor" />
+  </svg>
+);
+
 export const MusicNoteIcon = ({ className }: IconProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
     <path fillRule="evenodd" d="M19.952 1.651a.75.75 0 01.298.599V16.303a3 3 0 01-2.176 2.884l-1.32.377a2.553 2.553 0 11-1.403-4.909l2.311-.66a1.5 1.5 0 001.088-1.442V6.994l-9 2.572v9.737a3 3 0 01-2.176 2.884l-1.32.377a2.553 2.553 0 11-1.402-4.909l2.31-.66a1.5 1.5 0 001.088-1.442V9.017 5.25a.75.75 0 01.544-.721l10.5-3a.75.75 0 01.658.122z" clipRule="evenodd" />

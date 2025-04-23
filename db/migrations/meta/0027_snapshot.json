@@ -1,9 +1,76 @@
 {
-  "id": "b3f6a7ce-a2f8-4662-b1bf-5f41d61bc0bd",
-  "prevId": "02666791-a928-4130-bbe3-a8a99cda7c5e",
+  "id": "395755a6-d916-438a-9da3-f17f6bcd17c0",
+  "prevId": "b3f6a7ce-a2f8-4662-b1bf-5f41d61bc0bd",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.feedback": {
+      "name": "feedback",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "type": {
+          "name": "type",
+          "type": "feedback_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "feedback_user_id_users_userid_fk": {
+          "name": "feedback_user_id_users_userid_fk",
+          "tableFrom": "feedback",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "userid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.mailing_list": {
       "name": "mailing_list",
       "schema": "",
@@ -882,7 +949,18 @@
       "isRLSEnabled": false
     }
   },
-  "enums": {},
+  "enums": {
+    "public.feedback_type": {
+      "name": "feedback_type",
+      "schema": "public",
+      "values": [
+        "review",
+        "bug_report",
+        "feature_request",
+        "general"
+      ]
+    }
+  },
   "schemas": {},
   "sequences": {},
   "roles": {},
