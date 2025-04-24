@@ -7,6 +7,8 @@ import { CelebrationTables } from "./CelebrationTables";
 import { VotingResultsSection } from "./VotingResultsSection";
 import { SignupsTable } from "./SignupsTable";
 import { RoundNavigationWrapper } from "./RoundNavigationWrapper";
+import { CoveringPhaseSignup } from "./CoveringPhaseSignup";
+import { getAuthUser } from "@/utils/supabase/server";
 
 // Inline the chart utility function to avoid import issues
 const convertVoteBreakdownToBarchartFormat = (
@@ -97,6 +99,11 @@ const signupsHeaders = [
 export const RoundSummary = async ({ roundId, roundData, voteResults = [], outstandingVoters = [], voteBreakdown = [], allRounds = [], hasVoted = false }: Props) => {
   try {
     const { phase, song, playlistUrl, submissions, signups, dateLabels } = roundData;
+    
+    // Check if the current user is signed up for this round
+    const { userId } = getAuthUser();
+    const isUserSignedUp = userId ? signups.some(signup => signup.userId === userId) : false;
+    console.log({isUserSignedUp, userId, signups})
     let previousRound;
     let nextRound;
     if (allRounds && allRounds.length > 0) {
@@ -164,6 +171,9 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], outst
             )
           }
           </>
+        )}
+        {phase === "covering" && (
+          <CoveringPhaseSignup roundId={roundId} isSignedUp={isUserSignedUp} />
         )}
         {phase === "celebration" && (
           <CelebrationTables roundSummaryHeaders={roundSummaryHeaders} roundSummary={roundSummary} submissionsDisplayHeaders={submissionsDisplayHeaders} submissions={submissions} />
