@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 
 export default async function DashboardPage() {
   // Check auth first
-  const { email } = getAuthUser();
+  const { email, userId } = getAuthUser();
   const {  verifySignupByEmail } = await userParticipationProvider();
 
   let verificationStatus: { verified: boolean; message?: string } = { verified: false };
@@ -56,5 +56,6 @@ export default async function DashboardPage() {
     roundInfo={currentRound} 
     userRoundDetails={roundDetails}
     verificationStatus={verificationStatus}
+    userId={userId}
   />;
 }
