@@ -173,7 +173,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
       <Card className="w-full p-8 bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-xs mb-8">
         <div className="text-center py-8">
           <h2 className="text-2xl font-semibold mb-4 text-primary">No Active Round</h2>
-          <p className="text-secondary mb-6">There doesn't appear to be an active round at the moment.</p>
+          <p className="text-secondary mb-6">There doesn&apos;t appear to be an active round at the moment.</p>
         </div>
       </Card>
     );
