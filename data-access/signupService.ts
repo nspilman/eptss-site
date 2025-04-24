@@ -26,7 +26,7 @@ export const getSignupsByRound = async (roundId: number) => {
     .leftJoin(songs, eq(signUps.songId, songs.id))
     .leftJoin(users, eq(signUps.userId, users.userid))
     .where(
-      and(eq(signUps.roundId, roundId), ne(signUps.songId, -1))
+      eq(signUps.roundId, roundId)
     )
     .orderBy(signUps.createdAt);
 
@@ -165,6 +165,68 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
 }
 
 // Verify signup with user email
+export async function signupUserWithoutSong(props: { roundId: number, userId: string, additionalComments?: string }): Promise<FormReturn> {
+  "use server";
+  
+  const { roundId, userId, additionalComments = "" } = props;
+  
+  if (!userId) {
+    return handleResponse(401, Navigation.SignUp, "User ID is required for signup");
+  }
+  
+  try {
+    // Check if user has already signed up for this round
+    const existingSignup = await db
+      .select({ id: signUps.id })
+      .from(signUps)
+      .where(
+        and(
+          eq(signUps.userId, userId),
+          eq(signUps.roundId, roundId)
+        )
+      )
+      .limit(1);
+    
+    if (existingSignup.length > 0) {
+      // User already signed up, update to songId -1
+      await db.update(signUps)
+        .set({
+          youtubeLink: "",
+          additionalComments: additionalComments,
+          songId: -1,
+        })
+        .where(
+          eq(signUps.id, existingSignup[0].id)
+        );
+      
+      return handleResponse(200, Navigation.Dashboard, "You have successfully signed up for this round!");
+    } else {
+      // Get the next signup ID for a new signup
+      const lastSignupId = await db
+        .select({ id: signUps.id })
+        .from(signUps)
+        .orderBy(sql`id desc`)
+        .limit(1);
+      
+      const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+
+      // Insert new signup with songId -1
+      await db.insert(signUps).values({
+        id: nextSignupId,
+        youtubeLink: "",
+        additionalComments: additionalComments,
+        roundId: roundId,
+        songId: -1,
+        userId: userId,
+      });
+
+      return handleResponse(200, Navigation.Dashboard, "You have successfully signed up for this round!");
+    }
+  } catch (error) {
+    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+  }
+}
+
 export async function verifySignupByEmail(): Promise<FormReturn> {
   "use server";
   

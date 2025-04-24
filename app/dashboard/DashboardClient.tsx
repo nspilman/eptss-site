@@ -8,6 +8,10 @@ import { SignupData } from "@/types/signup";
 import { UserRoundParticipation } from "@/types/user";
 import { useEffect, useState } from "react";
 import { formatDate, formatTimeRemaining } from '@/services/dateService';
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFormStatus } from "react-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { signupForRound } from "./actions";
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;
@@ -16,6 +20,7 @@ interface DashboardClientProps {
     verified: boolean;
     message?: string;
   };
+  userId?: string;
 }
 
 // Helper functions for phase management
@@ -93,8 +98,65 @@ const getActionButton = (
   }
 };
 
-export function DashboardClient({ roundInfo, userRoundDetails, verificationStatus }: DashboardClientProps) {
+// Submit button with loading state
+function SubmitButton({ roundId }: { roundId: number }) {
+  const { pending } = useFormStatus();
+  
+  return (
+    <Button
+      size="lg"
+      variant="default"
+      className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+      type="submit"
+      disabled={pending}
+    >
+      {pending ? (
+        <>
+          <span className="mr-2">Signing up...</span>
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-900 border-t-transparent"></div>
+        </>
+      ) : (
+        `Sign Up for Round ${roundId}`
+      )}
+    </Button>
+  );
+}
+
+export function DashboardClient({ roundInfo, userRoundDetails, verificationStatus, userId }: DashboardClientProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  // Check for success or error messages in URL
+  useEffect(() => {
+    if (searchParams) {
+      const success = searchParams.get('success');
+      const error = searchParams.get('error');
+
+      if (success) {
+        toast({
+          title: "Success!",
+          description: success,
+          variant: "default",
+        });
+        // Clear the URL params after showing toast
+        router.replace(Navigation.Dashboard);
+      }
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error,
+          variant: "destructive",
+        });
+        // Clear the URL params after showing toast
+        router.replace(Navigation.Dashboard);
+      }
+    }
+  }, [searchParams, toast, router]);
+
   useEffect(() => {
     if (!roundInfo?.dateLabels[roundInfo.phase]?.closes) {
       setTimeRemaining('NaN NaN NaN');
@@ -112,15 +174,13 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
     return () => clearInterval(interval);
   }, [roundInfo]);
 
-  console.log({ roundInfo, userRoundDetails })
-
   // If we don't have round info, we can't show anything meaningful
   if (!roundInfo) {
     return (
       <Card className="w-full p-8 bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-xs mb-8">
         <div className="text-center py-8">
           <h2 className="text-2xl font-semibold mb-4 text-primary">No Active Round</h2>
-          <p className="text-secondary mb-6">There doesn't appear to be an active round at the moment.</p>
+          <p className="text-secondary mb-6">There doesn&apos;t appear to be an active round at the moment.</p>
         </div>
       </Card>
     );
@@ -196,7 +256,31 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
               </div>
             )}
             
-            {phase !== "signups" && (
+            {phase === "covering" && (
+              <div className="mt-12 flex flex-col items-center p-10 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+                <div className="relative z-10 flex flex-col items-center w-full max-w-md">
+                  <p className="text-secondary mb-4 text-center">
+                    The covering phase is now open! You can still sign up to participate in this round.
+                  </p>
+                  <form action={signupForRound}>
+                    <input type="hidden" name="roundId" value={roundInfo.roundId} />
+                    <input type="hidden" name="userId" value={userId || ''} />
+                    <Button
+                      size="lg"
+                      variant="default"
+                      className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                      type="submit"
+                      disabled={isLoading || !userId}
+                    >
+                      {isLoading ? "Signing up..." : `Sign Up for Round ${roundId}`}
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            )}
+            
+            {phase !== "signups" && phase !== "covering" && (
               <div className="mt-12 flex flex-col items-center p-10 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
                 <div className="relative z-10 flex flex-col items-center w-full max-w-md">
@@ -367,17 +451,83 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                 })()
                 }
 
-                {(!isParticipating && phase === "signups") && (
-                  <Button
-                    size="lg"
-                    variant="default"
-                    className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
-                    asChild
-                  >
-                    <Link href={Navigation.SignUp}>
-                      Sign Up for Round {roundId}
-                    </Link>
-                  </Button>
+                {(!isParticipating && (phase === "signups" || phase === "covering")) && (
+                  <>
+                    <div className="mb-6 text-center">
+                      <h3 className="text-lg font-medium text-primary mb-2">You&apos;re not participating in this round yet</h3>
+                      <p className="text-secondary max-w-md mx-auto">
+                        {phase === "signups" 
+                          ? "Join the current round by signing up below. You&apos;ll be able to suggest a song for everyone to cover." 
+                          : "The covering phase has already started, but you can still join! Sign up below to participate without suggesting a song."}
+                      </p>
+                    </div>
+                    {phase === "signups" ? (
+                      <Button
+                        size="lg"
+                        variant="default"
+                        className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                        asChild
+                      >
+                        <Link href={Navigation.SignUp}>
+                          Sign Up for Round {roundId}
+                        </Link>
+                      </Button>
+                    ) : (
+                      <form onSubmit={async (e) => {
+                        e.preventDefault();
+                        setIsLoading(true);
+                        
+                        try {
+                          const formData = new FormData(e.currentTarget);
+                          const result = await signupForRound(formData);
+                          
+                          if (result.success) {
+                            toast({
+                              title: "Success!",
+                              description: result.message,
+                              variant: "default",
+                            });
+                            // Refresh the page to show updated status
+                            router.refresh();
+                          } else {
+                            toast({
+                              title: "Error",
+                              description: result.error || "There was an error signing up. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Error signing up:', error);
+                          toast({
+                            title: "Error",
+                            description: "There was an error signing up. Please try again.",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}>
+                        <input type="hidden" name="roundId" value={roundInfo.roundId} />
+                        <input type="hidden" name="userId" value={userId || ''} />
+                        <Button
+                          size="lg"
+                          variant="default"
+                          className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                          type="submit"
+                          disabled={isLoading || !userId}
+                        >
+                          {isLoading ? (
+                            <>
+                              <span className="mr-2">Signing up...</span>
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-900 border-t-transparent"></div>
+                            </>
+                          ) : (
+                            `Sign Up for Round ${roundId}`
+                          )}
+                        </Button>
+                      </form>
+                    )}
+                  </>
                 )}
               </div>
             </div>
