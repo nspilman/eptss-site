@@ -8,6 +8,10 @@ import { SignupData } from "@/types/signup";
 import { UserRoundParticipation } from "@/types/user";
 import { useEffect, useState } from "react";
 import { formatDate, formatTimeRemaining } from '@/services/dateService';
+import { signupUserWithoutSong } from "@/data-access";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;
@@ -95,6 +99,11 @@ const getActionButton = (
 
 export function DashboardClient({ roundInfo, userRoundDetails, verificationStatus }: DashboardClientProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const { toast } = useToast();
+
   useEffect(() => {
     if (!roundInfo?.dateLabels[roundInfo.phase]?.closes) {
       setTimeRemaining('NaN NaN NaN');
@@ -111,8 +120,52 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
 
     return () => clearInterval(interval);
   }, [roundInfo]);
-
-  console.log({ roundInfo, userRoundDetails })
+  
+  // Function to handle signup for covering phase
+  const handleCoveringPhaseSignup = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Check if user is logged in
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // User is not logged in, redirect to login page with return URL
+        router.push(`/login?redirectTo=/dashboard`);
+        return;
+      }
+      
+      // User is logged in, proceed with signup
+      const result = await signupUserWithoutSong({ 
+        roundId: roundInfo?.roundId || 0, 
+        userId: session.user.id 
+      });
+      
+      // Convert status to number if it's a string
+      const statusCode = typeof result.status === 'string' ? parseInt(result.status, 10) : result.status;
+      
+      if (statusCode === 200) {
+        // Show success toast notification
+        toast({
+          title: "Success!",
+          description: "You have successfully signed up for this round.",
+          variant: "default",
+        });
+        
+        // Refresh the page to show updated status
+        router.refresh();
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError("An error occurred while signing up. Please try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // If we don't have round info, we can't show anything meaningful
   if (!roundInfo) {
@@ -196,7 +249,30 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
               </div>
             )}
             
-            {phase !== "signups" && (
+            {phase === "covering" && (
+              <div className="mt-12 flex flex-col items-center p-10 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+                <div className="relative z-10 flex flex-col items-center w-full max-w-md">
+                  <p className="text-secondary mb-4 text-center">
+                    The covering phase is now open! You can still sign up to participate in this round.
+                  </p>
+                  <Button
+                    size="lg"
+                    variant="default"
+                    className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                    onClick={handleCoveringPhaseSignup}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Signing up..." : `Sign Up for Round ${roundId}`}
+                  </Button>
+                  {error && (
+                    <p className="mt-2 text-[var(--color-accent-error)] text-sm">{error}</p>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {phase !== "signups" && phase !== "covering" && (
               <div className="mt-12 flex flex-col items-center p-10 bg-gray-900/70 rounded-lg border border-gray-800 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
                 <div className="relative z-10 flex flex-col items-center w-full max-w-md">
