@@ -1,4 +1,6 @@
 import { BlogPost } from "types/BlogPost";
+import Link from "next/link";
+import { formatDate } from "@/utils/formatDate";
 
 export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
   return (
@@ -8,7 +10,7 @@ export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full">
         {posts.map(({ frontmatter: { title, subtitle, date }, slug }, idx) => (
-          <a
+          <Link
             href={`blog/${slug}`}
             className="group transition-all duration-300 h-full"
             key={slug}
@@ -26,11 +28,7 @@ export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
                 {/* Date Badge - floating top left */}
                 {date && (
                   <span className="absolute -top-4 left-6 text-xs font-semibold font-roboto text-[var(--color-accent-secondary)] bg-[var(--color-gray-900-40)] px-4 py-1 rounded-full shadow-md border border-[var(--color-gray-700)] z-10">
-                    {new Date(date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {formatDate(date)}
                   </span>
                 )}
                 {/* Title with accent underline on hover */}
@@ -51,7 +49,7 @@ export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
                 </div>
               </div>
             </article>
-          </a>
+          </Link>
         ))}
       </div>
     </div>
