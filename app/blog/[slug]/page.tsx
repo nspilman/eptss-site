@@ -33,14 +33,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const BlogPost = ({ params }: { params: { slug: string } }) => {
   const { posts } = blogProvider();
-  const post = posts.find((post) => post.slug === params.slug);
+  const idx = posts.findIndex((post) => post.slug === params.slug);
+  const post = posts[idx];
   if (!post) {
     return <div>page not found</div>;
   }
+  const prevPost = idx > 0 ? posts[idx - 1] : null;
+  const nextPost = idx < posts.length - 1 ? posts[idx + 1] : null;
   return (
     <>
       <PageTitle title={post.slug} />
-      <Post post={post} />
+      <Post post={post} prevPost={prevPost} nextPost={nextPost} />
     </>
   );
 };
