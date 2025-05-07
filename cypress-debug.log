@@ -1,0 +1,156 @@
+[2025-04-21T15:16:00.451Z] 🔵 Base setupNodeEvents called
+[2025-04-21T15:17:20.131Z] Error getting magic link: Error: Command failed: node scripts/get-magic-link.js
+(node:76641) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Error in getMagicLink: GaxiosError: invalid_grant
+    at Gaxios._request [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgaxios[24m/build/src/gaxios.js:142:23[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at async OAuth2Client.refreshTokenNoCache [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgoogle-auth-library[24m/build/src/auth/oauth2client.js:212:19[90m)[39m
+    at async OAuth2Client.getRequestMetadataAsync [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgoogle-auth-library[24m/build/src/auth/oauth2client.js:333:17[90m)[39m
+    at async OAuth2Client.requestAsync [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgoogle-auth-library[24m/build/src/auth/oauth2client.js:418:23[90m)[39m
+    at async getMagicLink [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mscripts/get-magic-link.js:28:22[90m)[39m {
+  config: {
+    retry: [33mtrue[39m,
+    retryConfig: {
+      httpMethodsToRetry: [36m[Array][39m,
+      currentRetryAttempt: [33m0[39m,
+      retry: [33m3[39m,
+      noResponseRetries: [33m2[39m,
+      retryDelayMultiplier: [33m2[39m,
+      timeOfFirstRequest: [33m1745248640120[39m,
+      totalTimeout: [33m9007199254740991[39m,
+      maxRetryDelay: [33m9007199254740991[39m,
+      statusCodesToRetry: [36m[Array][39m
+    },
+    method: [32m'POST'[39m,
+    url: [32m'https://oauth2.googleapis.com/token'[39m,
+    data: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+    headers: {
+      [32m'Content-Type'[39m: [32m'application/x-www-form-urlencoded'[39m,
+      [32m'User-Agent'[39m: [32m'google-api-nodejs-client/9.14.1'[39m,
+      [32m'x-goog-api-client'[39m: [32m'gl-node/23.4.0'[39m
+    },
+    paramsSerializer: [36m[Function: paramsSerializer][39m,
+    body: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+    validateStatus: [36m[Function: validateStatus][39m,
+    responseType: [32m'unknown'[39m,
+    errorRedactor: [36m[Function: defaultErrorRedactor][39m
+  },
+  response: {
+    config: {
+      retry: [33mtrue[39m,
+      retryConfig: [36m[Object][39m,
+      method: [32m'POST'[39m,
+      url: [32m'https://oauth2.googleapis.com/token'[39m,
+      data: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+      headers: [36m[Object][39m,
+      paramsSerializer: [36m[Function: paramsSerializer][39m,
+      body: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+      validateStatus: [36m[Function: validateStatus][39m,
+      responseType: [32m'unknown'[39m,
+      errorRedactor: [36m[Function: defaultErrorRedactor][39m
+    },
+    data: { error: [32m'invalid_grant'[39m, error_description: [32m'Bad Request'[39m },
+    headers: {
+      [32m'alt-svc'[39m: [32m'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'[39m,
+      [32m'cache-control'[39m: [32m'no-cache, no-store, max-age=0, must-revalidate'[39m,
+      [32m'content-encoding'[39m: [32m'gzip'[39m,
+      [32m'content-type'[39m: [32m'application/json; charset=utf-8'[39m,
+      date: [32m'Mon, 21 Apr 2025 15:17:20 GMT'[39m,
+      expires: [32m'Mon, 01 Jan 1990 00:00:00 GMT'[39m,
+      pragma: [32m'no-cache'[39m,
+      server: [32m'scaffolding on HTTPServer2'[39m,
+      [32m'transfer-encoding'[39m: [32m'chunked'[39m,
+      vary: [32m'Origin, X-Origin, Referer'[39m,
+      [32m'x-content-type-options'[39m: [32m'nosniff'[39m,
+      [32m'x-frame-options'[39m: [32m'SAMEORIGIN'[39m,
+      [32m'x-xss-protection'[39m: [32m'0'[39m
+    },
+    status: [33m400[39m,
+    statusText: [32m'Bad Request'[39m,
+    request: { responseURL: [32m'https://oauth2.googleapis.com/token'[39m }
+  },
+  error: [90mundefined[39m,
+  status: [33m400[39m,
+  [[32mSymbol(gaxios-gaxios-error)[39m]: [32m'6.7.1'[39m
+}
+No magic link found
+
+[2025-04-21T15:17:20.134Z] Script error output: (node:76641) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Error in getMagicLink: GaxiosError: invalid_grant
+    at Gaxios._request [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgaxios[24m/build/src/gaxios.js:142:23[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)[39m
+    at async OAuth2Client.refreshTokenNoCache [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgoogle-auth-library[24m/build/src/auth/oauth2client.js:212:19[90m)[39m
+    at async OAuth2Client.getRequestMetadataAsync [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgoogle-auth-library[24m/build/src/auth/oauth2client.js:333:17[90m)[39m
+    at async OAuth2Client.requestAsync [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mnode_modules/[4mgoogle-auth-library[24m/build/src/auth/oauth2client.js:418:23[90m)[39m
+    at async getMagicLink [90m(/Users/natespilman/Repos/EPTSS-website/eptss-site/[39mscripts/get-magic-link.js:28:22[90m)[39m {
+  config: {
+    retry: [33mtrue[39m,
+    retryConfig: {
+      httpMethodsToRetry: [36m[Array][39m,
+      currentRetryAttempt: [33m0[39m,
+      retry: [33m3[39m,
+      noResponseRetries: [33m2[39m,
+      retryDelayMultiplier: [33m2[39m,
+      timeOfFirstRequest: [33m1745248640120[39m,
+      totalTimeout: [33m9007199254740991[39m,
+      maxRetryDelay: [33m9007199254740991[39m,
+      statusCodesToRetry: [36m[Array][39m
+    },
+    method: [32m'POST'[39m,
+    url: [32m'https://oauth2.googleapis.com/token'[39m,
+    data: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+    headers: {
+      [32m'Content-Type'[39m: [32m'application/x-www-form-urlencoded'[39m,
+      [32m'User-Agent'[39m: [32m'google-api-nodejs-client/9.14.1'[39m,
+      [32m'x-goog-api-client'[39m: [32m'gl-node/23.4.0'[39m
+    },
+    paramsSerializer: [36m[Function: paramsSerializer][39m,
+    body: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+    validateStatus: [36m[Function: validateStatus][39m,
+    responseType: [32m'unknown'[39m,
+    errorRedactor: [36m[Function: defaultErrorRedactor][39m
+  },
+  response: {
+    config: {
+      retry: [33mtrue[39m,
+      retryConfig: [36m[Object][39m,
+      method: [32m'POST'[39m,
+      url: [32m'https://oauth2.googleapis.com/token'[39m,
+      data: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+      headers: [36m[Object][39m,
+      paramsSerializer: [36m[Function: paramsSerializer][39m,
+      body: [32m'<<REDACTED> - See `errorRedactor` option in `gaxios` for configuration>.'[39m,
+      validateStatus: [36m[Function: validateStatus][39m,
+      responseType: [32m'unknown'[39m,
+      errorRedactor: [36m[Function: defaultErrorRedactor][39m
+    },
+    data: { error: [32m'invalid_grant'[39m, error_description: [32m'Bad Request'[39m },
+    headers: {
+      [32m'alt-svc'[39m: [32m'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'[39m,
+      [32m'cache-control'[39m: [32m'no-cache, no-store, max-age=0, must-revalidate'[39m,
+      [32m'content-encoding'[39m: [32m'gzip'[39m,
+      [32m'content-type'[39m: [32m'application/json; charset=utf-8'[39m,
+      date: [32m'Mon, 21 Apr 2025 15:17:20 GMT'[39m,
+      expires: [32m'Mon, 01 Jan 1990 00:00:00 GMT'[39m,
+      pragma: [32m'no-cache'[39m,
+      server: [32m'scaffolding on HTTPServer2'[39m,
+      [32m'transfer-encoding'[39m: [32m'chunked'[39m,
+      vary: [32m'Origin, X-Origin, Referer'[39m,
+      [32m'x-content-type-options'[39m: [32m'nosniff'[39m,
+      [32m'x-frame-options'[39m: [32m'SAMEORIGIN'[39m,
+      [32m'x-xss-protection'[39m: [32m'0'[39m
+    },
+    status: [33m400[39m,
+    statusText: [32m'Bad Request'[39m,
+    request: { responseURL: [32m'https://oauth2.googleapis.com/token'[39m }
+  },
+  error: [90mundefined[39m,
+  status: [33m400[39m,
+  [[32mSymbol(gaxios-gaxios-error)[39m]: [32m'6.7.1'[39m
+}
+No magic link found
+
+[2025-04-21T15:21:01.971Z] 🔵 Base setupNodeEvents called
+[2025-04-21T15:24:17.074Z] 🔵 Base setupNodeEvents called
