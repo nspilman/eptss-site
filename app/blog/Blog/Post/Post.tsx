@@ -2,7 +2,7 @@ import ReactMarkdown from "react-markdown";
 import { formatDate } from "@/utils/formatDate";
 import { markdownTheme } from "./MarkdownTheme";
 import { BlogPost } from "types/BlogPost";
-import { ReactNode } from "react";
+import React from "react"
 
 interface Props {
   post: BlogPost;
