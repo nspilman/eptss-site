@@ -44,7 +44,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   return (
     <html lang="en">
       <head>

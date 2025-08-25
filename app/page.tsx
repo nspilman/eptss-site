@@ -6,8 +6,6 @@ import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "./RoundInfoDisplay";
 import { roundProvider } from "@/providers";
-import { redirect } from 'next/navigation';
-import { getAuthUser } from "@/utils/supabase/server";
 
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
@@ -51,13 +49,7 @@ export const HomepageContent = async () => {
   );
 };
 
-// Root page component that redirects to dashboard if logged in
 const Homepage = async () => {
-  const { userId } = getAuthUser();
-  if (userId) {
-    redirect('/dashboard');
-  }
-
   return <HomepageContent />;
 };
 

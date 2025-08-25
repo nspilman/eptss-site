@@ -42,7 +42,8 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-[var(--color-background-secondary)] text-[var(--color-primary)] shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        // Ensure an opaque background in the portal: utility + CSS var + hardcoded hex fallback
+        "relative z-50 min-w-[8rem] overflow-hidden rounded-md border bg-background-primary bg-[var(--color-background-secondary,var(--color-background-primary,#111827))] text-[var(--color-primary,#ffffff)] shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:translate-x-1 data-[side=top]:slide-in-from-bottom-2 bg-[#111827] text-white",
         position === "popper" &&
           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
         className
@@ -54,7 +55,8 @@ const SelectContent = React.forwardRef<
     >
       <SelectPrimitive.Viewport
         className={cn(
-          "p-1",
+          // Ensure opaque background within the scrollable area as well
+          "p-1 bg-background-primary bg-[var(--color-background-secondary,var(--color-background-primary,#111827))] bg-[#111827]",
           position === "popper" &&
             "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
         )}
@@ -85,7 +87,14 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm bg-[var(--color-background-secondary)] text-[var(--color-primary)] outline-hidden focus:bg-[var(--color-accent-primary)] focus:text-[var(--color-background-primary)] hover:bg-[var(--color-accent-primary/80)] hover:text-[var(--color-background-primary)] data-disabled:pointer-events-none data-disabled:opacity-50",
+      // Default solid background + fallbacks (hex last to win specificity order)
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm bg-background-primary bg-[var(--color-background-secondary,var(--color-background-primary,#111827))] text-[var(--color-primary,#ffffff)] outline-hidden bg-[#111827] text-white",
+      // Hover/focus/selected states
+      "hover:bg-[var(--color-accent-primary,#2563eb)] hover:text-[var(--color-background-primary,#0b0f14)] focus:bg-[var(--color-accent-primary,#2563eb)] focus:text-[var(--color-background-primary,#0b0f14)] data-[state=checked]:bg-[var(--color-accent-primary,#2563eb)] data-[state=checked]:text-[var(--color-background-primary,#0b0f14)]",
+      // Highlighted state used by Radix
+      "data-[highlighted]:bg-[var(--color-accent-primary,#2563eb)] data-[highlighted]:text-[var(--color-background-primary,#0b0f14)]",
+      // Disabled handling
+      "data-disabled:pointer-events-none data-disabled:opacity-50",
       className
     )}
     role="option"

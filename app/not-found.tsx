@@ -35,7 +35,7 @@ export default function Custom404() {
           className="flex justify-center"
         >
           <Link href="/" className="inline-block">
-            <button className="bg-[var(--color-accent-primary)] text-[var(--color-background-primary)] hover:bg-[var(--color-accent-primary)]/90 text-lg py-6 px-10 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl flex items-center">
+            <button className="bg-[var(--color-accent-primary)] text-[var(--color-background-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-lg py-6 px-10 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl flex items-center">
               <Home className="mr-2 h-5 w-5" />
               Return to Home
             </button>

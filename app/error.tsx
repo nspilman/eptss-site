@@ -33,7 +33,7 @@ export default function Error({ error, reset }: ErrorProps) {
         <div className="space-y-3">
           <Button 
             onClick={reset}
-            className="w-full bg-[var(--color-accent-primary)] text-gray-900 hover:bg-[var(--color-accent-primary)]/90"
+            className="w-full bg-[var(--color-accent-primary)] text-gray-900 hover:bg-[var(--color-accent-primary)] hover:opacity-90"
           >
             Try again
           </Button>

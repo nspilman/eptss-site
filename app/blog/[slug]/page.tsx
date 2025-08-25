@@ -4,12 +4,13 @@ import { blogProvider } from "@/providers/blogProvider/blogProvider";
 import { Metadata } from 'next';
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
   const { posts } = blogProvider();
-  const post = posts.find(post => post.slug === params.slug);
+  const post = posts.find(post => post.slug === resolvedParams.slug);
   
   if (!post) {
     return {
@@ -31,9 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const BlogPost = ({ params }: { params: { slug: string } }) => {
+const BlogPost = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const resolvedParams = await params;
   const { posts } = blogProvider();
-  const idx = posts.findIndex((post) => post.slug === params.slug);
+  const idx = posts.findIndex((post) => post.slug === resolvedParams.slug);
   const post = posts[idx];
   if (!post) {
     return <div>page not found</div>;

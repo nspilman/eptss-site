@@ -4,9 +4,10 @@ import { SubmitPage } from "../SubmitPage";
 export default async function SignUpForRound({
   params,
 }: {
-  params: { roundId: string };
+  params: Promise<{ roundId: string }>;
 }) {
-  const roundId = JSON.parse(params.roundId);
+  const resolvedParams = await params;
+  const roundId = JSON.parse(resolvedParams.roundId);
   const {
     dateLabels: {
       covering: { closes: coverClosesLabel },

@@ -230,7 +230,7 @@ export async function signupUserWithoutSong(props: { roundId: number, userId: st
 export async function verifySignupByEmail(): Promise<FormReturn> {
   "use server";
   
-  const { userId, email } = getAuthUser();
+  const { userId, email } = await getAuthUser();
   
   if (!userId || !email) {
     return handleResponse(401, Navigation.SignUp, "You must be authenticated to complete signup");
@@ -341,7 +341,7 @@ export async function completeSignupAfterVerification(params: {
 }): Promise<FormReturn> {
   "use server";
   
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   
   if (!userId) {
     return handleResponse(401, Navigation.SignUp, "You must be authenticated to complete signup");
@@ -462,7 +462,7 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
 export async function signup(formData: FormData, providedUserId?: string): Promise<FormReturn> {
   "use server";
   // Use provided userId if available, otherwise get from auth
-  const { userId: authUserId } = getAuthUser();
+  const { userId: authUserId } = await getAuthUser();
   const userId = providedUserId || authUserId;
   
   if (!userId) {

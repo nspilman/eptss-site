@@ -21,7 +21,7 @@ const SidebarItem = ({ href, icon, label, isActive, onClick }: SidebarItemProps)
     onClick={onClick}
     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all
       ${isActive 
-        ? "bg-gradient-to-r from-[var(--color-accent-primary)]/50 to-[var(--color-accent-secondary)]/50 text-white" 
+        ? "bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] opacity-50 text-white" 
         : "hover:bg-background-secondary/30 text-accent-secondary hover:text-white"
       }`}
   >

@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { DashboardClient } from './DashboardClient';
 import { getAuthUser } from "@/utils/supabase/server";
@@ -8,7 +7,7 @@ import { eq } from "drizzle-orm";
 
 export default async function DashboardPage() {
   // Check auth first
-  const { email, userId } = getAuthUser();
+  const { email, userId } = await getAuthUser();
   const {  verifySignupByEmail } = await userParticipationProvider();
 
   let verificationStatus: { verified: boolean; message?: string } = { verified: false };

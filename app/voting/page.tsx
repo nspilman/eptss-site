@@ -18,11 +18,12 @@ export const metadata: Metadata = {
 import VotingPageWrapper from "./VotingPageWrapper";
 
 interface Props {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const VotingPageHome = async ({ searchParams }: Props) => {
-  return <VotingPageWrapper searchParams={searchParams} />;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  return <VotingPageWrapper searchParams={resolvedSearchParams} />;
 };
 
 export default VotingPageHome;

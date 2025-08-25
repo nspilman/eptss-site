@@ -6,6 +6,7 @@ export enum Navigation {
   Rounds = "/rounds",
   Voting = "/voting",
   Waitlist = "/waitlist",
+  Feedback = "/feedback",
   Login = "/login",
   Home = "/",
   Dashboard = "/dashboard",
@@ -21,4 +22,5 @@ export const protectedRoutes = [
   Navigation.Dashboard,
   Navigation.Profile,
   Navigation.Tasks,
+  Navigation.Feedback,
 ]

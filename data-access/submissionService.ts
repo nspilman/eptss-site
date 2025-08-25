@@ -89,7 +89,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
 
 export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   
   try {
     // Extract form data

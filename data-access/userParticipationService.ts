@@ -7,7 +7,7 @@ import { defaultDateString } from "@/constants";
 import { sql } from "drizzle-orm";
 
 export const getRoundDataForUser = async (roundId: number) => {
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   if (!userId) return undefined;
 
   const userData = await db

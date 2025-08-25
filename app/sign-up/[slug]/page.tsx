@@ -3,7 +3,8 @@ import { SharedSignupPageWrapper } from "../SharedSignupPageWrapper";
 export default async function SignUpForRound({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  return <SharedSignupPageWrapper slug={params.slug} />;
+  const resolvedParams = await params;
+  return <SharedSignupPageWrapper slug={resolvedParams.slug} />;
 }

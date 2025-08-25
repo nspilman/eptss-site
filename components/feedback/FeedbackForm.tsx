@@ -50,6 +50,9 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
   const router = useRouter();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  // Avoid SSR for Radix Select to prevent hydration ID mismatches
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
 
   // Initialize form with react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -115,24 +118,38 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-primary" htmlFor="feedback-type">Feedback Type</FormLabel>
-                <Select 
-                  onValueChange={field.onChange} 
-                  defaultValue={field.value}
-                  aria-required="true"
-                  aria-describedby="feedback-type-description"
-                >
+                {mounted ? (
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                    aria-required="true"
+                    aria-describedby="feedback-type-description"
+                  >
+                    <FormControl>
+                      <SelectTrigger id="feedback-type">
+                        <SelectValue placeholder="Select a feedback type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="review" aria-label="Review">Review</SelectItem>
+                      <SelectItem value="bug_report" aria-label="Bug Report">Bug Report</SelectItem>
+                      <SelectItem value="feature_request" aria-label="Feature Request">Feature Request</SelectItem>
+                      <SelectItem value="general" aria-label="General Feedback">General Feedback</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
                   <FormControl>
-                    <SelectTrigger id="feedback-type">
-                      <SelectValue placeholder="Select a feedback type" />
-                    </SelectTrigger>
+                    <div
+                      id="feedback-type"
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground"
+                      aria-required="true"
+                      aria-describedby="feedback-type-description"
+                      aria-disabled="true"
+                    >
+                      Loading...
+                    </div>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="review" aria-label="Review">Review</SelectItem>
-                    <SelectItem value="bug_report" aria-label="Bug Report">Bug Report</SelectItem>
-                    <SelectItem value="feature_request" aria-label="Feature Request">Feature Request</SelectItem>
-                    <SelectItem value="general" aria-label="General Feedback">General Feedback</SelectItem>
-                  </SelectContent>
-                </Select>
+                )}
                 <FormDescription className="text-secondary" id="feedback-type-description">
                   Select the type of feedback you&apos;d like to provide.
                 </FormDescription>

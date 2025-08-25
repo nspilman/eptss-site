@@ -1,10 +1,12 @@
 import VotingPageWrapper from "../VotingPageWrapper";
 
 interface Props {
-  params: { slug: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function VotingForRound({ params, searchParams }: Props) {
-  return <VotingPageWrapper slug={params.slug} searchParams={searchParams} />;
+  const resolvedParams = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  return <VotingPageWrapper slug={resolvedParams.slug} searchParams={resolvedSearchParams} />;
 }

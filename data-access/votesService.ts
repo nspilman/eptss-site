@@ -73,7 +73,7 @@ export const getVotingUsersByRound = async (roundId: number) => {
 };
 
 export const getVotesByUserForRound = async (roundId: number) => {
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   if (!userId) return [];
   const votes = await db
     .select({ songId: songSelectionVotes.songId, vote: songSelectionVotes.vote })
@@ -91,7 +91,7 @@ export const submitVotes = async (
   roundId: number,
   formData: FormData
 ): Promise<FormReturn> => {
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   if (!userId) {
     return handleResponse(401, Navigation.Login, "User not found");
   }
