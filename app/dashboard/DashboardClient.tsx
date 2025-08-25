@@ -11,7 +11,7 @@ import { formatDate, formatTimeRemaining } from '@/services/dateService';
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { signupForRound } from "./actions";
+import { signupForRound, signupForRoundWithResult } from "./actions";
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;
@@ -106,7 +106,7 @@ function SubmitButton({ roundId }: { roundId: number }) {
     <Button
       size="lg"
       variant="default"
-      className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+      className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-[var(--color-accent-primary)] transition-all"
       type="submit"
       disabled={pending}
     >
@@ -245,7 +245,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                   <Button
                     size="lg"
                     variant="default"
-                    className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                    className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-[var(--color-accent-primary)] transition-all"
                     asChild
                   >
                     <Link href={Navigation.SignUp}>
@@ -269,7 +269,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                     <Button
                       size="lg"
                       variant="default"
-                      className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                      className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-[var(--color-accent-primary)] transition-all"
                       type="submit"
                       disabled={isLoading || !userId}
                     >
@@ -440,7 +440,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                     <Button
                       size="lg"
                       variant="default"
-                      className="w-full sm:w-auto px-8 py-6 text-lg font-bold bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                      className="w-full sm:w-auto px-8 py-6 text-lg font-bold bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-[var(--color-accent-primary)] transition-all"
                       asChild
                     >
                       <Link href={actionButton.href}>
@@ -465,7 +465,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                       <Button
                         size="lg"
                         variant="default"
-                        className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                        className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-[var(--color-accent-primary)] transition-all"
                         asChild
                       >
                         <Link href={Navigation.SignUp}>
@@ -479,9 +479,9 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                         
                         try {
                           const formData = new FormData(e.currentTarget);
-                          const result = await signupForRound(formData);
+                          const result = await signupForRoundWithResult(formData);
                           
-                          if (result.success) {
+                          if (result.status === "Success") {
                             toast({
                               title: "Success!",
                               description: result.message,
@@ -492,7 +492,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                           } else {
                             toast({
                               title: "Error",
-                              description: result.error || "There was an error signing up. Please try again.",
+                              description: result.message,
                               variant: "destructive",
                             });
                           }
@@ -512,7 +512,7 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
                         <Button
                           size="lg"
                           variant="default"
-                          className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)]/20 hover:shadow-[var(--color-accent-primary)]/30 transition-all"
+                          className="w-full sm:w-auto bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-[var(--color-accent-primary)] transition-all"
                           type="submit"
                           disabled={isLoading || !userId}
                         >

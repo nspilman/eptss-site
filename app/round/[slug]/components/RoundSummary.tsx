@@ -101,7 +101,7 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], outst
     const { phase, song, playlistUrl, submissions, signups, dateLabels } = roundData;
     
     // Check if the current user is signed up for this round
-    const { userId } = getAuthUser();
+    const { userId } = await getAuthUser();
     const isUserSignedUp = userId ? signups.some(signup => signup.userId === userId) : false;
     let previousRound;
     let nextRound;

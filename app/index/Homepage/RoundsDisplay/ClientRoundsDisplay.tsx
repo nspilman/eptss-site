@@ -64,7 +64,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
                   transition={{ delay: index * 0.1 }}
                 >
                   <Link href={`round/${round.slug}`}>
-                    <div className={`p-6 rounded-lg border ${isCurrent ? 'bg-[var(--color-gray-800)]/60 border-[var(--color-accent-primary)]' : 'bg-[var(--color-background-tertiary)] border-[var(--color-gray-800)] hover:border-[var(--color-gray-700)]'} transition-all duration-200`}>
+                    <div className={`p-6 rounded-lg border ${isCurrent ? 'bg-[var(--color-gray-800)] opacity-60 border-[var(--color-accent-primary)]' : 'bg-[var(--color-background-tertiary)] border-[var(--color-gray-800)] hover:border-[var(--color-gray-700)]'} transition-all duration-200`}>
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                           {isCurrent && (
@@ -96,7 +96,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
                         
                         <div className="flex gap-4">
                           {round.signupCount !== undefined && (
-                            <div className="flex flex-col items-center px-3 py-2 bg-[var(--color-gray-800)]/50 rounded">
+                            <div className="flex flex-col items-center px-3 py-2 bg-[var(--color-gray-800)] opacity-50 rounded">
                               <div className="flex items-center gap-1 text-[var(--color-gray-300)] text-sm">
                                 <Users className="h-4 w-4 text-[var(--color-accent-primary)]" />
                                 Participants
@@ -106,7 +106,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
                           )}
                           
                           {round.submissionCount !== undefined && !isCurrent && (
-                            <div className="flex flex-col items-center px-3 py-2 bg-[var(--color-gray-800)]/50 rounded">
+                            <div className="flex flex-col items-center px-3 py-2 bg-[var(--color-gray-800)] opacity-50 rounded">
                               <div className="flex items-center gap-1 text-[var(--color-gray-300)] text-sm">
                                 <Mic2 className="h-4 w-4 text-[var(--color-accent-primary)]" />
                                 Submissions

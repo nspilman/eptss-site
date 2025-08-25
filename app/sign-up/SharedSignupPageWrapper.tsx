@@ -16,7 +16,7 @@ export const SharedSignupPageWrapper = async ({
   slug 
 }: SharedSignupPageWrapperProps) => {
   // Check if user is logged in
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
   const isLoggedIn = !!userId;
 
   // If slug is provided, use it directly, otherwise get current round info

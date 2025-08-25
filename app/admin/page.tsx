@@ -19,12 +19,15 @@ export const metadata: Metadata = {
 const AdminPage = async ({
   searchParams,
 }: {
-  searchParams: { slug: string; tab?: string };
+  searchParams: Promise<{ slug: string; tab?: string }>;
 }) => {
   try {
     if (!(await isAdmin())) {
       return notFound();
     }
+
+    // Await searchParams
+    const resolvedSearchParams = await searchParams;
 
     // Get all rounds for the selector
     const { allRoundSlugs } = await roundsProvider({});
@@ -40,8 +43,8 @@ const AdminPage = async ({
     let roundId = 0;
 
     if (currentRound.data) {
-      currentRoundSlug = searchParams.slug 
-        ? searchParams.slug
+      currentRoundSlug = resolvedSearchParams.slug 
+        ? resolvedSearchParams.slug
         : currentRound.data.slug;
 
       // Get current round data if a round exists
@@ -52,9 +55,9 @@ const AdminPage = async ({
       signups = roundData.signups;
       submissions = roundData.submissions;
       roundId = roundData.roundId;
-    } else if (allRoundSlugs && allRoundSlugs.length > 0 && searchParams.slug) {
+    } else if (allRoundSlugs && allRoundSlugs.length > 0 && resolvedSearchParams.slug) {
       // If no current round but we have a slug in params, use that
-      currentRoundSlug = searchParams.slug;
+      currentRoundSlug = resolvedSearchParams.slug;
       const roundData = await roundProvider(currentRoundSlug);
       phase = roundData.phase;
       dateLabels = roundData.dateLabels;
@@ -84,7 +87,7 @@ const AdminPage = async ({
     const activeUsers = await getActiveUsers();
 
     // Default to reports tab if none specified
-    const activeTab = searchParams.tab || "reports";
+    const activeTab = resolvedSearchParams.tab || "reports";
 
     return (
       <div className="container mx-auto py-8 px-4 space-y-8">

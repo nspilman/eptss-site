@@ -5,9 +5,10 @@ import { getVoteBreakdownBySong } from "@/data-access";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 
-export default async function Round({ params }: { params: { slug: string } }) {
+export default async function Round({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
   // Handle current round differently if needed
-  if(params.slug === "current") {
+  if(resolvedParams.slug === "current") {
     // Get the current round and redirect to its slug
     const currentRoundData = await roundProvider();
     return redirect(`/round/${currentRoundData.slug || currentRoundData.roundId}`);
@@ -15,7 +16,7 @@ export default async function Round({ params }: { params: { slug: string } }) {
   
   try {
     // Use the slug parameter directly
-    const slug = params.slug;
+    const slug = resolvedParams.slug;
     // Fetch all data at the page level
     const roundData = await roundProvider(slug);
 
@@ -74,9 +75,10 @@ export default async function Round({ params }: { params: { slug: string } }) {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
   // Handle current round differently if needed
-  if(params.slug === "current") {
+  if(resolvedParams.slug === "current") {
     return {
       title: "Current Round | Everyone Plays the Same Song",
       description: "Details about the current round of Everyone Plays the Same Song."
@@ -84,7 +86,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   try {
-    const roundData = await roundProvider(params.slug);
+    const roundData = await roundProvider(resolvedParams.slug);
     
     let title = `Round ${roundData.roundId}`;
     let description = "Everyone Plays the Same Song round details.";

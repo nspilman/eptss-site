@@ -18,7 +18,7 @@ const RoundCard = React.forwardRef<HTMLDivElement, RoundCardProps>(
         <motion.div
           ref={ref}
           className={cn(
-            "bg-[var(--color-gray-800)]/50 backdrop-blur-md rounded-lg p-4 border",
+            "bg-[var(--color-gray-800)] bg-opacity-50 backdrop-blur-md rounded-lg p-4 border",
             isActive
               ? "border-[var(--color-accent-primary)] ring-2 ring-[var(--color-accent-primary)]"
               : "border-[var(--color-gray-700)]",

@@ -20,7 +20,7 @@ interface UserParticipationData {
 
 export const userParticipationProvider = async (props?: Props): Promise<UserParticipationData> => {
   const roundIdOverride = props?.roundId;
-  const { userId } = getAuthUser();
+  const { userId } = await getAuthUser();
 
   const services = {
     signup,

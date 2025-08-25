@@ -3,7 +3,6 @@
 import { signupUserWithoutSong } from "@/data-access";
 import { FormReturn } from "@/types";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { Navigation } from "@/enum/navigation";
 
 export async function signupForRound(formData: FormData) {
@@ -11,7 +10,7 @@ export async function signupForRound(formData: FormData) {
   const userId = formData.get("userId") as string;
   
   if (!userId || !roundId) {
-    return { success: false, error: "Missing required information" };
+    throw new Error("Missing required information");
   }
   
   try {
@@ -23,8 +22,18 @@ export async function signupForRound(formData: FormData) {
     // Revalidate the dashboard page to show updated status
     revalidatePath(Navigation.Dashboard);
     
-    return { success: true, message: "You have successfully signed up for this round" };
+    // Success case - just revalidate, no return value needed
   } catch (error) {
-    return { success: false, error: (error as Error).message };
+    throw new Error((error as Error).message);
+  }
+}
+
+// Wrapper function for client-side usage that returns values
+export async function signupForRoundWithResult(formData: FormData): Promise<FormReturn> {
+  try {
+    await signupForRound(formData);
+    return { status: "Success", message: "You have successfully signed up for this round" };
+  } catch (error) {
+    return { status: "Error", message: (error as Error).message };
   }
 }

@@ -1,11 +1,12 @@
 import {CodeDisplay} from '@/components/CodeDisplay/CodeDisplay';
 
 interface Props {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const SpotifyCallbackPage = ({ searchParams }: Props) => {
-  const code = searchParams.code as string | undefined;
+const SpotifyCallbackPage = async ({ searchParams }: Props) => {
+  const resolvedSearchParams = await searchParams;
+  const code = resolvedSearchParams.code as string | undefined;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

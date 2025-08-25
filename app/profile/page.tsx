@@ -21,7 +21,7 @@ async function checkAuthentication() {
     redirect('/login?redirect=/profile');
   }
   
-  return { supabase, userId: getAuthUser().userId };
+  return { supabase, userId: (await getAuthUser()).userId };
 }
 
 // Helper function to fetch user details

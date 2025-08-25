@@ -3,12 +3,13 @@ import { roundProvider, votesProvider } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
 
-const AdminRoundPage = async ({ params }: { params: { slug: string } }) => {
+const AdminRoundPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
     if(!(await isAdmin())){
         return notFound();
     }
 
-    const slugParam = params.slug;
+    const resolvedParams = await params;
+    const slugParam = resolvedParams.slug;
     const { dateLabels, voteOptions } = await roundProvider(slugParam);
     const { voteResults, outstandingVoters } = await votesProvider({ roundSlug: slugParam })
     
