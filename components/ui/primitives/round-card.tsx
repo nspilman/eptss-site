@@ -5,7 +5,7 @@ import { motion, HTMLMotionProps } from "framer-motion"
 import { cn } from "./utils"
 import Link from "next/link"
 
-interface RoundCardProps extends HTMLMotionProps<"div"> {
+type RoundCardProps = Omit<HTMLMotionProps<"div">, "ref"> & {
   href: string
   isActive?: boolean
   children: React.ReactNode
