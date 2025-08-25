@@ -4,8 +4,8 @@ import * as React from "react"
 import { motion, HTMLMotionProps } from "framer-motion"
 import { cn } from "./utils"
 
-interface FeatureCardProps extends HTMLMotionProps<"div"> {
-  icon: string
+type FeatureCardProps = Omit<HTMLMotionProps<"div">, "ref"> & {
+  icon: React.ReactNode
   title: string
   description: string
 }
