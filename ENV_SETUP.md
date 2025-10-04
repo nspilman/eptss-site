@@ -1,0 +1,124 @@
+# Environment Variables Setup for Cron Jobs
+
+## Required Environment Variables
+
+### CRON_SECRET
+A secret token used to authenticate cron job requests to your API endpoints.
+
+**Generate a secure token:**
+```bash
+openssl rand -hex 32
+```
+
+**Where to add:**
+1. **GitHub Secrets** (for GitHub Actions):
+   - Go to your repo → Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `CRON_SECRET`
+   - Value: [your generated token]
+
+2. **Deployment Environment** (Vercel/etc.):
+   - Add `CRON_SECRET` to your environment variables
+   - Use the same value as in GitHub Secrets
+
+### APP_URL
+Your production application URL.
+
+**Where to add:**
+1. **GitHub Secrets**:
+   - Name: `APP_URL`
+   - Value: `https://your-domain.com` (no trailing slash)
+
+## Testing Locally
+
+### Method 1: Test Script (Recommended)
+
+1. Add `CRON_SECRET` to your `.env.local`:
+   ```
+   CRON_SECRET=your-test-secret-here
+   ```
+
+2. Start your dev server:
+   ```bash
+   bun dev
+   ```
+
+3. Run the test script:
+   ```bash
+   bun run scripts/test-assign-round-song.ts
+   ```
+
+### Method 2: Admin Panel Button
+
+1. Ensure `NEXT_PUBLIC_CRON_SECRET` is set in your `.env.local`
+2. Navigate to `/admin` in your browser
+3. Go to the "Actions" tab
+4. Click "Test Assign Round Song" in the "Automation Testing" section
+
+### Method 3: Manual curl
+
+```bash
+curl -X POST http://localhost:3000/api/cron/assign-round-song \
+  -H "Authorization: Bearer your-test-secret-here" \
+  -H "Content-Type: application/json"
+```
+
+### Expected Responses
+
+**No current round:**
+```json
+{
+  "success": true,
+  "message": "No current round found",
+  "action": "none"
+}
+```
+
+**Not in covering phase yet:**
+```json
+{
+  "success": true,
+  "message": "Round {slug} has not reached covering phase yet",
+  "action": "none",
+  "roundPhase": {
+    "coveringBegins": "2025-10-15T00:00:00.000Z",
+    "now": "2025-10-10T00:00:00.000Z"
+  }
+}
+```
+
+**Song already assigned:**
+```json
+{
+  "success": true,
+  "message": "Round {slug} already has song assigned",
+  "action": "none",
+  "assignedSong": {
+    "title": "Song Title",
+    "artist": "Artist Name"
+  }
+}
+```
+
+**Song successfully assigned:**
+```json
+{
+  "success": true,
+  "message": "Successfully assigned song to round {slug}",
+  "action": "assigned",
+  "assignedSong": {
+    "title": "Song Title",
+    "artist": "Artist Name",
+    "average": 4.5,
+    "votesCount": 10,
+    "oneStarCount": 1
+  }
+}
+```
+
+## Cron Jobs
+
+### assign-round-song
+- **Schedule**: Every 2 hours
+- **Purpose**: Automatically assigns the winning song to a round when voting closes
+- **Workflow**: `.github/workflows/assign-round-song.yml`

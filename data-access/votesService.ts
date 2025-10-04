@@ -56,6 +56,61 @@ export const getVoteResults = async (id: number) => {
   }));
 };
 
+export const getDetailedVoteResults = async (id: number) => {
+  // Get all votes for this round
+  const allVotes = await db
+    .select({
+      songId: songSelectionVotes.songId,
+      title: songs.title,
+      artist: songs.artist,
+      vote: songSelectionVotes.vote
+    })
+    .from(songSelectionVotes)
+    .leftJoin(songs, eq(songSelectionVotes.songId, songs.id))
+    .where(eq(songSelectionVotes.roundId, id));
+
+  // Group by song and calculate stats
+  const songStats = new Map<string, {
+    title: string;
+    artist: string;
+    votes: number[];
+    average: number;
+    votesCount: number;
+    oneStarCount: number;
+  }>();
+
+  for (const vote of allVotes) {
+    const key = `${vote.title}|${vote.artist}`;
+    if (!songStats.has(key)) {
+      songStats.set(key, {
+        title: vote.title || "",
+        artist: vote.artist || "",
+        votes: [],
+        average: 0,
+        votesCount: 0,
+        oneStarCount: 0
+      });
+    }
+    const stats = songStats.get(key)!;
+    stats.votes.push(vote.vote);
+    if (vote.vote === 1) {
+      stats.oneStarCount++;
+    }
+  }
+
+  // Calculate averages and return sorted results
+  const results = Array.from(songStats.values()).map(stats => ({
+    title: stats.title,
+    artist: stats.artist,
+    average: stats.votes.reduce((sum, v) => sum + v, 0) / stats.votes.length,
+    votesCount: stats.votes.length,
+    oneStarCount: stats.oneStarCount
+  }));
+
+  // Sort by average (descending)
+  return results.sort((a, b) => b.average - a.average);
+};
+
 export const getVotingUsersByRound = async (roundId: number) => {
   if (!await isAdmin()) {
     return [];

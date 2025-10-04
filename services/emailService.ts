@@ -9,6 +9,7 @@ import { VotingConfirmation } from '@/emails/templates/VotingConfirmation';
 import { AdminVotingNotification } from '@/emails/templates/AdminVotingNotification';
 import { SubmissionConfirmation } from '@/emails/templates/SubmissionConfirmation';
 import { AdminSubmissionNotification } from '@/emails/templates/AdminSubmissionNotification';
+import { AdminSongAssignmentNotification } from '@/emails/templates/AdminSongAssignmentNotification';
 
 // Initialize Resend client
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
@@ -478,6 +479,64 @@ export async function sendAdminSubmissionNotification(
   return sendEmail({
     to: adminEmail,
     subject: `New Submission: ${userEmail}`,
+    html,
+  });
+}
+
+/**
+ * Send admin notification when a song is automatically assigned to a round
+ */
+export interface AdminSongAssignmentNotificationParams {
+  roundName: string;
+  roundSlug: string;
+  assignedSong: {
+    title: string;
+    artist: string;
+    average: number;
+    votesCount: number;
+    oneStarCount: number;
+  };
+  allResults: Array<{
+    title: string;
+    artist: string;
+    average: number;
+    votesCount: number;
+    oneStarCount: number;
+  }>;
+}
+
+export async function sendAdminSongAssignmentNotification(
+  params: AdminSongAssignmentNotificationParams
+): Promise<EmailResult> {
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  
+  if (!adminEmail) {
+    return {
+      success: false,
+      error: 'Admin email not configured',
+    };
+  }
+
+  const {
+    roundName,
+    roundSlug,
+    assignedSong,
+    allResults,
+  } = params;
+
+  // Render React Email template to HTML
+  const html = await render(
+    React.createElement(AdminSongAssignmentNotification, {
+      roundName,
+      roundSlug,
+      assignedSong,
+      allResults,
+    })
+  );
+
+  return sendEmail({
+    to: adminEmail,
+    subject: `🎵 Song Auto-Assigned: ${roundName}`,
     html,
   });
 }

@@ -6,6 +6,7 @@ import { AdminSubmissionForm } from "../AdminSubmissionForm";
 import { CreateRoundForm } from "../CreateRoundForm";
 import { SetRoundSongForm } from "../SetRoundSongForm";
 import { TestEmailButtons } from "../TestEmailButton";
+import { TestAssignRoundSongButton } from "../TestAssignRoundSongButton";
 import { UserDetails } from "@/types/user";
 
 type ActionsTabProps = {
@@ -56,6 +57,16 @@ export function ActionsTab({ roundId, users, roundSlug }: ActionsTabProps) {
           </div>
           <div>
             <SetRoundSongForm roundId={roundId} roundSlug={roundSlug} />
+          </div>
+        </div>
+      </section>
+
+      {/* Automation Testing Section */}
+      <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-4 space-y-4">
+        <h2 className="text-xl font-semibold text-primary mb-4">Automation Testing</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <TestAssignRoundSongButton />
           </div>
         </div>
       </section>
