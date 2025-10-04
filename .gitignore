@@ -42,3 +42,6 @@ backup.sql
 
 # windsurf rules
 .windsurfrules
+
+# Local Netlify folder
+.netlify
