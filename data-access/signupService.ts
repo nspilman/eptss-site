@@ -1,13 +1,15 @@
 "use server";
 
 import { db } from "@/db";
-import { signUps, songs, users, unverifiedSignups } from "@/db/schema";
+import { signUps, songs, users, unverifiedSignups, roundMetadata } from "@/db/schema";
 import { Navigation } from "@/enum/navigation";
 import { FormReturn } from "@/types";
 import { handleResponse } from "@/utils";
 import { getAuthUser } from "@/utils/supabase/server";
 import { createClient } from "@/utils/supabase/server";
 import { eq, sql, and, ne } from "drizzle-orm";
+import { sendRoundSignupConfirmation } from "@/services/emailService";
+import { formatDate } from "@/services/dateService";
 
 export const getSignupsByRound = async (roundId: number) => {
   const data = await db
@@ -255,6 +257,8 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       .where(eq(users.userid, userId))
       .limit(1);
     
+    let userName: string | undefined;
+    
     // If user doesn't exist, create them
     if (existingUser.length === 0) {
       console.log("Creating new user in database:", { userId, email });
@@ -267,6 +271,10 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
         email: email,
         username: username,
       });
+      
+      userName = username;
+    } else {
+      userName = existingUser[0].username;
     }
     
     const signupData = unverifiedSignup[0];
@@ -324,6 +332,16 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     // Delete the unverified signup record
     await db.delete(unverifiedSignups)
       .where(eq(unverifiedSignups.email, email));
+
+    // Send confirmation email
+    await sendSignupConfirmationEmail({
+      email,
+      userName,
+      roundId: signupData.roundId,
+      songTitle: signupData.songTitle,
+      artist: signupData.artist,
+      youtubeLink: signupData.youtubeLink,
+    });
 
     return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
   } catch (error) {
@@ -459,10 +477,70 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
   }
 }
 
+/**
+ * Helper function to send signup confirmation email
+ */
+async function sendSignupConfirmationEmail({
+  email,
+  userName,
+  roundId,
+  songTitle,
+  artist,
+  youtubeLink,
+}: {
+  email: string;
+  userName?: string;
+  roundId: number;
+  songTitle: string;
+  artist: string;
+  youtubeLink: string;
+}) {
+  try {
+    // Get round information for the confirmation email
+    const roundInfo = await db
+      .select({
+        id: roundMetadata.id,
+        slug: roundMetadata.slug,
+        votingOpens: roundMetadata.votingOpens,
+        coveringBegins: roundMetadata.coveringBegins,
+        coversDue: roundMetadata.coversDue,
+        listeningParty: roundMetadata.listeningParty,
+      })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId))
+      .limit(1);
+
+    // Send confirmation email
+    if (roundInfo.length > 0) {
+      const round = roundInfo[0];
+      const roundName = round.slug || `Round ${round.id}`;
+      
+      await sendRoundSignupConfirmation({
+        to: email,
+        userName,
+        roundName,
+        songTitle,
+        artist,
+        youtubeLink,
+        roundSlug: round.slug || round.id.toString(),
+        phaseDates: {
+          votingOpens: formatDate.compact(round.votingOpens || new Date()),
+          coveringBegins: formatDate.compact(round.coveringBegins || new Date()),
+          coversDue: formatDate.compact(round.coversDue || new Date()),
+          listeningParty: formatDate.compact(round.listeningParty || new Date()),
+        },
+      });
+    }
+  } catch (error) {
+    // Log error but don't fail the signup
+    console.error('Failed to send confirmation email:', error);
+  }
+}
+
 export async function signup(formData: FormData, providedUserId?: string): Promise<FormReturn> {
   "use server";
   // Use provided userId if available, otherwise get from auth
-  const { userId: authUserId } = await getAuthUser();
+  const { userId: authUserId, email: authEmail } = await getAuthUser();
   const userId = providedUserId || authUserId;
   
   if (!userId) {
@@ -536,6 +614,23 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         ))
       )[0].id;
 
+    // Get user info for email
+    let userEmail = authEmail;
+    let userName: string | undefined;
+    
+    if (!userEmail) {
+      const userInfo = await db
+        .select({ email: users.email, username: users.username })
+        .from(users)
+        .where(eq(users.userid, userId))
+        .limit(1);
+      
+      if (userInfo.length > 0) {
+        userEmail = userInfo[0].email;
+        userName = userInfo[0].username;
+      }
+    }
+
     // If user has already signed up, update their signup
     if (existingSignup.length > 0) {
       await db.update(signUps)
@@ -569,6 +664,18 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         songId: songId,
         userId: userId,
       });
+
+      // Send confirmation email for new signups
+      if (userEmail) {
+        await sendSignupConfirmationEmail({
+          email: userEmail,
+          userName,
+          roundId: validData.roundId,
+          songTitle: validData.songTitle,
+          artist: validData.artist,
+          youtubeLink: validData.youtubeLink,
+        });
+      }
 
       return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
     }
