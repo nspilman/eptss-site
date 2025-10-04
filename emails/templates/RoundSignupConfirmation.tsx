@@ -30,19 +30,14 @@ interface RoundSignupConfirmationProps {
 }
 
 export const RoundSignupConfirmation = ({
-  userName = 'there',
-  roundName = 'Round 42',
-  songTitle = 'Bohemian Rhapsody',
-  artist = 'Queen',
-  youtubeLink = 'https://youtube.com/watch?v=fJ9rUzIMcZQ',
-  roundUrl = 'https://everyoneplaysthesamesong.com/round/42',
-  baseUrl = 'https://everyoneplaysthesamesong.com',
-  phaseDates = {
-    votingOpens: 'Jan 15, 2025',
-    coveringBegins: 'Jan 22, 2025',
-    coversDue: 'Feb 5, 2025',
-    listeningParty: 'Feb 8, 2025',
-  },
+  userName,
+  roundName,
+  songTitle,
+  artist,
+  youtubeLink,
+  roundUrl,
+  baseUrl,
+  phaseDates,
 }: RoundSignupConfirmationProps) => {
   const greeting = userName ? `Hi ${userName}` : 'Hi';
 

@@ -7,6 +7,7 @@
 
 // Templates
 export { RoundSignupConfirmation } from './templates/RoundSignupConfirmation';
+export { AdminSignupNotification } from './templates/AdminSignupNotification';
 export { BaseEmailLayout } from './templates/BaseEmailLayout';
 
 // Components

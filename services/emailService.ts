@@ -3,6 +3,7 @@
 import { Resend } from 'resend';
 import { render } from '@react-email/render';
 import { RoundSignupConfirmation } from '@/emails/templates/RoundSignupConfirmation';
+import { AdminSignupNotification } from '@/emails/templates/AdminSignupNotification';
 
 // Initialize Resend client
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
@@ -111,9 +112,93 @@ export async function sendRoundSignupConfirmation(
     })
   );
 
-  return sendEmail({
+  // Send user confirmation email
+  const userEmailResult = await sendEmail({
     to,
     subject: `🎵 You're signed up for ${roundName}!`,
+    html,
+  });
+
+  // Send admin notification email (don't fail if this fails)
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  if (adminEmail) {
+    try {
+      await sendAdminSignupNotification({
+        userEmail: to,
+        userName,
+        songTitle,
+        artist,
+        youtubeLink,
+        roundName,
+        roundSlug,
+      });
+    } catch (error) {
+      console.error('Failed to send admin notification:', error);
+      // Don't fail the whole operation if admin email fails
+    }
+  }
+
+  return userEmailResult;
+}
+
+/**
+ * Send admin notification when a user signs up
+ */
+export interface AdminSignupNotificationParams {
+  userEmail: string;
+  userName?: string;
+  songTitle: string;
+  artist: string;
+  youtubeLink: string;
+  roundName: string;
+  roundSlug: string;
+}
+
+export async function sendAdminSignupNotification(
+  params: AdminSignupNotificationParams
+): Promise<EmailResult> {
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  
+  if (!adminEmail) {
+    return {
+      success: false,
+      error: 'Admin email not configured',
+    };
+  }
+
+  const {
+    userEmail,
+    userName,
+    songTitle,
+    artist,
+    youtubeLink,
+    roundName,
+    roundSlug,
+  } = params;
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+
+  // Render React Email template to HTML
+  const html = await render(
+    AdminSignupNotification({
+      userEmail,
+      userName,
+      songTitle,
+      artist,
+      youtubeLink,
+      roundName,
+      roundUrl,
+      baseUrl,
+    })
+  );
+
+  console.log('Admin email HTML length:', html?.length);
+  console.log('Admin email HTML preview:', html?.substring(0, 200));
+
+  return sendEmail({
+    to: adminEmail,
+    subject: `New Signup: ${userEmail} - ${songTitle}`,
     html,
   });
 }
