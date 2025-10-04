@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { sendTestSignupEmail } from "./actions/sendTestEmail";
+import { sendTestSignupEmail, sendTestVotingEmail, sendTestSubmissionEmail } from "./actions/sendTestEmail";
 import { motion } from "framer-motion";
 
 const Button = ({ 
@@ -28,16 +28,28 @@ const Button = ({
   </button>
 );
 
-export function TestEmailButton() {
-  const [isLoading, setIsLoading] = useState(false);
+export function TestEmailButtons() {
+  const [isLoading, setIsLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleSendTestEmail = async () => {
-    setIsLoading(true);
+  const handleSendTestEmail = async (type: 'signup' | 'voting' | 'submission') => {
+    setIsLoading(type);
     setMessage(null);
 
     try {
-      const result = await sendTestSignupEmail();
+      let result;
+      
+      switch (type) {
+        case 'signup':
+          result = await sendTestSignupEmail();
+          break;
+        case 'voting':
+          result = await sendTestVotingEmail();
+          break;
+        case 'submission':
+          result = await sendTestSubmissionEmail();
+          break;
+      }
       
       if (result.success) {
         setMessage({ type: 'success', text: result.message || 'Test email sent!' });
@@ -50,7 +62,7 @@ export function TestEmailButton() {
         text: error instanceof Error ? error.message : 'An error occurred' 
       });
     } finally {
-      setIsLoading(false);
+      setIsLoading(null);
       
       // Clear message after 5 seconds
       setTimeout(() => setMessage(null), 5000);
@@ -59,13 +71,31 @@ export function TestEmailButton() {
 
   return (
     <div className="space-y-3">
-      <Button 
-        onClick={handleSendTestEmail}
-        disabled={isLoading}
-        className="w-full"
-      >
-        {isLoading ? '📧 Sending...' : '📧 Send Test Signup Email'}
-      </Button>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Button 
+          onClick={() => handleSendTestEmail('signup')}
+          disabled={isLoading !== null}
+          className="w-full"
+        >
+          {isLoading === 'signup' ? '📧 Sending...' : '📧 Signup Email'}
+        </Button>
+        
+        <Button 
+          onClick={() => handleSendTestEmail('voting')}
+          disabled={isLoading !== null}
+          className="w-full"
+        >
+          {isLoading === 'voting' ? '🗳️ Sending...' : '🗳️ Voting Email'}
+        </Button>
+        
+        <Button 
+          onClick={() => handleSendTestEmail('submission')}
+          disabled={isLoading !== null}
+          className="w-full"
+        >
+          {isLoading === 'submission' ? '🎸 Sending...' : '🎸 Submission Email'}
+        </Button>
+      </div>
       
       {message && (
         <motion.div

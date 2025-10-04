@@ -5,7 +5,7 @@ import { AdminSignupForm } from "../AdminSignupForm";
 import { AdminSubmissionForm } from "../AdminSubmissionForm";
 import { CreateRoundForm } from "../CreateRoundForm";
 import { SetRoundSongForm } from "../SetRoundSongForm";
-import { TestEmailButton } from "../TestEmailButton";
+import { TestEmailButtons } from "../TestEmailButton";
 import { UserDetails } from "@/types/user";
 
 type ActionsTabProps = {
@@ -26,11 +26,11 @@ export function ActionsTab({ roundId, users, roundSlug }: ActionsTabProps) {
       {/* Email Testing Section */}
       <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-4 space-y-4">
         <h2 className="text-xl font-semibold text-primary mb-4">Email Testing</h2>
-        <div className="max-w-md">
+        <div>
           <p className="text-sm text-gray-400 mb-3">
-            Send a test signup confirmation email to yourself to preview the design and content.
+            Send test emails to yourself to preview the design and content for each user action.
           </p>
-          <TestEmailButton />
+          <TestEmailButtons />
         </div>
       </section>
 
