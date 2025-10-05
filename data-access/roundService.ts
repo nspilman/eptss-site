@@ -54,7 +54,7 @@ const queryCurrentRound = () => {
         sql`${roundMetadata.listeningParty} >= ${now.toISOString()}`
       )
     )
-    .orderBy(desc(roundMetadata.signupOpens))
+    .orderBy(asc(roundMetadata.listeningParty))
     .limit(1);
 };
 
@@ -159,6 +159,8 @@ export const getCurrentRound = async (): Promise<AsyncResult<Round>> => {
     if (!roundData.length) {
       return createEmptyResult('No current round found');
     }
+
+    console.log({roundData});
 
     const round = mapToRound(roundData[0]);
     return createSuccessResult(round);
