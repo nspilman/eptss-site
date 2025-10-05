@@ -88,7 +88,6 @@ export function useFormSubmission<T extends FieldValues>({
         });
       }
     } catch (error) {
-      console.log({error});
       toast({
         variant: "destructive",
         title: "Error",
