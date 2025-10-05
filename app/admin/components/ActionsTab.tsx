@@ -7,6 +7,7 @@ import { CreateRoundForm } from "../CreateRoundForm";
 import { SetRoundSongForm } from "../SetRoundSongForm";
 import { TestEmailButtons } from "../TestEmailButton";
 import { TestAssignRoundSongButton } from "../TestAssignRoundSongButton";
+import { TestCreateFutureRoundsButton } from "../TestCreateFutureRoundsButton";
 import { UserDetails } from "@/types/user";
 
 type ActionsTabProps = {
@@ -67,6 +68,9 @@ export function ActionsTab({ roundId, users, roundSlug }: ActionsTabProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <TestAssignRoundSongButton />
+          </div>
+          <div>
+            <TestCreateFutureRoundsButton />
           </div>
         </div>
       </section>

@@ -122,3 +122,15 @@ curl -X POST http://localhost:3000/api/cron/assign-round-song \
 - **Schedule**: Every 2 hours
 - **Purpose**: Automatically assigns the winning song to a round when voting closes
 - **Workflow**: `.github/workflows/assign-round-song.yml`
+
+### create-future-rounds
+- **Schedule**: Daily at 9:00 AM UTC (1:00 AM PST)
+- **Purpose**: Ensures there are always 2 future quarterly rounds created
+- **Workflow**: `.github/workflows/create-future-rounds.yml`
+- **Details**: 
+  - Rounds are quarterly (Jan 1, Apr 1, Jul 1, Oct 1)
+  - Named with format: YYYY-MM-DD (e.g., 2025-10-01)
+  - Created without songs assigned
+  - Voting opens 2 weeks after quarter starts
+  - Voting lasts 1 week
+  - Covers due & listening party 2 weeks after quarter ends

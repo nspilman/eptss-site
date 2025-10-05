@@ -195,6 +195,36 @@ export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>>
   }
 };
 
+export const getFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
+  try {
+    const currentRoundResult = await getCurrentRoundId();
+    if (currentRoundResult.status !== 'success') {
+      return createSuccessResult([]);
+    }
+
+    // Get rounds with ID greater than current round
+    const rounds = await db
+      .select()
+      .from(roundMetadata)
+      .leftJoin(songs, eq(roundMetadata.songId, songs.id))
+      .where(sql`${roundMetadata.id} > ${currentRoundResult.data}`)
+      .orderBy(asc(roundMetadata.id));
+
+    if (!rounds.length) {
+      return createSuccessResult([]);
+    }
+
+    const mappedRounds = rounds.map(round => mapToRound({
+      ...round.round_metadata,
+      song: round.songs ? { artist: round.songs.artist, title: round.songs.title } : { artist: "", title: "" }
+    }));
+
+    return createSuccessResult(mappedRounds);
+  } catch (error) {
+    return createErrorResult(error instanceof Error ? error : new Error('Failed to get future rounds'));
+  }
+};
+
 export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> => {
   try {
     const currentRoundResult = await getCurrentRoundId();

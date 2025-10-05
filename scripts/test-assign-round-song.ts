@@ -7,10 +7,9 @@
  *   bun run scripts/test-assign-round-song.ts
  */
 
-const CRON_SECRET = process.env.CRON_SECRET;
-const API_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
 async function testAssignRoundSong() {
+  const CRON_SECRET = process.env.CRON_SECRET;
+  const API_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
   console.log('🧪 Testing assign-round-song endpoint...\n');
 
   if (!CRON_SECRET) {
