@@ -134,3 +134,16 @@ curl -X POST http://localhost:3000/api/cron/assign-round-song \
   - Voting opens 2 weeks after quarter starts
   - Voting lasts 1 week
   - Covers due & listening party 2 weeks after quarter ends
+
+### send-reminder-emails
+- **Schedule**: Daily at 10:00 AM UTC (2:00 AM PST)
+- **Purpose**: Sends reminder emails to participants throughout the round
+- **Workflow**: `.github/workflows/send-reminder-emails.yml`
+- **Email Types**:
+  1. **Voting closes tomorrow** - Sent 24-48 hours before voting closes (to signed-up users)
+  2. **Covering halfway** - Sent at midpoint of covering period (to all participants)
+  3. **One month left** - Sent ~30 days before covers due (to all participants)
+  4. **Last week** - Sent ~7 days before covers due (to all participants)
+  5. **Covers due tomorrow** - Sent 24-48 hours before deadline (to all participants)
+- **Deduplication**: Tracks sent emails in database to prevent duplicates
+- **Database**: Requires migration `0018_create_email_reminders_sent.sql`

@@ -141,7 +141,29 @@ export const feedback = pgTable("feedback", {
   isPublic: boolean("is_public").notNull().default(false),
 });
 
+// Reminder Email Type Enum
+export const reminderEmailTypeEnum = pgEnum('reminder_email_type', [
+  'voting_closes_tomorrow',
+  'covering_halfway',
+  'covering_one_month_left',
+  'covering_last_week',
+  'covers_due_tomorrow'
+]);
+
+// Email Reminders Sent Table
+export const emailRemindersSent = pgTable("email_reminders_sent", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  userId: uuid("user_id").references(() => users.userid).notNull(),
+  emailType: reminderEmailTypeEnum("email_type").notNull(),
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  success: boolean("success").notNull().default(true),
+  errorMessage: text("error_message"),
+});
+
 export type TestRun = typeof testRuns.$inferSelect;
 export type NewTestRun = typeof testRuns.$inferInsert;
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;
+export type EmailReminderSent = typeof emailRemindersSent.$inferSelect;
+export type NewEmailReminderSent = typeof emailRemindersSent.$inferInsert;

@@ -10,6 +10,11 @@ import { AdminVotingNotification } from '@/emails/templates/AdminVotingNotificat
 import { SubmissionConfirmation } from '@/emails/templates/SubmissionConfirmation';
 import { AdminSubmissionNotification } from '@/emails/templates/AdminSubmissionNotification';
 import { AdminSongAssignmentNotification } from '@/emails/templates/AdminSongAssignmentNotification';
+import { VotingClosesTomorrow } from '@/emails/templates/VotingClosesTomorrow';
+import { CoveringHalfway } from '@/emails/templates/CoveringHalfway';
+import { CoveringOneMonthLeft } from '@/emails/templates/CoveringOneMonthLeft';
+import { CoveringLastWeek } from '@/emails/templates/CoveringLastWeek';
+import { CoversDueTomorrow } from '@/emails/templates/CoversDueTomorrow';
 
 // Initialize Resend client
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
@@ -537,6 +542,184 @@ export async function sendAdminSongAssignmentNotification(
   return sendEmail({
     to: adminEmail,
     subject: `🎵 Song Auto-Assigned: ${roundName}`,
+    html,
+  });
+}
+
+/**
+ * Send reminder emails
+ */
+
+// Voting closes tomorrow
+export interface VotingClosesTomorrowParams {
+  userEmail: string;
+  userName: string;
+  roundName: string;
+  roundSlug: string;
+  votingCloses: string;
+}
+
+export async function sendVotingClosesTomorrowEmail(
+  params: VotingClosesTomorrowParams
+): Promise<EmailResult> {
+  const { userEmail, userName, roundName, roundSlug, votingCloses } = params;
+
+  const html = await render(
+    React.createElement(VotingClosesTomorrow, {
+      userName,
+      roundName,
+      roundSlug,
+      votingCloses,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `⏰ Voting closes tomorrow for ${roundName}`,
+    html,
+  });
+}
+
+// Covering halfway
+export interface CoveringHalfwayParams {
+  userEmail: string;
+  userName: string;
+  roundName: string;
+  roundSlug: string;
+  songTitle: string;
+  songArtist: string;
+  coversDue: string;
+}
+
+export async function sendCoveringHalfwayEmail(
+  params: CoveringHalfwayParams
+): Promise<EmailResult> {
+  const { userEmail, userName, roundName, roundSlug, songTitle, songArtist, coversDue } = params;
+
+  const html = await render(
+    React.createElement(CoveringHalfway, {
+      userName,
+      roundName,
+      roundSlug,
+      songTitle,
+      songArtist,
+      coversDue,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `🎸 Halfway through covering for ${roundName}`,
+    html,
+  });
+}
+
+// One month left
+export interface CoveringOneMonthLeftParams {
+  userEmail: string;
+  userName: string;
+  roundName: string;
+  roundSlug: string;
+  songTitle: string;
+  songArtist: string;
+  coversDue: string;
+  hasSubmitted: boolean;
+}
+
+export async function sendCoveringOneMonthLeftEmail(
+  params: CoveringOneMonthLeftParams
+): Promise<EmailResult> {
+  const { userEmail, userName, roundName, roundSlug, songTitle, songArtist, coversDue, hasSubmitted } = params;
+
+  const html = await render(
+    React.createElement(CoveringOneMonthLeft, {
+      userName,
+      roundName,
+      roundSlug,
+      songTitle,
+      songArtist,
+      coversDue,
+      hasSubmitted,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `📅 One month left to submit your cover for ${roundName}`,
+    html,
+  });
+}
+
+// Last week
+export interface CoveringLastWeekParams {
+  userEmail: string;
+  userName: string;
+  roundName: string;
+  roundSlug: string;
+  songTitle: string;
+  songArtist: string;
+  coversDue: string;
+  hasSubmitted: boolean;
+}
+
+export async function sendCoveringLastWeekEmail(
+  params: CoveringLastWeekParams
+): Promise<EmailResult> {
+  const { userEmail, userName, roundName, roundSlug, songTitle, songArtist, coversDue, hasSubmitted } = params;
+
+  const html = await render(
+    React.createElement(CoveringLastWeek, {
+      userName,
+      roundName,
+      roundSlug,
+      songTitle,
+      songArtist,
+      coversDue,
+      hasSubmitted,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `⏰ Final week to submit your cover for ${roundName}`,
+    html,
+  });
+}
+
+// Covers due tomorrow
+export interface CoversDueTomorrowParams {
+  userEmail: string;
+  userName: string;
+  roundName: string;
+  roundSlug: string;
+  songTitle: string;
+  songArtist: string;
+  coversDue: string;
+  listeningParty: string;
+  hasSubmitted: boolean;
+}
+
+export async function sendCoversDueTomorrowEmail(
+  params: CoversDueTomorrowParams
+): Promise<EmailResult> {
+  const { userEmail, userName, roundName, roundSlug, songTitle, songArtist, coversDue, listeningParty, hasSubmitted } = params;
+
+  const html = await render(
+    React.createElement(CoversDueTomorrow, {
+      userName,
+      roundName,
+      roundSlug,
+      songTitle,
+      songArtist,
+      coversDue,
+      listeningParty,
+      hasSubmitted,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `🚨 FINAL CALL: Covers due tomorrow for ${roundName}`,
     html,
   });
 }
