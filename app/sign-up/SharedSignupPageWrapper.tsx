@@ -7,6 +7,7 @@ import { db } from "@/db";
 import { signUps, songs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { UserSignupData } from "@/types/signup";
+import { getNextRoundByVotingDate } from "@/data-access";
 
 interface SharedSignupPageWrapperProps {
   slug?: string;
@@ -18,15 +19,19 @@ export const SharedSignupPageWrapper = async ({
   // Check if user is logged in
   const { userId } = await getAuthUser();
   const isLoggedIn = !!userId;
-
   // If slug is provided, use it directly, otherwise get current round info
   const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider(slug);
-  
+
+  // console.log({roundId, dateLabels, hasRoundStarted, slug})
   // Handle case when no slug is provided and round has started
   if (!slug && hasRoundStarted) {
-    // For the next round, we'll use the roundId + 1 as the slug
-    const nextRoundSlug = (roundId + 1).toString();
-    redirect(`/sign-up/${nextRoundSlug}`);
+    // Get the round with the nearest voting start date in the future
+    const nextRoundResult = await getNextRoundByVotingDate();
+    if (nextRoundResult.status === 'success') {
+      redirect(`/sign-up/${nextRoundResult.data.slug}`);
+    }
+    // If no future round found, show an error
+    return <div>No upcoming rounds available for signup</div>;
   }
 
   // Handle case when round is not found

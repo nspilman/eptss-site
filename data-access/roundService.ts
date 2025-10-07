@@ -227,6 +227,32 @@ export const getFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
   }
 };
 
+export const getNextRoundByVotingDate = async (): Promise<AsyncResult<Round>> => {
+  try {
+    const now = new Date();
+    
+    // Get the round with the nearest voting start date in the future
+    const roundData = await createBaseRoundQuery()
+      .where(
+        and(
+          sql`${roundMetadata.votingOpens} IS NOT NULL`,
+          sql`${roundMetadata.votingOpens} > ${now.toISOString()}`
+        )
+      )
+      .orderBy(asc(roundMetadata.votingOpens))
+      .limit(1);
+
+    if (!roundData.length) {
+      return createEmptyResult('No future round found');
+    }
+
+    const round = mapToRound(roundData[0]);
+    return createSuccessResult(round);
+  } catch (error) {
+    return createErrorResult(error instanceof Error ? error : new Error('Failed to get next round by voting date'));
+  }
+};
+
 export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> => {
   try {
     const currentRoundResult = await getCurrentRoundId();
