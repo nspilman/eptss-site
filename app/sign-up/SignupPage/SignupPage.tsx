@@ -5,6 +5,7 @@ import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { SignupForm } from "./SignupForm";
 import { useSearchParams } from "next/navigation";
 import { UserSignupData } from "@/types/signup";
+import { FormReturn } from "@/types";
 
 interface Props {
   hasSignedUp: boolean;
@@ -13,6 +14,8 @@ interface Props {
   slug: string;
   isLoggedIn?: boolean;
   userSignup?: UserSignupData;
+  signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
+  signupWithOTP: (formData: FormData) => Promise<FormReturn>;
 }
 
 export function SignupPage({
@@ -22,6 +25,8 @@ export function SignupPage({
   slug,
   isLoggedIn = false,
   userSignup,
+  signup,
+  signupWithOTP,
 }: Props) {
   // Check URL parameters
   const searchParams = useSearchParams();
@@ -63,6 +68,8 @@ export function SignupPage({
           isLoggedIn={isLoggedIn}
           isUpdate={hasSignedUp && isUpdate}
           existingSignup={userSignup}
+          signup={signup}
+          signupWithOTP={signupWithOTP}
         />
       )}
     </>

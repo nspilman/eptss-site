@@ -6,7 +6,6 @@ import { useFormSubmission } from "@/hooks/useFormSubmission"
 import { Button, Form } from "@/components/ui/primitives"
 import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
-import { userParticipationProvider } from "@/providers"
 import { FormReturn } from "@/types"
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder"
 import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@/schemas/signupSchemas"
@@ -23,6 +22,8 @@ interface SignupFormProps {
   isLoggedIn?: boolean;
   isUpdate?: boolean;
   existingSignup?: UserSignupData;
+  signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
+  signupWithOTP: (formData: FormData) => Promise<FormReturn>;
 }
 
 // Base fields for all users
@@ -87,7 +88,9 @@ export function SignupForm({
   onSuccess, 
   isLoggedIn = false,
   isUpdate = false,
-  existingSignup
+  existingSignup,
+  signup,
+  signupWithOTP
 }: SignupFormProps) {
   // State to track if the form has been submitted (for non-logged in users)
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -115,8 +118,6 @@ export function SignupForm({
   })
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {
-    const { signup, signupWithOTP } = await userParticipationProvider();
-    
     // Use the appropriate signup method based on login status
     if (isLoggedIn) {
       return await signup(formData);

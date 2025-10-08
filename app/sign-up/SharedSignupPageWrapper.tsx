@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { signUps, songs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { UserSignupData } from "@/types/signup";
-import { getNextRoundByVotingDate } from "@/data-access";
+import { getNextRoundByVotingDate, signup, signupWithOTP } from "@/data-access";
 
 interface SharedSignupPageWrapperProps {
   slug?: string;
@@ -22,7 +22,6 @@ export const SharedSignupPageWrapper = async ({
   // If slug is provided, use it directly, otherwise get current round info
   const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider(slug);
 
-  // console.log({roundId, dateLabels, hasRoundStarted, slug})
   // Handle case when no slug is provided and round has started
   if (!slug && hasRoundStarted) {
     // Get the round with the nearest voting start date in the future
@@ -94,6 +93,8 @@ export const SharedSignupPageWrapper = async ({
       slug={slug || currentSlug}
       isLoggedIn={isLoggedIn}
       userSignup={userSignup}
+      signup={signup}
+      signupWithOTP={signupWithOTP}
     />
   );
 };
