@@ -44,7 +44,6 @@ export function FormBuilder({ fields, control, disabled }: FormBuilderProps) {
     <>
       {fields.map((field) => {
         const commonProps = {
-          key: field.name,
           control,
           name: field.name,
           label: field.label,
@@ -58,16 +57,18 @@ export function FormBuilder({ fields, control, disabled }: FormBuilderProps) {
           case "input":
             return (
               <FormInputField
+                key={field.name}
                 {...commonProps}
                 type={field.inputType}
                 autoComplete={field.autoComplete}
               />
             );
           case "textarea":
-            return <FormTextareaField {...commonProps} />;
+            return <FormTextareaField key={field.name} {...commonProps} />;
           case "radio":
             return (
               <FormRadioGroupField
+                key={field.name}
                 {...commonProps}
                 options={field.options}
                 orientation={field.orientation || "horizontal"}

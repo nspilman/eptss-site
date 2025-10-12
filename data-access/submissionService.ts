@@ -4,10 +4,11 @@ import { db } from "@/db";
 import { submissions, users } from "@/db/schema";
 import { Navigation } from "@/enum/navigation";
 import { FormReturn } from "@/types";
-import { getDataToString, handleResponse } from "@/utils";
+import { handleResponse } from "@/utils";
 import { getAuthUser } from "@/utils/supabase/server";
 import { eq, sql } from "drizzle-orm";
 import { submissionFormSchema } from "@/lib/schemas/submission";
+import { validateFormData } from "@/utils/formDataHelpers";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
@@ -92,29 +93,14 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
   const { userId } = await getAuthUser();
   
   try {
-    // Extract form data
-    const formDataObj = {
-      roundId: Number(formData.get("roundId")?.toString() || "-1"),
-      soundcloudUrl: formData.get("soundcloudUrl")?.toString() || "",
-      coolThingsLearned: formData.get("coolThingsLearned")?.toString() || "",
-      toolsUsed: formData.get("toolsUsed")?.toString() || "",
-      happyAccidents: formData.get("happyAccidents")?.toString() || "",
-      didntWork: formData.get("didntWork")?.toString() || ""
-    };
+    // Validate form data with Zod
+    const validation = validateFormData(formData, submissionFormSchema);
     
-    // Validate with Zod
-    const validationResult = submissionFormSchema.safeParse(formDataObj);
-    
-    if (!validationResult.success) {
-      // Format Zod errors into a readable message
-      const errorMessages = validationResult.error.errors.map(err => 
-        `${err.path.join('.')}: ${err.message}`
-      ).join(', ');
-      
-      return handleResponse(400, Navigation.Submit, errorMessages);
+    if (!validation.success) {
+      return handleResponse(400, Navigation.Submit, validation.error);
     }
     
-    const validData = validationResult.data;
+    const validData = validation.data;
     
     // Get the next submission ID
     const lastSubmissionId = await db

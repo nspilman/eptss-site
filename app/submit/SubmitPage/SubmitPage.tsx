@@ -6,7 +6,6 @@ import { useFormSubmission } from "@/hooks/useFormSubmission"
 import { Button, Form } from "@/components/ui/primitives"
 import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
-import { userParticipationProvider } from "@/providers"
 import { FormReturn } from "@/types";
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder";
 import { submissionSchema, type SubmissionInput } from "@/lib/schemas/submission"
@@ -22,6 +21,7 @@ interface Props {
     coverClosesLabel: string;
     listeningPartyLabel: string;
   };
+  submitCover: (formData: FormData) => Promise<FormReturn>;
 }
 
 const formFields: FieldConfig[] = [
@@ -68,6 +68,7 @@ export const SubmitPage = ({
   hasSubmitted,
   song,
   dateStrings,
+  submitCover,
 }: Props) => {
   const { coverClosesLabel, listeningPartyLabel } = dateStrings;
 
@@ -86,7 +87,6 @@ export const SubmitPage = ({
   })
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {
-    const { submitCover } = await userParticipationProvider()
     const result = await submitCover(formData)
 
     if (result.status === "Error") {

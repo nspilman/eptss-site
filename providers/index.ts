@@ -5,3 +5,4 @@ export * from "./userParticipationProvider";
 export * from "./userSessionProvider";
 export * from "./votesProvider/votesProvider";
 export * from "./adminProvider/adminProvider";
+export * from "./monitoringProvider";

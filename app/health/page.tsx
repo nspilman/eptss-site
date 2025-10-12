@@ -1,4 +1,4 @@
-import { getMonitoringData } from "@/data-access";
+import { monitoringProvider } from "@/providers";
 import HealthBars from './HealthBars';
 import { Metadata } from 'next';
 
@@ -12,15 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HealthPage() {
-  const { runs, latestRuns, successRate, totalRuns } = await getMonitoringData();
-
-  // Sort runs by date and convert dates to ISO strings
-  const sortedRuns = [...runs]
-    .sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime())
-    .map(run => ({
-      ...run,
-      startedAt: new Date(run.startedAt).toISOString()
-    }));
+  const { runs: sortedRuns, latestRuns, successRate, totalRuns } = await monitoringProvider();
 
   return (
     <div className="min-h-screen bg-gray-50 py-4">

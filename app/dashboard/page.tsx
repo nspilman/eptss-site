@@ -1,29 +1,22 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { DashboardClient } from './DashboardClient';
 import { getAuthUser } from "@/utils/supabase/server";
-import { db } from "@/db";
-import { unverifiedSignups } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getUnverifiedSignupByEmail, verifySignupByEmail, getNextRoundByVotingDate, getUserSignupData } from "@/data-access";
 
 export default async function DashboardPage() {
   // Check auth first
   const { email, userId } = await getAuthUser();
-  const {  verifySignupByEmail } = await userParticipationProvider();
 
   let verificationStatus: { verified: boolean; message?: string } = { verified: false };
 
   // Check for pending unverified signups for this user
   if (email) {
     try {
-      // First check if there's an unverified signup for this email
-      const unverifiedSignup = await db
-        .select()
-        .from(unverifiedSignups)
-        .where(eq(unverifiedSignups.email, email))
-        .limit(1);
+      // Check if there's an unverified signup for this email using the service layer
+      const unverifiedSignupResult = await getUnverifiedSignupByEmail(email);
 
       // If there is one, verify it automatically
-      if (unverifiedSignup.length > 0) {
+      if (unverifiedSignupResult.status === 'success') {
         const result = await verifySignupByEmail();
         if (result.status === "Success") {
           verificationStatus = { 
@@ -51,10 +44,22 @@ export default async function DashboardPage() {
 
   const { roundDetails } = await userParticipationProvider();
 
+  // Get next round information
+  const nextRoundResult = await getNextRoundByVotingDate();
+  const nextRound = nextRoundResult.status === 'success' ? nextRoundResult.data : null;
+
+  // If there's a next round and user is logged in, check if they've signed up
+  let nextRoundUserSignup = null;
+  if (nextRound && userId) {
+    nextRoundUserSignup = await getUserSignupData(userId, nextRound.roundId);
+  }
+
   return <DashboardClient 
     roundInfo={currentRound} 
     userRoundDetails={roundDetails}
     verificationStatus={verificationStatus}
     userId={userId}
+    nextRound={nextRound}
+    nextRoundUserSignup={nextRoundUserSignup}
   />;
 }

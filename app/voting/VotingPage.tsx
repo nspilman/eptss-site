@@ -1,13 +1,12 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { useFormSubmission } from "@/hooks/useFormSubmission"
-import { Button, Form } from "@/components/ui/primitives"
-import { FormWrapper } from "@/components/client/Forms/FormWrapper"
-import { motion } from "framer-motion"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFormSubmission } from "@/hooks/useFormSubmission";
+import { Button, Form } from "@/components/ui/primitives";
+import { FormWrapper } from "@/components/client/Forms/FormWrapper";
+import { motion } from "framer-motion";
 import { z } from "zod"
-import { userParticipationProvider } from "@/providers"
 import { FormReturn } from "@/types"
 import { VoteOption } from "@/types/vote"
 import { FormBuilder, FieldConfig } from "@/components/ui/form-fields/FormBuilder"
@@ -25,6 +24,7 @@ interface Props {
   };
   userVotes?: { songId: number; vote: number }[];
   showUpdateView?: boolean;
+  submitVotes: (roundId: number, formData: FormData) => Promise<FormReturn>;
 }
 
 type VoteInput = Record<string, string>
@@ -55,6 +55,7 @@ export function VotingPage({
   userRoundDetails,
   userVotes = [],
   showUpdateView = false,
+  submitVotes,
 }: Props) {
   // Create schema dynamically based on available songs
   const voteSchema = z.object({
@@ -104,7 +105,6 @@ export function VotingPage({
     }
     newFormData.set('roundId', roundId.toString())
 
-    const { submitVotes } = await userParticipationProvider()
     const result = await submitVotes(roundId, newFormData)
     return result
   }
@@ -151,7 +151,7 @@ export function VotingPage({
       </motion.div>
     )
   }
-
+  
   return (
     <FormWrapper
       title={`Vote for the songs you want to cover in Round ${roundId}`}

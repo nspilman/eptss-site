@@ -7,3 +7,4 @@ export * from "./userSessionService";
 export * from "./votesService";
 export * from "./statsService";
 export * from "./monitoringService";
+export * from "./verificationService";

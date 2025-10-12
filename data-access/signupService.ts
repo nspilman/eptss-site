@@ -72,11 +72,54 @@ export const getSignupUsersByRound = async (roundId: number) => {
     .where(eq(signUps.roundId, roundId));
 };
 
+export const getUserSignupData = async (userId: string, roundId: number) => {
+  const existingSignup = await db
+    .select({
+      songId: signUps.songId,
+      youtubeLink: signUps.youtubeLink,
+      additionalComments: signUps.additionalComments,
+    })
+    .from(signUps)
+    .where(
+      and(
+        eq(signUps.userId, userId),
+        eq(signUps.roundId, roundId)
+      )
+    )
+    .limit(1);
+
+  if (existingSignup.length === 0) {
+    return undefined;
+  }
+
+  // Get the song details
+  const songDetails = await db
+    .select({
+      title: songs.title,
+      artist: songs.artist,
+    })
+    .from(songs)
+    .where(eq(songs.id, existingSignup[0].songId))
+    .limit(1);
+
+  if (songDetails.length === 0) {
+    return undefined;
+  }
+
+  return {
+    songTitle: songDetails[0].title || undefined,
+    artist: songDetails[0].artist || undefined,
+    youtubeLink: existingSignup[0].youtubeLink || undefined,
+    additionalComments: existingSignup[0].additionalComments || undefined,
+  };
+};
+
 
 
 // Import shared schemas
 import { signupSchema, nonLoggedInSchema } from "@/schemas/signupSchemas";
 import { seededShuffle } from "@/utils/seededShuffle";
+import { validateFormData } from "@/utils/formDataHelpers";
 
 // Alias for backward compatibility
 const nonAuthSignupSchema = nonLoggedInSchema;
@@ -85,31 +128,14 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
   "use server";
   
   try {
-    // Extract and validate form data
-    const formDataObj = {
-      songTitle: formData.get("songTitle")?.toString() || "",
-      artist: formData.get("artist")?.toString() || "",
-      youtubeLink: formData.get("youtubeLink")?.toString() || "",
-      additionalComments: formData.get("additionalComments")?.toString() || "",
-      roundId: Number(formData.get("roundId")?.toString() || "-1"),
-      email: formData.get("email")?.toString() || "",
-      name: formData.get("name")?.toString() || "",
-      location: formData.get("location")?.toString() || "",
-    };
+    // Validate form data with Zod
+    const validation = validateFormData(formData, nonAuthSignupSchema);
     
-    // Validate with Zod
-    const validationResult = nonAuthSignupSchema.safeParse(formDataObj);
-    
-    if (!validationResult.success) {
-      // Format Zod errors into a readable message
-      const errorMessages = validationResult.error.errors.map(err => 
-        `${err.path.join('.')}: ${err.message}`
-      ).join(', ');
-      
-      return handleResponse(400, Navigation.SignUp, errorMessages);
+    if (!validation.success) {
+      return handleResponse(400, Navigation.SignUp, validation.error);
     }
     
-    const validData = validationResult.data;
+    const validData = validation.data;
     
     // Get the next unverified signup ID
     const lastUnverifiedSignupId = await db
@@ -477,28 +503,14 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
   }
   
   try {
-    // Extract and validate form data
-    const formDataObj = {
-      songTitle: formData.get("songTitle")?.toString() || "",
-      artist: formData.get("artist")?.toString() || "",
-      youtubeLink: formData.get("youtubeLink")?.toString() || "",
-      additionalComments: formData.get("additionalComments")?.toString() || "",
-      roundId: Number(formData.get("roundId")?.toString() || "-1"),
-    };
+    // Validate form data with Zod
+    const validation = validateFormData(formData, signupSchema);
     
-    // Validate with Zod
-    const validationResult = signupSchema.safeParse(formDataObj);
-    
-    if (!validationResult.success) {
-      // Format Zod errors into a readable message
-      const errorMessages = validationResult.error.errors.map(err => 
-        `${err.path.join('.')}: ${err.message}`
-      ).join(', ');
-      
-      return handleResponse(400, Navigation.SignUp, errorMessages);
+    if (!validation.success) {
+      return handleResponse(400, Navigation.SignUp, validation.error);
     }
     
-    const validData = validationResult.data;
+    const validData = validation.data;
     
     // Check if user has already signed up for this round
     const existingSignup = await db

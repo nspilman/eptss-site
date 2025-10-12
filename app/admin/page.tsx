@@ -1,9 +1,8 @@
-import { roundProvider, votesProvider, roundsProvider, adminProvider, getActiveUsers } from "@/providers";
+import { roundProvider, votesProvider, roundsProvider, adminPageProvider } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
 import { Metadata } from 'next';
 import { RoundSelector } from "./RoundSelector";
-import { getCurrentRound, getAllUsers } from "@/data-access";
 import { AdminTabs } from "./components";
 import { PageTitle } from "./PageTitle";
 
@@ -29,9 +28,9 @@ const AdminPage = async ({
     // Await searchParams
     const resolvedSearchParams = await searchParams;
 
-    // Get all rounds for the selector
+    // Get all admin data in one call (following the architecture pattern)
+    const { stats, currentRound, allUsers, activeUsers } = await adminPageProvider();
     const { allRoundSlugs } = await roundsProvider({});
-    const currentRound = await getCurrentRound();
 
     // Handle case where no rounds exist
     let currentRoundSlug = "";
@@ -42,10 +41,10 @@ const AdminPage = async ({
     let submissions: Array<{ roundId: number; soundcloudUrl: string; username: string; createdAt: Date }> = [];
     let roundId = 0;
 
-    if (currentRound.data) {
+    if (currentRound) {
       currentRoundSlug = resolvedSearchParams.slug 
         ? resolvedSearchParams.slug
-        : currentRound.data.slug;
+        : currentRound.slug;
 
       // Get current round data if a round exists
       const roundData = await roundProvider(currentRoundSlug);
@@ -78,13 +77,6 @@ const AdminPage = async ({
       voteResults = votesData.voteResults || [];
       outstandingVoters = votesData.outstandingVoters || [];
     }
-    const stats = await adminProvider();
-    
-    // Get all users for the signup form
-    const users = await getAllUsers();
-    
-    // Get active users with their last signup and submission rounds
-    const activeUsers = await getActiveUsers();
 
     // Default to reports tab if none specified
     const activeTab = resolvedSearchParams.tab || "reports";
@@ -110,7 +102,7 @@ const AdminPage = async ({
           voteResults={voteResults}
           roundId={roundId}
           roundSlug={currentRoundSlug}
-          users={users}
+          users={allUsers}
         />
       </div>
     );

@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { users, signUps, submissions } from "@/db/schema";
-import { getCurrentAndPastRounds, getSignupsByRound, getSubmissions, getUserCount } from "@/data-access";
+import { getCurrentAndPastRounds, getSignupsByRound, getSubmissions, getUserCount, getCurrentRound, getAllUsers as getAllUsersService } from "@/data-access";
 import { eq } from "drizzle-orm";
 
 export type AdminStats = {
@@ -10,6 +10,13 @@ export type AdminStats = {
   totalRounds: number;
   activeUsers: number;
   completionRate: number;
+};
+
+export type AdminPageData = {
+  stats: AdminStats;
+  currentRound: Awaited<ReturnType<typeof getCurrentRound>>['data'] | null;
+  allUsers: Awaited<ReturnType<typeof getAllUsersService>>;
+  activeUsers: ActiveUserDetail[];
 };
 
 export type UserDetail = {
@@ -230,4 +237,25 @@ export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
   // Convert map to array and filter out users who have never participated
   return Array.from(userDetailsMap.values())
     .filter(user => user.lastSignupRound !== null || user.lastSubmissionRound !== null);
+};
+
+/**
+ * Comprehensive admin provider that fetches all data needed for the admin page
+ * This consolidates what was previously scattered service calls
+ */
+export const adminPageProvider = async (): Promise<AdminPageData> => {
+  // Fetch all data in parallel for better performance
+  const [stats, currentRoundResult, allUsers, activeUsers] = await Promise.all([
+    adminProvider(),
+    getCurrentRound(),
+    getAllUsersService(),
+    getActiveUsers(),
+  ]);
+
+  return {
+    stats,
+    currentRound: currentRoundResult.status === 'success' ? currentRoundResult.data : null,
+    allUsers,
+    activeUsers,
+  };
 };

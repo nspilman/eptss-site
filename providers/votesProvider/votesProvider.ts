@@ -1,4 +1,4 @@
-import { getCurrentRound, getRoundBySlug, getSignupUsersByRound, getVoteResults, getVotingUsersByRound } from "@/data-access";
+import { getCurrentRound, getRoundBySlug, getSignupUsersByRound, getVoteResults, getVotingUsersByRound, getVoteBreakdownBySong } from "@/data-access";
 
 interface Props {
   roundSlug?: string;
@@ -15,14 +15,19 @@ export const votesProvider = async ({ roundSlug }: Props) => {
     const voteResults = await getVoteResults(targetRoundId);
     const votingUserIds = await getVotingUsersByRound(targetRoundId);
     const usersInRound = await getSignupUsersByRound(targetRoundId);
+    const voteBreakdown = await getVoteBreakdownBySong(targetRoundId);
     const outstandingVoters = usersInRound
       ?.filter(user => !votingUserIds?.includes(user.userId))
       .map(user => user.user?.email)
       .filter((email): email is string => email !== undefined && email !== null);
 
-    return { voteResults, outstandingVoters: outstandingVoters || [] };
+    return { 
+      voteResults, 
+      outstandingVoters: outstandingVoters || [], 
+      voteBreakdown 
+    };
   } catch (error) {
     console.error("Error in votesProvider:", error);
-    return { voteResults: [], outstandingVoters: [] };
+    return { voteResults: [], outstandingVoters: [], voteBreakdown: [] };
   }
 };

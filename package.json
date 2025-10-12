@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "bun --bun next dev --turbopack",
-    "build": "bun --bun next build",
-    "start": "bun --bun next start",
+    "build": "next build",
+    "start": "next start",
     "drizzle:generate": "bun drizzle-kit generate",
     "drizzle:push": "bun drizzle-kit push",
     "lint": "bun --bun next lint",

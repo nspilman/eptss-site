@@ -44,7 +44,7 @@ export function FormRadioGroupField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className} id={`form-field-${name}`}>
           <FormLabel className="text-lg font-medium tracking-wide bg-clip-text text-transparent bg-linear-to-r from-[#e2e240] to-[#40e2e2]">
             {label}
           </FormLabel>

@@ -35,7 +35,7 @@ export function FormTextareaField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className} id={`form-field-${name}`}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Textarea

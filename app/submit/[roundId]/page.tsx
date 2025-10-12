@@ -1,4 +1,5 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
+import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "../SubmitPage";
 
 export default async function SignUpForRound({
@@ -26,6 +27,7 @@ export default async function SignUpForRound({
       roundId={roundId}
       hasSubmitted={roundDetails?.hasSubmitted || false}
       song={song}
+      submitCover={submitCover}
     />
   );
 }

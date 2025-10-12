@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
 import { roundProvider, votesProvider, roundsProvider, userParticipationProvider } from "@/providers";
-import { getVoteBreakdownBySong } from "@/data-access";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 
@@ -32,9 +31,8 @@ export default async function Round({ params }: { params: Promise<{ slug: string
 
     // Only fetch additional data if we're past the signup phase
     if (roundData.phase !== "signups") {
-      const { voteResults, outstandingVoters } = await votesProvider({ roundSlug: slug });
+      const { voteResults, outstandingVoters, voteBreakdown } = await votesProvider({ roundSlug: slug });
       const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false });
-      const voteBreakdown = await getVoteBreakdownBySong(roundData.roundId);
       
       return (
         <>

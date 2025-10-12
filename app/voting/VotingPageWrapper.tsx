@@ -1,4 +1,5 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
+import { submitVotes } from "@/actions/userParticipationActions";
 import { VotingPage } from "./VotingPage";
 import { notFound } from "next/navigation";
 
@@ -44,6 +45,7 @@ export default async function VotingPageWrapper({ slug, searchParams }: Props) {
       userRoundDetails={userRoundDetails}
       userVotes={filteredUserVotes}
       showUpdateView={showUpdateView}
+      submitVotes={submitVotes}
     />
   );
 }
