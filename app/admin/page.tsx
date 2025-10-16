@@ -28,9 +28,14 @@ const AdminPage = async ({
     // Await searchParams
     const resolvedSearchParams = await searchParams;
 
-    // Get all admin data in one call (following the architecture pattern)
-    const { stats, currentRound, allUsers, activeUsers } = await adminPageProvider();
-    const { allRoundSlugs } = await roundsProvider({});
+    // OPTIMIZED: Fetch all data in parallel instead of sequentially
+    const [adminData, roundsData] = await Promise.all([
+      adminPageProvider(),
+      roundsProvider({}),
+    ]);
+
+    const { stats, currentRound, allUsers, activeUsers } = adminData;
+    const { allRoundSlugs } = roundsData;
 
     // Handle case where no rounds exist
     let currentRoundSlug = "";
@@ -40,40 +45,30 @@ const AdminPage = async ({
     let signups: Array<{ email?: string | null; song: { title: string; artist: string }; songId: number; youtubeLink: string; userId?: string }> = [];
     let submissions: Array<{ roundId: number; soundcloudUrl: string; username: string; createdAt: Date }> = [];
     let roundId = 0;
+    let voteResults: Array<{ title: string; artist: string; average: number; votesCount: number }> = [];
+    let outstandingVoters: string[] = [];
 
     if (currentRound) {
       currentRoundSlug = resolvedSearchParams.slug 
         ? resolvedSearchParams.slug
         : currentRound.slug;
-
-      // Get current round data if a round exists
-      const roundData = await roundProvider(currentRoundSlug);
-      phase = roundData.phase;
-      dateLabels = roundData.dateLabels;
-      voteOptions = roundData.voteOptions;
-      signups = roundData.signups;
-      submissions = roundData.submissions;
-      roundId = roundData.roundId;
     } else if (allRoundSlugs && allRoundSlugs.length > 0 && resolvedSearchParams.slug) {
-      // If no current round but we have a slug in params, use that
       currentRoundSlug = resolvedSearchParams.slug;
-      const roundData = await roundProvider(currentRoundSlug);
+    }
+
+    // OPTIMIZED: Fetch round and votes data in parallel if we have a round slug
+    if (currentRoundSlug) {
+      const [roundData, votesData] = await Promise.all([
+        roundProvider(currentRoundSlug),
+        votesProvider({ roundSlug: currentRoundSlug }),
+      ]);
+
       phase = roundData.phase;
       dateLabels = roundData.dateLabels;
       voteOptions = roundData.voteOptions;
       signups = roundData.signups;
       submissions = roundData.submissions;
       roundId = roundData.roundId;
-    }
-    // If no rounds exist at all, we'll use the default empty values
-
-    // Default values for votes data
-    let voteResults: Array<{ title: string; artist: string; average: number; votesCount: number }> = [];
-    let outstandingVoters: string[] = [];
-    
-    // Only fetch votes if we have a valid round
-    if (currentRoundSlug) {
-      const votesData = await votesProvider({ roundSlug: currentRoundSlug });
       voteResults = votesData.voteResults || [];
       outstandingVoters = votesData.outstandingVoters || [];
     }
@@ -103,6 +98,7 @@ const AdminPage = async ({
           roundId={roundId}
           roundSlug={currentRoundSlug}
           users={allUsers}
+          allRoundSlugs={allRoundSlugs}
         />
       </div>
     );

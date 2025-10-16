@@ -18,7 +18,7 @@ if(!roundId) {
 const clientId = process.env.GOOGLE_API_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_API_CLIENT_SECRET;
 
-const redirectUri = 'urn:ietf:wg:oauth:2.0:oob';
+const redirectUri = 'http://localhost:3000/callback';
 
 const oauth2Client = new OAuth2Client(clientId, clientSecret, redirectUri);
 

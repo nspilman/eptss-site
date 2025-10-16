@@ -580,3 +580,61 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
   }
 };
 
+type UpdateRoundInput = {
+  slug: string;
+  signupOpens?: Date;
+  votingOpens?: Date;
+  coveringBegins?: Date;
+  coversDue?: Date;
+  listeningParty?: Date;
+  playlistUrl?: string;
+};
+
+export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<Round>> => {
+  try {
+    // Validate input
+    if (!input.slug) {
+      return createErrorResult(new Error('Missing required field: slug is required'));
+    }
+
+    // Check if round exists
+    const existingRound = await db
+      .select({ id: roundMetadata.id })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.slug, input.slug));
+
+    if (existingRound.length === 0) {
+      return createErrorResult(new Error(`Round with slug "${input.slug}" not found`));
+    }
+
+    const roundId = existingRound[0].id;
+
+    // Build update object with only provided fields
+    const updateData: any = {};
+    if (input.signupOpens) updateData.signupOpens = input.signupOpens;
+    if (input.votingOpens) updateData.votingOpens = input.votingOpens;
+    if (input.coveringBegins) updateData.coveringBegins = input.coveringBegins;
+    if (input.coversDue) updateData.coversDue = input.coversDue;
+    if (input.listeningParty) updateData.listeningParty = input.listeningParty;
+    if (input.playlistUrl !== undefined) updateData.playlistUrl = input.playlistUrl || null;
+
+    // Update the round
+    await db
+      .update(roundMetadata)
+      .set(updateData)
+      .where(eq(roundMetadata.id, roundId));
+
+    // Get the updated round
+    const updatedRound = await getRoundBySlug(input.slug);
+
+    if (updatedRound.status !== 'success') {
+      return createErrorResult(new Error('Failed to retrieve updated round'));
+    }
+
+    return createSuccessResult(updatedRound.data);
+  } catch (error) {
+    console.error('Error updating round:', error);
+    return createErrorResult(error instanceof Error ? error : new Error('Failed to update round'));
+  }
+};
+

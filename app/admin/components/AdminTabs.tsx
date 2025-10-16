@@ -40,6 +40,7 @@ type AdminTabsProps = {
   roundId: number;
   roundSlug: string;
   users: UserDetails[];
+  allRoundSlugs: string[];
 };
 
 export function AdminTabs({
@@ -56,6 +57,7 @@ export function AdminTabs({
   roundId,
   roundSlug,
   users,
+  allRoundSlugs,
 }: AdminTabsProps) {
   const [activeTab, setActiveTab] = useState(initialTab || "reports");
   const router = useRouter();
@@ -115,7 +117,8 @@ export function AdminTabs({
         <ActionsTab 
           roundId={roundId} 
           roundSlug={roundSlug}
-          users={users} 
+          users={users}
+          allRoundSlugs={allRoundSlugs}
         />
       )}
     </div>

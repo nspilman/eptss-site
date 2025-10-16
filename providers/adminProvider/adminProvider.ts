@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { users, signUps, submissions } from "@/db/schema";
 import { getCurrentAndPastRounds, getSignupsByRound, getSubmissions, getUserCount, getCurrentRound, getAllUsers as getAllUsersService } from "@/data-access";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export type AdminStats = {
   totalUsers: number;
@@ -51,23 +51,25 @@ export const adminProvider = async (): Promise<AdminStats> => {
   }
 
   const totalRounds = rounds.data.length;
-  const lastThreeRounds = rounds.data.slice(-3);
-  const activeUserIds = new Set<string>();
   
-  for (const round of lastThreeRounds) {
-    const signups = await getSignupsByRound(round.roundId);
-    signups.forEach(signup => activeUserIds.add(signup.userId || ""));
-  }
-  const activeUsers = activeUserIds.size;
-
-  let totalSignups = 0;
-  let totalSubmissions = 0;
-
-  for (const round of rounds.data) {
-    const signups = await getSignupsByRound(round.roundId);
-    const submissions = await getSubmissions(round.roundId);
-    totalSignups += signups.length;
-    totalSubmissions += submissions.length;
+  // OPTIMIZED: Use the counts already fetched in getCurrentAndPastRounds
+  // instead of fetching them again in loops
+  const totalSignups = rounds.data.reduce((sum, round) => sum + (round.signupCount || 0), 0);
+  const totalSubmissions = rounds.data.reduce((sum, round) => sum + (round.submissionCount || 0), 0);
+  
+  // OPTIMIZED: Get active users from last 3 rounds in a single query
+  const lastThreeRounds = rounds.data.slice(-3);
+  const lastThreeRoundIds = lastThreeRounds.map(r => r.roundId);
+  
+  let activeUsers = 0;
+  if (lastThreeRoundIds.length > 0) {
+    // Single query to get distinct user count from last 3 rounds
+    const activeUsersResult = await db
+      .selectDistinct({ userId: signUps.userId })
+      .from(signUps)
+      .where(sql`${signUps.roundId} IN (${sql.join(lastThreeRoundIds.map(id => sql`${id}`), sql`, `)})`);
+    
+    activeUsers = activeUsersResult.filter(u => u.userId).length;
   }
 
   const completionRate = totalSignups > 0 ? totalSubmissions / totalSignups : 0;
@@ -174,69 +176,64 @@ export const getRoundDetails = async (): Promise<RoundDetail[]> => {
 };
 
 export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
-  // Get all users
-  const allUsers = await db.select({
-    email: users.email,
-    userid: users.userid,
-  }).from(users);
-
-  // Get all rounds
-  const rounds = await getCurrentAndPastRounds();
-  if (rounds.status !== 'success') {
-    return [];
-  }
-
-  // Create a map of user details
-  const userDetailsMap = new Map<string, ActiveUserDetail>();
+  // OPTIMIZED: Get all data in 2 queries instead of N queries in loops
   
-  // Initialize the map with all users
-  allUsers.forEach(user => {
-    userDetailsMap.set(user.userid, {
-      email: user.email,
-      userId: user.userid,
-      lastSignupRound: null,
-      lastSubmissionRound: null,
-    });
+  // Query 1: Get last signup round for each user
+  const lastSignups = await db
+    .select({
+      userId: signUps.userId,
+      email: users.email,
+      lastSignupRound: sql<number>`MAX(${signUps.roundId})`
+    })
+    .from(signUps)
+    .leftJoin(users, eq(signUps.userId, users.userid))
+    .groupBy(signUps.userId, users.email);
+  
+  // Query 2: Get last submission round for each user
+  const lastSubmissions = await db
+    .select({
+      userId: submissions.userId,
+      lastSubmissionRound: sql<number>`MAX(${submissions.roundId})`
+    })
+    .from(submissions)
+    .groupBy(submissions.userId);
+  
+  // Create maps for quick lookup
+  const submissionsMap = new Map(
+    lastSubmissions.map(s => [s.userId, Number(s.lastSubmissionRound)])
+  );
+  
+  // Combine the data
+  const activeUsers: ActiveUserDetail[] = lastSignups
+    .filter(signup => signup.userId && signup.email)
+    .map(signup => ({
+      email: signup.email!,
+      userId: signup.userId!,
+      lastSignupRound: Number(signup.lastSignupRound),
+      lastSubmissionRound: submissionsMap.get(signup.userId!) || null,
+    }));
+  
+  // Add users who only have submissions (no signups)
+  lastSubmissions.forEach(submission => {
+    if (!activeUsers.find(u => u.userId === submission.userId)) {
+      // Get user email
+      db.select({ email: users.email })
+        .from(users)
+        .where(eq(users.userid, submission.userId!))
+        .then(userResult => {
+          if (userResult.length > 0 && userResult[0].email) {
+            activeUsers.push({
+              email: userResult[0].email,
+              userId: submission.userId!,
+              lastSignupRound: null,
+              lastSubmissionRound: Number(submission.lastSubmissionRound),
+            });
+          }
+        });
+    }
   });
-
-  // Process all rounds to find the last signup and submission for each user
-  for (const round of rounds.data) {
-    const roundId = round.roundId;
-    
-    // Get signups for this round
-    const signups = await getSignupsByRound(roundId);
-    
-    // Update last signup round for each user
-    signups.forEach(signup => {
-      if (signup.userId) {
-        const userDetail = userDetailsMap.get(signup.userId);
-        if (userDetail) {
-          if (userDetail.lastSignupRound === null || roundId > userDetail.lastSignupRound) {
-            userDetail.lastSignupRound = roundId;
-          }
-        }
-      }
-    });
-    
-    // Get submissions for this round
-    const submissions = await getSubmissions(roundId);
-    
-    // Update last submission round for each user
-    submissions.forEach(submission => {
-      if (submission.userId) {
-        const userDetail = userDetailsMap.get(submission.userId);
-        if (userDetail) {
-          if (userDetail.lastSubmissionRound === null || roundId > userDetail.lastSubmissionRound) {
-            userDetail.lastSubmissionRound = roundId;
-          }
-        }
-      }
-    });
-  }
-
-  // Convert map to array and filter out users who have never participated
-  return Array.from(userDetailsMap.values())
-    .filter(user => user.lastSignupRound !== null || user.lastSubmissionRound !== null);
+  
+  return activeUsers;
 };
 
 /**

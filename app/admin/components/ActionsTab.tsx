@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AdminSignupForm } from "../AdminSignupForm";
 import { AdminSubmissionForm } from "../AdminSubmissionForm";
 import { CreateRoundForm } from "../CreateRoundForm";
+import { UpdateRoundForm } from "../UpdateRoundForm";
 import { SetRoundSongForm } from "../SetRoundSongForm";
 import { TestEmailButtons } from "../TestEmailButton";
 import { TestAssignRoundSongButton } from "../TestAssignRoundSongButton";
@@ -15,9 +16,10 @@ type ActionsTabProps = {
   roundId: number;
   users: UserDetails[];
   roundSlug: string;
+  allRoundSlugs: string[];
 };
 
-export function ActionsTab({ roundId, users, roundSlug }: ActionsTabProps) {
+export function ActionsTab({ roundId, users, roundSlug, allRoundSlugs }: ActionsTabProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -57,6 +59,11 @@ export function ActionsTab({ roundId, users, roundSlug }: ActionsTabProps) {
           <div>
             <CreateRoundForm />
           </div>
+          <div>
+            <UpdateRoundForm allRoundSlugs={allRoundSlugs} />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <SetRoundSongForm roundId={roundId} roundSlug={roundSlug} />
           </div>
