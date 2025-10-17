@@ -60,16 +60,15 @@ export function ActiveUsersCard({ users }: ActiveUsersCardProps) {
           <h2 className="text-lg font-semibold text-primary">Active Users</h2>
           <p className="text-sm text-secondary">Users and their last participation in rounds</p>
         </div>
-        <div className="max-h-[400px] overflow-auto">
-          <DataTable
-            headers={headers}
-            rows={rows}
-            isLoading={isLoading}
-            defaultSortKey={sortKey}
-            defaultSortDirection={sortDirection}
-            onSort={handleSort}
-          />
-        </div>
+        <DataTable
+          headers={headers}
+          rows={rows}
+          isLoading={isLoading}
+          defaultSortKey={sortKey}
+          defaultSortDirection={sortDirection}
+          onSort={handleSort}
+          maxHeight={400}
+        />
       </motion.div>
     </div>
   );

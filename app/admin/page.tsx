@@ -73,8 +73,8 @@ const AdminPage = async ({
       outstandingVoters = votesData.outstandingVoters || [];
     }
 
-    // Default to reports tab if none specified
-    const activeTab = resolvedSearchParams.tab || "reports";
+    // Default to overview tab if none specified
+    const activeTab = resolvedSearchParams.tab || "overview";
 
     return (
       <div className="container mx-auto py-8 px-4 space-y-8">

@@ -69,20 +69,20 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults }: Voti
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] space-y-4 overflow-auto pr-2">
+          <div className="space-y-4 pr-2">
             <div>
               <h3 className="text-sm font-medium text-white mb-2 flex items-center justify-between">
                 Vote Options
               </h3>
               <div className="rounded-lg border border-gray-700/50">
-                <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} />
+                <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} maxHeight={200} />
               </div>
             </div>
             
             <div>
               <h3 className="text-sm font-medium text-white mb-2">Vote Results</h3>
               <div className="rounded-lg border border-gray-700/50">
-                <DataTable rows={voteResults} headers={voteResultsHeaders} />
+                <DataTable rows={voteResults} headers={voteResultsHeaders} maxHeight={200} />
               </div>
             </div>
 
@@ -92,6 +92,7 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults }: Voti
                 <DataTable
                   rows={outstandingVoters.map((email) => ({ email }))}
                   headers={outstandingVotesHeader}
+                  maxHeight={200}
                 />
               </div>
             </div>

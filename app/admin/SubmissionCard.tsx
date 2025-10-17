@@ -42,8 +42,8 @@ export const SubmissionsCard = ({ submissions }: SubmissionsCardProps) => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] overflow-auto rounded-lg border border-gray-700/50">
-            <DataTable rows={submissionRows} headers={submissionHeaders} />
+          <div className="rounded-lg border border-gray-700/50">
+            <DataTable rows={submissionRows} headers={submissionHeaders} maxHeight={400} />
           </div>
         </CardContent>
       </Card>

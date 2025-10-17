@@ -218,14 +218,14 @@ export function DataTable<T extends string>({
           </button>
         )}
       </div>
-      <div style={{ maxHeight }} className="overflow-hidden">
+      <div style={{ maxHeight }} className="overflow-auto">
         <Table>
-          <TableHeader>
+          <TableHeader className="sticky top-0 z-10 bg-background-primary">
             <TableRow>
               {headers.map((header) => (
                 <TableHead 
                   key={header.key} 
-                  className={header.sortable !== false ? "cursor-pointer select-none" : ""}
+                  className={`${header.sortable !== false ? "cursor-pointer select-none" : ""} bg-background-primary`}
                   onClick={() => handleSort(header.key, header.sortable !== false)}
                 >
                   <div className="flex items-center space-x-1">

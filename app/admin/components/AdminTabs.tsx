@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/primitives/tabs";
+import { OverviewTab } from "./OverviewTab";
 import { ReportsTab } from "./ReportsTab";
+import { UsersTab } from "./UsersTab";
 import { ActionsTab } from "./ActionsTab";
 import { UserDetails } from "@/types/user";
 
@@ -59,50 +62,58 @@ export function AdminTabs({
   users,
   allRoundSlugs,
 }: AdminTabsProps) {
-  const [activeTab, setActiveTab] = useState(initialTab || "reports");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(initialTab || "overview");
+
+  // Sync with URL changes
+  useEffect(() => {
+    setActiveTab(initialTab || "overview");
+  }, [initialTab]);
 
   const handleTabChange = (tabId: string) => {
+    // Only update client-side state - no URL changes to avoid server round-trips
     setActiveTab(tabId);
-    
-    // Create a new URLSearchParams object
-    const params = new URLSearchParams(searchParams?.toString());
-    params.set("tab", tabId);
-    
-    // Navigate to the new URL
-    router.push(`?${params.toString()}`);
   };
 
   return (
-    <div className="w-full">
-      <div className="flex space-x-1 bg-background-secondary/30 p-1 rounded-lg border border-background-tertiary/50 mb-6">
-        <button
-          onClick={() => handleTabChange("reports")}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "reports"
-              ? "bg-accent-primary text-white"
-              : "text-primary hover:bg-background-tertiary/50"
-          }`}
+    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <TabsList className="bg-background-secondary/30 border border-background-tertiary/50 mb-6">
+        <TabsTrigger 
+          value="overview"
+          className="cursor-pointer data-[state=active]:bg-background-tertiary/70 data-[state=active]:text-primary data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
         >
-          Reports
-        </button>
-        <button
-          onClick={() => handleTabChange("actions")}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === "actions"
-              ? "bg-accent-primary text-white"
-              : "text-primary hover:bg-background-tertiary/50"
-          }`}
+          Overview
+        </TabsTrigger>
+        <TabsTrigger 
+          value="reports"
+          className="cursor-pointer data-[state=active]:bg-background-tertiary/70 data-[state=active]:text-primary data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
+        >
+          Rounds
+        </TabsTrigger>
+        <TabsTrigger 
+          value="users"
+          className="cursor-pointer data-[state=active]:bg-background-tertiary/70 data-[state=active]:text-primary data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
+        >
+          Users
+        </TabsTrigger>
+        <TabsTrigger 
+          value="actions"
+          className="cursor-pointer bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30 data-[state=active]:bg-yellow-500 data-[state=active]:text-black data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
         >
           Actions
-        </button>
-      </div>
+        </TabsTrigger>
+      </TabsList>
 
-      {activeTab === "reports" && (
+      <TabsContent value="overview" padding="none">
+        <OverviewTab 
+          stats={stats}
+        />
+      </TabsContent>
+
+      <TabsContent value="reports" padding="none">
         <ReportsTab 
           stats={stats}
-          activeUsers={activeUsers}
           phase={phase}
           dateLabels={dateLabels}
           signups={signups}
@@ -111,16 +122,22 @@ export function AdminTabs({
           outstandingVoters={outstandingVoters}
           voteResults={voteResults}
         />
-      )}
+      </TabsContent>
 
-      {activeTab === "actions" && (
+      <TabsContent value="users" padding="none">
+        <UsersTab 
+          activeUsers={activeUsers}
+        />
+      </TabsContent>
+
+      <TabsContent value="actions" padding="none">
         <ActionsTab 
           roundId={roundId} 
           roundSlug={roundSlug}
           users={users}
           allRoundSlugs={allRoundSlugs}
         />
-      )}
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }

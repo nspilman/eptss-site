@@ -1,14 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ProjectStatsCard } from "../ProjectStatsCard";
-import { ActiveUsersCard } from "../ActiveUsersCard";
 import { RoundScheduleCard } from "../RoundScheduleCard";
 import { SignupsCard } from "../SignupsCard";
 import { SubmissionsCard } from "../SubmissionCard";
 import { VotingCard } from "../VotingCard";
 import { Phase, DateLabel, Submission } from "@/types/round";
-import { ActiveUserDetail } from "@/providers/adminProvider/adminProvider";
 import { VoteOption } from "@/types/vote";
 import { SignupData } from "@/types/signup";
 
@@ -26,7 +23,6 @@ type ReportsTabProps = {
     activeUsers: number;
     completionRate: number;
   };
-  activeUsers: ActiveUserDetail[];
   phase: Phase;
   dateLabels: Record<Phase, DateLabel>;
   signups: Array<Pick<SignupData, 'songId' | 'youtubeLink' | 'song' | 'additionalComments'> & {
@@ -41,7 +37,6 @@ type ReportsTabProps = {
 
 export function ReportsTab({
   stats,
-  activeUsers,
   phase,
   dateLabels,
   signups,
@@ -56,46 +51,34 @@ export function ReportsTab({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-8"
+      className="space-y-6"
     >
-      {/* Project Overview Section */}
-      <section>
-        <ProjectStatsCard 
-          totalUsers={stats.totalUsers}
-          totalRounds={stats.totalRounds}
-          activeUsers={stats.activeUsers}
-          completionRate={stats.completionRate}
-        />
+      {/* Schedule Section */}
+      <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-6">
+        <h2 className="text-2xl font-semibold text-primary mb-4">Schedule</h2>
+        <RoundScheduleCard phase={phase} dateLabels={dateLabels} />
       </section>
       
-      {/* Active Users Section */}
-      <section>
-        <ActiveUsersCard users={activeUsers} />
+      {/* Signups Section */}
+      <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-6">
+        <h2 className="text-2xl font-semibold text-primary mb-4">Signups</h2>
+        <SignupsCard signups={signups} />
       </section>
 
-      {/* Round Details Section */}
-      <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-4 space-y-4">
-        {/* Schedule Card - Full Width */}
-        <RoundScheduleCard phase={phase} dateLabels={dateLabels} />
-        
-        {/* Signups Row */}
-        <div className="w-full">
-          <SignupsCard signups={signups} />
-        </div>
+      {/* Voting Section */}
+      <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-6">
+        <h2 className="text-2xl font-semibold text-primary mb-4">Voting</h2>
+        <VotingCard
+          voteOptions={voteOptions}
+          outstandingVoters={outstandingVoters}
+          voteResults={voteResults}
+        />
+      </section>
 
-        {/* Voting Row */}
-        <div className="w-full">
-          <VotingCard
-            voteOptions={voteOptions}
-            outstandingVoters={outstandingVoters}
-            voteResults={voteResults}
-          />
-        </div>
-
-        {/* Submissions Row */}
-        <div className="w-full">
-          <SubmissionsCard submissions={submissions} />
-        </div>
+      {/* Submissions Section */}
+      <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-6">
+        <h2 className="text-2xl font-semibold text-primary mb-4">Submissions</h2>
+        <SubmissionsCard submissions={submissions} />
       </section>
     </motion.div>
   );
