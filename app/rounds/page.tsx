@@ -1,62 +1,23 @@
-"use server";
-
-import { RoundTimeline } from "@/components/rounds/RoundTimeline";
-import { getCurrentAndPastRounds, Round } from "@/data-access/roundService";
-import { RoundInfo } from "@/types/round";
+import { RoundsDisplay } from "@/app/index/Homepage/RoundsDisplay";
+import { Suspense } from "react";
 
 export default async function RoundsPage() {
-  const roundsResult = await getCurrentAndPastRounds();
-  const rounds = roundsResult.status === 'success' ? roundsResult.data : [];
-
-  const roundsForTimeline: RoundInfo[] = [...rounds]
-    .sort((a, b) => b.roundId - a.roundId)
-    .map((round: Round) => {
-
-      
-      return {
-        roundId: round.roundId,
-        slug: round.slug,
-        phase: "celebration",
-        song: round.song,
-        dateLabels: {
-          signups: { opens: "", closes: "" },
-          voting: { opens: "", closes: "" },
-          covering: { opens: "", closes: "" },
-          celebration: { opens: "", closes: "" }
-        },
-        hasRoundStarted: true,
-        areSubmissionsOpen: false,
-        isVotingOpen: false,
-        voteOptions: [],
-        submissions: [],
-        signups: [],
-        playlistUrl: round.playlistUrl,
-        // Add the counts to the RoundInfo object
-        signupCount: round.signupCount,
-        submissionCount: round.submissionCount
-      };
-    });
-  
-  if (!roundsForTimeline.length) {
-    return (
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 text-white">All Rounds</h1>
-        <div className="text-center py-12">
-          <p className="text-lg text-purple-200">Loading rounds...</p>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-400 to-blue-400 text-transparent bg-clip-text">
-          All Rounds
-        </h1>
-        <p className="text-purple-200">{roundsForTimeline.length} rounds total</p>
+      <div className="max-w-7xl mx-auto">
+        <Suspense fallback={
+          <div className="py-16 bg-[var(--color-background-secondary)] rounded-xl">
+            <div className="max-w-5xl mx-auto px-4 flex justify-center items-center h-40">
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 border-t-2 border-[var(--color-accent-primary)] rounded-full animate-spin mb-4"></div>
+                <p className="text-[var(--color-primary)]">Loading rounds...</p>
+              </div>
+            </div>
+          </div>
+        }>
+          <RoundsDisplay />
+        </Suspense>
       </div>
-      <RoundTimeline rounds={roundsForTimeline} />
     </main>
   );
 }
