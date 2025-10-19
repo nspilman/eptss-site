@@ -1,7 +1,7 @@
-import { Button } from "components/components/ui/button";
-import { Card, CardContent } from "components/components/ui/card";
-import { Badge } from "components/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "components/components/ui/avatar";
+import { Button } from "components/ui/button";
+import { Card, CardContent } from "components/ui/card";
+import { Badge } from "components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "components/ui/avatar";
 import { Camera, MapPin } from "lucide-react";
 import { CalendarIcon, EnvelopeClosedIcon } from "@radix-ui/react-icons";
 

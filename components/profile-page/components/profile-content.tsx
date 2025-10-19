@@ -1,14 +1,14 @@
 import { Shield, Key, Trash2 } from "lucide-react";
 
-import { Button } from "components/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/components/ui/card";
-import { Input } from "components/components/ui/input";
-import { Label } from "components/components/ui/label";
-import { Separator } from "components/components/ui/separator";
-import { Switch } from "components/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "components/components/ui/tabs";
-import { Textarea } from "components/components/ui/textarea";
-import { Badge } from "components/components/ui/badge";
+import { Button } from "components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "components/ui/card";
+import { Input } from "components/ui/input";
+import { Label } from "components/ui/label";
+import { Separator } from "components/ui/separator";
+import { Switch } from "components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "components/ui/tabs";
+import { Textarea } from "components/ui/textarea";
+import { Badge } from "components/ui/badge";
 
 export default function ProfileContent() {
   return (
