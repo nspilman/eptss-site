@@ -1,6 +1,6 @@
 import ConditionalDashboardLayout from "../layouts/ConditionalDashboardLayout";
 
-export default function RoundsLayout({
+export default function RoundLayout({
   children,
 }: {
   children: React.ReactNode;
