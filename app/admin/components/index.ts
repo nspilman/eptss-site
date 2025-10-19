@@ -1,6 +1,8 @@
 export * from "./AdminTabs";
-export * from "./ActionsTab";
-export * from "./OverviewTab";
-export * from "./ReportsTab";
-export * from "./UsersTab";
+export { AdminTabs } from './AdminTabs';
+export { OverviewTab } from './OverviewTab';
+export { ReportsTab } from './ReportsTab';
+export { UsersTab } from './UsersTab';
+export { ActionsTab } from './ActionsTab';
+export { FeedbackTab } from './FeedbackTab';
 export * from "./TabsComponent";

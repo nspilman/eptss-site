@@ -7,6 +7,8 @@ import { OverviewTab } from "./OverviewTab";
 import { ReportsTab } from "./ReportsTab";
 import { UsersTab } from "./UsersTab";
 import { ActionsTab } from "./ActionsTab";
+import { FeedbackTab } from "./FeedbackTab";
+import type { Feedback } from "@/data-access/feedbackService";
 import { UserDetails } from "@/types/user";
 
 import { Phase, DateLabel, Submission } from "@/types/round";
@@ -44,6 +46,7 @@ type AdminTabsProps = {
   roundSlug: string;
   users: UserDetails[];
   allRoundSlugs: string[];
+  feedbackList: Feedback[];
 };
 
 export function AdminTabs({
@@ -61,6 +64,7 @@ export function AdminTabs({
   roundSlug,
   users,
   allRoundSlugs,
+  feedbackList,
 }: AdminTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -98,6 +102,12 @@ export function AdminTabs({
           Users
         </TabsTrigger>
         <TabsTrigger 
+          value="feedback"
+          className="cursor-pointer data-[state=active]:bg-background-tertiary/70 data-[state=active]:text-primary data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
+        >
+          Feedback
+        </TabsTrigger>
+        <TabsTrigger 
           value="actions"
           className="cursor-pointer bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30 data-[state=active]:bg-yellow-500 data-[state=active]:text-black data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
         >
@@ -127,6 +137,12 @@ export function AdminTabs({
       <TabsContent value="users" padding="none">
         <UsersTab 
           activeUsers={activeUsers}
+        />
+      </TabsContent>
+
+      <TabsContent value="feedback" padding="none">
+        <FeedbackTab 
+          feedbackList={feedbackList}
         />
       </TabsContent>
 

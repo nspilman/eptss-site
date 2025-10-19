@@ -1,10 +1,11 @@
 import { roundProvider, votesProvider, roundsProvider, adminPageProvider } from "@/providers";
 import { isAdmin } from "@/utils/isAdmin";
 import { notFound } from "next/navigation";
-import { Metadata } from 'next';
+import { Metadata } from 'next/types';
 import { RoundSelector } from "./RoundSelector";
 import { AdminTabs } from "./components";
 import { PageTitle } from "./PageTitle";
+import { getAllFeedback } from "@/data-access/feedbackService";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Everyone Plays the Same Song",
@@ -29,13 +30,15 @@ const AdminPage = async ({
     const resolvedSearchParams = await searchParams;
 
     // OPTIMIZED: Fetch all data in parallel instead of sequentially
-    const [adminData, roundsData] = await Promise.all([
+    const [adminData, roundsData, feedbackResult] = await Promise.all([
       adminPageProvider(),
       roundsProvider({}),
+      getAllFeedback(100, 0),
     ]);
 
     const { stats, currentRound, allUsers, activeUsers } = adminData;
     const { allRoundSlugs } = roundsData;
+    const feedbackList = feedbackResult.status === 'success' ? feedbackResult.data : [];
 
     // Handle case where no rounds exist
     let currentRoundSlug = "";
@@ -99,6 +102,7 @@ const AdminPage = async ({
           roundSlug={currentRoundSlug}
           users={allUsers}
           allRoundSlugs={allRoundSlugs}
+          feedbackList={feedbackList}
         />
       </div>
     );
