@@ -22,7 +22,7 @@ const SidebarItem = ({ href, icon, label, isActive, onClick, isCollapsed }: Side
     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all
       ${isActive 
         ? "bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black" 
-        : "hover:bg-background-secondary/30 text-accent-secondary hover:text-white"
+        : "hover:bg-white/30 text-accent-secondary hover:text-white"
       }
       ${isCollapsed ? "justify-center" : ""}`}
     title={isCollapsed ? label : undefined}
