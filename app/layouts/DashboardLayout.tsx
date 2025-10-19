@@ -1,34 +1,9 @@
 "use client";
 
-import { Navigation } from "@/enum/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "../../components/ui/icons";
 import { Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
-
-interface SidebarItemProps {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-  isActive?: boolean;
-  onClick?: () => void;
-}
-
-const SidebarItem = ({ href, icon, label, isActive, onClick }: SidebarItemProps) => (
-  <Link 
-    href={href}
-    onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-      ${isActive 
-        ? "bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] opacity-50 text-white" 
-        : "hover:bg-background-secondary/30 text-accent-secondary hover:text-white"
-      }`}
-  >
-    {icon}
-    <span className="font-medium">{label}</span>
-  </Link>
-);
+import { DashboardSidebar } from "./DashboardSidebar";
 
 // Dashboard header that replaces the regular header's mobile menu button with our sidebar toggle
 const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () => void, isSidebarOpen: boolean }) => {
@@ -86,10 +61,24 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
+  // Load collapsed state from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    if (saved !== null) {
+      setIsCollapsed(saved === 'true');
+    }
+  }, []);
   
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+  
+  const toggleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebarCollapsed', String(newState));
   };
 
   return (
@@ -105,52 +94,29 @@ export default function DashboardLayout({
       {/* Custom dashboard header with integrated sidebar toggle */}
       <DashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
-      <div className="flex">
-        {/* Sidebar - hidden on mobile by default, shown when toggled or on md+ screens */}
-        <aside 
-          className={`w-64 min-h-screen bg-background-primary/50 backdrop-blur-xs border-r border-accent-secondary/20 p-4 fixed z-40 transition-transform duration-300 ease-in-out md:translate-x-0 pt-20 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-        >
-          <nav className="space-y-2">
-            <SidebarItem 
-              href={Navigation.Dashboard}
-              icon={<HomeIcon className="w-5 h-5" />}
-              label="Dashboard"
-              isActive={pathname === Navigation.Dashboard}
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <SidebarItem 
-              href="/round/current"
-              icon={<MusicNoteIcon className="w-5 h-5" />}
-              label="Current Round"
-              isActive={pathname === "/round/current"}
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <SidebarItem 
-              href="/rounds"
-              icon={<HistoryIcon className="w-5 h-5" />}
-              label="Past Rounds"
-              isActive={pathname === "/rounds"}
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <SidebarItem 
-              href="/profile" 
-              icon={<UserIcon className="w-5 h-5" />}
-              label="Profile"
-              isActive={pathname === "/profile"}
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <SidebarItem 
-              href="/feedback" 
-              icon={<ChatBubbleLeftEllipsisIcon className="w-5 h-5" />}
-              label="Feedback"
-              isActive={pathname === "/feedback"}
-              onClick={() => setIsSidebarOpen(false)}
-            />
-          </nav>
-        </aside>
+      {/* Mobile Menu - Dropdown from top */}
+      <div className={`md:hidden fixed top-16 left-0 right-0 z-40 bg-background-primary/95 backdrop-blur-md border-b border-accent-secondary/20 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+        <DashboardSidebar
+          isSidebarOpen={isSidebarOpen}
+          isCollapsed={false}
+          toggleCollapse={toggleCollapse}
+          onNavigate={() => setIsSidebarOpen(false)}
+        />
+      </div>
 
-        {/* Main Content - adjusted padding on mobile, margin on larger screens */}
-        <main className="flex-1 p-4 pt-20 md:p-8 md:ml-64">
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block">
+          <DashboardSidebar
+            isSidebarOpen={true}
+            isCollapsed={isCollapsed}
+            toggleCollapse={toggleCollapse}
+            onNavigate={() => setIsSidebarOpen(false)}
+          />
+        </div>
+
+        {/* Main Content */}
+        <main className={`flex-1 p-4 pt-20 md:pl-0 md:pr-6 md:py-6 transition-all duration-500 ease-in-out ${isCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
           {children}
         </main>
       </div>

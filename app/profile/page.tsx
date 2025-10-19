@@ -228,6 +228,7 @@ async function fetchUserSubmissions(supabase: any, userId: string) {
     submissions = rawSubmissions.map((submission: any) => {
       // Get song info for this submission's round
       const roundSongInfo = songInfo[submission.round_id] || { title: null, artist: null };
+      const roundMetadata = extractRoundMetadata(submission.round_metadata);
       
       return {
         id: submission.id,
@@ -236,9 +237,10 @@ async function fetchUserSubmissions(supabase: any, userId: string) {
         artist: roundSongInfo.artist,
         soundcloud_url: submission.soundcloud_url,
         round_id: submission.round_id,
+        round_slug: roundMetadata?.slug || `${submission.round_id}`,
         user_id: submission.user_id,
         additional_comments: submission.additional_comments,
-        round_metadata: extractRoundMetadata(submission.round_metadata)
+        round_metadata: roundMetadata
       };
     });
   }
@@ -356,13 +358,11 @@ export default async function ProfilePage() {
   const { votes, votesError } = await fetchUserVotes(supabase, userId);
   
   return (
-    <div>
-      <ProfilePageClient 
-        user={userData} 
-        signups={signups} 
-        submissions={submissions} 
-        votes={votes || []}
-      />
-    </div>
+    <ProfilePageClient 
+      user={userData} 
+      signups={signups} 
+      submissions={submissions} 
+      votes={votes || []}
+    />
   );
 }

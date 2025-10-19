@@ -12,6 +12,8 @@ import { ExternalLink } from 'lucide-react';
 import { Signup, Submission, GroupedVote } from '../types';
 import { MissingUserErrorDisplay } from './MissingUserErrorDisplay';
 import { ActivityCard } from './ActivityCard';
+import { ProfileHeader } from './ProfileHeader';
+import { PersonalInfoTab } from './PersonalInfoTab';
 
 type User = Database['public']['Tables']['users']['Row'];
 
@@ -29,7 +31,7 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
   
   // Set default tab based on URL parameter or default to 'overview'
   const [activeTab, setActiveTab] = useState(
-    tabParam === 'signups' || tabParam === 'submissions' || tabParam === 'votes' 
+    tabParam === 'signups' || tabParam === 'submissions' || tabParam === 'votes' || tabParam === 'personal'
       ? tabParam 
       : 'overview'
   );
@@ -56,6 +58,7 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
   
   const tabs = [
     { value: 'overview', label: 'Overview' },
+    { value: 'personal', label: 'Personal Info' },
     { value: 'signups', label: `Rounds Signed Up (${signups.length})` },
     { value: 'submissions', label: `Submissions (${submissions.length})` },
     { value: 'votes', label: `Rounds Voted (${votes.length})` },
@@ -87,9 +90,14 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8">
-      <div className="mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">Your Profile</h1>
-        <p className="text-accent-secondary">Welcome back, {user.username || user.email}</p>
+      {/* Profile Header with Stats */}
+      <div className="mb-6">
+        <ProfileHeader 
+          user={user}
+          signupCount={signups.length}
+          submissionCount={submissions.length}
+          voteCount={votes.length}
+        />
       </div>
 
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
@@ -123,7 +131,8 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
           }
         </TabsList>
 
-        <TabsContent value="overview">
+        <TabsContent value="overview" className="space-y-6">
+          {/* Activity Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {
               activityCards.map(card => (
@@ -139,9 +148,16 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
             }
           </div>
 
-          <div className="mt-6 md:mt-8">
-            <h2 className="text-lg md:text-xl font-semibold text-primary mb-3 md:mb-4">Recent Activity</h2>
-            <div className="space-y-4">
+          {/* Recent Activity Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">Recent Activity</CardTitle>
+              <CardDescription className="text-accent-secondary">
+                Your latest actions across all rounds
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
               {/* Combine and sort activities by date with proper typing */}
               {[
                 ...signups.map(item => ({ type: 'signup' as const, data: item, date: item.latest_signup_date })),
@@ -150,24 +166,28 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
               ]
                 .sort((a, b) => new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime())
                 .slice(0, 5)
-                .map((activity) => {
+                .map((activity, index) => {
                   const date = activity.date ? format(new Date(activity.date), 'MMM d, yyyy') : 'Unknown date';
                   let activityType = '';
                   let description = '';
+                  let uniqueKey = '';
                   
                   if (activity.type === 'signup') {
                     activityType = 'Signup';
                     description = `You signed up for Round #${activity.data.round_slug}`;
+                    uniqueKey = `signup-${activity.data.round_id}-${index}`;
                   } else if (activity.type === 'submission') {
                     activityType = 'Submission';
                     description = `You submitted a song for Round #${activity.data.round_slug}`;
+                    uniqueKey = `submission-${activity.data.id}-${index}`;
                   } else if (activity.type === 'vote') {
                     activityType = 'Votes';
                     description = `You voted on ${activity.data.count} song${activity.data.count !== 1 ? 's' : ''} in Round #${activity.data.round_slug}`;
+                    uniqueKey = `vote-${activity.data.round_slug}-${index}`;
                   }
                   
                   return (
-                    <div key={`${activityType}-${activity.data.round_slug}`} className="p-3 md:p-4 border rounded-lg bg-background-secondary shadow-[0px_0px_2px_2px_var(--color-accent-secondary)] transition-all duration-300 hover:shadow-[0px_0px_3px_3px_var(--color-accent-secondary)]">
+                    <div key={uniqueKey} className="p-3 md:p-4 border rounded-lg bg-background-secondary shadow-[0px_0px_2px_2px_var(--color-accent-secondary)] transition-all duration-300 hover:shadow-[0px_0px_3px_3px_var(--color-accent-secondary)]">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                         <div>
                           <Badge className="mb-2">{activityType}</Badge>
@@ -178,8 +198,13 @@ export function ProfilePageClient({ user, signups, submissions, votes }: Profile
                     </div>
                   );
                 })}
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="personal">
+          <PersonalInfoTab user={user} />
         </TabsContent>
 
         <TabsContent value="signups">
