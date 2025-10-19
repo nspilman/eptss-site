@@ -9,7 +9,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-[var(--color-background-secondary)] mt-16 py-12 border-t border-[var(--color-gray-800)]">
+    <footer className="bg-[var(--color-background-secondary)] mt-16 py-12 border-t border-[var(--color-gray-800)] flex flex-col w-screen">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and Description */}
@@ -72,26 +72,6 @@ export const Footer = () => {
                 <Link href={Navigation.Login} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
                   Join Us
                 </Link>
-              </li>
-              <li>
-                <a 
-                  href="https://discord.gg/everyoneplaysthesamesong" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors"
-                >
-                  Discord Community
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://www.youtube.com/@everyoneplaysthesamesong/playlists" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors"
-                >
-                  Listen to Submissions
-                </a>
               </li>
             </ul>
           </div>

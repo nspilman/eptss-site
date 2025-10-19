@@ -44,10 +44,10 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
 
   return (
     <aside 
-      className={`bg-background-primary/50 backdrop-blur-xs px-3 py-4 transition-all duration-500 ease-in-out relative md:min-h-screen md:border-r md:border-accent-secondary/20 md:fixed md:z-40 md:pt-20 ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}
+      className={`bg-background-primary/50 backdrop-blur-xs h-full px-3 py-4 transition-all duration-500 ease-in-out md:border-r md:border-accent-secondary/20 md:z-40 md:pt-20 ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}
     >
       {/* Collapse/Expand Button with glow effect - On the right divider, Desktop only */}
-      <div className="hidden md:block absolute -right-3 top-24 z-50 group/button">
+      <div className="hidden md:block absolute -right-3 top-24 z-50 group/button ">
         <button
           onClick={toggleCollapse}
           className="flex items-center justify-center w-6 h-6 rounded-full bg-white border border-accent-secondary/20 hover:bg-white/90 text-black hover:text-black transition-colors shadow-lg cursor-pointer"
@@ -59,7 +59,7 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
         <div className="absolute left-3 top-0 bottom-0 w-[1px] bg-accent-secondary/20 transition-all duration-300 group-hover/button:shadow-[0_0_15px_4px_rgba(var(--color-accent-primary-rgb),0.7)] group-hover/button:bg-accent-primary pointer-events-none" style={{height: '100vh', top: '-6rem'}}></div>
       </div>
       
-      <nav className="space-y-2">
+      <nav className="space-y-2 md:sticky md:top-24">
         <SidebarItem 
           href={Navigation.Dashboard}
           icon={<HomeIcon className="w-5 h-5" />}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
+import { Footer } from "@/components/Footer/Footer";
 
 // Dashboard header that replaces the regular header's mobile menu button with our sidebar toggle
 const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () => void, isSidebarOpen: boolean }) => {
@@ -82,11 +83,12 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background-primary via-accent-primary/20 to-accent-secondary/20">
+    <div className="min-h-screen bg-gradient-to-br from-background-primary via-accent-primary/20 to-accent-secondary/20 flex flex-col">
       {/* Replace header's mobile menu button with our own */}
       <style jsx global>{`
-        /* Hide the main site header completely on dashboard pages */
-        body > div > header:first-of-type {
+        /* Hide the main site header and footer completely on dashboard pages */
+        body > div > header:first-of-type,
+        body > div > footer {
           display: none;
         }
       `}</style>
@@ -104,7 +106,9 @@ export default function DashboardLayout({
         />
       </div>
 
-      <div className="flex">
+      {/* Container for sidebar and content - this is the sticky container */}
+      <div className="flex flex-col">
+      <div className="flex flex-1 pt-16">
         {/* Desktop Sidebar */}
         <div className="hidden md:block">
           <DashboardSidebar
@@ -115,10 +119,14 @@ export default function DashboardLayout({
           />
         </div>
 
-        {/* Main Content */}
-        <main className={`flex-1 p-4 pt-20 md:pl-0 md:pr-6 md:py-6 transition-all duration-500 ease-in-out ${isCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
-          {children}
-        </main>
+        {/* Main Content and Footer Column */}
+        <div className={`flex-1 flex flex-col transition-all duration-500 ease-in-out md:ml-20`}>
+          <main className="flex-1 p-4 md:pl-0 md:pr-6 md:py-6">
+            {children}
+          </main>
+        </div>
+      </div>
+      <Footer />
       </div>
     </div>
   );
