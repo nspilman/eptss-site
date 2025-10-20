@@ -1,10 +1,11 @@
 /**
  * Structured logging utility for Server Actions
  * 
- * Integrates with Sentry for error tracking and monitoring
+ * Integrates with Sentry for error tracking and PostHog for analytics
  */
 
 import * as Sentry from '@sentry/nextjs';
+import posthog from 'posthog-js';
 
 type LogLevel = 'info' | 'warn' | 'error';
 
@@ -33,9 +34,9 @@ class Logger {
       ...data,
     };
 
-    // Send to Sentry in production
+    // Send to monitoring services in production
     if (process.env.NODE_ENV === 'production') {
-      // Map log levels to Sentry severity
+      // 1. Send to Sentry for error tracking
       const sentryLevel = level === 'error' ? 'error' : level === 'warn' ? 'warning' : 'info';
       
       if (level === 'error') {
@@ -59,7 +60,17 @@ class Logger {
         });
       }
       
-      // Also log to console for CloudWatch/server logs
+      // 2. Send to PostHog for analytics
+      if (typeof window !== 'undefined' && posthog.__loaded) {
+        posthog.capture(`server_action_${level}`, {
+          message,
+          level,
+          timestamp,
+          ...data,
+        });
+      }
+      
+      // 3. Also log to console for CloudWatch/server logs
       console[level](JSON.stringify(logEntry));
     } else {
       // Development: Pretty print

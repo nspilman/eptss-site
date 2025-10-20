@@ -45,3 +45,5 @@ backup.sql
 
 # Local Netlify folder
 .netlify
+
+.env.local
