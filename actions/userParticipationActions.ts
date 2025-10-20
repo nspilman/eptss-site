@@ -6,7 +6,11 @@ import {
   submitVotes as submitVotesService,
   signupWithOTP as signupWithOTPService,
   completeSignupAfterVerification as completeSignupAfterVerificationService,
-  verifySignupByEmail as verifySignupByEmailService
+  verifySignupByEmail as verifySignupByEmailService,
+  getUserInfo,
+  getRoundInfo,
+  getSongsByIds,
+  getMostRecentSignupForUser,
 } from "@/data-access";
 import { getAuthUser } from "@/utils/supabase/server";
 import { 
@@ -14,55 +18,70 @@ import {
   sendSubmissionConfirmation, 
   sendRoundSignupConfirmation 
 } from "@/services/emailService";
-import { db } from "@/db";
-import { users, roundMetadata, songs, signUps } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
 import { formatDate } from "@/services/dateService";
 import { FormReturn } from "@/types";
 import { revalidatePath } from "next/cache";
 import { signupSchema } from "@/schemas/signupSchemas";
 import { validateFormData } from "@/utils/formDataHelpers";
+import { submitVotesSchema, submitCoverSchema, signupWithSongSchema, signupWithOTPSchema } from "@/lib/schemas/actionSchemas";
+import { votingRateLimit, submissionRateLimit, signupRateLimit, emailRateLimit } from "@/lib/ratelimit";
+import { logger } from "@/lib/logger";
 
 /**
  * Server Action: Submit votes for a round
  * Includes email confirmation on success
  */
 export async function submitVotes(roundId: number, formData: FormData): Promise<FormReturn> {
-  const { userId } = await getAuthUser();
-  const result = await submitVotesService(roundId, formData);
-  
-  if (result.status === 'Success' && userId) {
+  try {
+    // 1. Authenticate
+    const { userId } = await getAuthUser();
+    if (!userId) {
+      return { status: "Error", message: "Please log in to vote" };
+    }
+    
+    // 2. Validate input
+    const validation = submitVotesSchema.safeParse({ roundId });
+    if (!validation.success) {
+      logger.warn('Vote validation failed', { errors: validation.error.errors });
+      return { 
+        status: "Error", 
+        message: validation.error.errors[0].message 
+      };
+    }
+    
+    // 3. Rate limit
+    const { success } = await votingRateLimit.limit(`vote:${userId}`);
+    if (!success) {
+      logger.warn('Voting rate limit exceeded', { userId, roundId });
+      return { 
+        status: "Error", 
+        message: "Too many voting attempts. Please try again later." 
+      };
+    }
+    
+    // 4. Submit votes
+    const result = await submitVotesService(roundId, formData);
+    
+    if (result.status !== 'Success') {
+      logger.error('Vote submission failed', { userId, roundId });
+      return result;
+    }
+    
+    // 5. Send confirmation email (non-blocking)
     try {
-      const userInfo = await db
-        .select({ email: users.email, username: users.username })
-        .from(users)
-        .where(eq(users.userid, userId))
-        .limit(1);
+      const [userInfo, roundInfo] = await Promise.all([
+        getUserInfo(userId),
+        getRoundInfo(roundId),
+      ]);
+      
+      if (userInfo && roundInfo) {
+        // Extract voted songs from formData
+        const votedSongIds = Array.from(formData.entries())
+          .filter(([key]) => key.startsWith('song-'))
+          .map(([key]) => Number(key.replace('song-', '')));
 
-      const roundInfo = await db
-        .select({
-          slug: roundMetadata.slug,
-          coveringBegins: roundMetadata.coveringBegins,
-          coversDue: roundMetadata.coversDue,
-          listeningParty: roundMetadata.listeningParty,
-        })
-        .from(roundMetadata)
-        .where(eq(roundMetadata.id, roundId))
-        .limit(1);
+        const votedSongsData = await getSongsByIds(votedSongIds);
 
-      const votedSongIds = Array.from(formData.entries())
-        .filter(([key]) => key.startsWith('song-'))
-        .map(([key]) => Number(key.replace('song-', '')));
-
-      const votedSongsData = await db
-        .select({ id: songs.id, title: songs.title, artist: songs.artist })
-        .from(songs)
-        .where(sql`${songs.id} IN (${sql.join(votedSongIds.map(id => sql`${id}`), sql`, `)})`)
-        .execute();
-
-      if (userInfo.length > 0 && roundInfo.length > 0) {
-        const user = userInfo[0];
-        const round = roundInfo[0];
         const votedSongs = votedSongsData.map(song => {
           const voteEntry = Array.from(formData.entries())
             .find(([key]) => key === `song-${song.id}`);
@@ -74,27 +93,46 @@ export async function submitVotes(roundId: number, formData: FormData): Promise<
         });
 
         await sendVotingConfirmation({
-          userEmail: user.email,
-          userName: user.username,
-          roundName: round.slug || `Round ${roundId}`,
-          roundSlug: round.slug || roundId.toString(),
+          userEmail: userInfo.email,
+          userName: userInfo.username,
+          roundName: roundInfo.slug || `Round ${roundId}`,
+          roundSlug: roundInfo.slug || roundId.toString(),
           votedSongs,
           phaseDates: {
-            coveringBegins: formatDate.compact(round.coveringBegins || new Date()),
-            coversDue: formatDate.compact(round.coversDue || new Date()),
-            listeningParty: formatDate.compact(round.listeningParty || new Date()),
+            coveringBegins: formatDate.compact(roundInfo.coveringBegins || new Date()),
+            coversDue: formatDate.compact(roundInfo.coversDue || new Date()),
+            listeningParty: formatDate.compact(roundInfo.listeningParty || new Date()),
           },
         });
       }
-    } catch (error) {
-      console.error('Failed to send voting confirmation email:', error);
+    } catch (emailError) {
+      logger.error('Failed to send voting confirmation', { 
+        userId, 
+        roundId, 
+        error: emailError 
+      });
+      // Don't fail the action if email fails
     }
     
-    // Revalidate the voting page
+    // 6. Revalidate cache
     revalidatePath(`/voting/${roundId}`);
+    
+    // 7. Log success
+    logger.info('Votes submitted', { userId, roundId });
+    
+    return result;
+    
+  } catch (error) {
+    logger.error('Vote submission error', {
+      error: error instanceof Error ? error.message : 'Unknown',
+      roundId,
+    });
+    
+    return { 
+      status: "Error", 
+      message: "Failed to submit votes. Please try again." 
+    };
   }
-  
-  return result;
 }
 
 /**
@@ -102,35 +140,65 @@ export async function submitVotes(roundId: number, formData: FormData): Promise<
  * Includes email confirmation on success
  */
 export async function submitCover(formData: FormData): Promise<FormReturn> {
-  const { userId } = await getAuthUser();
-  const result = await submitCoverService(formData);
-  
-  if (result.status === 'Success' && userId) {
+  try {
+    // 1. Authenticate
+    const { userId } = await getAuthUser();
+    if (!userId) {
+      return { status: "Error", message: "Please log in to submit a cover" };
+    }
+    
+    // 2. Validate input
+    const roundId = Number(formData.get("roundId")?.toString() || "-1");
+    const validation = submitCoverSchema.safeParse({
+      roundId: formData.get("roundId"),
+      soundcloudUrl: formData.get("soundcloudUrl"),
+      coolThingsLearned: formData.get("coolThingsLearned"),
+      toolsUsed: formData.get("toolsUsed"),
+      happyAccidents: formData.get("happyAccidents"),
+      didntWork: formData.get("didntWork"),
+    });
+    
+    if (!validation.success) {
+      logger.warn('Cover submission validation failed', { errors: validation.error.errors });
+      return { 
+        status: "Error", 
+        message: validation.error.errors[0].message 
+      };
+    }
+    
+    // 3. Rate limit
+    const { success } = await submissionRateLimit.limit(`submission:${userId}`);
+    if (!success) {
+      logger.warn('Submission rate limit exceeded', { userId, roundId });
+      return { 
+        status: "Error", 
+        message: "Too many submission attempts. Please try again later." 
+      };
+    }
+    
+    // 4. Submit cover
+    const result = await submitCoverService(formData);
+    
+    if (result.status !== 'Success') {
+      logger.error('Cover submission failed', { userId, roundId });
+      return result;
+    }
+    
+    // 5. Send confirmation email (non-blocking)
     try {
-      const roundId = Number(formData.get("roundId")?.toString() || "-1");
-      const soundcloudUrl = formData.get("soundcloudUrl")?.toString() || "";
+      const [userInfo, roundInfo] = await Promise.all([
+        getUserInfo(userId),
+        getRoundInfo(roundId),
+      ]);
       
-      const userInfo = await db
-        .select({ email: users.email, username: users.username })
-        .from(users)
-        .where(eq(users.userid, userId))
-        .limit(1);
-
-      const roundInfo = await db
-        .select({ slug: roundMetadata.slug, listeningParty: roundMetadata.listeningParty })
-        .from(roundMetadata)
-        .where(eq(roundMetadata.id, roundId))
-        .limit(1);
-
-      if (userInfo.length > 0 && roundInfo.length > 0) {
-        const user = userInfo[0];
-        const round = roundInfo[0];
-
+      if (userInfo && roundInfo) {
+        const soundcloudUrl = formData.get("soundcloudUrl")?.toString() || "";
+        
         await sendSubmissionConfirmation({
-          userEmail: user.email,
-          userName: user.username,
-          roundName: round.slug || `Round ${roundId}`,
-          roundSlug: round.slug || roundId.toString(),
+          userEmail: userInfo.email,
+          userName: userInfo.username,
+          roundName: roundInfo.slug || `Round ${roundId}`,
+          roundSlug: roundInfo.slug || roundId.toString(),
           soundcloudUrl,
           additionalComments: {
             coolThingsLearned: formData.get("coolThingsLearned")?.toString(),
@@ -138,21 +206,38 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
             happyAccidents: formData.get("happyAccidents")?.toString(),
             didntWork: formData.get("didntWork")?.toString(),
           },
-          listeningPartyDate: formatDate.compact(round.listeningParty || new Date()),
+          listeningPartyDate: formatDate.compact(roundInfo.listeningParty || new Date()),
         });
       }
-    } catch (error) {
-      console.error('Failed to send submission confirmation email:', error);
+    } catch (emailError) {
+      logger.error('Failed to send submission confirmation', { 
+        userId, 
+        roundId, 
+        error: emailError 
+      });
     }
     
-    // Revalidate the round page
+    // 6. Revalidate cache
     const roundSlug = formData.get("roundSlug")?.toString();
     if (roundSlug) {
       revalidatePath(`/round/${roundSlug}`);
     }
+    
+    // 7. Log success
+    logger.info('Cover submitted', { userId, roundId });
+    
+    return result;
+    
+  } catch (error) {
+    logger.error('Cover submission error', {
+      error: error instanceof Error ? error.message : 'Unknown',
+    });
+    
+    return { 
+      status: "Error", 
+      message: "Failed to submit cover. Please try again." 
+    };
   }
-  
-  return result;
 }
 
 /**
@@ -170,41 +255,26 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       const artist = formData.get("artist")?.toString() || "";
       const youtubeLink = formData.get("youtubeLink")?.toString() || "";
       
-      const userInfo = await db
-        .select({ email: users.email, username: users.username })
-        .from(users)
-        .where(eq(users.userid, userId))
-        .limit(1);
+      const [userInfo, roundInfo] = await Promise.all([
+        getUserInfo(userId),
+        getRoundInfo(roundId),
+      ]);
 
-      const roundInfo = await db
-        .select({
-          slug: roundMetadata.slug,
-          votingOpens: roundMetadata.votingOpens,
-          coveringBegins: roundMetadata.coveringBegins,
-          coversDue: roundMetadata.coversDue,
-          listeningParty: roundMetadata.listeningParty,
-        })
-        .from(roundMetadata)
-        .where(eq(roundMetadata.id, roundId))
-        .limit(1);
-
-      if (userInfo.length > 0 && roundInfo.length > 0) {
-        const user = userInfo[0];
-        const round = roundInfo[0];
+      if (userInfo && roundInfo) {
 
         await sendRoundSignupConfirmation({
-          to: user.email,
-          userName: user.username,
-          roundName: round.slug || `Round ${roundId}`,
+          to: userInfo.email,
+          userName: userInfo.username,
+          roundName: roundInfo.slug || `Round ${roundId}`,
           songTitle,
           artist,
           youtubeLink,
-          roundSlug: round.slug || roundId.toString(),
+          roundSlug: roundInfo.slug || roundId.toString(),
           phaseDates: {
-            votingOpens: formatDate.compact(round.votingOpens || new Date()),
-            coveringBegins: formatDate.compact(round.coveringBegins || new Date()),
-            coversDue: formatDate.compact(round.coversDue || new Date()),
-            listeningParty: formatDate.compact(round.listeningParty || new Date()),
+            votingOpens: formatDate.compact(roundInfo.votingOpens || new Date()),
+            coveringBegins: formatDate.compact(roundInfo.coveringBegins || new Date()),
+            coversDue: formatDate.compact(roundInfo.coversDue || new Date()),
+            listeningParty: formatDate.compact(roundInfo.listeningParty || new Date()),
           },
         });
       }
@@ -227,37 +297,124 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
  * Server Action: Sign up with OTP (for unverified users)
  */
 export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
-  const result = await signupWithOTPService(formData);
-  
-  // Revalidate the sign-up page
-  if (result.status === 'Success') {
+  try {
+    // 1. Validate input
+    const validation = signupWithOTPSchema.safeParse({
+      roundId: formData.get("roundId"),
+      email: formData.get("email"),
+      songTitle: formData.get("songTitle"),
+      artist: formData.get("artist"),
+      youtubeLink: formData.get("youtubeLink"),
+    });
+    
+    if (!validation.success) {
+      logger.warn('OTP signup validation failed', { errors: validation.error.errors });
+      return { 
+        status: "Error", 
+        message: validation.error.errors[0].message 
+      };
+    }
+    
+    // 2. Rate limit by email
+    const email = formData.get("email")?.toString() || "";
+    const { success } = await emailRateLimit.limit(`otp-signup:${email}`);
+    if (!success) {
+      logger.warn('OTP signup rate limit exceeded', { email });
+      return { 
+        status: "Error", 
+        message: "Too many signup attempts. Please try again later." 
+      };
+    }
+    
+    // 3. Process signup
+    const result = await signupWithOTPService(formData);
+    
+    if (result.status !== 'Success') {
+      logger.error('OTP signup failed', { email });
+      return result;
+    }
+    
+    // 4. Revalidate cache
     const roundSlug = formData.get("roundSlug")?.toString();
     if (roundSlug) {
       revalidatePath(`/sign-up/${roundSlug}`);
     }
+    
+    // 5. Log success
+    logger.info('OTP signup initiated', { email });
+    
+    return result;
+    
+  } catch (error) {
+    logger.error('OTP signup error', {
+      error: error instanceof Error ? error.message : 'Unknown',
+    });
+    
+    return { 
+      status: "Error", 
+      message: "Failed to process signup. Please try again." 
+    };
   }
-  
-  return result;
 }
 
 /**
  * Server Action: Complete signup after email verification
  */
 export async function completeSignupAfterVerification(formData: FormData): Promise<FormReturn> {
-  // Validate FormData with Zod
-  const validation = validateFormData(formData, signupSchema);
-  
-  if (!validation.success) {
-    return { status: 'Error', message: validation.error };
-  }
-  
-  const result = await completeSignupAfterVerificationService(validation.data);
-  
-  if (result.status === 'Success') {
+  try {
+    // 1. Authenticate
+    const { userId } = await getAuthUser();
+    if (!userId) {
+      return { status: "Error", message: "Please log in to complete signup" };
+    }
+    
+    // 2. Validate FormData with Zod
+    const validation = validateFormData(formData, signupSchema);
+    
+    if (!validation.success) {
+      logger.warn('Signup completion validation failed', { 
+        userId,
+        error: validation.error 
+      });
+      return { status: 'Error', message: validation.error };
+    }
+    
+    // 3. Rate limit
+    const { success } = await signupRateLimit.limit(`complete-signup:${userId}`);
+    if (!success) {
+      logger.warn('Signup completion rate limit exceeded', { userId });
+      return { 
+        status: "Error", 
+        message: "Too many attempts. Please try again later." 
+      };
+    }
+    
+    // 4. Complete signup
+    const result = await completeSignupAfterVerificationService(validation.data);
+    
+    if (result.status !== 'Success') {
+      logger.error('Signup completion failed', { userId });
+      return result;
+    }
+    
+    // 5. Revalidate cache
     revalidatePath('/dashboard');
+    
+    // 6. Log success
+    logger.info('Signup completed after verification', { userId });
+    
+    return result;
+    
+  } catch (error) {
+    logger.error('Signup completion error', {
+      error: error instanceof Error ? error.message : 'Unknown',
+    });
+    
+    return { 
+      status: "Error", 
+      message: "Failed to complete signup. Please try again." 
+    };
   }
-  
-  return result;
 }
 
 /**
@@ -270,63 +427,31 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
   
   if (result.status === 'Success' && userId) {
     try {
-      const userInfo = await db
-        .select({ email: users.email, username: users.username })
-        .from(users)
-        .where(eq(users.userid, userId))
-        .limit(1);
+      const [userInfo, signupData] = await Promise.all([
+        getUserInfo(userId),
+        getMostRecentSignupForUser(userId),
+      ]);
 
-      if (userInfo.length > 0) {
-        const user = userInfo[0];
-        
-        // Get the most recent signup data to find round and song info
-        const signupData = await db
-          .select({
-            roundId: signUps.roundId,
-            songTitle: songs.title,
-            artist: songs.artist,
-            youtubeLink: signUps.youtubeLink,
-          })
-          .from(signUps)
-          .leftJoin(songs, eq(signUps.songId, songs.id))
-          .where(eq(signUps.userId, userId))
-          .orderBy(sql`${signUps.createdAt} desc`)
-          .limit(1);
+      if (userInfo && signupData) {
+        const roundInfo = await getRoundInfo(signupData.roundId);
 
-        if (signupData.length > 0) {
-          const signup = signupData[0];
-          
-          const roundInfo = await db
-            .select({
-              slug: roundMetadata.slug,
-              votingOpens: roundMetadata.votingOpens,
-              coveringBegins: roundMetadata.coveringBegins,
-              coversDue: roundMetadata.coversDue,
-              listeningParty: roundMetadata.listeningParty,
-            })
-            .from(roundMetadata)
-            .where(eq(roundMetadata.id, signup.roundId))
-            .limit(1);
+        if (roundInfo) {
 
-          if (roundInfo.length > 0) {
-            const round = roundInfo[0];
-
-            await sendRoundSignupConfirmation({
-              to: user.email,
-              userName: user.username,
-              roundName: round.slug || `Round ${signup.roundId}`,
-              songTitle: signup.songTitle || "",
-              artist: signup.artist || "",
-              youtubeLink: signup.youtubeLink,
-              roundSlug: round.slug || signup.roundId.toString(),
-              phaseDates: {
-                votingOpens: formatDate.compact(round.votingOpens || new Date()),
-                coveringBegins: formatDate.compact(round.coveringBegins || new Date()),
-                coversDue: formatDate.compact(round.coversDue || new Date()),
-                listeningParty: formatDate.compact(round.listeningParty || new Date()),
-              },
-            });
-          }
+          await sendRoundSignupConfirmation({
+            to: userInfo.email,
+            userName: userInfo.username,
+            roundName: roundInfo.slug || `Round ${signupData.roundId}`,
+            songTitle: signupData.songTitle || "",
+            artist: signupData.artist || "",
+            youtubeLink: signupData.youtubeLink,
+            roundSlug: roundInfo.slug || signupData.roundId.toString(),
+            phaseDates: {
+              votingOpens: formatDate.compact(roundInfo.votingOpens || new Date()),
+              coveringBegins: formatDate.compact(roundInfo.coveringBegins || new Date()),
+              coversDue: formatDate.compact(roundInfo.coversDue || new Date()),
+              listeningParty: formatDate.compact(roundInfo.listeningParty || new Date()),
+            },
+          });
         }
       }
     } catch (error) {

@@ -9,6 +9,27 @@ import { getAuthUser } from "@/utils/supabase/server";
 import { createClient } from "@/utils/supabase/server";
 import { eq, sql, and, ne } from "drizzle-orm";
 
+/**
+ * Get the most recent signup data for a user
+ * Used in email verification flow
+ */
+export async function getMostRecentSignupForUser(userId: string) {
+  const result = await db
+    .select({
+      roundId: signUps.roundId,
+      songTitle: songs.title,
+      artist: songs.artist,
+      youtubeLink: signUps.youtubeLink,
+    })
+    .from(signUps)
+    .leftJoin(songs, eq(signUps.songId, songs.id))
+    .where(eq(signUps.userId, userId))
+    .orderBy(sql`${signUps.createdAt} desc`)
+    .limit(1);
+
+  return result[0] || null;
+}
+
 export const getSignupsByRound = async (roundId: number) => {
   const data = await db
     .select({

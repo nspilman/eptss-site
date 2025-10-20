@@ -93,6 +93,15 @@ export interface Round {
   submissionCount?: number;
 }
 
+export interface NextRoundData {
+  roundId: number;
+  slug: string | null;
+  song: { title: string; artist: string } | null;
+  signupOpens: Date | string | null;
+  votingOpens: Date | string | null;
+  coveringBegins: Date | string | null;
+}
+
 export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
   try {
     const currentRound = await queryCurrentRound();
@@ -225,29 +234,32 @@ export const getFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
   }
 };
 
-export const getNextRoundByVotingDate = async (): Promise<AsyncResult<Round>> => {
+export const getNextRoundByVotingDate = async (): Promise<AsyncResult<NextRoundData>> => {
   try {
     const now = new Date();
     
-    // Get the round with the nearest voting start date in the future
-    const roundData = await createBaseRoundQuery()
-      .where(
-        and(
-          sql`${roundMetadata.votingOpens} IS NOT NULL`,
-          sql`${roundMetadata.votingOpens} > ${now.toISOString()}`
-        )
-      )
+    const result = await db
+      .select({
+        roundId: roundMetadata.id,
+        slug: roundMetadata.slug,
+        song: { title: songs.title, artist: songs.artist },
+        signupOpens: roundMetadata.signupOpens,
+        votingOpens: roundMetadata.votingOpens,
+        coveringBegins: roundMetadata.coveringBegins,
+      })
+      .from(roundMetadata)
+      .leftJoin(songs, eq(roundMetadata.songId, songs.id))
+      .where(gte(roundMetadata.votingOpens, now))
       .orderBy(asc(roundMetadata.votingOpens))
       .limit(1);
 
-    if (!roundData.length) {
-      return createEmptyResult('No future round found');
+    if (result.length === 0) {
+      return createEmptyResult<NextRoundData>('No upcoming rounds found');
     }
 
-    const round = mapToRound(roundData[0]);
-    return createSuccessResult(round);
+    return createSuccessResult(result[0]);
   } catch (error) {
-    return createErrorResult(error instanceof Error ? error : new Error('Failed to get next round by voting date'));
+    return createErrorResult<NextRoundData>(error instanceof Error ? error : new Error('Failed to get next round'));
   }
 };
 
@@ -640,5 +652,27 @@ export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<
     console.error('Error updating round:', error);
     return createErrorResult(error instanceof Error ? error : new Error('Failed to update round'));
   }
+};
+
+/**
+ * Get basic round information by round ID
+ * Simpler version for Server Actions that need round metadata
+ */
+export const getRoundInfo = async (roundId: number) => {
+  const result = await db
+    .select({
+      id: roundMetadata.id,
+      slug: roundMetadata.slug,
+      signupOpens: roundMetadata.signupOpens,
+      votingOpens: roundMetadata.votingOpens,
+      coveringBegins: roundMetadata.coveringBegins,
+      coversDue: roundMetadata.coversDue,
+      listeningParty: roundMetadata.listeningParty,
+    })
+    .from(roundMetadata)
+    .where(eq(roundMetadata.id, roundId))
+    .limit(1);
+  
+  return result[0] || null;
 };
 

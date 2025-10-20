@@ -41,3 +41,23 @@ export const getAllSongs = async ({
     isWinningSong: song.round_metadata || false,
   }));
 };
+
+/**
+ * Get multiple songs by their IDs
+ * Used for retrieving voted songs in voting confirmation
+ */
+export const getSongsByIds = async (songIds: number[]) => {
+  if (songIds.length === 0) return [];
+  
+  const result = await db
+    .select({ 
+      id: songs.id, 
+      title: songs.title, 
+      artist: songs.artist 
+    })
+    .from(songs)
+    .where(sql`${songs.id} IN (${sql.join(songIds.map(id => sql`${id}`), sql`, `)})`)
+    .execute();
+
+  return result;
+};
