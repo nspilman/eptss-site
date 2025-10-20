@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/primitives';
+import * as Sentry from '@sentry/nextjs';
 
 interface ErrorProps {
   error: Error;
@@ -12,6 +13,7 @@ export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     // Optionally log the error to an error reporting service
     console.error(error);
+    Sentry.captureException(error);
   }, [error]);
 
   return (

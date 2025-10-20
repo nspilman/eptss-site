@@ -10,9 +10,6 @@ const nextConfig = {
       ? 'https://everyoneplaysthesamesong.com' // replace with your actual production domain
       : 'http://localhost:3000'
   },
-  sentry: {
-    hideSourceMaps: true,
-  },
   async redirects() {
     return [
       {
@@ -32,4 +29,8 @@ const sentryWebpackPluginOptions = {
   project: process.env.SENTRY_PROJECT,
 };
 
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+const sentryBuildOptions = {
+  hideSourceMaps: true,
+};
+
+export default withSentryConfig(nextConfig, sentryWebpackPluginOptions, sentryBuildOptions);
