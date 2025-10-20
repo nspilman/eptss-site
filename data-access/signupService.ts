@@ -401,14 +401,19 @@ export async function completeSignupAfterVerification(params: {
 export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
   "use server";
   
+  console.log("=== adminSignupUser START ===");
+  
   try {
     // Extract and validate form data
     const userId = formData.get("userId")?.toString() || "";
     const roundId = Number(formData.get("roundId")?.toString() || "-1");
+    const providedSongId = formData.get("songId")?.toString();
     const songTitle = formData.get("songTitle")?.toString() || "";
     const artist = formData.get("artist")?.toString() || "";
     const youtubeLink = formData.get("youtubeLink")?.toString() || "";
     const additionalComments = formData.get("additionalComments")?.toString() || "";
+    
+    console.log("adminSignupUser called with:", { userId, roundId, providedSongId, songTitle, artist });
     
     if (!userId) {
       return { status: "Error", message: "User ID is required" };
@@ -418,42 +423,54 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
       return { status: "Error", message: "Valid Round ID is required" };
     }
     
-    if (!songTitle || !artist || !youtubeLink) {
-      return { status: "Error", message: "Song title, artist, and YouTube link are required" };
-    }
+    let songId: number;
     
-    // Get the next song ID
-    const lastSongId = await db
-      .select({ id: songs.id })
-      .from(songs)
-      .orderBy(sql`id desc`)
-      .limit(1);
-    
-    const nextSongId = (lastSongId[0]?.id || 0) + 1;
-
-    // First insert or get the song
-    const songResult = await db
-      .insert(songs)
-      .values({
-        id: nextSongId,
-        title: songTitle,
-        artist: artist,
-      })
-      .onConflictDoNothing()
-      .returning();
-    
-    // Get the song ID (either from insert or existing)
-    const songId = songResult[0]?.id || 
-      (await db
+    // Check if signing up without a song
+    if (providedSongId === "-1") {
+      console.log("Signing up without a song");
+      songId = -1;
+      console.log("Set songId to -1");
+    } else {
+      console.log("Creating new song");
+      // Validate song fields are provided
+      if (!songTitle || !artist || !youtubeLink) {
+        return { status: "Error", message: "Song title, artist, and YouTube link are required" };
+      }
+      
+      // Get the next song ID
+      const lastSongId = await db
         .select({ id: songs.id })
         .from(songs)
-        .where(and(
-          eq(songs.title, songTitle),
-          eq(songs.artist, artist)
-        ))
-      )[0].id;
+        .orderBy(sql`id desc`)
+        .limit(1);
+      
+      const nextSongId = (lastSongId[0]?.id || 0) + 1;
+
+      // First insert or get the song
+      const songResult = await db
+        .insert(songs)
+        .values({
+          id: nextSongId,
+          title: songTitle,
+          artist: artist,
+        })
+        .onConflictDoNothing()
+        .returning();
+      
+      // Get the song ID (either from insert or existing)
+      songId = songResult[0]?.id || 
+        (await db
+          .select({ id: songs.id })
+          .from(songs)
+          .where(and(
+            eq(songs.title, songTitle),
+            eq(songs.artist, artist)
+          ))
+        )[0].id;
+    }
 
     // Check if user is already signed up for this round
+    console.log("Checking for existing signup");
     const existingSignup = await db
       .select()
       .from(signUps)
@@ -461,32 +478,43 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
         eq(signUps.userId, userId),
         eq(signUps.roundId, roundId)
       ));
+    console.log("Existing signup check complete:", existingSignup.length);
       
     if (existingSignup.length > 0) {
       return { status: "Error", message: "User is already signed up for this round" };
     }
 
-    // Get the next signup ID
-    const lastSignupId = await db
-      .select({ id: signUps.id })
-      .from(signUps)
-      .orderBy(sql`id desc`)
-      .limit(1);
+    // Insert the signup using raw SQL to avoid ID generation issues
+    console.log("Inserting signup with songId:", songId);
     
-    const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+    try {
+      const result = await db.execute(sql`
+        INSERT INTO sign_ups (id, youtube_link, additional_comments, round_id, song_id, user_id, created_at)
+        VALUES (
+          (SELECT COALESCE(MAX(id), 0) + 1 FROM sign_ups),
+          ${youtubeLink || ""},
+          ${additionalComments || ""},
+          ${roundId},
+          ${songId},
+          ${userId},
+          NOW()
+        )
+        RETURNING id
+      `);
+      console.log("Signup inserted successfully, result:", result);
+    } catch (insertError) {
+      console.error("Insert error:", insertError);
+      throw insertError;
+    }
 
-    // Then insert the signup
-    await db.insert(signUps).values({
-      id: nextSignupId,
-      youtubeLink: youtubeLink,
-      additionalComments: additionalComments,
-      roundId: roundId,
-      songId: songId,
-      userId: userId,
-    });
-
-    return { status: "Success", message: "User has been successfully signed up for the round!" };
+    const successMessage = songId === -1 
+      ? "User has been successfully signed up for the round without a song!" 
+      : "User has been successfully signed up for the round!";
+    
+    console.log("=== adminSignupUser SUCCESS ===");
+    return { status: "Success", message: successMessage };
   } catch (error) {
+    console.error("=== adminSignupUser ERROR ===", error);
     return { status: "Error", message: (error as Error).message };
   }
 }

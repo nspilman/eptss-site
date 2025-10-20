@@ -160,8 +160,6 @@ export const getCurrentRound = async (): Promise<AsyncResult<Round>> => {
       return createEmptyResult('No current round found');
     }
 
-    console.log({roundData});
-
     const round = mapToRound(roundData[0]);
     return createSuccessResult(round);
   } catch (error) {
@@ -288,32 +286,38 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
       return createSuccessResult([]);
     }
 
-    // Now get counts for each round
-    const roundsWithCounts = await Promise.all(
-      rounds.map(async (round) => {
-        // Get signup count
-        const signupResult = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(signUps)
-          .where(eq(signUps.roundId, round.id));
-        
-        // Get submission count
-        const submissionResult = await db
-          .select({ count: sql<number>`count(*)` })
-          .from(submissions)
-          .where(eq(submissions.roundId, round.id));
-        
-        // Convert to number to ensure proper serialization
-        const signupCount = Number(signupResult[0]?.count || 0);
-        const submissionCount = Number(submissionResult[0]?.count || 0);
-        
-        return {
-          ...round,
-          signupCount,
-          submissionCount,
-        };
-      })
-    );
+    // OPTIMIZED: Get all counts in 2 queries instead of 2*N queries
+    const roundIds = rounds.map(r => r.id);
+    
+    const [signupCounts, submissionCounts] = await Promise.all([
+      db
+        .select({ 
+          roundId: signUps.roundId, 
+          count: sql<number>`count(*)` 
+        })
+        .from(signUps)
+        .where(sql`${signUps.roundId} IN (${sql.join(roundIds.map(id => sql`${id}`), sql`, `)})`)
+        .groupBy(signUps.roundId),
+      db
+        .select({ 
+          roundId: submissions.roundId, 
+          count: sql<number>`count(*)` 
+        })
+        .from(submissions)
+        .where(sql`${submissions.roundId} IN (${sql.join(roundIds.map(id => sql`${id}`), sql`, `)})`)
+        .groupBy(submissions.roundId)
+    ]);
+    
+    // Create maps for O(1) lookup
+    const signupCountMap = new Map(signupCounts.map(s => [Number(s.roundId), Number(s.count)]));
+    const submissionCountMap = new Map(submissionCounts.map(s => [Number(s.roundId), Number(s.count)]));
+    
+    // Add counts to rounds
+    const roundsWithCounts = rounds.map(round => ({
+      ...round,
+      signupCount: signupCountMap.get(round.id) || 0,
+      submissionCount: submissionCountMap.get(round.id) || 0,
+    }));
 
     // Map database results to Round objects using our helper function
     const mappedRounds = roundsWithCounts.map(round => mapToRound(round));

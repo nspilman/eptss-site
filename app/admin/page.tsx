@@ -22,19 +22,25 @@ const AdminPage = async ({
   searchParams: Promise<{ slug: string; tab?: string }>;
 }) => {
   try {
-    if (!(await isAdmin())) {
+    const adminCheck = await isAdmin();
+    console.log("Admin check result:", adminCheck);
+    if (!adminCheck) {
+      console.log("User is not admin, returning notFound");
       return notFound();
     }
+    console.log("User is admin, proceeding");
 
     // Await searchParams
     const resolvedSearchParams = await searchParams;
 
     // OPTIMIZED: Fetch all data in parallel instead of sequentially
+    console.time('Admin page - initial data fetch');
     const [adminData, roundsData, feedbackResult] = await Promise.all([
       adminPageProvider(),
       roundsProvider({}),
       getAllFeedback(100, 0),
     ]);
+    console.timeEnd('Admin page - initial data fetch');
 
     const { stats, currentRound, allUsers, activeUsers } = adminData;
     const { allRoundSlugs } = roundsData;
@@ -61,10 +67,12 @@ const AdminPage = async ({
 
     // OPTIMIZED: Fetch round and votes data in parallel if we have a round slug
     if (currentRoundSlug) {
+      console.time('Admin page - round data fetch');
       const [roundData, votesData] = await Promise.all([
         roundProvider(currentRoundSlug),
         votesProvider({ roundSlug: currentRoundSlug }),
       ]);
+      console.timeEnd('Admin page - round data fetch');
 
       phase = roundData.phase;
       dateLabels = roundData.dateLabels;

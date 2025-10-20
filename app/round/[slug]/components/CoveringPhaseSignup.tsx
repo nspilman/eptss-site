@@ -43,7 +43,6 @@ export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPha
       
       // Convert status to number if it's a string
       const statusCode = typeof result.status === 'string' ? parseInt(result.status, 10) : result.status;
-      console.log({statusCode, result})
       if (statusCode === 200) {
         // Show success toast notification
         toast({

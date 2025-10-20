@@ -59,9 +59,7 @@ async function fetchUserSignups(supabase: any, userId: string) {
     
   if (signupsError) {
     console.error('Error fetching signups:', signupsError);
-  } else if (rawSignups && rawSignups.length > 0) {
-    console.log('First signup data:', JSON.stringify(rawSignups[0], null, 2));
-  }
+  } 
   
   return { rawSignups, signupsError };
 }
@@ -110,13 +108,6 @@ function groupSignupsByRound(rawSignups: any[]): Record<number, RoundSignups> {
   
   rawSignups.forEach(signup => {
     const roundId = signup.round_id;
-    
-    // Log the raw round metadata for debugging
-    console.log('Raw round metadata for signup:', {
-      roundId,
-      signupId: signup.id,
-      roundMetadata: signup.round_metadata ? JSON.stringify(signup.round_metadata, null, 2) : 'None'
-    });
     
     // Initialize the round data if it doesn't exist yet
     if (!signupsByRound[roundId]) {

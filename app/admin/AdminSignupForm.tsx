@@ -71,6 +71,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
   const [artist, setArtist] = useState("");
   const [youtubeLink, setYoutubeLink] = useState("");
   const [additionalComments, setAdditionalComments] = useState("");
+  const [signupWithoutSong, setSignupWithoutSong] = useState(false);
   
   // Filter users based on search term
   const filteredUsers = users.filter(user => 
@@ -86,12 +87,26 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
       const formData = new FormData();
       formData.append("userId", selectedUserId);
       formData.append("roundId", roundId.toString());
-      formData.append("songTitle", songTitle);
-      formData.append("artist", artist);
-      formData.append("youtubeLink", youtubeLink);
-      formData.append("additionalComments", additionalComments);
+      
+      if (signupWithoutSong) {
+        formData.append("songId", "-1");
+      } else {
+        formData.append("songTitle", songTitle);
+        formData.append("artist", artist);
+        formData.append("youtubeLink", youtubeLink);
+        formData.append("additionalComments", additionalComments);
+      }
+
+      console.log("About to call adminSignupUser with:", {
+        userId: selectedUserId,
+        roundId,
+        signupWithoutSong,
+        songTitle: signupWithoutSong ? "N/A" : songTitle,
+      });
 
       const result = await adminSignupUser(formData);
+
+      console.log("Result received:", result);
 
       if (result.status === "Success") {
         toast({
@@ -105,6 +120,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
         setArtist("");
         setYoutubeLink("");
         setAdditionalComments("");
+        setSignupWithoutSong(false);
       } else {
         toast({
           title: "Error",
@@ -113,9 +129,10 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
         });
       }
     } catch (error) {
+      console.error("Form submission error:", error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
         variant: "destructive",
       });
     } finally {
@@ -169,52 +186,69 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="songTitle" className="text-primary">Song Title</Label>
-              <Input
-                id="songTitle"
-                value={songTitle}
-                onChange={(e) => setSongTitle(e.target.value)}
-                required
-                placeholder="Enter song title"
-                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
+            <div className="flex items-center space-x-2 p-3 bg-background-tertiary/30 rounded-md">
+              <input
+                type="checkbox"
+                id="signupWithoutSong"
+                checked={signupWithoutSong}
+                onChange={(e) => setSignupWithoutSong(e.target.checked)}
+                className="w-4 h-4 rounded border-background-tertiary/50"
               />
+              <Label htmlFor="signupWithoutSong" className="text-primary cursor-pointer mb-0">
+                Sign up without a song
+              </Label>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="artist" className="text-primary">Artist</Label>
-              <Input
-                id="artist"
-                value={artist}
-                onChange={(e) => setArtist(e.target.value)}
-                required
-                placeholder="Enter artist name"
-                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
-              />
-            </div>
+            {!signupWithoutSong && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="songTitle" className="text-primary">Song Title</Label>
+                  <Input
+                    id="songTitle"
+                    value={songTitle}
+                    onChange={(e) => setSongTitle(e.target.value)}
+                    required
+                    placeholder="Enter song title"
+                    className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="youtubeLink" className="text-primary">YouTube Link</Label>
-              <Input
-                id="youtubeLink"
-                value={youtubeLink}
-                onChange={(e) => setYoutubeLink(e.target.value)}
-                required
-                placeholder="Enter YouTube link"
-                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="artist" className="text-primary">Artist</Label>
+                  <Input
+                    id="artist"
+                    value={artist}
+                    onChange={(e) => setArtist(e.target.value)}
+                    required
+                    placeholder="Enter artist name"
+                    className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="additionalComments" className="text-primary">Additional Comments</Label>
-              <Textarea
-                id="additionalComments"
-                value={additionalComments}
-                onChange={(e) => setAdditionalComments(e.target.value)}
-                placeholder="Any additional comments (optional)"
-                className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="youtubeLink" className="text-primary">YouTube Link</Label>
+                  <Input
+                    id="youtubeLink"
+                    value={youtubeLink}
+                    onChange={(e) => setYoutubeLink(e.target.value)}
+                    required
+                    placeholder="Enter YouTube link"
+                    className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="additionalComments" className="text-primary">Additional Comments</Label>
+                  <Textarea
+                    id="additionalComments"
+                    value={additionalComments}
+                    onChange={(e) => setAdditionalComments(e.target.value)}
+                    placeholder="Any additional comments (optional)"
+                    className="bg-background-secondary/50 border-background-tertiary/50 text-primary"
+                  />
+                </div>
+              </>
+            )}
 
             <Button 
               type="submit" 

@@ -107,8 +107,6 @@ async function createPlaylist(client: SpotifyWebApi) {
       .filter('song_id', 'neq', -1)
       .order("created_at");
 
-      console.log({data, error: JSON.stringify(error)})
-
     const sortedData = seededShuffle(data || [], JSON.stringify(data?.map(val => val.youtube_link)));
     const songs = await sortedData.map((field) => field.song) || [];
     const spotifyUrls = await Promise.all(songs.map((song) => searchTrack(song?.artist || "", song?.title || "")));

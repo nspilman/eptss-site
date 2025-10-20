@@ -33,7 +33,6 @@ export const signInWithPassword = async ({
   password: string;
 }) => {
   const supabaseClient = await createClient();
-  console.log({username, password})
   // First, find the user's email by username
   const { data: userData, error: userError } = await supabaseClient
     .from("users")

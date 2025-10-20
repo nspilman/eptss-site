@@ -83,55 +83,51 @@ export const adminProvider = async (): Promise<AdminStats> => {
 };
 
 export const getUserDetails = async (): Promise<UserDetail[]> => {
-  // Get all users with their IDs
-  const allUsers = await db.select({
-    email: users.email,
-    userid: users.userid,
-    lastActive: users.createdAt, // Using createdAt as lastActive for now
-  }).from(users)
+  // OPTIMIZED: Get all data in 3 parallel queries instead of N+1 queries
+  const [allUsers, allSignups, allSubmissions] = await Promise.all([
+    db.select({
+      email: users.email,
+      userid: users.userid,
+      lastActive: users.createdAt,
+    }).from(users),
+    db.select().from(signUps),
+    db.select().from(submissions),
+  ]);
 
-  // Get all signups with user IDs
-  const signupsByUser = await Promise.all(
-    allUsers.map(async (user) => {
-      const userSignups = await db
-        .select()
-        .from(signUps)
-        .where(eq(signUps.userId, user.userid));
-      return {
-        userid: user.userid,
-        signups: userSignups,
-      };
-    })
-  );
-
-  // Get all submissions with user IDs
-  const submissionsByUser = await Promise.all(
-    allUsers.map(async (user) => {
-      const userSubmissions = await db
-        .select()
-        .from(submissions)
-        .where(eq(submissions.userId, user.userid));
-      return {
-        userid: user.userid,
-        submissions: userSubmissions,
-      };
-    })
-  );
+  // Group signups and submissions by user ID
+  const signupsByUser = new Map<string, typeof allSignups>();
+  const submissionsByUser = new Map<string, typeof allSubmissions>();
+  
+  allSignups.forEach(signup => {
+    if (!signup.userId) return;
+    if (!signupsByUser.has(signup.userId)) {
+      signupsByUser.set(signup.userId, []);
+    }
+    signupsByUser.get(signup.userId)!.push(signup);
+  });
+  
+  allSubmissions.forEach(submission => {
+    if (!submission.userId) return;
+    if (!submissionsByUser.has(submission.userId)) {
+      submissionsByUser.set(submission.userId, []);
+    }
+    submissionsByUser.get(submission.userId)!.push(submission);
+  });
 
   // Map the data together
   const userDetails = allUsers.map(user => {
-    const userSignupData = signupsByUser.find(s => s.userid === user.userid);
-    const userSubmissionData = submissionsByUser.find(s => s.userid === user.userid);
+    const userSignups = signupsByUser.get(user.userid) || [];
+    const userSubmissions = submissionsByUser.get(user.userid) || [];
     
-    const lastSubmission = userSubmissionData?.submissions.length ? 
-      userSubmissionData.submissions.reduce((latest, current) => {
+    const lastSubmission = userSubmissions.length ? 
+      userSubmissions.reduce((latest, current) => {
         const latestTime = latest.createdAt?.getTime() || 0;
         const currentTime = current.createdAt?.getTime() || 0;
         return latestTime > currentTime ? latest : current;
       }).createdAt : null;
 
-    const lastSignup = userSignupData?.signups.length ? 
-      userSignupData.signups.reduce((latest, current) => {
+    const lastSignup = userSignups.length ? 
+      userSignups.reduce((latest, current) => {
         const latestTime = latest.createdAt?.getTime() || 0;
         const currentTime = current.createdAt?.getTime() || 0;
         return latestTime > currentTime ? latest : current;
@@ -140,8 +136,8 @@ export const getUserDetails = async (): Promise<UserDetail[]> => {
     return {
       email: user.email,
       lastActive: user.lastActive?.toISOString() || null,
-      totalParticipation: userSignupData?.signups.length || 0,
-      totalSubmissions: userSubmissionData?.submissions.length || 0,
+      totalParticipation: userSignups.length,
+      totalSubmissions: userSubmissions.length,
       lastSubmitted: lastSubmission?.toISOString() || null,
       lastSignup: lastSignup?.toISOString() || null,
     };
@@ -242,12 +238,16 @@ export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
  */
 export const adminPageProvider = async (): Promise<AdminPageData> => {
   // Fetch all data in parallel for better performance
+  console.time('adminPageProvider - total');
+  console.time('adminPageProvider - parallel queries');
   const [stats, currentRoundResult, allUsers, activeUsers] = await Promise.all([
     adminProvider(),
     getCurrentRound(),
     getAllUsersService(),
     getActiveUsers(),
   ]);
+  console.timeEnd('adminPageProvider - parallel queries');
+  console.timeEnd('adminPageProvider - total');
 
   return {
     stats,
