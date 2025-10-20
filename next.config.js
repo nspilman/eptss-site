@@ -5,6 +5,14 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  // Optimize bundle size
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
+  },
+  // Reduce serverless function size
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/**/*.wasm', './node_modules/**/*.node'],
+  },
   env: {
     NEXT_PUBLIC_SITE_URL: process.env.NODE_ENV === 'production' 
       ? 'https://everyoneplaysthesamesong.com' // replace with your actual production domain

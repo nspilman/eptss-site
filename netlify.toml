@@ -1,0 +1,19 @@
+[build]
+  command = "npx next build"
+  publish = ".next"
+
+[functions]
+  # Increase function size limit (default is 50MB unzipped)
+  # This allows larger serverless functions
+  node_bundler = "esbuild"
+  
+  # Set included files pattern to reduce bundle size
+  included_files = [".next/**", "!.next/cache/**"]
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Optimize build performance
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--legacy-peer-deps"
