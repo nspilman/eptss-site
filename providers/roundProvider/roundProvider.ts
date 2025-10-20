@@ -86,12 +86,11 @@ export const roundProvider = async (slug?: string): Promise<RoundInfo> => {
   const areSubmissionsOpen = phase === "signups";
   const isVotingOpen = phase === "voting";
   
-  const [voteOptions, submissions] = await Promise.all([
+  const [voteOptions, submissions, signups] = await Promise.all([
     getVoteOptions(roundId),
-    getSubmissions(roundId)
+    getSubmissions(roundId),
+    getSignupsByRound(roundId)
   ]);
-
-  const signups = await getSignupsByRound(roundId);
 
   return {
     roundId,

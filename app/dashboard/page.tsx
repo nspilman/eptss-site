@@ -1,72 +1,42 @@
-import { roundProvider, userParticipationProvider } from "@/providers";
-import { DashboardClient } from './DashboardClient';
-import { getAuthUser } from "@/utils/supabase/server";
-import { getUnverifiedSignupByEmail, verifySignupByEmail, getNextRoundByVotingDate, getUserSignupData, getVotesByUserForRoundWithDetails } from "@/data-access";
+import { Suspense } from 'react';
+import { DashboardHero,
+  NextRoundSkeleton,
+   HeroSkeleton,
+    CurrentRoundSkeleton,
+     URLParamsHandler,
+      VerificationAlert,
+       CurrentRoundCard,
+        NextRoundCard } from './components';
+
+// Force dynamic rendering for authenticated content
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
-  // Check auth first
-  const { email, userId } = await getAuthUser();
+  return (
+    <div>
+      {/* URL params handler for toast notifications */}
+      <URLParamsHandler />
 
-  let verificationStatus: { verified: boolean; message?: string } = { verified: false };
+      {/* Hero Section - Streams independently */}
+      <Suspense fallback={<HeroSkeleton />}>
+        <DashboardHero />
+      </Suspense>
 
-  // Check for pending unverified signups for this user
-  if (email) {
-    try {
-      // Check if there's an unverified signup for this email using the service layer
-      const unverifiedSignupResult = await getUnverifiedSignupByEmail(email);
+      {/* Verification Alert - Streams independently */}
+      <Suspense fallback={null}>
+        <VerificationAlert />
+      </Suspense>
 
-      // If there is one, verify it automatically
-      if (unverifiedSignupResult.status === 'success') {
-        const result = await verifySignupByEmail();
-        if (result.status === "Success") {
-          verificationStatus = { 
-            verified: true, 
-            message: "Your signup has been verified successfully!" 
-          };
-        } else {
-          verificationStatus = { 
-            verified: false, 
-            message: `Verification error: ${result.message}` 
-          };
-        }
-      }
-    } catch (error) {
-      console.error("Error checking for unverified signups:", error);
-      verificationStatus = { 
-        verified: false, 
-        message: `Error during verification: ${(error as Error).message}` 
-      };
-    }
-  }
+      {/* Current Round Card - Streams independently */}
+      <Suspense fallback={<CurrentRoundSkeleton />}>
+        <CurrentRoundCard />
+      </Suspense>
 
-  // Only fetch round data if user is authenticated
-  const currentRound = await roundProvider();
-
-  const { roundDetails } = await userParticipationProvider();
-
-  // Get user votes with song details if in voting phase and user has voted
-  let userVotesWithDetails = null;
-  if (currentRound?.phase === 'voting' && roundDetails?.hasVoted && currentRound.roundId) {
-    userVotesWithDetails = await getVotesByUserForRoundWithDetails(currentRound.roundId);
-  }
-
-  // Get next round information
-  const nextRoundResult = await getNextRoundByVotingDate();
-  const nextRound = nextRoundResult.status === 'success' ? nextRoundResult.data : null;
-
-  // If there's a next round and user is logged in, check if they've signed up
-  let nextRoundUserSignup = null;
-  if (nextRound && userId) {
-    nextRoundUserSignup = await getUserSignupData(userId, nextRound.roundId);
-  }
-
-  return <DashboardClient 
-    roundInfo={currentRound} 
-    userRoundDetails={roundDetails}
-    verificationStatus={verificationStatus}
-    userId={userId}
-    nextRound={nextRound}
-    nextRoundUserSignup={nextRoundUserSignup}
-    userVotesWithDetails={userVotesWithDetails}
-  />;
+      {/* Next Round Card - Streams independently */}
+      <Suspense fallback={<NextRoundSkeleton />}>
+        <NextRoundCard />
+      </Suspense>
+    </div>
+  );
 }

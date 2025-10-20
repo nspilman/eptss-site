@@ -13,6 +13,10 @@ const nextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  // PPR requires Next.js canary - uncomment when upgrading:
+  // experimental: {
+  //   ppr: 'incremental',
+  // },
   async redirects() {
     return [
       {

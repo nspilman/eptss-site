@@ -87,7 +87,7 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
         <SidebarItem 
           href="/reporting"
           icon={<MusicNoteIcon className="w-5 h-5" />}
-          label="All Submitted Songs"
+          label="Past Submitted Songs"
           isActive={pathname === "/reporting"}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
