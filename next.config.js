@@ -7,11 +7,27 @@ const nextConfig = {
   },
   // Optimize bundle size
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: [
+      'lucide-react', 
+      'framer-motion',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      'drizzle-orm'
+    ],
   },
-  // Reduce serverless function size
+  // Reduce serverless function size by excluding unnecessary files
   outputFileTracingIncludes: {
-    '/api/**/*': ['./node_modules/**/*.wasm', './node_modules/**/*.node'],
+    '/api/**/*': [],
+  },
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/@esbuild/linux-x64',
+      'node_modules/webpack',
+      'node_modules/terser',
+    ],
   },
   env: {
     NEXT_PUBLIC_SITE_URL: process.env.NODE_ENV === 'production' 

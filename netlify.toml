@@ -3,12 +3,29 @@
   publish = ".next"
 
 [functions]
-  # Increase function size limit (default is 50MB unzipped)
-  # This allows larger serverless functions
+  # Use esbuild for better tree-shaking and smaller bundles
   node_bundler = "esbuild"
   
-  # Set included files pattern to reduce bundle size
-  included_files = [".next/**", "!.next/cache/**"]
+  # Exclude unnecessary files from function bundle
+  included_files = [
+    ".next/**",
+    "!.next/cache/**",
+    "!.next/standalone/**",
+    "!.next/static/**",
+    ".env",
+    ".env.production",
+    ".env.local",
+    ".env.production.local"
+  ]
+  
+  # External packages to reduce bundle size
+  external_node_modules = [
+    "@sentry/nextjs",
+    "sharp",
+    "canvas",
+    "bufferutil",
+    "utf-8-validate"
+  ]
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
