@@ -33,6 +33,7 @@ interface Props<T extends string> {
   isLoading?: boolean;
   defaultSortKey?: T;
   defaultSortDirection?: SortDirection;
+  allowCopy?: boolean;
   onSort?: (key: T, direction: SortDirection) => void;
 }
 
@@ -46,6 +47,7 @@ export function DataTable<T extends string>({
   isLoading,
   defaultSortKey,
   defaultSortDirection = null,
+  allowCopy = false,
   onSort,
 }: Props<T>) {
   // Always declare hooks at the top level
@@ -198,7 +200,7 @@ export function DataTable<T extends string>({
           <h2 className="text-2xl font-bold text-primary mb-2">{title}</h2>
           <p className="text-sm text-secondary">{subtitle}</p>
         </div>
-        {!isEmpty && (
+        {!isEmpty && allowCopy && (
           <button
             onClick={() => copyTableAsMarkdown(headers, sortedRows)}
             className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-background-secondary hover:bg-background-secondary/80 text-primary text-sm transition-colors"
