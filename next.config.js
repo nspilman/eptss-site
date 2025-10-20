@@ -1,4 +1,4 @@
-import { withSentryConfig } from "@sentry/nextjs";
+// import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig = {
   reactStrictMode: true,
@@ -66,16 +66,18 @@ const nextConfig = {
   skipTrailingSlashRedirect: true,
 };
 
-const sentryWebpackPluginOptions = {
-  silent: true, // Suppresses all logs
-  // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options.
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-};
+// const sentryWebpackPluginOptions = {
+//   silent: true, // Suppresses all logs
+//   // For all available options, see:
+//   // https://github.com/getsentry/sentry-webpack-plugin#options.
+//   org: process.env.SENTRY_ORG,
+//   project: process.env.SENTRY_PROJECT,
+// };
 
-const sentryBuildOptions = {
-  hideSourceMaps: true,
-};
+// const sentryBuildOptions = {
+//   hideSourceMaps: true,
+// };
 
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions, sentryBuildOptions);
+// Temporarily disable Sentry to reduce bundle size
+export default nextConfig;
+// export default withSentryConfig(nextConfig, sentryWebpackPluginOptions, sentryBuildOptions);

@@ -1,6 +1,6 @@
 [build]
   command = "npx next build"
-  publish = ".next"
+    publish = ".next"
 
 [functions]
   # Use esbuild for better tree-shaking and smaller bundles
@@ -24,7 +24,21 @@
     "sharp",
     "canvas",
     "bufferutil",
-    "utf-8-validate"
+    "utf-8-validate",
+    "@supabase/supabase-js",
+    "@supabase/ssr",
+    "@supabase/auth-helpers-nextjs",
+    "googleapis",           # Big one!
+    "google-auth-library",
+    "nodemailer",
+    "mailparser",
+    "imap-simple",
+    "drizzle-orm",
+    "postgres",
+    "@libsql/client",
+    "spotify-web-api-node",
+    "@atproto/api",
+    "posthog-node"
   ]
 
 [[plugins]]
