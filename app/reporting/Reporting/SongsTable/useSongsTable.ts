@@ -49,31 +49,37 @@ export const useSongTable = (allSongsData: SongDatum[]) => {
     key: Headerkey;
     label: string;
     sortable: true;
+    type?: 'text' | 'number' | 'date';
   }[] = [
     {
       key: "songTitle",
       label: "Song Title",
       sortable: true,
+      type: 'text',
     },
     {
       key: "artist",
       label: "Artist",
       sortable: true,
+      type: 'text',
     },
     {
       key: "roundId",
       label: "Round Id",
       sortable: true,
+      type: 'number',
     },
     {
       key: "average",
       label: "Average Vote",
       sortable: true,
+      type: 'number',
     },
     {
       key: "isWinningSong",
       label: "Covered?",
       sortable: true,
+      type: 'text',
     },
   ];
 
