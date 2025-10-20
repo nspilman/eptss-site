@@ -1,7 +1,7 @@
 import { roundProvider, userParticipationProvider } from "@/providers";
 import { DashboardClient } from './DashboardClient';
 import { getAuthUser } from "@/utils/supabase/server";
-import { getUnverifiedSignupByEmail, verifySignupByEmail, getNextRoundByVotingDate, getUserSignupData } from "@/data-access";
+import { getUnverifiedSignupByEmail, verifySignupByEmail, getNextRoundByVotingDate, getUserSignupData, getVotesByUserForRoundWithDetails } from "@/data-access";
 
 export default async function DashboardPage() {
   // Check auth first
@@ -44,6 +44,12 @@ export default async function DashboardPage() {
 
   const { roundDetails } = await userParticipationProvider();
 
+  // Get user votes with song details if in voting phase and user has voted
+  let userVotesWithDetails = null;
+  if (currentRound?.phase === 'voting' && roundDetails?.hasVoted && currentRound.roundId) {
+    userVotesWithDetails = await getVotesByUserForRoundWithDetails(currentRound.roundId);
+  }
+
   // Get next round information
   const nextRoundResult = await getNextRoundByVotingDate();
   const nextRound = nextRoundResult.status === 'success' ? nextRoundResult.data : null;
@@ -61,5 +67,6 @@ export default async function DashboardPage() {
     userId={userId}
     nextRound={nextRound}
     nextRoundUserSignup={nextRoundUserSignup}
+    userVotesWithDetails={userVotesWithDetails}
   />;
 }

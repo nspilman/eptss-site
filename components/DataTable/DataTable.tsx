@@ -218,64 +218,66 @@ export function DataTable<T extends string>({
           </button>
         )}
       </div>
-      <div style={{ maxHeight }} className="overflow-auto">
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-background-primary">
-            <TableRow>
-              {headers.map((header) => (
-                <TableHead 
-                  key={header.key} 
-                  className={`${header.sortable !== false ? "cursor-pointer select-none" : ""} bg-background-primary`}
-                  onClick={() => handleSort(header.key, header.sortable !== false)}
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>{header.label}</span>
-                    {header.sortable !== false && (
-                      <span className="flex flex-col ml-1">
-                        <ChevronUp 
-                          className={`h-3 w-3 ${sortKey === header.key && sortDirection === 'asc' 
-                            ? 'text-accent-primary' 
-                            : 'text-secondary/50'}`} 
-                        />
-                        <ChevronDown 
-                          className={`h-3 w-3 -mt-1 ${sortKey === header.key && sortDirection === 'desc' 
-                            ? 'text-accent-primary' 
-                            : 'text-secondary/50'}`} 
-                        />
-                      </span>
-                    )}
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isEmpty ? (
+      <div className="border border-background-secondary rounded-md overflow-hidden">
+        <div style={{ maxHeight }} className="overflow-auto">
+          <Table disableWrapper>
+            <TableHeader className="sticky top-0 z-10 bg-background-primary shadow-sm">
               <TableRow>
-                <TableCell 
-                  colSpan={headers.length}
-                  className="text-center text-secondary"
-                >
-                  No data available
-                </TableCell>
+                {headers.map((header) => (
+                  <TableHead 
+                    key={header.key} 
+                    className={`${header.sortable !== false ? "cursor-pointer select-none" : ""} bg-background-primary border-b border-background-secondary`}
+                    onClick={() => handleSort(header.key, header.sortable !== false)}
+                  >
+                    <div className="flex items-center space-x-1">
+                      <span>{header.label}</span>
+                      {header.sortable !== false && (
+                        <span className="flex flex-col ml-1">
+                          <ChevronUp 
+                            className={`h-3 w-3 ${sortKey === header.key && sortDirection === 'asc' 
+                              ? 'text-accent-primary' 
+                              : 'text-secondary/50'}`} 
+                          />
+                          <ChevronDown 
+                            className={`h-3 w-3 -mt-1 ${sortKey === header.key && sortDirection === 'desc' 
+                              ? 'text-accent-primary' 
+                              : 'text-secondary/50'}`} 
+                          />
+                        </span>
+                      )}
+                    </div>
+                  </TableHead>
+                ))}
               </TableRow>
-            ) : (
-              sortedRows.map((row, i) => (
-                <motion.tr 
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: i * 0.05 }}
-                  className="border-t border-background-secondary hover:bg-background-secondary/30"
-                >
-                  {headers.map(({ key, displayKey }) => (
-                    <TableCell key={key}>{row[displayKey || key]}</TableCell>
-                  ))}
-                </motion.tr>
-              ))
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {isEmpty ? (
+                <TableRow>
+                  <TableCell 
+                    colSpan={headers.length}
+                    className="text-center text-secondary"
+                  >
+                    No data available
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sortedRows.map((row, i) => (
+                  <motion.tr 
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, delay: i * 0.05 }}
+                    className="border-t border-background-secondary hover:bg-background-secondary/30"
+                  >
+                    {headers.map(({ key, displayKey }) => (
+                      <TableCell key={key}>{row[displayKey || key]}</TableCell>
+                    ))}
+                  </motion.tr>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </motion.div>
   );

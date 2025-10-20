@@ -10,6 +10,9 @@ const nextConfig = {
       ? 'https://everyoneplaysthesamesong.com' // replace with your actual production domain
       : 'http://localhost:3000'
   },
+  turbopack: {
+    root: process.cwd(),
+  },
   async redirects() {
     return [
       {

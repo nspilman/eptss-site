@@ -15,7 +15,7 @@ export const getAllSongs = async ({
       artist: songs.artist,
       title: songs.title,
       round_id: songSelectionVotes.roundId,
-      average: sql<number>`avg(${songSelectionVotes.vote})`.as('average'),
+      average: sql<number>`round(avg(${songSelectionVotes.vote}), 2)`.as('average'),
       round_metadata: sql<boolean>`
         case when ${roundMetadata.songId} is not null then true else false end
       `.as('is_winning_song'),

@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useFormStatus } from "react-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { signupForRound, signupForRoundWithResult } from "./actions";
+import { UserVotesDisplay } from "@/components/UserVotesDisplay";
 
 interface DashboardClientProps {
   roundInfo: RoundInfo | null;
@@ -35,6 +36,11 @@ interface DashboardClientProps {
     youtubeLink?: string;
     additionalComments?: string;
   } | null;
+  userVotesWithDetails?: {
+    title: string;
+    artist: string;
+    rating: number;
+  }[] | null;
 }
 
 // Helper functions for phase management
@@ -45,7 +51,7 @@ const getPhaseTitle = (phase: Phase) => {
     case "covering":
       return "Covering";
     case "voting":
-      return "Community Voting";
+      return "Voting";
     case "celebration":
       return "Round Celebration";
     default:
@@ -136,7 +142,7 @@ function SubmitButton({ roundId }: { roundId: number }) {
   );
 }
 
-export function DashboardClient({ roundInfo, userRoundDetails, verificationStatus, userId, nextRound, nextRoundUserSignup }: DashboardClientProps) {
+export function DashboardClient({ roundInfo, userRoundDetails, verificationStatus, userId, nextRound, nextRoundUserSignup, userVotesWithDetails }: DashboardClientProps) {
   const [timeRemaining, setTimeRemaining] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -432,6 +438,13 @@ export function DashboardClient({ roundInfo, userRoundDetails, verificationStatu
             </div>
           )}
           
+          {/* Show user votes if in voting phase and has voted */}
+          {phase === "voting" && isParticipating && hasCompletedCurrentPhase && userVotesWithDetails && userVotesWithDetails.length > 0 && (
+            <div className="mt-6">
+              <UserVotesDisplay votedSongs={userVotesWithDetails} />
+            </div>
+          )}
+
           {/* Explanation about voting responsibility */}
           {phase === "signups" && (
             <div className="mt-6 p-4 rounded-lg bg-background-tertiary border border-accent-tertiary">

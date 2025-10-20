@@ -69,14 +69,6 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           isCollapsed={isCollapsed}
         />
         <SidebarItem 
-          href="/round/current"
-          icon={<MusicNoteIcon className="w-5 h-5" />}
-          label="Current Round"
-          isActive={pathname === "/round/current"}
-          onClick={onNavigate}
-          isCollapsed={isCollapsed}
-        />
-        <SidebarItem 
           href="/rounds"
           icon={<HistoryIcon className="w-5 h-5" />}
           label="Past Rounds"
@@ -89,6 +81,14 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           icon={<UserIcon className="w-5 h-5" />}
           label="Profile"
           isActive={pathname === "/profile"}
+          onClick={onNavigate}
+          isCollapsed={isCollapsed}
+        />
+        <SidebarItem 
+          href="/reporting"
+          icon={<MusicNoteIcon className="w-5 h-5" />}
+          label="All Submitted Songs"
+          isActive={pathname === "/reporting"}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />

@@ -142,6 +142,34 @@ export const getVotesByUserForRound = async (roundId: number) => {
   return votes;
 };
 
+export const getVotesByUserForRoundWithDetails = async (roundId: number) => {
+  const { userId } = await getAuthUser();
+  if (!userId) return [];
+  
+  const votes = await db
+    .select({ 
+      songId: songSelectionVotes.songId, 
+      vote: songSelectionVotes.vote,
+      title: songs.title,
+      artist: songs.artist
+    })
+    .from(songSelectionVotes)
+    .leftJoin(songs, eq(songSelectionVotes.songId, songs.id))
+    .where(
+      and(
+        eq(songSelectionVotes.userId, userId),
+        eq(songSelectionVotes.roundId, roundId)
+      )
+    )
+    .orderBy(desc(songSelectionVotes.vote));
+  
+  return votes.map(vote => ({
+    title: vote.title || "",
+    artist: vote.artist || "",
+    rating: vote.vote
+  }));
+};
+
 export const submitVotes = async (
   roundId: number,
   formData: FormData
