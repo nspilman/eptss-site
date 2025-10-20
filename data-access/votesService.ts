@@ -2,7 +2,7 @@
 
 import { isAdmin } from "@/utils/isAdmin";
 import { db } from "@/db";
-import { votingCandidateOverrides, songs, songSelectionVotes } from "@/db/schema";
+import { votingCandidateOverrides, songs, songSelectionVotes, users } from "@/db/schema";
 import { eq, avg, count, sql, desc, and } from "drizzle-orm";
 import { handleResponse } from "@/utils";
 import { Navigation } from "@/enum/navigation";
@@ -168,6 +168,30 @@ export const getVotesByUserForRoundWithDetails = async (roundId: number) => {
     artist: vote.artist || "",
     rating: vote.vote
   }));
+};
+
+export const getAllVotesForRound = async (roundId: number) => {
+  if (!await isAdmin()) {
+    return [];
+  }
+
+  const votes = await db
+    .select({
+      email: users.email,
+      userId: songSelectionVotes.userId,
+      songId: songSelectionVotes.songId,
+      vote: songSelectionVotes.vote,
+      createdAt: songSelectionVotes.createdAt,
+      title: songs.title,
+      artist: songs.artist
+    })
+    .from(songSelectionVotes)
+    .leftJoin(songs, eq(songSelectionVotes.songId, songs.id))
+    .leftJoin(users, eq(songSelectionVotes.userId, users.userid))
+    .where(eq(songSelectionVotes.roundId, roundId))
+    .orderBy(songSelectionVotes.createdAt);
+
+  return votes;
 };
 
 export const submitVotes = async (

@@ -16,6 +16,16 @@ type VoteResult = {
   votesCount: number;
 };
 
+type IndividualVote = {
+  email: string | null;
+  userId: string | null;
+  songId: number | null;
+  vote: number;
+  createdAt: Date | null;
+  title: string | null;
+  artist: string | null;
+};
+
 type ReportsTabProps = {
   stats: {
     totalUsers: number;
@@ -33,6 +43,7 @@ type ReportsTabProps = {
   voteOptions: VoteOption[];
   outstandingVoters: string[];
   voteResults: VoteResult[];
+  allVotes: IndividualVote[];
 };
 
 export function ReportsTab({
@@ -44,6 +55,7 @@ export function ReportsTab({
   voteOptions,
   outstandingVoters,
   voteResults,
+  allVotes,
 }: ReportsTabProps) {
   return (
     <motion.div
@@ -72,6 +84,7 @@ export function ReportsTab({
           voteOptions={voteOptions}
           outstandingVoters={outstandingVoters}
           voteResults={voteResults}
+          allVotes={allVotes}
         />
       </section>
 

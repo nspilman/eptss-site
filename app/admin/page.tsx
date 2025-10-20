@@ -56,6 +56,7 @@ const AdminPage = async ({
     let roundId = 0;
     let voteResults: Array<{ title: string; artist: string; average: number; votesCount: number }> = [];
     let outstandingVoters: string[] = [];
+    let allVotes: Array<{ email: string | null; userId: string | null; songId: number | null; vote: number; createdAt: Date | null; title: string | null; artist: string | null }> = [];
 
     if (currentRound) {
       currentRoundSlug = resolvedSearchParams.slug 
@@ -82,6 +83,7 @@ const AdminPage = async ({
       roundId = roundData.roundId;
       voteResults = votesData.voteResults || [];
       outstandingVoters = votesData.outstandingVoters || [];
+      allVotes = votesData.allVotes || [];
     }
 
     // Default to overview tab if none specified
@@ -106,6 +108,7 @@ const AdminPage = async ({
           voteOptions={voteOptions}
           outstandingVoters={outstandingVoters}
           voteResults={voteResults}
+          allVotes={allVotes}
           roundId={roundId}
           roundSlug={currentRoundSlug}
           users={allUsers}

@@ -23,6 +23,16 @@ type VoteResult = {
   votesCount: number;
 };
 
+type IndividualVote = {
+  email: string | null;
+  userId: string | null;
+  songId: number | null;
+  vote: number;
+  createdAt: Date | null;
+  title: string | null;
+  artist: string | null;
+};
+
 type AdminTabsProps = {
   initialTab: string;
   stats: {
@@ -42,6 +52,7 @@ type AdminTabsProps = {
   voteOptions: VoteOption[];
   outstandingVoters: string[];
   voteResults: VoteResult[];
+  allVotes: IndividualVote[];
   roundId: number;
   roundSlug: string;
   users: UserDetails[];
@@ -60,6 +71,7 @@ export function AdminTabs({
   voteOptions,
   outstandingVoters,
   voteResults,
+  allVotes,
   roundId,
   roundSlug,
   users,
@@ -131,6 +143,7 @@ export function AdminTabs({
           voteOptions={voteOptions}
           outstandingVoters={outstandingVoters}
           voteResults={voteResults}
+          allVotes={allVotes}
         />
       </TabsContent>
 

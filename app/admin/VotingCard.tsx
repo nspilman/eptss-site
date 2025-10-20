@@ -20,13 +20,24 @@ type VoteResult = {
   votesCount: number
 }
 
+type IndividualVote = {
+  email: string | null
+  userId: string | null
+  songId: number | null
+  vote: number
+  createdAt: Date | null
+  title: string | null
+  artist: string | null
+}
+
 type VotingCardProps = {
   voteOptions: VoteOption[]
   outstandingVoters: string[]
   voteResults: VoteResult[]
+  allVotes: IndividualVote[]
 }
 
-export const VotingCard = ({ voteOptions, outstandingVoters, voteResults }: VotingCardProps) => {
+export const VotingCard = ({ voteOptions, outstandingVoters, voteResults, allVotes }: VotingCardProps) => {
   const voteOptionsArray = voteOptions.map((option) => ({
     song: `${option.song.title} - ${option.song.artist}`,
     link: option.youtubeLink ? (
@@ -49,6 +60,50 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults }: Voti
   ];
 
   const outstandingVotesHeader = [{ key: "email", label: "Email" }];
+
+  // Group votes by user email
+  const votesByUser = allVotes.reduce((acc, vote) => {
+    const email = vote.email || "Unknown";
+    if (!acc[email]) {
+      acc[email] = {
+        email,
+        createdAt: vote.createdAt,
+        votes: {}
+      };
+    }
+    const songKey = `${vote.title} - ${vote.artist}`;
+    acc[email].votes[songKey] = vote.vote;
+    return acc;
+  }, {} as Record<string, { email: string; createdAt: Date | null; votes: Record<string, number> }>);
+
+  // Get all unique songs from vote options
+  const allSongs = voteOptions.map(option => `${option.song.title} - ${option.song.artist}`);
+
+  // Create table data with dynamic columns for each song
+  const individualVotesData = Object.values(votesByUser).map(userVotes => {
+    const row: Record<string, any> = {
+      email: userVotes.email,
+      votedAt: userVotes.createdAt ? new Date(userVotes.createdAt).toLocaleDateString() : "N/A"
+    };
+    
+    // Add each song as a column
+    allSongs.forEach(song => {
+      row[song] = userVotes.votes[song] !== undefined ? userVotes.votes[song] : "-";
+    });
+    
+    return row;
+  });
+
+  // Create headers for individual votes table
+  const individualVotesHeaders = [
+    { key: "email", label: "Email", sortable: true },
+    { key: "votedAt", label: "Voted At", sortable: true },
+    ...allSongs.map(song => ({
+      key: song,
+      label: song,
+      sortable: true
+    }))
+  ];
 
   return (
     <motion.div
@@ -93,6 +148,17 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults }: Voti
                   rows={outstandingVoters.map((email) => ({ email }))}
                   headers={outstandingVotesHeader}
                   maxHeight={200}
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-white mb-2">Individual Votes</h3>
+              <div className="rounded-lg border border-gray-700/50 overflow-x-auto max-w-[80vw]">
+                <DataTable
+                  rows={individualVotesData}
+                  headers={individualVotesHeaders}
+                  maxHeight={400}
                 />
               </div>
             </div>
