@@ -3,16 +3,10 @@
 import { Button, Card } from "@/components/ui/primitives";
 import Link from "next/link";
 import { formatDate } from '@/services/dateService';
+import { NextRoundData } from '@/data-access/roundService';
 
 interface NextRoundDisplayProps {
-  nextRound: {
-    roundId: number;
-    slug: string;
-    song: { title: string; artist: string };
-    signupOpens: string | Date;
-    votingOpens: string | Date;
-    coveringBegins: string | Date;
-  };
+  nextRound: NextRoundData;
   nextRoundUserSignup?: {
     songTitle?: string;
     artist?: string;
@@ -40,20 +34,26 @@ export function NextRoundDisplay({ nextRound, nextRoundUserSignup }: NextRoundDi
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Signup Opens</p>
-              <p className="text-xl text-primary font-medium">
-                {formatDate.v(nextRound.signupOpens)}
-              </p>
+          {(nextRound.signupOpens || nextRound.coveringBegins) && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {nextRound.signupOpens && (
+                <div>
+                  <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Signup Opens</p>
+                  <p className="text-xl text-primary font-medium">
+                    {formatDate.v(nextRound.signupOpens)}
+                  </p>
+                </div>
+              )}
+              {nextRound.coveringBegins && (
+                <div>
+                  <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Voting Closes</p>
+                  <p className="text-xl text-primary font-medium">
+                    {formatDate.v(nextRound.coveringBegins)}
+                  </p>
+                </div>
+              )}
             </div>
-            <div>
-              <p className="text-[var(--color-accent-primary)] mb-2 text-lg">Voting Closes</p>
-              <p className="text-xl text-primary font-medium">
-                {formatDate.v(nextRound.coveringBegins)}
-              </p>
-            </div>
-          </div>
+          )}
 
           {nextRoundUserSignup ? (
             <div className="p-4 rounded-lg bg-background-secondary border border-accent-secondary">
@@ -68,7 +68,7 @@ export function NextRoundDisplay({ nextRound, nextRoundUserSignup }: NextRoundDi
                   className="w-full sm:w-auto"
                   asChild
                 >
-                  <Link href={`/sign-up/${nextRound.slug}?update=true`}>
+                  <Link href={`/sign-up/${nextRound.slug || nextRound.roundId}?update=true`}>
                     Update Song Suggestion
                   </Link>
                 </Button>
@@ -86,7 +86,7 @@ export function NextRoundDisplay({ nextRound, nextRoundUserSignup }: NextRoundDi
                 className="w-full sm:w-auto bg-[var(--color-accent-secondary)] hover:bg-[var(--color-accent-secondary)] hover:opacity-90 text-gray-900"
                 asChild
               >
-                <Link href={`/sign-up/${nextRound.slug}`}>
+                <Link href={`/sign-up/${nextRound.slug || nextRound.roundId}`}>
                   Sign Up for Round {nextRound.roundId}
                 </Link>
               </Button>
