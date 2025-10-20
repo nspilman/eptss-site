@@ -182,7 +182,9 @@ export function CurrentRoundDisplay({ roundInfo, userRoundDetails, userId, userV
                   <p className="text-secondary mb-4 text-center">
                     The covering phase is now open! You can still sign up to participate in this round.
                   </p>
-                  <form action={signupForRound}>
+                  <form action={async (formData: FormData) => {
+                    await signupForRound(formData);
+                  }}>
                     <input type="hidden" name="roundId" value={roundInfo.roundId} />
                     <input type="hidden" name="userId" value={userId || ''} />
                     <Button
