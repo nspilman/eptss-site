@@ -112,10 +112,8 @@ export const getDetailedVoteResults = async (id: number) => {
 };
 
 export const getVotingUsersByRound = async (roundId: number) => {
-  if (!await isAdmin()) {
-    return [];
-  }
-
+  // Note: Admin check should be done at the route/page level, not here
+  // This function is called from cached providers and cannot use cookies()
   const votes = await db
     .select({
       userId: songSelectionVotes.userId

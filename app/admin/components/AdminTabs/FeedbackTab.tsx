@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FeedbackCard } from "../FeedbackCard";
+import { FeedbackCard } from "../../FeedbackCard";
 import type { Feedback } from "@/data-access/feedbackService";
 
 type FeedbackTabProps = {

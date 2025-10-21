@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { users, signUps, submissions } from "@/db/schema";
+import { users, signUps, submissions, roundMetadata } from "@/db/schema";
 import { getCurrentAndPastRounds, getSignupsByRound, getSubmissions, getUserCount, getCurrentRound, getAllUsers as getAllUsersService } from "@/data-access";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 
 export type AdminStats = {
   totalUsers: number;
@@ -43,8 +43,23 @@ export type ActiveUserDetail = {
 };
 
 export const adminProvider = async (): Promise<AdminStats> => {
-  const totalUsers = await getUserCount();
-  const rounds = await getCurrentAndPastRounds();
+  // OPTIMIZED: Get all stats in a single parallel query set
+  const [totalUsers, rounds, activeUsersCount] = await Promise.all([
+    getUserCount(),
+    getCurrentAndPastRounds(),
+    // Get active users count directly with COUNT instead of fetching all rows
+    // Use a subquery to get the last 3 round IDs
+    db
+      .select({ count: sql<number>`COUNT(DISTINCT ${signUps.userId})::int` })
+      .from(signUps)
+      .where(sql`${signUps.roundId} IN (
+        SELECT ${roundMetadata.id} 
+        FROM ${roundMetadata} 
+        ORDER BY ${roundMetadata.id} DESC 
+        LIMIT 3
+      )`)
+      .then(result => result[0]?.count || 0)
+  ]);
 
   if (rounds.status !== 'success') {
     throw new Error('Failed to fetch rounds');
@@ -52,123 +67,90 @@ export const adminProvider = async (): Promise<AdminStats> => {
 
   const totalRounds = rounds.data.length;
   
-  // OPTIMIZED: Use the counts already fetched in getCurrentAndPastRounds
-  // instead of fetching them again in loops
+  // Use the counts already fetched in getCurrentAndPastRounds
   const totalSignups = rounds.data.reduce((sum, round) => sum + (round.signupCount || 0), 0);
   const totalSubmissions = rounds.data.reduce((sum, round) => sum + (round.submissionCount || 0), 0);
-  
-  // OPTIMIZED: Get active users from last 3 rounds in a single query
-  const lastThreeRounds = rounds.data.slice(-3);
-  const lastThreeRoundIds = lastThreeRounds.map(r => r.roundId);
-  
-  let activeUsers = 0;
-  if (lastThreeRoundIds.length > 0) {
-    // Single query to get distinct user count from last 3 rounds
-    const activeUsersResult = await db
-      .selectDistinct({ userId: signUps.userId })
-      .from(signUps)
-      .where(sql`${signUps.roundId} IN (${sql.join(lastThreeRoundIds.map(id => sql`${id}`), sql`, `)})`);
-    
-    activeUsers = activeUsersResult.filter(u => u.userId).length;
-  }
-
   const completionRate = totalSignups > 0 ? totalSubmissions / totalSignups : 0;
 
   return {
     totalUsers,
     totalRounds,
-    activeUsers,
+    activeUsers: activeUsersCount,
     completionRate,
   };
 };
 
 export const getUserDetails = async (): Promise<UserDetail[]> => {
-  // OPTIMIZED: Get all data in 3 parallel queries instead of N+1 queries
-  const [allUsers, allSignups, allSubmissions] = await Promise.all([
-    db.select({
+  // OPTIMIZED: Use SQL aggregations instead of fetching all data into memory
+  const userStats = await db
+    .select({
       email: users.email,
-      userid: users.userid,
       lastActive: users.createdAt,
-    }).from(users),
-    db.select().from(signUps),
-    db.select().from(submissions),
-  ]);
+      totalParticipation: sql<number>`COUNT(DISTINCT ${signUps.roundId})::int`,
+      totalSubmissions: sql<number>`COUNT(DISTINCT ${submissions.roundId})::int`,
+      lastSubmitted: sql<Date>`MAX(${submissions.createdAt})`,
+      lastSignup: sql<Date>`MAX(${signUps.createdAt})`
+    })
+    .from(users)
+    .leftJoin(signUps, eq(users.userid, signUps.userId))
+    .leftJoin(submissions, eq(users.userid, submissions.userId))
+    .groupBy(users.userid, users.email, users.createdAt)
+    .having(sql`MAX(${signUps.createdAt}) IS NOT NULL`)
+    .orderBy(sql`${users.createdAt} DESC NULLS LAST`);
 
-  // Group signups and submissions by user ID
-  const signupsByUser = new Map<string, typeof allSignups>();
-  const submissionsByUser = new Map<string, typeof allSubmissions>();
-  
-  allSignups.forEach(signup => {
-    if (!signup.userId) return;
-    if (!signupsByUser.has(signup.userId)) {
-      signupsByUser.set(signup.userId, []);
-    }
-    signupsByUser.get(signup.userId)!.push(signup);
-  });
-  
-  allSubmissions.forEach(submission => {
-    if (!submission.userId) return;
-    if (!submissionsByUser.has(submission.userId)) {
-      submissionsByUser.set(submission.userId, []);
-    }
-    submissionsByUser.get(submission.userId)!.push(submission);
-  });
-
-  // Map the data together
-  const userDetails = allUsers.map(user => {
-    const userSignups = signupsByUser.get(user.userid) || [];
-    const userSubmissions = submissionsByUser.get(user.userid) || [];
-    
-    const lastSubmission = userSubmissions.length ? 
-      userSubmissions.reduce((latest, current) => {
-        const latestTime = latest.createdAt?.getTime() || 0;
-        const currentTime = current.createdAt?.getTime() || 0;
-        return latestTime > currentTime ? latest : current;
-      }).createdAt : null;
-
-    const lastSignup = userSignups.length ? 
-      userSignups.reduce((latest, current) => {
-        const latestTime = latest.createdAt?.getTime() || 0;
-        const currentTime = current.createdAt?.getTime() || 0;
-        return latestTime > currentTime ? latest : current;
-      }).createdAt : null;
-
-    return {
-      email: user.email,
-      lastActive: user.lastActive?.toISOString() || null,
-      totalParticipation: userSignups.length,
-      totalSubmissions: userSubmissions.length,
-      lastSubmitted: lastSubmission?.toISOString() || null,
-      lastSignup: lastSignup?.toISOString() || null,
-    };
-  }).filter(user => user.lastSignup !== null);
-
-  // Sort by lastActive date, with most recent first
-  return userDetails.sort((a, b) => {
-    const timeA = a.lastActive ? new Date(a.lastActive).getTime() : 0;
-    const timeB = b.lastActive ? new Date(b.lastActive).getTime() : 0;
-    return timeB - timeA; // most recent first
-  });
+  return userStats.map(user => ({
+    email: user.email,
+    lastActive: user.lastActive?.toISOString() || null,
+    totalParticipation: user.totalParticipation || 0,
+    totalSubmissions: user.totalSubmissions || 0,
+    lastSubmitted: user.lastSubmitted?.toISOString() || null,
+    lastSignup: user.lastSignup?.toISOString() || null,
+  }));
 };
 
 export const getRoundDetails = async (): Promise<RoundDetail[]> => {
+  // OPTIMIZED: Get counts in 2 aggregate queries instead of 2N queries
   const rounds = await getCurrentAndPastRounds();
-  const details: RoundDetail[] = [];
-
-  for (const round of rounds.data || []) {
-    const signups = await getSignupsByRound(round.roundId);
-    const submissions = await getSubmissions(round.roundId);
-    const completionRate = signups.length > 0 ? submissions.length / signups.length : 0;
-
-    details.push({
-      roundId: round.roundId,
-      signupCount: signups.length,
-      submissionCount: submissions.length,
-      completionRate,
-    });
+  
+  if (rounds.status !== 'success' || !rounds.data.length) {
+    return [];
   }
 
-  return details;
+  // Get all signup counts in one query
+  const signupCounts = await db
+    .select({
+      roundId: signUps.roundId,
+      count: sql<number>`COUNT(*)::int`
+    })
+    .from(signUps)
+    .groupBy(signUps.roundId);
+
+  // Get all submission counts in one query
+  const submissionCounts = await db
+    .select({
+      roundId: submissions.roundId,
+      count: sql<number>`COUNT(*)::int`
+    })
+    .from(submissions)
+    .groupBy(submissions.roundId);
+
+  // Create maps for O(1) lookup
+  const signupMap = new Map(signupCounts.map(s => [s.roundId, s.count]));
+  const submissionMap = new Map(submissionCounts.map(s => [s.roundId, s.count]));
+
+  // Build details array
+  return rounds.data.map(round => {
+    const signupCount = signupMap.get(round.roundId) || 0;
+    const submissionCount = submissionMap.get(round.roundId) || 0;
+    const completionRate = signupCount > 0 ? submissionCount / signupCount : 0;
+
+    return {
+      roundId: round.roundId,
+      signupCount,
+      submissionCount,
+      completionRate,
+    };
+  });
 };
 
 export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
@@ -209,45 +191,48 @@ export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
       lastSubmissionRound: submissionsMap.get(signup.userId!) || null,
     }));
   
-  // Add users who only have submissions (no signups)
-  lastSubmissions.forEach(submission => {
-    if (!activeUsers.find(u => u.userId === submission.userId)) {
-      // Get user email
-      db.select({ email: users.email })
-        .from(users)
-        .where(eq(users.userid, submission.userId!))
-        .then(userResult => {
-          if (userResult.length > 0 && userResult[0].email) {
-            activeUsers.push({
-              email: userResult[0].email,
-              userId: submission.userId!,
-              lastSignupRound: null,
-              lastSubmissionRound: Number(submission.lastSubmissionRound),
-            });
-          }
-        });
-    }
-  });
+  // OPTIMIZED: Get all user IDs that only have submissions (no signups) in one query
+  const submissionOnlyUserIds = lastSubmissions
+    .filter(submission => submission.userId && !activeUsers.find(u => u.userId === submission.userId))
+    .map(submission => submission.userId!);
+  
+  if (submissionOnlyUserIds.length > 0) {
+    const submissionOnlyUsers = await db
+      .select({ email: users.email, userid: users.userid })
+      .from(users)
+      .where(sql`${users.userid} IN (${sql.join(submissionOnlyUserIds.map(id => sql`${id}`), sql`, `)})`);
+    
+    submissionOnlyUsers.forEach(user => {
+      if (user.email && user.userid) {
+        const submission = lastSubmissions.find(s => s.userId === user.userid);
+        if (submission) {
+          activeUsers.push({
+            email: user.email,
+            userId: user.userid,
+            lastSignupRound: null,
+            lastSubmissionRound: Number(submission.lastSubmissionRound),
+          });
+        }
+      }
+    });
+  }
   
   return activeUsers;
 };
 
 /**
+ * @deprecated Use individual tab server components with caching instead
  * Comprehensive admin provider that fetches all data needed for the admin page
  * This consolidates what was previously scattered service calls
  */
 export const adminPageProvider = async (): Promise<AdminPageData> => {
   // Fetch all data in parallel for better performance
-  console.time('adminPageProvider - total');
-  console.time('adminPageProvider - parallel queries');
   const [stats, currentRoundResult, allUsers, activeUsers] = await Promise.all([
     adminProvider(),
     getCurrentRound(),
     getAllUsersService(),
     getActiveUsers(),
   ]);
-  console.timeEnd('adminPageProvider - parallel queries');
-  console.timeEnd('adminPageProvider - total');
 
   return {
     stats,

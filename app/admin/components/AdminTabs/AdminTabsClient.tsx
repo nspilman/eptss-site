@@ -1,85 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, ReactNode } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/primitives/tabs";
-import { OverviewTab } from "./OverviewTab";
-import { ReportsTab } from "./ReportsTab";
-import { UsersTab } from "./UsersTab";
-import { ActionsTab } from "./ActionsTab";
-import { FeedbackTab } from "./FeedbackTab";
-import type { Feedback } from "@/data-access/feedbackService";
-import { UserDetails } from "@/types/user";
 
-import { Phase, DateLabel, Submission } from "@/types/round";
-import { ActiveUserDetail } from "@/providers/adminProvider/adminProvider";
-import { SignupData } from "@/types/signup";
-import { VoteOption } from "@/types/vote";
-
-type VoteResult = {
-  title: string;
-  artist: string;
-  average: number;
-  votesCount: number;
-};
-
-type IndividualVote = {
-  email: string | null;
-  userId: string | null;
-  songId: number | null;
-  vote: number;
-  createdAt: Date | null;
-  title: string | null;
-  artist: string | null;
-};
-
-type AdminTabsProps = {
+type AdminTabsClientProps = {
   initialTab: string;
-  stats: {
-    totalUsers: number;
-    totalRounds: number;
-    activeUsers: number;
-    completionRate: number;
-  };
-  activeUsers: ActiveUserDetail[];
-  phase: Phase;
-  dateLabels: Record<Phase, DateLabel>;
-  signups: Array<Pick<SignupData, 'songId' | 'youtubeLink' | 'song' | 'additionalComments'> & {
-    userId?: string;
-    email?: string | null;
-  }>;
-  submissions: Submission[];
-  voteOptions: VoteOption[];
-  outstandingVoters: string[];
-  voteResults: VoteResult[];
-  allVotes: IndividualVote[];
-  roundId: number;
-  roundSlug: string;
-  users: UserDetails[];
-  allRoundSlugs: string[];
-  feedbackList: Feedback[];
+  overviewContent: ReactNode;
+  reportsContent: ReactNode;
+  usersContent: ReactNode;
+  feedbackContent: ReactNode;
+  actionsContent: ReactNode;
 };
 
-export function AdminTabs({
+export function AdminTabsClient({
   initialTab,
-  stats,
-  activeUsers,
-  phase,
-  dateLabels,
-  signups,
-  submissions,
-  voteOptions,
-  outstandingVoters,
-  voteResults,
-  allVotes,
-  roundId,
-  roundSlug,
-  users,
-  allRoundSlugs,
-  feedbackList,
-}: AdminTabsProps) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  overviewContent,
+  reportsContent,
+  usersContent,
+  feedbackContent,
+  actionsContent,
+}: AdminTabsClientProps) {
   const [activeTab, setActiveTab] = useState(initialTab || "overview");
 
   // Sync with URL changes
@@ -128,44 +68,23 @@ export function AdminTabs({
       </TabsList>
 
       <TabsContent value="overview" padding="none">
-        <OverviewTab 
-          stats={stats}
-        />
+        {overviewContent}
       </TabsContent>
 
       <TabsContent value="reports" padding="none">
-        <ReportsTab 
-          stats={stats}
-          phase={phase}
-          dateLabels={dateLabels}
-          signups={signups}
-          submissions={submissions}
-          voteOptions={voteOptions}
-          outstandingVoters={outstandingVoters}
-          voteResults={voteResults}
-          allVotes={allVotes}
-        />
+        {reportsContent}
       </TabsContent>
 
       <TabsContent value="users" padding="none">
-        <UsersTab 
-          activeUsers={activeUsers}
-        />
+        {usersContent}
       </TabsContent>
 
       <TabsContent value="feedback" padding="none">
-        <FeedbackTab 
-          feedbackList={feedbackList}
-        />
+        {feedbackContent}
       </TabsContent>
 
       <TabsContent value="actions" padding="none">
-        <ActionsTab 
-          roundId={roundId} 
-          roundSlug={roundSlug}
-          users={users}
-          allRoundSlugs={allRoundSlugs}
-        />
+        {actionsContent}
       </TabsContent>
     </Tabs>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ActiveUsersCard } from "../ActiveUsersCard";
+import { ActiveUsersCard } from "../../ActiveUsersCard";
 import { ActiveUserDetail } from "@/providers/adminProvider/adminProvider";
 
 type UsersTabProps = {
