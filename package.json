@@ -75,6 +75,7 @@
     "eslint-config-next": "15.5.0",
     "framer-motion": "^12.23.12",
     "google-auth-library": "^9.14.1",
+    "googleapis": "^144.0.0",
     "gray-matter": "^4.0.3",
     "imap-simple": "^5.1.0",
     "lucide-react": "^0.546.0",
