@@ -32,6 +32,7 @@
     "node_modules",
     "cypress",
     "**/*.cy.tsx",
-    "**/*.cy.ts"
+    "**/*.cy.ts",
+    "scripts"
   ]
 }
