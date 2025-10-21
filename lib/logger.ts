@@ -5,7 +5,7 @@
  */
 
 import * as Sentry from '@sentry/nextjs';
-import posthog from 'posthog-js';
+import { PostHog } from 'posthog-node';
 
 type LogLevel = 'info' | 'warn' | 'error';
 
@@ -22,7 +22,7 @@ interface LogEntry {
 }
 
 class Logger {
-  private log(level: LogLevel, message: string, data?: LogData) {
+  private async log(level: LogLevel, message: string, data?: LogData) {
     const timestamp = new Date().toISOString();
     const environment = process.env.NODE_ENV || 'development';
     
@@ -60,14 +60,26 @@ class Logger {
         });
       }
       
-      // 2. Send to PostHog for analytics
-      if (typeof window !== 'undefined' && posthog.__loaded) {
-        posthog.capture(`server_action_${level}`, {
-          message,
-          level,
-          timestamp,
-          ...data,
+      // 2. Send to PostHog for analytics (server-side)
+      if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+        const posthogClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+          host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.posthog.com',
+          flushAt: 1,
+          flushInterval: 0
         });
+        
+        posthogClient.capture({
+          distinctId: 'server',
+          event: `server_action_${level}`,
+          properties: {
+            message,
+            level,
+            timestamp,
+            ...data,
+          },
+        });
+        
+        await posthogClient.shutdown();
       }
       
       // 3. Also log to console for CloudWatch/server logs
@@ -83,21 +95,24 @@ class Logger {
    * Log informational messages
    */
   info(message: string, data?: LogData) {
-    this.log('info', message, data);
+    // Fire and forget - don't await to avoid blocking
+    void this.log('info', message, data);
   }
 
   /**
    * Log warning messages
    */
   warn(message: string, data?: LogData) {
-    this.log('warn', message, data);
+    // Fire and forget - don't await to avoid blocking
+    void this.log('warn', message, data);
   }
 
   /**
    * Log error messages
    */
   error(message: string, data?: LogData) {
-    this.log('error', message, data);
+    // Fire and forget - don't await to avoid blocking
+    void this.log('error', message, data);
   }
 
   /**
@@ -106,7 +121,8 @@ class Logger {
   action(actionName: string, status: 'started' | 'completed' | 'failed', data?: LogData) {
     const message = `Action ${actionName} ${status}`;
     const level = status === 'failed' ? 'error' : 'info';
-    this.log(level, message, { actionName, status, ...data });
+    // Fire and forget - don't await to avoid blocking
+    void this.log(level, message, { actionName, status, ...data });
   }
 }
 
