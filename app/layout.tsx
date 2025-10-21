@@ -1,10 +1,8 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from "@/components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
-import BackgroundPattern from "@/components/BackgroundPattern";
 import AuthStateListener from "@/components/AuthStateListener";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
-import { PostHogProvider } from "@/providers/PostHogProvider";
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
@@ -58,7 +56,6 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
       </head>
       <body>
-        <PostHogProvider>
           <AuthStateListener>
             {userId ? (
               // Authenticated users get the dashboard layout with sidebar
@@ -79,7 +76,6 @@ export default async function RootLayout({
               </div>
             )}
           </AuthStateListener>
-        </PostHogProvider>
       </body>
     </html>
   );
