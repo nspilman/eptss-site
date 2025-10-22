@@ -3,7 +3,6 @@ import { Header } from "@/components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
 import AuthStateListener from "@/components/AuthStateListener";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
-import { PostHogProvider } from "@/providers/PostHogProvider";
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
@@ -57,28 +56,26 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href={process.env.NEXT_PUBLIC_SUPABASE_URL} />
       </head>
       <body>
-        <PostHogProvider>
-          <AuthStateListener>
-            {userId ? (
-              // Authenticated users get the dashboard layout with sidebar
-              <DashboardLayout>
+        <AuthStateListener>
+          {userId ? (
+            // Authenticated users get the dashboard layout with sidebar
+            <DashboardLayout>
+              {children}
+              <Toaster />
+            </DashboardLayout>
+          ) : (
+            // Non-authenticated users get the regular layout with header and footer
+            <div className="min-h-screen bg-[var(--color-background-primary)] text-[var(--color-primary)] relative overflow-hidden font-sans flex flex-col">
+              {/* <BackgroundPattern /> */}
+              <Header userId={userId} />
+              <main className="pt-24 w-screen flex-1 pt-24 px-4 md:px-8 lg:px-12 w-screen">
                 {children}
-                <Toaster />
-              </DashboardLayout>
-            ) : (
-              // Non-authenticated users get the regular layout with header and footer
-              <div className="min-h-screen bg-[var(--color-background-primary)] text-[var(--color-primary)] relative overflow-hidden font-sans flex flex-col">
-                {/* <BackgroundPattern /> */}
-                <Header userId={userId} />
-                <main className="pt-24 w-screen flex-1 pt-24 px-4 md:px-8 lg:px-12 w-screen">
-                  {children}
-                </main>
-                <Footer />
-                <Toaster />
-              </div>
-            )}
-          </AuthStateListener>
-        </PostHogProvider>
+              </main>
+              <Footer />
+              <Toaster />
+            </div>
+          )}
+        </AuthStateListener>
       </body>
     </html>
   );

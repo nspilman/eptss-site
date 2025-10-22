@@ -61,25 +61,32 @@ class Logger {
       }
       
       // 2. Send to PostHog for analytics (server-side)
+      // Note: Server-side PostHog is optional and requires POSTHOG_API_KEY
+      // This is different from NEXT_PUBLIC_POSTHOG_KEY used for client-side tracking
       if (process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-        const posthogClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-          host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.posthog.com',
-          flushAt: 1,
-          flushInterval: 0
-        });
-        
-        posthogClient.capture({
-          distinctId: 'server',
-          event: `server_action_${level}`,
-          properties: {
-            message,
-            level,
-            timestamp,
-            ...data,
-          },
-        });
-        
-        await posthogClient.shutdown();
+        try {
+          const posthogClient = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
+            host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.posthog.com',
+            flushAt: 1,
+            flushInterval: 0
+          });
+          
+          posthogClient.capture({
+            distinctId: 'server',
+            event: `server_action_${level}`,
+            properties: {
+              message,
+              level,
+              timestamp,
+              ...data,
+            },
+          });
+          
+          await posthogClient.shutdown();
+        } catch (error) {
+          // Silently fail PostHog logging to avoid breaking the main flow
+          console.error('PostHog logging failed:', error);
+        }
       }
       
       // 3. Also log to console for CloudWatch/server logs
