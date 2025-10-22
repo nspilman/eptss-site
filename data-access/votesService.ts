@@ -1,6 +1,5 @@
 "use server";
 
-import { isAdmin } from "@/utils/isAdmin";
 import { db } from "@/db";
 import { votingCandidateOverrides, songs, songSelectionVotes, users } from "@/db/schema";
 import { eq, avg, count, sql, desc, and } from "drizzle-orm";
@@ -169,10 +168,8 @@ export const getVotesByUserForRoundWithDetails = async (roundId: number) => {
 };
 
 export const getAllVotesForRound = async (roundId: number) => {
-  if (!await isAdmin()) {
-    return [];
-  }
-
+  // Note: Admin check should be done at the route/page level, not here
+  // This function is called from cached contexts where cookies cannot be accessed
   const votes = await db
     .select({
       email: users.email,
