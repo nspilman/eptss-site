@@ -122,7 +122,7 @@ export const FeedbackCard = ({ feedbackList = [] }: FeedbackCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-gray-700/50">
-            <DataTable rows={feedbackRows} headers={feedbackHeaders} maxHeight={600} />
+            <DataTable rows={feedbackRows} headers={feedbackHeaders} maxHeight={600} allowCopy={true} />
           </div>
         </CardContent>
       </Card>

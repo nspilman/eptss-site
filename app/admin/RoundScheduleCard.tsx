@@ -50,7 +50,7 @@ export const RoundScheduleCard = ({ phase, dateLabels }: RoundScheduleProps) => 
         </CardHeader>
         <CardContent className="px-4 pb-4">
           <div className="rounded-lg border border-gray-700/50">
-            <DataTable rows={dates} headers={dateHeaders} />
+            <DataTable rows={dates} headers={dateHeaders} allowCopy={true} />
           </div>
         </CardContent>
       </Card>

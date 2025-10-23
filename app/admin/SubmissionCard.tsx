@@ -43,7 +43,7 @@ export const SubmissionsCard = ({ submissions }: SubmissionsCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-gray-700/50">
-            <DataTable rows={submissionRows} headers={submissionHeaders} maxHeight={400} />
+            <DataTable rows={submissionRows} headers={submissionHeaders} maxHeight={400} allowCopy={true} />
           </div>
         </CardContent>
       </Card>

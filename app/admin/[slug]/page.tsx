@@ -47,13 +47,13 @@ const AdminRoundPage = async ({ params }: { params: Promise<{ slug: string }> })
     return (
         <>
             <h2>Round Dates</h2>
-            <DataTable rows={datesArray} headers={dateHeaders} />
+            <DataTable rows={datesArray} headers={dateHeaders} allowCopy={true} />
             <h2>Vote Options</h2>
-            <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} />
+            <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} allowCopy={true} />
             <h2>Outstanding Voters</h2>
-            <DataTable rows={outstandingVoters.map(email => ({email: email || ''}))} headers={outstandingVotesHeader}/>
+            <DataTable rows={outstandingVoters.map(email => ({email: email || ''}))} headers={outstandingVotesHeader} allowCopy={true} />
             <h2>Vote Results</h2>
-            <DataTable rows={voteResults} headers={voteHeaders} />
+            <DataTable rows={voteResults} headers={voteHeaders} allowCopy={true} />
         </>
     )
 }

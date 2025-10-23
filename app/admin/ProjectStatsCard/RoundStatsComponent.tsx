@@ -47,6 +47,7 @@ export const RoundStatsComponent = ({ detailData, isLoading, sortKey, sortDirect
           defaultSortKey={sortKey || undefined}
           defaultSortDirection={sortDirection}
           onSort={onSort}
+          allowCopy={true}
         />
       </div>
     </motion.div>

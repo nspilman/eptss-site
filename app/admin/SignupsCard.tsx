@@ -53,7 +53,7 @@ export const SignupsCard = ({ signups }: SignupsCardProps) => {
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-gray-700/50">
-            <DataTable rows={signupRows} headers={signupHeaders} maxHeight={400} />
+            <DataTable rows={signupRows} headers={signupHeaders} maxHeight={400} allowCopy={true} />
           </div>
         </CardContent>
       </Card>

@@ -62,6 +62,7 @@ export const UserStatsComponent = ({ detailData, isLoading, sortKey, sortDirecti
             defaultSortKey={sortKey || undefined}
             defaultSortDirection={sortDirection}
             onSort={onSort}
+            allowCopy={true}
           />
         </div>
       </motion.div>

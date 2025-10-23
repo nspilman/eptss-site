@@ -68,6 +68,7 @@ export function ActiveUsersCard({ users }: ActiveUsersCardProps) {
           defaultSortDirection={sortDirection}
           onSort={handleSort}
           maxHeight={400}
+          allowCopy={true}
         />
       </motion.div>
     </div>

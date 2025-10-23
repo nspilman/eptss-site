@@ -130,14 +130,14 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults, allVot
                 Vote Options
               </h3>
               <div className="rounded-lg border border-gray-700/50">
-                <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} maxHeight={200} />
+                <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} maxHeight={200} allowCopy={true} />
               </div>
             </div>
             
             <div>
               <h3 className="text-sm font-medium text-white mb-2">Vote Results</h3>
               <div className="rounded-lg border border-gray-700/50">
-                <DataTable rows={voteResults} headers={voteResultsHeaders} maxHeight={200} />
+                <DataTable rows={voteResults} headers={voteResultsHeaders} maxHeight={200} allowCopy={true} />
               </div>
             </div>
 
@@ -148,6 +148,7 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults, allVot
                   rows={outstandingVoters.map((email) => ({ email }))}
                   headers={outstandingVotesHeader}
                   maxHeight={200}
+                  allowCopy={true}
                 />
               </div>
             </div>
@@ -159,6 +160,7 @@ export const VotingCard = ({ voteOptions, outstandingVoters, voteResults, allVot
                   rows={individualVotesData}
                   headers={individualVotesHeaders}
                   maxHeight={400}
+                  allowCopy={true}
                 />
               </div>
             </div>
