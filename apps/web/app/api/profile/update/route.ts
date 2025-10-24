@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
     // Update user in database
     const { data, error } = await supabase
       .from('users')
+      //@ts-ignore
       .update({ username: trimmedUsername })
       .eq('userid', userId)
       .select()

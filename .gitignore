@@ -12,7 +12,7 @@
 /.next/
 /out/
 
-/apps/web/.next/*
+/apps/web/.next/
 
 # production
 /build
