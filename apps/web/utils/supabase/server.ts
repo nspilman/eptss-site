@@ -3,9 +3,7 @@ import { cookies, headers } from 'next/headers'
 import type { Database } from '@/types/database'
 import { AUTH_HEADER_KEYS } from '@/constants'
 
-type TypedSupabaseClient = ReturnType<typeof createServerClient<Database>>
-
-export async function createClient(): Promise<TypedSupabaseClient> {
+export async function createClient() {
   const cookieStore = await cookies()
 
   return createServerClient<Database>(

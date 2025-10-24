@@ -1,5 +1,6 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
+import type { Database } from "@/types/database";
 
 
 export const signOut = async () => {
@@ -122,13 +123,16 @@ export const signUpWithPassword = async ({
     }
     
     // Create the user record in the users table
-    const { error: insertError } = await supabaseClient
-      .from("users")
+    // Note: Type assertion required due to TypeScript generic inference limitations in monorepo
+    // The types are correct at runtime, but TS can't infer them across workspace boundaries
+    const insertResult = await (supabaseClient
+      .from("users") as any)
       .insert({
         userid: data.user.id,
         email: email,
         username: username,
       });
+    const insertError = insertResult.error;
       
     if (insertError) {
       // If there was an error creating the user record, delete the auth user

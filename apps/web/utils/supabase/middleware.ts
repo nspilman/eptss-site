@@ -46,7 +46,7 @@ export async function updateSession(request: NextRequest) {
     // Only try to create the user if we&apos;re coming from an auth callback or if it&apos;s the first request after login
     if (isAuthCallback || isDashboard || request.cookies.get('just_authenticated')) {
       console.log('Middleware: Ensuring user exists in database');
-      const result = await ensureUserExists(user, supabase);
+      const result = await ensureUserExists(user);
       
       if (result.success) {
         // If we just created the user, set a cookie to avoid trying again on every request

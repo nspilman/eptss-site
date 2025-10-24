@@ -13,6 +13,8 @@
 /out/
 
 /apps/web/.next/
+/apps/web/.turbo/
+/.turbo/
 
 # production
 /build

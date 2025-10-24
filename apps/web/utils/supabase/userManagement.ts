@@ -1,10 +1,9 @@
 import { createClient } from '@/utils/supabase/server';
-import { SupabaseClient, User } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 
-export async function ensureUserExists(user: User, supabaseClient?: SupabaseClient) {
+export async function ensureUserExists(user: User) {
   try {
-    // Use the provided client or create a new one
-    const supabase = supabaseClient || await createClient();
+    const supabase = await createClient();
     
     // Check if the user already exists in the users table
     const { data: existingUser, error: fetchError } = await supabase
@@ -38,8 +37,8 @@ export async function ensureUserExists(user: User, supabaseClient?: SupabaseClie
       let lastError = null;
       
       while (!success && retryCount < maxRetries) {
-        const { error: insertError } = await supabase
-          .from('users')
+        const { error: insertError } = await (supabase
+          .from('users') as any)
           .insert({
             userid: user.id,
             email: user.email,
