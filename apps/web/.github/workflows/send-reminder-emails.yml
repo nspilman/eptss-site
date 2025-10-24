@@ -1,0 +1,43 @@
+name: Send Reminder Emails
+
+on:
+  schedule:
+    # Runs daily at 10:00 AM UTC (2:00 AM PST)
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Allows manual triggering for testing
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+    environment: Pioneer
+    
+    steps:
+      - name: Call send-reminder-emails API endpoint
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          APP_URL: ${{ secrets.APP_URL }}
+        run: |
+          response=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            "${APP_URL}/api/cron/send-reminder-emails")
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo "Response body: $body"
+          echo "HTTP status: $http_code"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: API returned status $http_code"
+            exit 1
+          fi
+          
+          # Check if the response indicates success
+          if echo "$body" | grep -q '"success":false'; then
+            echo "Warning: API returned success:false"
+            echo "$body"
+            exit 1
+          fi
+          
+          echo "Successfully completed"

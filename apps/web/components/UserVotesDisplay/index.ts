@@ -1,0 +1,1 @@
+export { UserVotesDisplay } from './UserVotesDisplay';

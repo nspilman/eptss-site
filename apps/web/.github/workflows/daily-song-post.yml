@@ -1,0 +1,32 @@
+name: Daily Song Post
+
+on:
+  schedule:
+    # Runs at 11:00 AM PST (19:00 UTC) every day
+    - cron: '0 19 * * *'
+  workflow_dispatch: # Allows manual triggering for testing
+
+jobs:
+  post-song:
+    runs-on: ubuntu-latest
+    environment: Pioneer
+    env:
+        ENVIRONMENT: Pioneer  # Set at job level
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run song posting script
+        run: bun run post-song
+        env:
+          BLUESKY_USERNAME: ${{ secrets.BLUESKY_USERNAME }}
+          BLUESKY_PASSWORD: ${{ secrets.BLUESKY_PASSWORD }}

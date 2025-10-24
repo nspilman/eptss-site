@@ -1,0 +1,53 @@
+"use client";
+
+import { Control } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+  Textarea,
+} from "../primitives";
+
+interface FormTextareaFieldProps {
+  name: string;
+  label: string;
+  control: Control<any>;
+  disabled?: boolean;
+  placeholder?: string;
+  description?: string;
+  className?: string;
+}
+
+export function FormTextareaField({
+  name,
+  label,
+  control,
+  disabled,
+  placeholder,
+  description,
+  className,
+}: FormTextareaFieldProps) {
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className={className} id={`form-field-${name}`}>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Textarea
+              {...field}
+              disabled={disabled}
+              placeholder={placeholder}
+            />
+          </FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
