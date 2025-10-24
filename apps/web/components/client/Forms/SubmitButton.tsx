@@ -1,7 +1,6 @@
 "use client";
 
-import { LoadingSpinner } from "../../LoadingSpinner";
-import { Button } from "@eptss/ui";
+import { Button, LoadingSpinner } from "@eptss/ui";
 
 export const SubmitButton = ({
   label,

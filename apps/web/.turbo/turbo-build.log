@@ -1,0 +1,113 @@
+$ next build
+(node:48249) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/next.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+   ▲ Next.js 15.5.0
+   - Environments: .env
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+(node:48262) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/next.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ⚠ Compiled with warnings in 9.0s
+
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/index.js
+../../node_modules/@sentry/opentelemetry/build/cjs/index.js
+../../node_modules/@sentry/nextjs/build/cjs/server/index.js
+../../node_modules/@sentry/nextjs/build/cjs/index.server.js
+./app/error.tsx
+
+../../node_modules/@opentelemetry/instrumentation-http/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../../node_modules/@opentelemetry/instrumentation-http/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+../../node_modules/@opentelemetry/instrumentation-http/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+../../node_modules/@opentelemetry/instrumentation-http/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+../../node_modules/@opentelemetry/instrumentation-http/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+../../node_modules/@opentelemetry/instrumentation-http/build/src/http.js
+../../node_modules/@opentelemetry/instrumentation-http/build/src/index.js
+../../node_modules/@sentry/node/build/cjs/integrations/http/index.js
+../../node_modules/@sentry/node/build/cjs/index.js
+../../node_modules/@sentry/nextjs/build/cjs/index.server.js
+./lib/logger.ts
+./app/dashboard/actions.ts
+
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+../../node_modules/@opentelemetry/instrumentation/build/esm/index.js
+../../node_modules/@sentry/opentelemetry/build/cjs/index.js
+../../node_modules/@sentry/nextjs/build/cjs/server/index.js
+../../node_modules/@sentry/nextjs/build/cjs/index.server.js
+./lib/logger.ts
+./app/dashboard/actions.ts
+
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+../../node_modules/@prisma/instrumentation/node_modules/@opentelemetry/instrumentation/build/esm/index.js
+../../node_modules/@prisma/instrumentation/dist/chunk-PVBRMQBZ.js
+../../node_modules/@prisma/instrumentation/dist/index.js
+../../node_modules/@sentry/node/build/cjs/integrations/tracing/prisma.js
+../../node_modules/@sentry/node/build/cjs/index.js
+../../node_modules/@sentry/nextjs/build/cjs/index.server.js
+./lib/logger.ts
+./app/dashboard/actions.ts
+
+(node:48340) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/next.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48358) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/next.config.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/natespilman/Repos/EPTSS-website/eptss-site/apps/web/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Found 3 warnings while optimizing generated CSS:
+
+Issue #1:
+[2m│ }[22m
+[2m│ @layer base {[22m
+[2m│[22m   @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');
+[2m┆[22m          [33m[2m^--[22m Unknown at rule: @import[39m
+[2m┆[22m
+[2m│   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');[22m
+[2m│   @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;700&display=swap');[22m
+
+Issue #2:
+[2m│ @layer base {[22m
+[2m│   @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');[22m
+[2m│[22m   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+[2m┆[22m          [33m[2m^--[22m Unknown at rule: @import[39m
+[2m┆[22m
+[2m│   @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;700&display=swap');[22m
+[2m│ }[22m
+
+Issue #3:
+[2m│   @import url('https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap');[22m
+[2m│   @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');[22m
+[2m│[22m   @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;700&display=swap');
+[2m┆[22m          [33m[2m^--[22m Unknown at rule: @import[39m
+[2m┆[22m
+[2m│ }[22m
+[2m│ @layer base {[22m
+

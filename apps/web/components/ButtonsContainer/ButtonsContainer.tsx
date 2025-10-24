@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Toolbar, ToolbarButtonGroup } from '../ui/primitives'
+import { Toolbar, ToolbarButtonGroup } from '@eptss/ui'
 
 interface ButtonsContainerProps {
   children: React.ReactNode

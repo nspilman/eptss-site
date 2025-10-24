@@ -34,11 +34,14 @@ export const signInWithPassword = async ({
 }) => {
   const supabaseClient = await createClient();
   // First, find the user's email by username
-  const { data: userData, error: userError } = await supabaseClient
+  const result = await supabaseClient
     .from("users")
     .select("email")
     .eq("username", username)
     .single();
+  
+  const userData = result.data as { email: string } | null;
+  const userError = result.error;
 
   if (userError || !userData) {
     return { error: { message: "Invalid username or password" } };
