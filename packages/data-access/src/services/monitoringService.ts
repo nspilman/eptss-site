@@ -5,6 +5,18 @@ import { testRuns } from "../db/schema";
 import { sql } from "drizzle-orm";
 import { desc } from "drizzle-orm";
 
+export async function saveTestRun(testData: {
+  testName: string;
+  status: string;
+  errorMessage?: string | null;
+  duration?: number;
+  environment: string;
+  startedAt: Date;
+}) {
+  const result = await db.insert(testRuns).values(testData).returning();
+  return result[0];
+}
+
 export async function getMonitoringData() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

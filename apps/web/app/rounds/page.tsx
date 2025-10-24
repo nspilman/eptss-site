@@ -1,22 +1,54 @@
-import { RoundsDisplay } from "@/app/index/Homepage/RoundsDisplay";
-import { Suspense } from "react";
+import { ClientRoundsDisplay } from "@/app/index/Homepage/RoundsDisplay/ClientRoundsDisplay";
+
+// Enable static generation
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
+async function getRoundsData() {
+  try {
+    // Fetch current round to determine phase
+    const currentRoundResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/round/current`,
+      { next: { revalidate: 3600 } }
+    );
+    const currentRoundData = await currentRoundResponse.json();
+    
+    // Fetch rounds data
+    const excludeCurrentRound = currentRoundData?.phase === 'signups';
+    const roundsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/rounds?excludeCurrentRound=${excludeCurrentRound}`,
+      { next: { revalidate: 3600 } }
+    );
+    const roundsData = await roundsResponse.json();
+    
+    return {
+      rounds: roundsData.roundContent || [],
+      currentRoundId: currentRoundData?.roundId || null,
+      isVotingPhase: currentRoundData?.phase === 'voting',
+    };
+  } catch (error) {
+    console.error("Error fetching rounds data:", error);
+    return {
+      rounds: [],
+      currentRoundId: null,
+      isVotingPhase: false,
+    };
+  }
+}
 
 export default async function RoundsPage() {
+  const { rounds, currentRoundId, isVotingPhase } = await getRoundsData();
+
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="max-w-7xl mx-auto">
-        <Suspense fallback={
-          <div className="py-16 bg-[var(--color-background-secondary)] rounded-xl">
-            <div className="max-w-5xl mx-auto px-4 flex justify-center items-center h-40">
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 border-t-2 border-[var(--color-accent-primary)] rounded-full animate-spin mb-4"></div>
-                <p className="text-[var(--color-primary)]">Loading rounds...</p>
-              </div>
-            </div>
-          </div>
-        }>
-          <RoundsDisplay />
-        </Suspense>
+        <section id="rounds">
+          <ClientRoundsDisplay 
+            rounds={rounds} 
+            currentRoundId={currentRoundId} 
+            isVotingPhase={isVotingPhase} 
+          />
+        </section>
       </div>
     </main>
   );

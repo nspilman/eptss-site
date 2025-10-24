@@ -18,6 +18,7 @@ export { getUnverifiedSignupByEmail } from './services/verificationService';
 export { getAllFeedback, updateFeedbackPublicStatus, deleteFeedback } from './services/feedbackService';
 export { getSignupSongsForRound, setRoundSong } from './services/roundService';
 export { getActiveUsersCount, getUserDetails, getActiveUsers, getAllUsers } from './services/userService';
+export { saveTestRun } from './services/monitoringService';
 export type { Feedback, CreateFeedbackInput } from './services/feedbackService';
 
 // Re-export actions

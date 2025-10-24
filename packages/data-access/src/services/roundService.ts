@@ -265,13 +265,18 @@ export const getNextRoundByVotingDate = async (): Promise<AsyncResult<NextRoundD
 
 export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> => {
   try {
-    const currentRoundResult = await getCurrentRoundId();
-    if (currentRoundResult.status !== 'success') {
-      return createSuccessResult([]);
-    }
-
     const now = new Date();
-    // Get all rounds first
+    const currentRoundResult = await getCurrentRoundId();
+    
+    // Build the where clause - if we have a current round, use it; otherwise just get past rounds by voting date
+    const whereClause = currentRoundResult.status === 'success'
+      ? or(
+          sql`${roundMetadata.id} <= ${currentRoundResult.data}`,
+          sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now.toISOString()}::timestamp`
+        )
+      : sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now.toISOString()}::timestamp`;
+
+    // Get all rounds
     const rounds = await db
       .select({
         id: roundMetadata.id,
@@ -286,12 +291,7 @@ export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> =
       })
       .from(roundMetadata)
       .leftJoin(songs, eq(roundMetadata.songId, songs.id))
-      .where(
-        or(
-          sql`${roundMetadata.id} <= ${currentRoundResult.data}`,
-          sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now.toISOString()}::timestamp`
-        )
-      )
+      .where(whereClause)
       .orderBy(desc(roundMetadata.id));
 
     if (!rounds.length) {

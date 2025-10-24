@@ -1,5 +1,4 @@
-import { db } from "@eptss/data-access/db";
-import { testRuns } from "@/db/schema";
+import { saveTestRun } from "@eptss/data-access";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -60,16 +59,16 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await db.insert(testRuns).values({
+    const result = await saveTestRun({
       testName: testData.testName,
       status: testData.status,
       errorMessage: testData.errorMessage || null,
       duration: testData.duration,
       environment: testData.environment,
       startedAt: new Date(testData.startedAt)
-    }).returning();
+    });
 
-    return NextResponse.json({ success: true, data: result[0] });
+    return NextResponse.json({ success: true, data: result });
   } catch (error) {
     return NextResponse.json(
       { 

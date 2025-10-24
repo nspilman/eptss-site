@@ -53,6 +53,12 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/api/:path*',
+        destination: process.env.NODE_ENV === 'production'
+          ? 'https://api.everyoneplaysthesamesong.com/api/:path*'
+          : 'http://localhost:3002/api/:path*',
+      },
+      {
         source: '/admin/:path*',
         destination: process.env.NODE_ENV === 'production'
           ? 'https://admin.everyoneplaysthesamesong.com/admin/:path*'
