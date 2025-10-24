@@ -1,0 +1,35 @@
+{
+  "name": "@eptss/data-access",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./types/*": "./src/types/*.ts",
+    "./utils": "./src/utils/index.ts",
+    "./utils/*": "./src/utils/*.ts",
+    "./schemas/*": "./src/schemas/*.ts",
+    "./providers/blogProvider": "./src/providers/blogProvider/blogProvider.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@eptss/shared": "workspace:*",
+    "@libsql/client": "^0.14.0",
+    "@supabase/ssr": "^0.5.1",
+    "@supabase/supabase-js": "^2.45.4",
+    "drizzle-orm": "^0.38.4",
+    "drizzle-zod": "^0.6.1",
+    "postgres": "^3.4.5",
+    "zod": "^3.24.1",
+    "date-fns": "^2.30.0",
+    "@date-fns/tz": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.3",
+    "drizzle-kit": "^0.30.2",
+    "eslint": "8.26.0",
+    "typescript": "5.1.3"
+  }
+}

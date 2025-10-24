@@ -1,4 +1,4 @@
-import { Navigation } from '@/enum/navigation'
+import { Navigation } from '@eptss/shared'
 import { NavigationButton } from '@eptss/ui'
 
 export const RoundsButton = () => (

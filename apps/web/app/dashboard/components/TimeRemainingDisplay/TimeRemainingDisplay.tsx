@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { formatTimeRemaining } from '@/services/dateService';
-import { Phase } from "@/types/round";
+import { Phase } from "@eptss/data-access/types/round";
 
 interface TimeRemainingDisplayProps {
   phaseCloses: string;

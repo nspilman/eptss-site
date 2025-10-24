@@ -1,6 +1,5 @@
-import { roundProvider, userParticipationProvider } from "@/providers";
-import { getAuthUser } from "@/utils/supabase/server";
-import { getVotesByUserForRoundWithDetails } from "@/data-access";
+import { roundProvider, userParticipationProvider, getVotesByUserForRoundWithDetails } from "@eptss/data-access";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { CurrentRoundDisplay } from "./CurrentRoundDisplay";
 
 export async function CurrentRoundCard() {

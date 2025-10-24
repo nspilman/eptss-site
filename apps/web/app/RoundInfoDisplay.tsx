@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import React from "react";
-import { RoundInfo } from "@/types/round";
+import { RoundInfo } from "@eptss/data-access/types/round";
 
 export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null }) => {
   if (!roundInfo) {

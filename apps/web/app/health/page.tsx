@@ -1,4 +1,4 @@
-import { monitoringProvider } from "@/providers";
+import { monitoringProvider } from "@eptss/data-access";
 import HealthBars from './HealthBars';
 import { Metadata } from 'next';
 

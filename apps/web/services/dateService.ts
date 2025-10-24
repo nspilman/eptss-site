@@ -1,6 +1,6 @@
 import { format, subDays, isBefore, parseISO, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { TZDate } from "@date-fns/tz";
-import { Phase } from "@/types/round";
+import { Phase } from "@eptss/data-access/types/round";
 
 export interface RoundDates {
   signupOpens: Date;

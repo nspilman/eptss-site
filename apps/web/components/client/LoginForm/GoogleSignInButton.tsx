@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@eptss/ui";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@eptss/data-access/utils/supabase/client";
 import { useState } from "react";
 
 export function GoogleSignInButton({ redirectUrl = "/dashboard" }: { redirectUrl?: string }) {

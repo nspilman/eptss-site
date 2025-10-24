@@ -53,6 +53,12 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/admin/:path*',
+        destination: process.env.NODE_ENV === 'production'
+          ? 'https://admin.everyoneplaysthesamesong.com/admin/:path*'
+          : 'http://localhost:3001/admin/:path*',
+      },
+      {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
       },

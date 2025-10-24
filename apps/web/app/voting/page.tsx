@@ -1,9 +1,4 @@
 import React from "react";
-import {
-  roundProvider,
-  userParticipationProvider,
-} from "@/providers";
-import {VotingPage} from "./VotingPage";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

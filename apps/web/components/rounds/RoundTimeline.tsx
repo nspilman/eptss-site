@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Button } from "@eptss/ui";
-import { RoundInfo } from "@/types/round";
+import { RoundInfo } from "@eptss/data-access/types/round";
 import { useState } from "react";
 import Link from "next/link";
 

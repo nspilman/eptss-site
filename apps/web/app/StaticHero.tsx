@@ -3,7 +3,7 @@
 import { Button } from "@eptss/ui";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 
 export const StaticHero = () => {
   return (

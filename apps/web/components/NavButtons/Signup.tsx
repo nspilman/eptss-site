@@ -4,7 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signout } from "@/actions/actions";
 import { Button } from "@eptss/ui";
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 import Link from "next/link";
 import { LogOut, User, LogIn } from "lucide-react";
 

@@ -11,8 +11,8 @@ import {
   getRoundInfo,
   getSongsByIds,
   getMostRecentSignupForUser,
-} from "@/data-access";
-import { getAuthUser } from "@/utils/supabase/server";
+} from "@eptss/data-access";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { 
   sendVotingConfirmation, 
   sendSubmissionConfirmation, 
@@ -21,9 +21,9 @@ import {
 import { formatDate } from "@/services/dateService";
 import { FormReturn } from "@/types";
 import { revalidatePath } from "next/cache";
-import { signupSchema } from "@/schemas/signupSchemas";
-import { validateFormData } from "@/utils/formDataHelpers";
-import { submitVotesSchema, submitCoverSchema, signupWithSongSchema, signupWithOTPSchema } from "@/lib/schemas/actionSchemas";
+import { signupSchema } from "@eptss/data-access/schemas/signupSchemas";
+import { validateFormData } from "@eptss/data-access/utils/formDataHelpers";
+import { submitVotesSchema, submitCoverSchema, signupWithSongSchema, signupWithOTPSchema } from "@eptss/data-access/schemas/actionSchemas";
 import { votingRateLimit, submissionRateLimit, signupRateLimit, emailRateLimit } from "@/lib/ratelimit";
 import { logger } from "@/lib/logger";
 

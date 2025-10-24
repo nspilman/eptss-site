@@ -22,6 +22,7 @@ export * from './ui/primitives';
 // Other Components
 export * from './LoadingSpinner';
 export * from './BackgroundPattern';
+export * from './DataTable';
 
 // Re-export utility
 export { cn } from '../lib/utils';

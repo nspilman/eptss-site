@@ -3,12 +3,14 @@
 import * as React from 'react';
 import { Resend } from 'resend';
 import { render } from '@react-email/render';
-import { RoundSignupConfirmation } from '@/emails/templates/RoundSignupConfirmation';
-import { AdminSignupNotification } from '@/emails/templates/AdminSignupNotification';
-import { VotingConfirmation } from '@/emails/templates/VotingConfirmation';
-import { AdminVotingNotification } from '@/emails/templates/AdminVotingNotification';
-import { SubmissionConfirmation } from '@/emails/templates/SubmissionConfirmation';
-import { AdminSubmissionNotification } from '@/emails/templates/AdminSubmissionNotification';
+// Note: Email templates are app-specific and should be passed as parameters
+// These imports are commented out - email sending should be done in app-specific code
+// import { RoundSignupConfirmation } from '@/emails/templates/RoundSignupConfirmation';
+// import { AdminSignupNotification } from '@/emails/templates/AdminSignupNotification';
+// import { VotingConfirmation } from '@/emails/templates/VotingConfirmation';
+// import { AdminVotingNotification } from '@/emails/templates/AdminVotingNotification';
+// import { SubmissionConfirmation } from '@/emails/templates/SubmissionConfirmation';
+// import { AdminSubmissionNotification } from '@/emails/templates/AdminSubmissionNotification';
 import { AdminSongAssignmentNotification } from '@/emails/templates/AdminSongAssignmentNotification';
 import { VotingClosesTomorrow } from '@/emails/templates/VotingClosesTomorrow';
 import { CoveringHalfway } from '@/emails/templates/CoveringHalfway';

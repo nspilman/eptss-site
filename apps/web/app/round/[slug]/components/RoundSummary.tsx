@@ -1,5 +1,5 @@
 import { VoteBreakdown, VoteResults } from "../types";
-import { RoundInfo } from "@/types/round";
+import { RoundInfo } from "@eptss/data-access/types/round";
 import { RoundInfoHeader } from "./RoundInfoHeader";
 import { PlaylistEmbed } from "./PlaylistEmbed";
 import { VotingAveragesTable } from "./VotingAveragesTable";
@@ -8,7 +8,7 @@ import { VotingResultsSection } from "./VotingResultsSection";
 import { SignupsTable } from "./SignupsTable";
 import { RoundNavigationWrapper } from "./RoundNavigationWrapper";
 import { CoveringPhaseSignup } from "./CoveringPhaseSignup";
-import { getAuthUser } from "@/utils/supabase/server";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 
 // Inline the chart utility function to avoid import issues
 const convertVoteBreakdownToBarchartFormat = (

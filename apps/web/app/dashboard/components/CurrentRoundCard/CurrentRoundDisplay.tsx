@@ -2,10 +2,10 @@
 
 import { Button, Card } from "@eptss/ui";
 import Link from "next/link";
-import { Navigation } from "@/enum/navigation";
-import { Phase, RoundInfo } from "@/types/round";
-import { SignupData } from "@/types/signup";
-import { UserRoundParticipation } from "@/types/user";
+import { Navigation } from "@eptss/shared";
+import { Phase, RoundInfo } from "@eptss/data-access/types/round";
+import { SignupData } from "@eptss/data-access/types/signup";
+import { UserRoundParticipation } from "@eptss/data-access/types/user";
 import { useState } from "react";
 import { formatDate } from '@/services/dateService';
 import { useRouter } from "next/navigation";

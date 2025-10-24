@@ -8,7 +8,7 @@ import { FormWrapper } from "@/components/client/Forms/FormWrapper";
 import { motion } from "framer-motion";
 import { z } from "zod"
 import { FormReturn } from "@/types"
-import { VoteOption } from "@/types/vote"
+import { VoteOption } from "@eptss/data-access/types/vote"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
 import { cn } from "@/lib/utils"
 

@@ -1,4 +1,4 @@
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 import { FormReturn } from "@/types";
 import { revalidateTag } from "next/cache";
 

@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@eptss/data-access/utils/supabase/server";
 
 export const signout = async () => {
   "use server";

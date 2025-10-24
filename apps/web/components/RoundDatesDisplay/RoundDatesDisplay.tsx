@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Round } from "@/data-access/roundService";
+import { Round } from "@eptss/data-access/services/roundService";
 import { format, subMilliseconds } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import {

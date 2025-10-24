@@ -1,6 +1,6 @@
 "use client";
 
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 import Link from "next/link";
 import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
 import { ChevronLeft, ChevronRight } from "lucide-react";

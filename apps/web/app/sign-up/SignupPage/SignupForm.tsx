@@ -8,11 +8,11 @@ import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
 import { FormReturn } from "@/types"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
-import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@/schemas/signupSchemas"
+import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/data-access/schemas/signupSchemas"
 import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter } from "next/navigation"
-import { UserSignupData } from "@/types/signup"
+import { UserSignupData } from "@eptss/data-access/types/signup"
 
 
 interface SignupFormProps {

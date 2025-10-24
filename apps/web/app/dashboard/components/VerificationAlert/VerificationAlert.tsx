@@ -1,5 +1,5 @@
-import { getAuthUser } from "@/utils/supabase/server";
-import { getUnverifiedSignupByEmail, verifySignupByEmail } from "@/data-access";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { getUnverifiedSignupByEmail, verifySignupByEmail } from "@eptss/data-access";
 
 export async function VerificationAlert() {
   const { email } = await getAuthUser();

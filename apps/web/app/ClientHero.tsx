@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import React from "react";
-import { Phase, RoundInfo } from "@/types/round";
+import { Phase, RoundInfo } from "@eptss/data-access/types/round";
 
 type ClientHeroProps = {
   roundInfo: RoundInfo | null;

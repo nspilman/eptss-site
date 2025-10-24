@@ -1,4 +1,4 @@
-import { roundProvider } from "@/providers";
+import { roundProvider } from "@eptss/data-access";
 
 export async function DashboardHero() {
   const currentRound = await roundProvider();

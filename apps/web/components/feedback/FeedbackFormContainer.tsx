@@ -3,7 +3,7 @@
 import React from "react";
 import { FeedbackForm } from "./FeedbackForm";
 import { useRouter } from "next/navigation";
-import { submitFeedback } from "@/app/actions/feedbackActions";
+import { submitFeedback } from "@eptss/data-access";
 
 interface FeedbackFormContainerProps {
   userId?: string;

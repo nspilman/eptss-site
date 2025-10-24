@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { WaitlistForm } from "./WaitlistForm";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel/ActionSuccessPanel";
-import { RoundInfo } from "@/types/round";
+import { RoundInfo } from "@eptss/data-access/types/round";
 
 interface WaitlistPageClientProps {
   roundToDisplay: RoundInfo;

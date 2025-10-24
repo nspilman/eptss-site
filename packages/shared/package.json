@@ -1,0 +1,18 @@
+{
+  "name": "@eptss/shared",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./constants": "./src/constants.ts",
+    "./enums": "./src/enums/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "devDependencies": {
+    "eslint": "8.26.0",
+    "typescript": "5.1.3"
+  }
+}

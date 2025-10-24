@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "./RoundInfoDisplay";
-import { roundProvider } from "@/providers";
+import { roundProvider } from "@eptss/data-access";
 
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",

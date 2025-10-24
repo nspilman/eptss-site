@@ -1,10 +1,10 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { roundProvider, userParticipationProvider } from "@/providers";
+import { roundProvider, userParticipationProvider } from "@eptss/data-access";
 import { SignupPage } from "./SignupPage/SignupPage";
-import { getAuthUser } from "@/utils/supabase/server";
-import { UserSignupData } from "@/types/signup";
-import { getNextRoundByVotingDate, getUserSignupData } from "@/data-access";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { UserSignupData } from "@eptss/data-access/types/signup";
+import { getNextRoundByVotingDate, getUserSignupData } from "@eptss/data-access";
 import { signup, signupWithOTP } from "@/actions/userParticipationActions";
 
 interface SharedSignupPageWrapperProps {

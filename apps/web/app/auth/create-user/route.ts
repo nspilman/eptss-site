@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
+import { db } from "@eptss/data-access/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import dotenv from "dotenv"

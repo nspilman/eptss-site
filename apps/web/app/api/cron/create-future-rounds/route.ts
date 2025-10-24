@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentRound, getFutureRounds, createRound } from '@/data-access/roundService';
+import { getCurrentRound, getFutureRounds, createRound } from '@/data-access';
 import { getNextQuarterlyRounds, parseRoundSlug } from '@/utils/roundDateCalculator';
 
 /**

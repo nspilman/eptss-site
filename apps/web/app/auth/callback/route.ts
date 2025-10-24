@@ -1,8 +1,8 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
-import { TOAST_REDIRECT_KEY } from "@/constants";
-import { createClient } from "@/utils/supabase/server";
+import { TOAST_REDIRECT_KEY } from "@eptss/shared";
+import { createClient } from "@eptss/data-access/utils/supabase/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

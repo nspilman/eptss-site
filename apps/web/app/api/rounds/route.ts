@@ -1,5 +1,5 @@
-import { getCurrentAndPastRounds } from "@/data-access";
-import { db } from "@/db";
+import { getCurrentAndPastRounds } from "@eptss/data-access";
+import { db } from "@eptss/data-access/db";
 import { songs, roundMetadata } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";

@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@eptss/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -25,6 +25,8 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@eptss/data-access": "workspace:*",
+    "@eptss/shared": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@atproto/api": "^0.13.22",
     "@babel/core": "^7.24.3",

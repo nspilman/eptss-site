@@ -1,6 +1,6 @@
 import { BlogPost } from "types/BlogPost";
 import Link from "next/link";
-import { formatDate } from "@/utils/formatDate";
+import { formatDate } from "@eptss/data-access/utils/formatDate";
 
 export const BlogHome = ({ posts }: { posts: BlogPost[] }) => {
   return (

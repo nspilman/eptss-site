@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { MusicIcon, Menu, X, Info, Music, Users } from "lucide-react"
 import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 import { useState, useEffect } from "react";
 import { NavLink } from "@eptss/ui";
 

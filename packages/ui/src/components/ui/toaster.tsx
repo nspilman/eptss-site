@@ -6,8 +6,8 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-  useToast
-} from "@eptss/ui";
+} from "./toast";
+import {useToast} from "./use-toast"
 
 export function Toaster() {
   const { toasts } = useToast();

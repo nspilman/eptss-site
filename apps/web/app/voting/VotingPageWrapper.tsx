@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider } from "@/providers";
+import { roundProvider, userParticipationProvider } from "@eptss/data-access";
 import { submitVotes } from "@/actions/userParticipationActions";
 import { VotingPage } from "./VotingPage";
 import { notFound } from "next/navigation";

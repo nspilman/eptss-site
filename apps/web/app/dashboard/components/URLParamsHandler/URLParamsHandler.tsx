@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@eptss/ui";
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 
 export function URLParamsHandler() {
   const router = useRouter();

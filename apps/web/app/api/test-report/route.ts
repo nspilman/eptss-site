@@ -1,4 +1,4 @@
-import { db } from "@/db";
+import { db } from "@eptss/data-access/db";
 import { testRuns } from "@/db/schema";
 import { NextResponse } from "next/server";
 

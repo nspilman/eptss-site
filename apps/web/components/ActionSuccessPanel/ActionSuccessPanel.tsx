@@ -1,4 +1,4 @@
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent, Button } from "@eptss/ui";

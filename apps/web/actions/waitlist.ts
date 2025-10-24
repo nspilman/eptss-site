@@ -1,6 +1,6 @@
 'use server';
 
-import { db } from "@/db";
+import { db } from "@eptss/data-access/db";
 import { mailingList } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { uuid } from "drizzle-orm/pg-core";

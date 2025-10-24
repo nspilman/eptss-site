@@ -1,4 +1,4 @@
-import { roundProvider } from "@/providers";
+import { roundProvider } from "@eptss/data-access";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

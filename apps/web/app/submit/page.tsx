@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider } from "@/providers";
+import { roundProvider, userParticipationProvider } from "@eptss/data-access";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "./SubmitPage";
 import { Metadata } from 'next';

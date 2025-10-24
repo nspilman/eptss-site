@@ -1,4 +1,4 @@
-import { roundProvider, roundsProvider } from "@/providers";
+import { roundProvider, roundsProvider } from "@eptss/data-access";
 import { WaitlistPageClient } from "./WaitlistPageClient";
 
 export default async function WaitlistPage() {

@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Badge, Button } from "@eptss/ui";
 import { useRouter } from "next/navigation";
-import { signupUserWithoutSong } from "@/data-access";
-import { createClient } from "@/utils/supabase/client";
+import { signupUserWithoutSong } from "@eptss/data-access";
+import { createClient } from "@eptss/data-access/utils/supabase/client";
 import { FormReturn } from "@/types";
-import { Navigation } from "@/enum/navigation";
+import { Navigation } from "@eptss/shared";
 import { useToast } from "@eptss/ui";
 
 interface CoveringPhaseSignupProps {

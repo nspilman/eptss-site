@@ -7,7 +7,7 @@ import {
   getUsersSignedUpForRound,
   getUsersWhoHaventSubmitted,
   hasUserSubmitted
-} from '@/data-access/emailReminderService';
+} from '@/data-access';
 import { 
   sendVotingClosesTomorrowEmail,
   sendCoveringHalfwayEmail,

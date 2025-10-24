@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
-import { roundProvider, votesProvider, roundsProvider, userParticipationProvider } from "@/providers";
+import { roundProvider, votesProvider, roundsProvider, userParticipationProvider } from "@eptss/data-access";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 

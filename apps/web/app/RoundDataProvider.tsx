@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { ClientHero } from "./ClientHero";
-import { Phase, RoundInfo } from "@/types/round";
-import { UserRoundParticipation } from "@/types/user";
+import { Phase, RoundInfo } from "@eptss/data-access/types/round";
+import { UserRoundParticipation } from "@eptss/data-access/types/user";
 
 export const RoundDataProvider = () => {
   const [isLoading, setIsLoading] = useState(true);

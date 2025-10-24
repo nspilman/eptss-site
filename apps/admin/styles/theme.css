@@ -1,0 +1,185 @@
+/* 
+  Theme variables using Tailwind 4 @theme directive
+  This defines design tokens that influence utility classes
+*/
+@layer theme {
+  :root {
+    /* Typography */
+    --text-sm: 14px, 1.25rem;
+    --text-base: 16px, 1.25rem;
+    --text-lg: 20px, 1.25rem;
+    --text-xl: 24px, 1.25rem;
+    --text-3xl: 1.875rem, 1.75rem;
+    --text-header: 36px, 1.25rem;
+    
+    /* Default text color */
+    --text-color: var(--color-primary);
+
+    /* Brand Colors */
+    --color-accent-primary: #e2e240;
+    --color-accent-primary-rgb: 226, 226, 64;
+    --color-accent-secondary: #40e2e2;
+    --color-accent-secondary-rgb: 64, 226, 226;
+    --color-background-primary: #0a0a14; /* Primary background color */
+    --color-background-primary-rgb: 10, 10, 20;
+    --color-background-secondary: rgba(17, 24, 39, 0.3); /* Secondary background color (gray-900 with 30% opacity) */
+    --color-background-secondary-rgb: 17, 24, 39;
+    --color-background-tertiary: rgba(17, 24, 39, 0.4); /* Tertiary background color (gray-900 with 40% opacity) */
+    --color-background-tertiary-rgb: 17, 24, 39;
+    --color-primary: #f8f9fa; /* Primary color (barely-off-white) */
+    --color-primary-rgb: 248, 249, 250;
+    --color-secondary: rgba(17, 24, 39, 0.7); /* Secondary background color (gray-900 with 70% opacity) */
+    --color-secondary-rgb: 17, 24, 39;
+    --color-white: #ffffff;
+    --color-white-rgb: 255, 255, 255;
+    
+    /* Semantic Colors */
+    --color-destructive: #ef4444; /* Red-600 */
+    --color-destructive-rgb: 239, 68, 68;
+    --color-destructive-hover: #b91c1c; /* Red-700 */
+    --color-destructive-hover-rgb: 185, 28, 28;
+    
+    /* Gray Scale */
+    --color-gray-300: #d1d5db;
+    --color-gray-300-rgb: 209, 213, 219;
+    --color-gray-400: #9ca3af;
+    --color-gray-400-rgb: 156, 163, 175;
+    --color-gray-700: #374151;
+    --color-gray-700-rgb: 55, 65, 81;
+    --color-gray-800: #1f2937;
+    --color-gray-800-rgb: 31, 41, 55;
+    --color-gray-900: #111827;
+    --color-gray-900-rgb: 17, 24, 39;
+    --color-gray-900-30: rgba(17, 24, 39, 0.3);
+    --color-gray-900-40: rgba(17, 24, 39, 0.4);
+    --color-gray-900-60: rgba(17, 24, 39, 0.6);
+    
+    /* Transparent Colors */
+    --color-bg-transparent: hsla(0, 0%, 100%, 0.05);
+    --color-gradient-primary: linear-gradient(to right, var(--color-accent-secondary), var(--color-accent-primary));
+    
+    /* Shadows */
+    --shadow-nav-shadow: 0px 0px 3px 3px #f6e05e;
+    --shadow-button: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+    /* Border radius */
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+    
+    /* Button styles */
+    --button-border-width: 1px;
+    --button-border-color: var(--color-gray-700);
+    --button-hover-opacity: 0.9;
+    --button-focus-ring-color: var(--color-accent-primary);
+    --button-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    /* Fonts */
+    --font-fraunces: Fraunces, serif;
+    --font-roboto: Roboto, serif;
+
+    /* Container queries */
+    --container-sm: 40rem;
+    --container-md: 48rem;
+    --container-lg: 64rem;
+    --container-xl: 80rem;
+  }
+}
+
+/* HSL color variables for shadcn UI compatibility */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 240 33% 6%; /* #0a0a14 in HSL */
+    --foreground: 210 40% 98%;
+ 
+    --card: 240 33% 6%; /* #0a0a14 in HSL */
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+ 
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+/* Semantic Colors - Using HSL variables for compatibility */
+@layer theme {
+  :root {
+    --color-border: hsl(var(--border));
+    --color-input: hsl(var(--input));
+    --color-ring: hsl(var(--ring));
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+    
+    /* These are shadowed by our custom primary color above */
+    /* --color-primary: hsl(var(--primary)); */
+    --color-primary-foreground: hsl(var(--primary-foreground));
+
+    --color-secondary: hsl(var(--secondary));
+    --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+    --color-destructive: hsl(var(--destructive));
+    --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+    --color-muted: hsl(var(--muted));
+    --color-muted-foreground: hsl(var(--muted-foreground));
+
+    --color-accent: hsl(var(--accent));
+    --color-accent-foreground: hsl(var(--accent-foreground));
+    
+    --color-popover: hsl(var(--popover));
+    --color-popover-foreground: hsl(var(--popover-foreground));
+
+    --color-card: hsl(var(--card));
+    --color-card-foreground: hsl(var(--card-foreground));
+  }
+}

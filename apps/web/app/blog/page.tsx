@@ -1,6 +1,6 @@
 import { PageTitle } from "@/components/PageTitle";
 import { BlogHome } from "@/app/blog/Blog";
-import { blogProvider } from "@/providers/blogProvider/blogProvider";
+import { blogProvider } from "@eptss/data-access";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

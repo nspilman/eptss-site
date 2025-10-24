@@ -37,7 +37,7 @@ export const metadata = {
 
 import "../styles/globals.css";
 
-import { getAuthUser } from "@/utils/supabase/server";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 
 export default async function RootLayout({
   children,

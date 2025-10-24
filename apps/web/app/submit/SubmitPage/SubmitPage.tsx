@@ -8,7 +8,7 @@ import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
 import { FormReturn } from "@/types";
 import { FormBuilder, FieldConfig } from "@eptss/ui";
-import { submissionSchema, type SubmissionInput } from "@/lib/schemas/submission"
+import { submissionSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
 
 interface Props {
   roundId: number;

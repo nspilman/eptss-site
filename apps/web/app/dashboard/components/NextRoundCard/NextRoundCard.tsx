@@ -1,5 +1,5 @@
-import { getNextRoundByVotingDate, getUserSignupData } from "@/data-access";
-import { getAuthUser } from "@/utils/supabase/server";
+import { getNextRoundByVotingDate, getUserSignupData } from "@eptss/data-access";
+import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { NextRoundDisplay } from "./NextRoundDisplay";
 
 export async function NextRoundCard() {
