@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "@eptss/ui";
+import { Button } from "@eptss/ui";
 import Link from "next/link";
 import { LoginForm } from "@/components/client/LoginForm/LoginForm";
 
