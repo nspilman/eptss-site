@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "check-types": "tsc --noEmit",
     "drizzle:generate": "bun drizzle-kit generate",
     "drizzle:push": "bun drizzle-kit push",
     "lint": "bun --bun next lint",
