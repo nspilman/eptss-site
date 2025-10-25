@@ -1,6 +1,6 @@
 import { Navigation } from "@eptss/shared";
-import { FormReturn } from "../types";
 import { revalidateTag } from "next/cache";
+import type { FormReturn } from "../types";
 
 export const getIsSuccess = (responseCode: number) => {
   return [200, 201, 204].includes(responseCode);
@@ -18,6 +18,5 @@ export const getDataToString = (formData: FormData, key: string) => {
   return formData.get(key)?.toString();
 };
 
-// Re-export commonly used utils
 export * from './isAdmin';
 export * from './supabase/server';

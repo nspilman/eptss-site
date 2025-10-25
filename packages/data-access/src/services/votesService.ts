@@ -5,7 +5,7 @@ import { votingCandidateOverrides, songs, songSelectionVotes, users } from "../d
 import { eq, avg, count, sql, desc, and } from "drizzle-orm";
 import { handleResponse } from "../utils";
 import { Navigation } from "@eptss/shared";
-import { FormReturn } from "../utils";
+import { FormReturn } from "../types";
 import { getAuthUser } from "../utils/supabase/server";
 
 export const getRoundOverrideVotes = async (roundId: number) => {

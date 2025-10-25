@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies, headers } from 'next/headers'
-import type { Database } from '@/types/database'
+import type { Database } from '../../types/database'
 import { AUTH_HEADER_KEYS } from '@eptss/shared'
 
 export async function createClient() {

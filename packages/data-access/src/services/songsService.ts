@@ -61,3 +61,17 @@ export const getSongsByIds = async (songIds: number[]) => {
 
   return result;
 };
+
+/**
+ * Find a song by title and artist
+ * Used for assigning winning songs to rounds
+ */
+export const getSongByTitleAndArtist = async (title: string, artist: string) => {
+  const result = await db
+    .select({ id: songs.id })
+    .from(songs)
+    .where(sql`${songs.title} = ${title} AND ${songs.artist} = ${artist}`)
+    .limit(1);
+  
+  return result.length > 0 ? result[0].id : null;
+};

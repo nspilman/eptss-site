@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { getAuthUser } from '@/utils/supabase/server';
+import { createClient, getAuthUser } from '@eptss/data-access';
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentRound, getFutureRounds, createRound } from '@/data-access';
-import { getNextQuarterlyRounds, parseRoundSlug } from '@/utils/roundDateCalculator';
+import { getCurrentRound, getFutureRounds, createRound, getNextQuarterlyRounds } from '@eptss/data-access';
 
 /**
  * API route to automatically create future rounds

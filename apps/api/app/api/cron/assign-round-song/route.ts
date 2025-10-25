@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentRound, setRoundSong } from '@/data-access/roundService';
-import { getDetailedVoteResults } from '@/data-access/votesService';
-import { sendAdminSongAssignmentNotification } from '@/services/emailService';
-import { db } from '@/db';
-import { songs } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { 
+  getCurrentRound, 
+  setRoundSong, 
+  getDetailedVoteResults,
+  getSongByTitleAndArtist 
+} from '@eptss/data-access';
 
 /**
  * API route to automatically assign the winning song to a round when voting closes
@@ -15,7 +15,7 @@ import { eq, and } from 'drizzle-orm';
  * 2. Check if round already has a song assigned
  * 3. If not, get vote results and assign the highest-voted song
  * 4. Tie-breaking: highest average, then fewest 1-star votes
- * 5. Send admin notification email
+ * 5. Log results (email notification removed for now)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -121,17 +121,9 @@ export async function POST(request: NextRequest) {
     console.log(`[assign-round-song] Winning song for round ${round.roundId} (${round.slug}): ${winningSong.title} - ${winningSong.artist} (avg: ${winningSong.average}, votes: ${winningSong.votesCount}, 1-star: ${winningSong.oneStarCount})`);
 
     // Find the song ID in the database
-    const songRecord = await db
-      .select({ id: songs.id })
-      .from(songs)
-      .where(
-        and(
-          eq(songs.title, winningSong.title),
-          eq(songs.artist, winningSong.artist)
-        )
-      );
+    const songId = await getSongByTitleAndArtist(winningSong.title, winningSong.artist);
 
-    if (songRecord.length === 0) {
+    if (!songId) {
       console.error(`[assign-round-song] Song not found in database: ${winningSong.title} - ${winningSong.artist}`);
       return NextResponse.json(
         { 
@@ -142,8 +134,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    const songId = songRecord[0].id;
 
     // Assign the song to the round
     const setResult = await setRoundSong(round.roundId, songId);
@@ -161,19 +151,8 @@ export async function POST(request: NextRequest) {
 
     console.log(`[assign-round-song] Successfully assigned song to round ${round.roundId} (${round.slug})`);
 
-    // Send admin notification email
-    try {
-      await sendAdminSongAssignmentNotification({
-        roundName: round.slug || `Round ${round.roundId}`,
-        roundSlug: round.slug,
-        assignedSong: winningSong,
-        allResults: sortedResults,
-      });
-      console.log(`[assign-round-song] Admin notification email sent`);
-    } catch (emailError) {
-      console.error(`[assign-round-song] Failed to send admin notification:`, emailError);
-      // Don't fail the whole operation if email fails
-    }
+    // TODO: Add admin notification email when email service is available
+    // For now, just log the assignment
 
     return NextResponse.json(
       { 
