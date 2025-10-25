@@ -10,6 +10,7 @@ export async function sendTestSignupEmail() {
   // TODO: Implement admin-specific email sending or import from web app
   return {
     success: false,
+    message: "",
     error: "Email service needs to be implemented in admin app",
   };
   
@@ -76,16 +77,18 @@ export async function sendTestSignupEmail() {
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
+  */
 }
 
 export async function sendTestVotingEmail() {
   // TODO: Implement admin-specific email sending or import from web app
   return {
     success: false,
+    message: "",
     error: "Email service needs to be implemented in admin app",
   };
   
-  /* Original implementation
+  /* Original implementation - requires email templates
   try {
     const { email } = await getAuthUser();
     
@@ -148,16 +151,18 @@ export async function sendTestVotingEmail() {
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
+  */
 }
 
 export async function sendTestSubmissionEmail() {
   // TODO: Implement admin-specific email sending or import from web app
   return {
     success: false,
+    message: "",
     error: "Email service needs to be implemented in admin app",
   };
   
-  /* Original implementation
+  /* Original implementation - requires email templates
   try {
     const { email } = await getAuthUser();
     

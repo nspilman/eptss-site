@@ -7,7 +7,7 @@
  * 3. Has this email already been sent to this user?
  */
 
-import { Round } from '@/data-access/roundService';
+import { Round } from '@eptss/data-access';
 
 export type ReminderEmailType = 
   | 'voting_closes_tomorrow'

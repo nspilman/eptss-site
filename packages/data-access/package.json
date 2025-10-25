@@ -8,7 +8,9 @@
     "./utils": "./src/utils/index.ts",
     "./utils/*": "./src/utils/*.ts",
     "./schemas/*": "./src/schemas/*.ts",
-    "./providers/blogProvider": "./src/providers/blogProvider/blogProvider.ts"
+    "./services/*": "./src/services/*.ts",
+    "./providers/blogProvider": "./src/providers/blogProvider/blogProvider.ts",
+    "./providers/reportingProvider": "./src/providers/reportingProvider/reportingProvider.ts"
   },
   "scripts": {
     "lint": "eslint .",

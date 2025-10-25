@@ -1,0 +1,33 @@
+{
+  "name": "@eptss/email",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./templates/*": "./src/templates/*.tsx",
+    "./services/*": "./src/services/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@react-email/components": "^0.0.25",
+    "@react-email/render": "^1.0.1",
+    "resend": "^4.0.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.3",
+    "@types/react": "18",
+    "@types/react-dom": "18",
+    "eslint": "8.26.0",
+    "typescript": "5.1.3"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

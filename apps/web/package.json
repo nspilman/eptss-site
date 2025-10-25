@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@eptss/data-access": "workspace:*",
+    "@eptss/email": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@atproto/api": "^0.13.22",

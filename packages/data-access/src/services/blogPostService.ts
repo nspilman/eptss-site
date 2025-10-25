@@ -1,4 +1,5 @@
-"use server";
+// Service functions for blog posts
+// Note: No "use server" directive - these are utility functions, not server actions
 
 import path from "path";
 import matter from "gray-matter";

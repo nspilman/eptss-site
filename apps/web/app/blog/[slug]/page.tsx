@@ -1,6 +1,6 @@
 import { Post } from "@/app/blog/Blog/Post";
 import { PageTitle } from "@/components/PageTitle";
-import { blogProvider } from "@eptss/data-access";
+import { blogProvider } from "@eptss/data-access/providers/blogProvider";
 import { Metadata } from 'next';
 
 type Props = {

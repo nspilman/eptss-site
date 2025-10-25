@@ -20,9 +20,8 @@ function generateUsername() {
   return `${adj}${animal}${number}`;
 }
 
-// Server Action
+// Database service function
 export async function createUser(userId: string, email: string) {
-  "use server";
   // Check if user already exists
   const existingUser = await db.select().from(users).where(eq(users.userid, userId));
   if (existingUser.length) {

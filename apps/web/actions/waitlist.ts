@@ -1,6 +1,6 @@
 'use server';
 
-import { addToMailingList } from "@eptss/data-access";
+import { addToMailingList } from "@eptss/data-access/services/mailingListService";
 
 type WaitlistInput = {
   email: string;

@@ -3,7 +3,7 @@
 import { Button, Card } from "@eptss/ui";
 import Link from "next/link";
 import { formatDate } from '@/services/dateService';
-import { NextRoundData } from '@/data-access/roundService';
+import type { NextRoundData } from '@eptss/data-access';
 
 interface NextRoundDisplayProps {
   nextRound: NextRoundData;

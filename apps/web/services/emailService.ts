@@ -75,420 +75,420 @@ export async function sendEmail(params: SendEmailParams): Promise<EmailResult> {
   }
 }
 
-/**
- * Send a round signup confirmation email
- */
-export interface RoundSignupConfirmationParams {
-  to: string;
-  userName?: string;
-  roundName: string;
-  songTitle: string;
-  artist: string;
-  youtubeLink: string;
-  roundSlug: string;
-  phaseDates: {
-    votingOpens: string;
-    coveringBegins: string;
-    coversDue: string;
-    listeningParty: string;
-  };
-}
+// /**
+//  * Send a round signup confirmation email
+//  */
+// export interface RoundSignupConfirmationParams {
+//   to: string;
+//   userName?: string;
+//   roundName: string;
+//   songTitle: string;
+//   artist: string;
+//   youtubeLink: string;
+//   roundSlug: string;
+//   phaseDates: {
+//     votingOpens: string;
+//     coveringBegins: string;
+//     coversDue: string;
+//     listeningParty: string;
+//   };
+// }
 
-export async function sendRoundSignupConfirmation(
-  params: RoundSignupConfirmationParams
-): Promise<EmailResult> {
-  const {
-    to,
-    userName,
-    roundName,
-    songTitle,
-    artist,
-    youtubeLink,
-    roundSlug,
-    phaseDates,
-  } = params;
+// export async function sendRoundSignupConfirmation(
+//   params: RoundSignupConfirmationParams
+// ): Promise<EmailResult> {
+//   const {
+//     to,
+//     userName,
+//     roundName,
+//     songTitle,
+//     artist,
+//     youtubeLink,
+//     roundSlug,
+//     phaseDates,
+//   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
-  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+//   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+//   const roundUrl = `${baseUrl}/round/${roundSlug}`;
 
-  // Render React Email template to HTML
-  const html = await render(
-    React.createElement(RoundSignupConfirmation, {
-      userName,
-      roundName,
-      songTitle,
-      artist,
-      youtubeLink,
-      roundUrl,
-      baseUrl,
-      phaseDates,
-    })
-  );
+//   // Render React Email template to HTML
+//   const html = await render(
+//     React.createElement(RoundSignupConfirmation, {
+//       userName,
+//       roundName,
+//       songTitle,
+//       artist,
+//       youtubeLink,
+//       roundUrl,
+//       baseUrl,
+//       phaseDates,
+//     })
+//   );
 
-  // Send user confirmation email
-  const userEmailResult = await sendEmail({
-    to,
-    subject: `🎵 You're signed up for ${roundName}!`,
-    html,
-  });
+//   // Send user confirmation email
+//   const userEmailResult = await sendEmail({
+//     to,
+//     subject: `🎵 You're signed up for ${roundName}!`,
+//     html,
+//   });
 
-  // Send admin notification email (don't fail if this fails)
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-  if (adminEmail) {
-    try {
-      await sendAdminSignupNotification({
-        userEmail: to,
-        userName,
-        songTitle,
-        artist,
-        youtubeLink,
-        roundName,
-        roundSlug,
-      });
-    } catch (error) {
-      console.error('Failed to send admin notification:', error);
-      // Don't fail the whole operation if admin email fails
-    }
-  }
+//   // Send admin notification email (don't fail if this fails)
+//   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+//   if (adminEmail) {
+//     try {
+//       await sendAdminSignupNotification({
+//         userEmail: to,
+//         userName,
+//         songTitle,
+//         artist,
+//         youtubeLink,
+//         roundName,
+//         roundSlug,
+//       });
+//     } catch (error) {
+//       console.error('Failed to send admin notification:', error);
+//       // Don't fail the whole operation if admin email fails
+//     }
+//   }
 
-  return userEmailResult;
-}
+//   return userEmailResult;
+// }
 
-/**
- * Send admin notification when a user signs up
- */
-export interface AdminSignupNotificationParams {
-  userEmail: string;
-  userName?: string;
-  songTitle: string;
-  artist: string;
-  youtubeLink: string;
-  roundName: string;
-  roundSlug: string;
-}
+// /**
+//  * Send admin notification when a user signs up
+//  */
+// export interface AdminSignupNotificationParams {
+//   userEmail: string;
+//   userName?: string;
+//   songTitle: string;
+//   artist: string;
+//   youtubeLink: string;
+//   roundName: string;
+//   roundSlug: string;
+// }
 
-export async function sendAdminSignupNotification(
-  params: AdminSignupNotificationParams
-): Promise<EmailResult> {
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+// export async function sendAdminSignupNotification(
+//   params: AdminSignupNotificationParams
+// ): Promise<EmailResult> {
+//   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
   
-  if (!adminEmail) {
-    return {
-      success: false,
-      error: 'Admin email not configured',
-    };
-  }
+//   if (!adminEmail) {
+//     return {
+//       success: false,
+//       error: 'Admin email not configured',
+//     };
+//   }
 
-  const {
-    userEmail,
-    userName,
-    songTitle,
-    artist,
-    youtubeLink,
-    roundName,
-    roundSlug,
-  } = params;
+//   const {
+//     userEmail,
+//     userName,
+//     songTitle,
+//     artist,
+//     youtubeLink,
+//     roundName,
+//     roundSlug,
+//   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
-  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+//   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+//   const roundUrl = `${baseUrl}/round/${roundSlug}`;
 
-  // Render React Email template to HTML
-  const html = await render(
-    React.createElement(AdminSignupNotification, {
-      userEmail,
-      userName,
-      songTitle,
-      artist,
-      youtubeLink,
-      roundName,
-      roundUrl,
-      baseUrl,
-    })
-  );
+//   // Render React Email template to HTML
+//   const html = await render(
+//     React.createElement(AdminSignupNotification, {
+//       userEmail,
+//       userName,
+//       songTitle,
+//       artist,
+//       youtubeLink,
+//       roundName,
+//       roundUrl,
+//       baseUrl,
+//     })
+//   );
 
-  return sendEmail({
-    to: adminEmail,
-    subject: `New Signup: ${userEmail} - ${songTitle}`,
-    html,
-  });
-}
+//   return sendEmail({
+//     to: adminEmail,
+//     subject: `New Signup: ${userEmail} - ${songTitle}`,
+//     html,
+//   });
+// }
 
-/**
- * Send voting confirmation email
- */
-export interface VotingConfirmationParams {
-  userEmail: string;
-  userName?: string;
-  roundName: string;
-  roundSlug: string;
-  votedSongs: Array<{
-    title: string;
-    artist: string;
-    rating: number;
-  }>;
-  phaseDates: {
-    coveringBegins: string;
-    coversDue: string;
-    listeningParty: string;
-  };
-}
+// /**
+//  * Send voting confirmation email
+//  */
+// export interface VotingConfirmationParams {
+//   userEmail: string;
+//   userName?: string;
+//   roundName: string;
+//   roundSlug: string;
+//   votedSongs: Array<{
+//     title: string;
+//     artist: string;
+//     rating: number;
+//   }>;
+//   phaseDates: {
+//     coveringBegins: string;
+//     coversDue: string;
+//     listeningParty: string;
+//   };
+// }
 
-export async function sendVotingConfirmation(
-  params: VotingConfirmationParams
-): Promise<EmailResult> {
-  const {
-    userEmail,
-    userName,
-    roundName,
-    roundSlug,
-    votedSongs,
-    phaseDates,
-  } = params;
+// export async function sendVotingConfirmation(
+//   params: VotingConfirmationParams
+// ): Promise<EmailResult> {
+//   const {
+//     userEmail,
+//     userName,
+//     roundName,
+//     roundSlug,
+//     votedSongs,
+//     phaseDates,
+//   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
-  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+//   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+//   const roundUrl = `${baseUrl}/round/${roundSlug}`;
 
-  // Render React Email template to HTML
-  const html = await render(
-    React.createElement(VotingConfirmation, {
-      userEmail,
-      userName,
-      roundName,
-      roundSlug,
-      votedSongs,
-      roundUrl,
-      baseUrl,
-      phaseDates,
-    })
-  );
+//   // Render React Email template to HTML
+//   const html = await render(
+//     React.createElement(VotingConfirmation, {
+//       userEmail,
+//       userName,
+//       roundName,
+//       roundSlug,
+//       votedSongs,
+//       roundUrl,
+//       baseUrl,
+//       phaseDates,
+//     })
+//   );
 
-  console.log('Voting confirmation HTML length:', html?.length);
-  console.log('Voting confirmation HTML preview:', html?.substring(0, 300));
+//   console.log('Voting confirmation HTML length:', html?.length);
+//   console.log('Voting confirmation HTML preview:', html?.substring(0, 300));
 
-  // Send user confirmation email
-  const userEmailResult = await sendEmail({
-    to: userEmail,
-    subject: `🗳️ Your votes for ${roundName} have been recorded!`,
-    html,
-  });
+//   // Send user confirmation email
+//   const userEmailResult = await sendEmail({
+//     to: userEmail,
+//     subject: `🗳️ Your votes for ${roundName} have been recorded!`,
+//     html,
+//   });
 
-  // Send admin notification email (don't fail if this fails)
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-  if (adminEmail) {
-    try {
-      await sendAdminVotingNotification({
-        userEmail,
-        userName,
-        roundName,
-        roundSlug,
-        votedSongs,
-      });
-    } catch (error) {
-      console.error('Failed to send admin voting notification:', error);
-    }
-  }
+//   // Send admin notification email (don't fail if this fails)
+//   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+//   if (adminEmail) {
+//     try {
+//       await sendAdminVotingNotification({
+//         userEmail,
+//         userName,
+//         roundName,
+//         roundSlug,
+//         votedSongs,
+//       });
+//     } catch (error) {
+//       console.error('Failed to send admin voting notification:', error);
+//     }
+//   }
 
-  return userEmailResult;
-}
+//   return userEmailResult;
+// }
 
-/**
- * Send admin notification when a user votes
- */
-export interface AdminVotingNotificationParams {
-  userEmail: string;
-  userName?: string;
-  roundName: string;
-  roundSlug: string;
-  votedSongs: Array<{
-    title: string;
-    artist: string;
-    rating: number;
-  }>;
-}
+// /**
+//  * Send admin notification when a user votes
+//  */
+// export interface AdminVotingNotificationParams {
+//   userEmail: string;
+//   userName?: string;
+//   roundName: string;
+//   roundSlug: string;
+//   votedSongs: Array<{
+//     title: string;
+//     artist: string;
+//     rating: number;
+//   }>;
+// }
 
-export async function sendAdminVotingNotification(
-  params: AdminVotingNotificationParams
-): Promise<EmailResult> {
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+// export async function sendAdminVotingNotification(
+//   params: AdminVotingNotificationParams
+// ): Promise<EmailResult> {
+//   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
   
-  if (!adminEmail) {
-    return {
-      success: false,
-      error: 'Admin email not configured',
-    };
-  }
+//   if (!adminEmail) {
+//     return {
+//       success: false,
+//       error: 'Admin email not configured',
+//     };
+//   }
 
-  const {
-    userEmail,
-    userName,
-    roundName,
-    roundSlug,
-    votedSongs,
-  } = params;
+//   const {
+//     userEmail,
+//     userName,
+//     roundName,
+//     roundSlug,
+//     votedSongs,
+//   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
-  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+//   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+//   const roundUrl = `${baseUrl}/round/${roundSlug}`;
 
-  // Render React Email template to HTML
-  const html = await render(
-    React.createElement(AdminVotingNotification, {
-      userEmail,
-      userName,
-      roundName,
-      roundSlug,
-      votedSongs,
-      roundUrl,
-      baseUrl,
-    })
-  );
+//   // Render React Email template to HTML
+//   const html = await render(
+//     React.createElement(AdminVotingNotification, {
+//       userEmail,
+//       userName,
+//       roundName,
+//       roundSlug,
+//       votedSongs,
+//       roundUrl,
+//       baseUrl,
+//     })
+//   );
 
-  console.log('Admin voting notification HTML length:', html?.length);
-  console.log('Admin voting notification HTML preview:', html?.substring(0, 300));
+//   console.log('Admin voting notification HTML length:', html?.length);
+//   console.log('Admin voting notification HTML preview:', html?.substring(0, 300));
 
-  return sendEmail({
-    to: adminEmail,
-    subject: `New Votes: ${userEmail} - ${votedSongs.length} songs`,
-    html,
-  });
-}
+//   return sendEmail({
+//     to: adminEmail,
+//     subject: `New Votes: ${userEmail} - ${votedSongs.length} songs`,
+//     html,
+//   });
+// }
 
-/**
- * Send submission confirmation email
- */
-export interface SubmissionConfirmationParams {
-  userEmail: string;
-  userName?: string;
-  roundName: string;
-  roundSlug: string;
-  soundcloudUrl: string;
-  additionalComments?: {
-    coolThingsLearned?: string;
-    toolsUsed?: string;
-    happyAccidents?: string;
-    didntWork?: string;
-  };
-  listeningPartyDate: string;
-}
+// /**
+//  * Send submission confirmation email
+//  */
+// export interface SubmissionConfirmationParams {
+//   userEmail: string;
+//   userName?: string;
+//   roundName: string;
+//   roundSlug: string;
+//   soundcloudUrl: string;
+//   additionalComments?: {
+//     coolThingsLearned?: string;
+//     toolsUsed?: string;
+//     happyAccidents?: string;
+//     didntWork?: string;
+//   };
+//   listeningPartyDate: string;
+// }
 
-export async function sendSubmissionConfirmation(
-  params: SubmissionConfirmationParams
-): Promise<EmailResult> {
-  const {
-    userEmail,
-    userName,
-    roundName,
-    roundSlug,
-    soundcloudUrl,
-    additionalComments,
-    listeningPartyDate,
-  } = params;
+// export async function sendSubmissionConfirmation(
+//   params: SubmissionConfirmationParams
+// ): Promise<EmailResult> {
+//   const {
+//     userEmail,
+//     userName,
+//     roundName,
+//     roundSlug,
+//     soundcloudUrl,
+//     additionalComments,
+//     listeningPartyDate,
+//   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
-  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+//   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+//   const roundUrl = `${baseUrl}/round/${roundSlug}`;
 
-  // Render React Email template to HTML
-  const html = await render(
-    React.createElement(SubmissionConfirmation, {
-      userEmail,
-      userName,
-      roundName,
-      roundSlug,
-      soundcloudUrl,
-      additionalComments,
-      roundUrl,
-      baseUrl,
-      listeningPartyDate,
-    })
-  );
+//   // Render React Email template to HTML
+//   const html = await render(
+//     React.createElement(SubmissionConfirmation, {
+//       userEmail,
+//       userName,
+//       roundName,
+//       roundSlug,
+//       soundcloudUrl,
+//       additionalComments,
+//       roundUrl,
+//       baseUrl,
+//       listeningPartyDate,
+//     })
+//   );
 
-  // Send user confirmation email
-  const userEmailResult = await sendEmail({
-    to: userEmail,
-    subject: `🎸 Your cover for ${roundName} has been submitted!`,
-    html,
-  });
+//   // Send user confirmation email
+//   const userEmailResult = await sendEmail({
+//     to: userEmail,
+//     subject: `🎸 Your cover for ${roundName} has been submitted!`,
+//     html,
+//   });
 
-  // Send admin notification email (don't fail if this fails)
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
-  if (adminEmail) {
-    try {
-      await sendAdminSubmissionNotification({
-        userEmail,
-        userName,
-        roundName,
-        roundSlug,
-        soundcloudUrl,
-        additionalComments,
-      });
-    } catch (error) {
-      console.error('Failed to send admin submission notification:', error);
-    }
-  }
+//   // Send admin notification email (don't fail if this fails)
+//   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+//   if (adminEmail) {
+//     try {
+//       await sendAdminSubmissionNotification({
+//         userEmail,
+//         userName,
+//         roundName,
+//         roundSlug,
+//         soundcloudUrl,
+//         additionalComments,
+//       });
+//     } catch (error) {
+//       console.error('Failed to send admin submission notification:', error);
+//     }
+//   }
 
-  return userEmailResult;
-}
+//   return userEmailResult;
+// }
 
-/**
- * Send admin notification when a user submits a cover
- */
-export interface AdminSubmissionNotificationParams {
-  userEmail: string;
-  userName?: string;
-  roundName: string;
-  roundSlug: string;
-  soundcloudUrl: string;
-  additionalComments?: {
-    coolThingsLearned?: string;
-    toolsUsed?: string;
-    happyAccidents?: string;
-    didntWork?: string;
-  };
-}
+// /**
+//  * Send admin notification when a user submits a cover
+//  */
+// export interface AdminSubmissionNotificationParams {
+//   userEmail: string;
+//   userName?: string;
+//   roundName: string;
+//   roundSlug: string;
+//   soundcloudUrl: string;
+//   additionalComments?: {
+//     coolThingsLearned?: string;
+//     toolsUsed?: string;
+//     happyAccidents?: string;
+//     didntWork?: string;
+//   };
+// }
 
-export async function sendAdminSubmissionNotification(
-  params: AdminSubmissionNotificationParams
-): Promise<EmailResult> {
-  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+// export async function sendAdminSubmissionNotification(
+//   params: AdminSubmissionNotificationParams
+// ): Promise<EmailResult> {
+//   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
   
-  if (!adminEmail) {
-    return {
-      success: false,
-      error: 'Admin email not configured',
-    };
-  }
+//   if (!adminEmail) {
+//     return {
+//       success: false,
+//       error: 'Admin email not configured',
+//     };
+//   }
 
-  const {
-    userEmail,
-    userName,
-    roundName,
-    roundSlug,
-    soundcloudUrl,
-    additionalComments,
-  } = params;
+//   const {
+//     userEmail,
+//     userName,
+//     roundName,
+//     roundSlug,
+//     soundcloudUrl,
+//     additionalComments,
+//   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
-  const roundUrl = `${baseUrl}/round/${roundSlug}`;
+//   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
+//   const roundUrl = `${baseUrl}/round/${roundSlug}`;
 
-  // Render React Email template to HTML
-  const html = await render(
-    React.createElement(AdminSubmissionNotification, {
-      userEmail,
-      userName,
-      roundName,
-      roundSlug,
-      soundcloudUrl,
-      additionalComments,
-      roundUrl,
-      baseUrl,
-    })
-  );
+//   // Render React Email template to HTML
+//   const html = await render(
+//     React.createElement(AdminSubmissionNotification, {
+//       userEmail,
+//       userName,
+//       roundName,
+//       roundSlug,
+//       soundcloudUrl,
+//       additionalComments,
+//       roundUrl,
+//       baseUrl,
+//     })
+//   );
 
-  return sendEmail({
-    to: adminEmail,
-    subject: `New Submission: ${userEmail}`,
-    html,
-  });
-}
+//   return sendEmail({
+//     to: adminEmail,
+//     subject: `New Submission: ${userEmail}`,
+//     html,
+//   });
+// }
 
 /**
  * Send admin notification when a song is automatically assigned to a round
