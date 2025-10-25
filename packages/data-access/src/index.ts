@@ -20,7 +20,7 @@ export { getSignupSongsForRound, setRoundSong } from './services/roundService';
 export { getActiveUsersCount, getUserDetails, getActiveUsers, getAllUsers } from './services/userService';
 export { saveTestRun } from './services/monitoringService';
 export { addToMailingList } from './services/mailingListService';
-export { createUser, generateUsername } from './services/userCreationService';
+export { createUser } from './services/userCreationService';
 export type { Feedback, CreateFeedbackInput } from './services/feedbackService';
 
 // Re-export actions

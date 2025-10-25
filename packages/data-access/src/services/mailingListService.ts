@@ -1,10 +1,9 @@
-"use server";
-
 import { db } from "../db";
 import { mailingList } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 export async function addToMailingList(email: string, name: string) {
+  "use server";
   // Check if email already exists
   const existing = await db
     .select({ email: mailingList.email })
