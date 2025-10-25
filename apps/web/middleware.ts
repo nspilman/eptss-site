@@ -1,52 +1,53 @@
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { updateSession } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
-    const { response, user } = await updateSession(request);
+    let response = NextResponse.next({
+        request,
+    })
 
-    // If authenticated and on root, redirect to dashboard server-side
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                getAll() {
+                    return request.cookies.getAll()
+                },
+                setAll(cookiesToSet) {
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+                    response = NextResponse.next({
+                        request,
+                    })
+                    cookiesToSet.forEach(({ name, value, options }) =>
+                        response.cookies.set(name, value, options)
+                    )
+                },
+            },
+        }
+    )
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // If authenticated and on root, redirect to dashboard
     if (user && request.nextUrl.pathname === '/') {
-        const url = request.nextUrl.clone();
-        url.pathname = '/dashboard';
-        const redirectResponse = NextResponse.redirect(url);
-        // Preserve cookies set during session update
-        const cookiesToCopy = response.cookies.getAll();
-        for (const cookie of cookiesToCopy) {
-            // Copy by name/value to avoid type mismatches across Next versions
-            redirectResponse.cookies.set(cookie.name, cookie.value);
-        }
-        return redirectResponse;
+        const url = request.nextUrl.clone()
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
     }
 
-    // Redirect /round/current to the current round's slug
-    if (request.nextUrl.pathname === '/round/current') {
-        try {
-            const apiUrl = new URL('/api/round/current', request.nextUrl.origin);
-            const apiRes = await fetch(apiUrl.toString(), {
-                headers: { 'accept': 'application/json' },
-                // Ensure middleware request context is forwarded when possible
-                cache: 'no-store',
-            });
-            if (apiRes.ok) {
-                const data = await apiRes.json();
-                const slug = data?.slug;
-                if (slug) {
-                    const url = request.nextUrl.clone();
-                    url.pathname = `/round/${slug}`;
-                    const redirectResponse = NextResponse.redirect(url);
-                    const cookiesToCopy = response.cookies.getAll();
-                    for (const cookie of cookiesToCopy) {
-                        redirectResponse.cookies.set(cookie.name, cookie.value);
-                    }
-                    return redirectResponse;
-                }
-            }
-        } catch (e) {
-            // Fall through to default response if any error occurs
-        }
+    // Protected routes redirect - check auth only, no DB calls
+    const protectedPaths = ['/dashboard', '/profile', '/submit', '/voting']
+    const isProtected = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
+    
+    if (!user && isProtected) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        url.searchParams.set('redirectUrl', request.nextUrl.pathname)
+        return NextResponse.redirect(url)
     }
 
-    return response;
+    return response
 }
 
 export const config = {
