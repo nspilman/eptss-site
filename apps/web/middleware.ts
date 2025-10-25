@@ -27,6 +27,7 @@ export async function middleware(request: NextRequest) {
         }
     )
 
+    // Refresh session
     const { data: { user } } = await supabase.auth.getUser()
 
     // If authenticated and on root, redirect to dashboard
@@ -36,7 +37,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
-    // Protected routes redirect - check auth only, no DB calls
+    // Protected routes - redirect to login if not authenticated
     const protectedPaths = ['/dashboard', '/profile', '/submit', '/voting']
     const isProtected = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
     
