@@ -62,4 +62,5 @@ export const config = {
      */
     '/((?!_next/static|_next/image|eptss-logo.png|auth|verify-signup|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
+  runtime: 'nodejs',
 }
