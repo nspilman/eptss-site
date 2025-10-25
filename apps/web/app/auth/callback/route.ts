@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { TOAST_REDIRECT_KEY } from "@eptss/shared";
 import { createClient } from "@eptss/data-access/utils/supabase/server";
+import { ensureUserExists } from "@/utils/supabase/userManagement";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -22,7 +23,10 @@ export async function GET(request: NextRequest) {
         token_hash,
       });
 
-      if (!error) {
+      if (!error && data?.user) {
+        // Ensure user exists in database
+        await ensureUserExists(data.user);
+        
         // Add a parameter to indicate successful authentication
         // This will be used by the AuthStateListener to trigger a refresh
         targetUrl.searchParams.set('auth_success', 'true');

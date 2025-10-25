@@ -2,7 +2,6 @@ import { AUTH_HEADER_KEYS } from '@eptss/shared'
 import { Navigation, protectedRoutes } from '@eptss/shared'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { ensureUserExists } from './userManagement'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -39,30 +38,8 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   if (user) {
-    // Ensure the user exists in our database
-    const isAuthCallback = request.nextUrl.pathname.includes('/auth/callback');
-    const isDashboard = request.nextUrl.pathname.includes('/dashboard');
-    
-    // Only try to create the user if we&apos;re coming from an auth callback or if it&apos;s the first request after login
-    if (isAuthCallback || isDashboard || request.cookies.get('just_authenticated')) {
-      console.log('Middleware: Ensuring user exists in database');
-      const result = await ensureUserExists(user);
-      
-      if (result.success) {
-        // If we just created the user, set a cookie to avoid trying again on every request
-        if (isAuthCallback) {
-          supabaseResponse.cookies.set('just_authenticated', 'true', {
-            path: '/',
-            maxAge: 10, // Only keep this for a few seconds to handle the initial redirect
-            httpOnly: true,
-            secure: true,
-            sameSite: 'lax'
-          });
-        }
-      } else {
-        console.error('Middleware: Failed to ensure user exists:', result.error);
-      }
-    }
+    // NOTE: ensureUserExists removed from middleware because it doesn't work in Edge Runtime
+    // User creation should be handled in /auth/callback API route instead
     
     // Set auth cookies
     supabaseResponse.cookies.set(AUTH_HEADER_KEYS.USER_ID, user.id, {
