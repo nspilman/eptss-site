@@ -107,7 +107,6 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
       const result = await adminSignupUser(formData);
 
       console.log("Result received:", result);
-      console.log("Making sure the web app doesn't rebuild")
 
       if (result.status === "Success") {
         toast({
