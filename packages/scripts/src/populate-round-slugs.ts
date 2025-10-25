@@ -6,8 +6,8 @@
  * Run with: bun scripts/populate-round-slugs.ts
  */
 
-import { db } from "../db";
-import { roundMetadata } from "../db/schema";
+import { db } from "@eptss/data-access/db";
+import { roundMetadata } from "@eptss/data-access/db/schema";
 import { eq } from "drizzle-orm";
 
 async function populateRoundSlugs() {

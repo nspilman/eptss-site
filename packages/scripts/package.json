@@ -1,0 +1,39 @@
+{
+  "name": "@eptss/scripts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "post-song": "bun src/post-song-to-bsky.ts",
+    "create-spotify-playlist": "bun src/createSpotifyPlaylist.ts",
+    "create-youtube-playlist": "bun src/createYoutubePlaylist.ts",
+    "populate-round-slugs": "bun src/populate-round-slugs.ts",
+    "test-assign-round-song": "bun src/test-assign-round-song.ts",
+    "test-create-future-rounds": "bun src/test-create-future-rounds.ts",
+    "test-send-reminder-emails": "bun src/test-send-reminder-emails.ts",
+    "test-voting-email-render": "bun src/test-voting-email-render.ts",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@eptss/data-access": "workspace:*",
+    "@eptss/email": "workspace:*",
+    "@eptss/shared": "workspace:*",
+    "@atproto/api": "^0.13.22",
+    "@react-email/components": "^0.5.5",
+    "@react-email/render": "^1.3.1",
+    "@supabase/supabase-js": "^2.45.4",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.38.4",
+    "google-auth-library": "^9.14.1",
+    "googleapis": "^144.0.0",
+    "react": "18.3.1",
+    "seedrandom": "^3.0.5",
+    "spotify-web-api-node": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.3",
+    "@types/react": "18",
+    "@types/seedrandom": "^3.0.8",
+    "@types/spotify-web-api-node": "^5.0.11",
+    "typescript": "5.1.3"
+  }
+}

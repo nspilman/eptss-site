@@ -1,9 +1,8 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types';
 import readline from 'readline';
-import { seededShuffle } from '@/utils/seededShuffle';
+import { seededShuffle } from './utils/seededShuffle.js';
 
 dotenv.config();
 

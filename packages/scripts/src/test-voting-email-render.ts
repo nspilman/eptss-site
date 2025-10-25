@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from '@react-email/render';
-import { VotingConfirmation } from '../emails/templates/VotingConfirmation';
+import { VotingConfirmation } from '@eptss/email/templates/VotingConfirmation';
 
 async function testVotingEmailRender() {
   try {

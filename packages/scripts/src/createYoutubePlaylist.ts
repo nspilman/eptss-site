@@ -2,9 +2,8 @@ import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import readline from 'readline';
 import * as dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js'
-import { Database } from '@/types'
-import { seededShuffle } from '@/utils/seededShuffle';
+import { createClient } from '@supabase/supabase-js';
+import { seededShuffle } from './utils/seededShuffle.js';
 
 dotenv.config();
 

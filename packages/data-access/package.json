@@ -10,7 +10,9 @@
     "./schemas/*": "./src/schemas/*.ts",
     "./services/*": "./src/services/*.ts",
     "./providers/blogProvider": "./src/providers/blogProvider/blogProvider.ts",
-    "./providers/reportingProvider": "./src/providers/reportingProvider/reportingProvider.ts"
+    "./providers/reportingProvider": "./src/providers/reportingProvider/reportingProvider.ts",
+    "./db": "./src/db/index.ts",
+    "./db/schema": "./src/db/schema.ts"
   },
   "scripts": {
     "lint": "eslint .",
