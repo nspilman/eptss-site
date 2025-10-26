@@ -4,7 +4,25 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "env": [
+        "NEXT_PUBLIC_SUPABASE_URL",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "DATABASE_URL",
+        "CRON_SECRET",
+        "GOOGLE_API_CLIENT_ID",
+        "GOOGLE_API_CLIENT_SECRET",
+        "SPOTIFY_API_CLIENT_ID",
+        "SPOTIFY_API_CLIENT_SECRET",
+        "BLUESKY_USERNAME",
+        "BLUESKY_PASSWORD",
+        "THE_SECRET_SLIME_ACTION",
+        "GMAIL_CLIENT_ID",
+        "GMAIL_CLIENT_SECRET",
+        "GMAIL_REFRESH_TOKEN",
+        "GMAIL_USER_EMAIL"
+      ]
     },
     "dev": {
       "cache": false,
