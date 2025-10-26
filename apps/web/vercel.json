@@ -7,11 +7,11 @@
   "rewrites": [
     {
       "source": "/admin",
-      "destination": "https://eptss-admin.vercel.app"
+      "destination": "https://eptss-site-admin.vercel.app"
     },
     {
       "source": "/admin/:path*",
-      "destination": "https://eptss-admin.vercel.app/:path*"
+      "destination": "https://eptss-site-admin.vercel.app/:path*"
     }
   ]
 }
