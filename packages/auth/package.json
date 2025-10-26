@@ -1,0 +1,50 @@
+{
+  "name": "@eptss/auth",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    },
+    "./components": {
+      "import": "./src/components/index.tsx",
+      "types": "./src/components/index.tsx"
+    },
+    "./middleware": {
+      "import": "./src/middleware/index.ts",
+      "types": "./src/middleware/index.ts"
+    },
+    "./hooks": {
+      "import": "./src/hooks/index.ts",
+      "types": "./src/hooks/index.ts"
+    },
+    "./guards": {
+      "import": "./src/guards/index.ts",
+      "types": "./src/guards/index.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@eptss/data-access": "workspace:*",
+    "@eptss/ui": "workspace:*",
+    "@eptss/shared": "workspace:*",
+    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/ssr": "^0.5.1",
+    "@hookform/resolvers": "^3.9.0",
+    "framer-motion": "^11.11.12",
+    "next": "^14.2.16",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.3"
+  }
+}

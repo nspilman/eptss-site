@@ -11,6 +11,7 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@eptss/auth": "workspace:*",
     "@eptss/data-access": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/ui": "workspace:*",

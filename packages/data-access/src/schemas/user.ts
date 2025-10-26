@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { users } from "@/db/schema"
+import { users } from "../db/schema"
 import { createInsertSchema } from "drizzle-zod"
 
 // Create a Zod schema from your Drizzle schema

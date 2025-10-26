@@ -1,7 +1,6 @@
 import { Toaster } from "@eptss/ui";
 import "../styles/globals.css";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { isAdmin } from "@eptss/data-access/utils/isAdmin";
+import { getAuthUser, isAdmin } from "@eptss/auth";
 import { redirect } from "next/navigation";
 
 export const metadata = {
