@@ -35,7 +35,7 @@ export const metadata = {
   },
 };
 
-import "../styles/globals.css";
+import "@eptss/ui/styles";
 
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 

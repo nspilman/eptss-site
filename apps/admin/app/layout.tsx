@@ -1,5 +1,5 @@
 import { Toaster } from "@eptss/ui";
-import "../styles/globals.css";
+import "@eptss/ui/styles";
 
 export const metadata = {
   title: "Admin Dashboard | Everyone Plays the Same Song",

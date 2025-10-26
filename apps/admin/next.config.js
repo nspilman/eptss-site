@@ -1,5 +1,6 @@
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ['@eptss/ui'],
   webpack: (config, { isServer }) => {
     // Ensure PostCSS processes CSS files
     if (!isServer) {

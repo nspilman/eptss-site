@@ -2,6 +2,7 @@
 
 const nextConfig = {
   reactStrictMode: true,
+  transpilePackages: ['@eptss/ui'],
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
