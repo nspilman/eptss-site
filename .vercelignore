@@ -1,0 +1,27 @@
+# Exclude all cache directories
+**/.next/cache
+**/.turbo
+.turbo
+
+# Exclude development files
+**/*.test.*
+**/*.spec.*
+**/cypress
+**/cypress.json
+**/jest.config.js
+**/.storybook
+
+# Exclude build artifacts that shouldn't be deployed
+**/dist
+**/.next/trace
+**/.next/diagnostics
+
+# Exclude local env files
+**/.env*.local
+
+# Development dependencies
+**/node_modules/.cache
+**/node_modules/.vite
+
+# Source maps in production (optional - uncomment to exclude)
+# **/*.map

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 const BlogPage = () => {
   const { posts } = blogProvider();
-console.log("Making sure the web app rebuilds")
+console.log("Making sure the web app rebuilds!")
   return (
     <>
       <PageTitle title="Blog Home" />
