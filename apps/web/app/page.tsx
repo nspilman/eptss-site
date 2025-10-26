@@ -1,10 +1,9 @@
 import Head from "next/head";
-import { RoundsDisplay } from "./index/Homepage/RoundsDisplay";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
-import { Suspense } from "react";
 import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "./RoundInfoDisplay";
+import { ClientRoundsDisplay } from "./index/Homepage/RoundsDisplay/ClientRoundsDisplay";
 import { roundProvider } from "@eptss/data-access";
 
 export const metadata: Metadata = {
@@ -24,9 +23,46 @@ export const metadata: Metadata = {
   },
 };
 
-// Shared homepage content component that can be reused
-export const HomepageContent = async () => {
+// Enable static generation with revalidation
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
+async function getRoundsData() {
+  try {
+    // Fetch current round to determine phase
+    const currentRoundResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/round/current`,
+      { next: { revalidate: 3600 } }
+    );
+    const currentRoundData = await currentRoundResponse.json();
+    
+    // Fetch rounds data
+    const excludeCurrentRound = currentRoundData?.phase === 'signups';
+    const roundsResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/rounds?excludeCurrentRound=${excludeCurrentRound}`,
+      { next: { revalidate: 3600 } }
+    );
+    const roundsData = await roundsResponse.json();
+    
+    return {
+      rounds: roundsData.roundContent || [],
+      currentRoundId: currentRoundData?.roundId || null,
+      isVotingPhase: currentRoundData?.phase === 'voting',
+    };
+  } catch (error) {
+    console.error("Error fetching rounds data:", error);
+    return {
+      rounds: [],
+      currentRoundId: null,
+      isVotingPhase: false,
+    };
+  }
+}
+
+// Static homepage with data fetched at build time
+const Homepage = async () => {
   const roundInfo = await roundProvider();
+  const { rounds, currentRoundId, isVotingPhase } = await getRoundsData();
   
   return (
     <div className="max-w-7xl mx-auto">
@@ -41,16 +77,19 @@ export const HomepageContent = async () => {
       </div>
       <div className="space-y-24 mt-16 md:mt-24">
         <HowItWorks />
-        <Suspense fallback={<div className="h-40 flex items-center justify-center">Loading rounds...</div>}>
-          <RoundsDisplay />
-        </Suspense>
+        <section id="rounds">
+          <ClientRoundsDisplay 
+            rounds={rounds} 
+            currentRoundId={currentRoundId} 
+            isVotingPhase={isVotingPhase} 
+          />
+        </section>
       </div>
     </div>
   );
 };
 
-const Homepage = async () => {
-  return <HomepageContent />;
-};
+// Export as named export for use in /home route
+export { Homepage as HomepageContent };
 
 export default Homepage;
