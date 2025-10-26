@@ -75,7 +75,7 @@ const nextConfig = {
       ...(process.env.NODE_ENV !== 'production' ? [
         {
           source: '/admin/:path*',
-          destination: 'http://localhost:3001/admin/:path*',
+          destination: 'http://localhost:3001/:path*',
         }
       ] : []),
       {

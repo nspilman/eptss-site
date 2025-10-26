@@ -6,8 +6,12 @@
   "outputDirectory": ".next",
   "rewrites": [
     {
+      "source": "/admin",
+      "destination": "https://eptss-admin.vercel.app"
+    },
+    {
       "source": "/admin/:path*",
-      "destination": "https://eptss-admin.vercel.app/admin/:path*"
+      "destination": "https://eptss-admin.vercel.app/:path*"
     }
   ]
 }
