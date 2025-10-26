@@ -1,5 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "turbo build",
-  "outputDirectory": ".next"
+  "buildCommand": "turbo build --filter=@eptss/admin",
+  "outputDirectory": "apps/admin/.next"
 }
