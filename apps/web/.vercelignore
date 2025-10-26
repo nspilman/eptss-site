@@ -1,0 +1,14 @@
+# Exclude cache directories from build artifact
+.next/cache
+.turbo
+
+# Exclude development-only files
+*.test.*
+*.spec.*
+cypress
+cypress.json
+jest.config.js
+.storybook
+
+# Source maps (optional - uncomment if you don't need them in production)
+# *.map

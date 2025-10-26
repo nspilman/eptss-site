@@ -5,6 +5,13 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  // Disable webpack cache persistence to reduce build artifact size
+  webpack: (config, { isServer }) => {
+    if (process.env.NODE_ENV === 'production') {
+      config.cache = false;
+    }
+    return config;
+  },
   // Optimize bundle size
   experimental: {
     optimizePackageImports: [
@@ -13,7 +20,13 @@ const nextConfig = {
       '@radix-ui/react-tabs',
       '@radix-ui/react-dialog',
       '@radix-ui/react-dropdown-menu',
-      'drizzle-orm'
+      '@radix-ui/react-select',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-tooltip',
+      'drizzle-orm',
+      '@supabase/supabase-js',
+      '@sentry/nextjs',
+      'date-fns'
     ],
   },
   // Reduce serverless function size by excluding unnecessary files
