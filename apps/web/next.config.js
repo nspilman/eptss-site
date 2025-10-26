@@ -74,8 +74,12 @@ const nextConfig = {
       // Admin rewrites handled differently in dev vs prod
       ...(process.env.NODE_ENV !== 'production' ? [
         {
+          source: '/admin',
+          destination: 'http://localhost:3001/admin',
+        },
+        {
           source: '/admin/:path*',
-          destination: 'http://localhost:3001/:path*',
+          destination: 'http://localhost:3001/admin/:path*',
         }
       ] : []),
       {
