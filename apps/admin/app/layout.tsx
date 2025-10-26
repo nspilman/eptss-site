@@ -1,7 +1,5 @@
 import { Toaster } from "@eptss/ui";
 import "../styles/globals.css";
-import { getAuthUser, isAdmin } from "@eptss/auth";
-import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Admin Dashboard | Everyone Plays the Same Song",
@@ -16,19 +14,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await getAuthUser();
+  // Auth checks are handled by middleware now
+  // Layout should not redirect to avoid conflicts
   
-  // Redirect non-authenticated users to login
-  if (!userId) {
-    redirect("/login");
-  }
-
-  // Check if user is admin
-  const adminCheck = await isAdmin();
-  if (!adminCheck) {
-    redirect("/");
-  }
-
   return (
     <html lang="en">
       <body>
