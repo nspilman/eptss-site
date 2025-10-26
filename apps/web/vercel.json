@@ -3,5 +3,11 @@
   "buildCommand": "cd ../.. && turbo build --filter=@eptss/web",
   "installCommand": "cd ../.. && bun install",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "rewrites": [
+    {
+      "source": "/admin/:path*",
+      "destination": "https://eptss-admin.vercel.app/admin/:path*"
+    }
+  ]
 }

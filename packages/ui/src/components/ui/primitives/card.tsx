@@ -29,7 +29,8 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col text-center font-fraunces", className)}
+    className={cn("flex flex-col !flex-col space-y-2 text-center font-fraunces", className)}
+    style={{ flexDirection: 'column' }}
     {...props}
   />
 ))
@@ -42,7 +43,7 @@ const CardTitle = React.forwardRef<
   <h1
     ref={ref}
     className={cn(
-      "text-3xl text-[var(--color-white)] font-bold mb-6 text-center bg-clip-text bg-[var(--color-gradient-primary)] pb-1",
+      "text-3xl text-[var(--color-white)] font-bold text-center bg-clip-text bg-[var(--color-gradient-primary)] pb-1",
       className
     )}
     {...props}
@@ -51,12 +52,12 @@ const CardTitle = React.forwardRef<
 CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <h1
+  <p
     ref={ref}
-    className={cn("text-[var(--color-white)] font-light text-sm", className)}
+    className={cn("text-[var(--color-white)] font-light text-sm mt-2", className)}
     {...props}
   />
 ))

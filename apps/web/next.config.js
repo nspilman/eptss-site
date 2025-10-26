@@ -71,12 +71,13 @@ const nextConfig = {
           ? 'https://api.everyoneplaysthesamesong.com/api/:path*'
           : 'http://localhost:3002/api/:path*',
       },
-      {
-        source: '/admin/:path*',
-        destination: process.env.NODE_ENV === 'production'
-          ? 'https://admin.everyoneplaysthesamesong.com/admin/:path*'
-          : 'http://localhost:3001/admin/:path*',
-      },
+      // Admin rewrites handled differently in dev vs prod
+      ...(process.env.NODE_ENV !== 'production' ? [
+        {
+          source: '/admin/:path*',
+          destination: 'http://localhost:3001/admin/:path*',
+        }
+      ] : []),
       {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',

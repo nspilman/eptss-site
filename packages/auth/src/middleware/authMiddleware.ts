@@ -19,15 +19,29 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig = {}) {
   } = config;
 
   return async function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+    
     let response = NextResponse.next({
       request: {
         headers: request.headers,
       },
     })
 
+    // Check if Supabase env vars are available
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('Missing Supabase environment variables');
+      // Allow access to public paths if env vars are missing
+      const isPublic = publicPaths.some(path => pathname.startsWith(path));
+      if (isPublic) {
+        return response;
+      }
+      // Redirect to login for protected paths
+      return NextResponse.redirect(new URL(redirectToOnNoAuth, request.url));
+    }
+
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           get(name: string) {
@@ -72,10 +86,17 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig = {}) {
     )
 
     const { data: { user } } = await supabase.auth.getUser()
-    const pathname = request.nextUrl.pathname;
+
+    // Skip auth logic for public paths when not authenticated
+    const isPublic = publicPaths.some(path => pathname.startsWith(path));
+    const isProtected = protectedPaths.some(path => pathname.startsWith(path));
+    const isAdminPath = adminPaths.some(path => pathname.startsWith(path));
+
+    if (isPublic && !user) {
+      return response;
+    }
 
     // Check if path is admin route
-    const isAdminPath = adminPaths.some(path => pathname.startsWith(path));
     if (isAdminPath && user) {
       // Check if user is admin
       const email = user.email;
@@ -92,8 +113,6 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig = {}) {
     }
 
     // Protected routes - redirect to login if not authenticated
-    const isProtected = protectedPaths.some(path => pathname.startsWith(path))
-    
     if (!user && isProtected) {
       const redirectUrl = new URL(redirectToOnNoAuth, request.url)
       redirectUrl.searchParams.set('redirectUrl', pathname)
@@ -101,7 +120,6 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig = {}) {
     }
 
     // Public routes - redirect to dashboard if authenticated
-    const isPublic = publicPaths.some(path => pathname.startsWith(path))
     if (user && isPublic) {
       return NextResponse.redirect(new URL(redirectToOnAuth, request.url))
     }
