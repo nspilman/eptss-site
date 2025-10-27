@@ -67,27 +67,6 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: process.env.NODE_ENV === 'production'
-          ? 'https://api.everyoneplaysthesamesong.com/api/:path*'
-          : 'http://localhost:3002/api/:path*',
-      },
-      // Admin rewrites handled differently in dev vs prod
-      ...(process.env.NODE_ENV !== 'production' ? [
-        {
-          source: '/admin/_next/:path*',
-          destination: 'http://localhost:3001/admin/_next/:path*',
-        },
-        {
-          source: '/admin',
-          destination: 'http://localhost:3001/admin',
-        },
-        {
-          source: '/admin/:path*',
-          destination: 'http://localhost:3001/admin/:path*',
-        }
-      ] : []),
-      {
         source: '/ingest/static/:path*',
         destination: 'https://us-assets.i.posthog.com/static/:path*',
       },
