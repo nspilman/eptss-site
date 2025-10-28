@@ -30,6 +30,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@eptss/auth": "workspace:*",
+    "@eptss/dashboard": "workspace:*",
     "@eptss/data-access": "workspace:*",
     "@eptss/email": "workspace:*",
     "@eptss/rich-text-editor": "workspace:*",

@@ -1,49 +1,43 @@
-import { Suspense } from 'react';
-import { DashboardHero,
-  NextRoundSkeleton,
-   HeroSkeleton,
-    CurrentRoundSkeleton,
-     URLParamsHandler,
-      VerificationAlert,
-       CurrentRoundCard,
-        NextRoundCard,
-         ReflectionCard,
-          ReflectionSkeleton } from './components';
+import { Dashboard } from '@eptss/dashboard';
+import { eptssDeboardConfig } from './dashboard-config';
+import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
+import {
+  fetchHeroData,
+  fetchPhaseStatusData,
+  fetchActionData,
+  fetchCurrentRoundData,
+  fetchReflectionData,
+} from './data-fetchers';
 
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
+  // Fetch user for role-based panel visibility
+  const { userId } = await getAuthUser();
+
+  // Fetch data for all panels in parallel
+  const [heroData, phaseStatusData, actionData, currentRoundData, reflectionData] =
+    await Promise.all([
+      fetchHeroData(),
+      fetchPhaseStatusData(),
+      fetchActionData(),
+      fetchCurrentRoundData(),
+      fetchReflectionData(),
+    ]);
+
   return (
-    <div>
-      {/* URL params handler for toast notifications */}
-      <URLParamsHandler />
-
-      {/* Hero Section - Streams independently */}
-      <Suspense fallback={<HeroSkeleton />}>
-        <DashboardHero />
-      </Suspense>
-
-      {/* Verification Alert - Streams independently */}
-      <Suspense fallback={null}>
-        <VerificationAlert />
-      </Suspense>
-
-      {/* Current Round Card - Streams independently */}
-      <Suspense fallback={<CurrentRoundSkeleton />}>
-        <CurrentRoundCard />
-      </Suspense>
-
-      {/* Reflection Card - Streams independently */}
-      <Suspense fallback={<ReflectionSkeleton />}>
-        <ReflectionCard />
-      </Suspense>
-
-      {/* Next Round Card - Streams independently */}
-      <Suspense fallback={<NextRoundSkeleton />}>
-        <NextRoundCard />
-      </Suspense>
-    </div>
+    <Dashboard
+      config={eptssDeboardConfig}
+      user={userId ? { id: userId, role: 'user' } : undefined}
+      panelData={{
+        hero: heroData,
+        'phase-status': phaseStatusData,
+        action: actionData,
+        'current-round': currentRoundData,
+        reflections: reflectionData,
+      }}
+    />
   );
 }

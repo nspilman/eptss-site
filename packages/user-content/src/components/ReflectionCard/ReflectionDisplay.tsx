@@ -189,7 +189,7 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
         ) : (
           <div className="space-y-4">
             <p className="text-[var(--color-gray-300)]">
-              {schedule.availabilityMessage || 'Start your journey by reflecting on your goals, expectations, and approach for this round.'}
+              {schedule.availabilityMessage || 'Start your journey by reflecting on your initial thoughts on the song to cover, as well as your goals, expectations, and approach for this round.'}
             </p>
 
             {canCreateReflection ? (
