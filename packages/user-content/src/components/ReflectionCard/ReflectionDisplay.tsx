@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { Reflection } from '@eptss/data-access';
 import { deleteReflection } from '@eptss/data-access';
+import type { Reflection } from '@eptss/data-access';
 import { getReflectionSchedule } from '../../utils/reflectionScheduler';
 import type { Round } from '../../types';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal';
@@ -65,7 +65,6 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
       listeningParty: new Date(round.listeningParty),
     },
     hasInitialReflection,
-    round.song
   );
 
   // Determine button text and availability

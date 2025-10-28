@@ -5,7 +5,7 @@
  * based on the current round's phase and dates.
  */
 
-export type ReflectionType = 'initial' | 'checkin';
+import type { ReflectionType } from '../types';
 
 export interface ReflectionSchedule {
   /** Whether initial reflections can be created */

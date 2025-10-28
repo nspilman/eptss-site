@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { tags, Tag, NewTag } from "../db/schema";
-import { eq, desc, like, or } from "drizzle-orm";
+import { eq, desc, like, or, sql } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createErrorResult } from '../types/asyncResult';
 
 /**
@@ -42,7 +42,7 @@ export const createOrGetTag = async (
     return createSuccessResult(newTag);
   } catch (error) {
     console.error("Error in createOrGetTag:", error);
-    return createErrorResult(`Failed to create or get tag: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to create or get tag: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -60,7 +60,7 @@ export const getTagBySlug = async (slug: string): Promise<AsyncResult<Tag | null
     return createSuccessResult(tag || null);
   } catch (error) {
     console.error("Error in getTagBySlug:", error);
-    return createErrorResult(`Failed to get tag: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to get tag: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -79,7 +79,7 @@ export const getAllTags = async (category?: string): Promise<AsyncResult<Tag[]>>
     return createSuccessResult(result);
   } catch (error) {
     console.error("Error in getAllTags:", error);
-    return createErrorResult(`Failed to get tags: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to get tags: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -90,13 +90,13 @@ export const incrementTagUseCount = async (tagId: number): Promise<AsyncResult<v
   try {
     await db
       .update(tags)
-      .set({ useCount: db.$count(tags.useCount) + 1 })
+      .set({ useCount: sql`${tags.useCount} + 1` })
       .where(eq(tags.id, tagId));
 
     return createSuccessResult(undefined);
   } catch (error) {
     console.error("Error in incrementTagUseCount:", error);
-    return createErrorResult(`Failed to increment tag use count: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to increment tag use count: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -120,7 +120,7 @@ export const searchTags = async (searchTerm: string, limit = 10): Promise<AsyncR
     return createSuccessResult(result);
   } catch (error) {
     console.error("Error in searchTags:", error);
-    return createErrorResult(`Failed to search tags: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to search tags: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -137,17 +137,17 @@ export const deleteTag = async (tagId: number): Promise<AsyncResult<void>> => {
       .limit(1);
 
     if (!tag) {
-      return createErrorResult('Tag not found');
+      return createErrorResult(new Error('Tag not found'));
     }
 
     if (tag.isSystemTag) {
-      return createErrorResult('Cannot delete system tags');
+      return createErrorResult(new Error('Cannot delete system tags'));
     }
 
     await db.delete(tags).where(eq(tags.id, tagId));
     return createSuccessResult(undefined);
   } catch (error) {
     console.error("Error in deleteTag:", error);
-    return createErrorResult(`Failed to delete tag: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to delete tag: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };

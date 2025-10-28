@@ -26,7 +26,7 @@ export interface Round {
   coveringBegins: Date | string;
   coversDue: Date | string;
   listeningParty: Date | string;
-  playlistUrl: string;
+  playlistUrl?: string;
   song: { artist: string; title: string };
   signupCount?: number;
   submissionCount?: number;
