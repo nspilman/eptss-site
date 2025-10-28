@@ -100,8 +100,9 @@ const autoTagReflection = async (
   );
   console.log('[autoTagReflection] Type tag result:', typeTagResult);
 
-  if (!typeTagResult.success || !typeTagResult.data) {
-    throw new Error(`Failed to create type tag: ${typeTagResult.error || 'Unknown error'}`);
+  if (typeTagResult.status !== 'success' || !typeTagResult.data) {
+    const errorMsg = typeTagResult.status === 'error' ? typeTagResult.error.message : 'Unknown error';
+    throw new Error(`Failed to create type tag: ${errorMsg}`);
   }
 
   // Create/get round-specific tag
@@ -114,8 +115,9 @@ const autoTagReflection = async (
   );
   console.log('[autoTagReflection] Round tag result:', roundTagResult);
 
-  if (!roundTagResult.success || !roundTagResult.data) {
-    throw new Error(`Failed to create round tag: ${roundTagResult.error || 'Unknown error'}`);
+  if (roundTagResult.status !== 'success' || !roundTagResult.data) {
+    const errorMsg = roundTagResult.status === 'error' ? roundTagResult.error.message : 'Unknown error';
+    throw new Error(`Failed to create round tag: ${errorMsg}`);
   }
 
   // Create/get reflection-type tag (initial or checkin)
@@ -128,8 +130,9 @@ const autoTagReflection = async (
   );
   console.log('[autoTagReflection] Reflection type tag result:', reflectionTypeTagResult);
 
-  if (!reflectionTypeTagResult.success || !reflectionTypeTagResult.data) {
-    throw new Error(`Failed to create reflection type tag: ${reflectionTypeTagResult.error || 'Unknown error'}`);
+  if (reflectionTypeTagResult.status !== 'success' || !reflectionTypeTagResult.data) {
+    const errorMsg = reflectionTypeTagResult.status === 'error' ? reflectionTypeTagResult.error.message : 'Unknown error';
+    throw new Error(`Failed to create reflection type tag: ${errorMsg}`);
   }
 
   // Associate tags with content

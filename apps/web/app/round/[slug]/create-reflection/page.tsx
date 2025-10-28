@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
-import { createClient, getAuthUser } from '@/utils/supabase/server';
+import { getAuthUser } from '@/utils/supabase/server';
 import { PageTitle } from "@/components/PageTitle";
-import { ReflectionForm } from './ReflectionForm';
+import { ReflectionForm } from '@eptss/user-content';
+import { getRoundBySlug, getUserInitialReflectionForRound } from '@eptss/data-access';
 import { Metadata } from 'next';
 
 type Props = {
@@ -17,55 +18,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-async function checkAuthentication() {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (!session) {
-    return null;
-  }
-
-  return { supabase, userId: (await getAuthUser()).userId };
-}
-
-async function getRoundData(supabase: any, slug: string) {
-  const { data: roundData, error } = await supabase
-    .from('round_metadata')
-    .select('id, slug')
-    .eq('slug', slug)
-    .single();
-
-  if (error || !roundData) {
-    return null;
-  }
-
-  return roundData;
-}
-
 const CreateReflectionPage = async ({ params }: Props) => {
   const resolvedParams = await params;
 
   // Check authentication
-  const authResult = await checkAuthentication();
-  if (!authResult) {
+  const { userId } = await getAuthUser();
+  if (!userId) {
     redirect(`/login?redirect=/round/${resolvedParams.slug}/create-reflection`);
   }
 
-  const { supabase, userId } = authResult;
-
   // Get round data
-  const roundData = await getRoundData(supabase, resolvedParams.slug);
-  if (!roundData) {
+  const roundResult = await getRoundBySlug(resolvedParams.slug);
+  if (roundResult.status !== 'success' || !roundResult.data) {
     redirect('/rounds');
   }
+
+  const round = roundResult.data;
+
+  // Check if user has an initial reflection
+  const initialReflectionResult = await getUserInitialReflectionForRound(userId, round.roundId);
+  const hasInitialReflection = initialReflectionResult.status === 'success' && !!initialReflectionResult.data;
 
   return (
     <>
       <PageTitle title={`Create Reflection - ${resolvedParams.slug}`} />
       <ReflectionForm
         userId={userId}
-        roundId={roundData.id}
-        roundSlug={roundData.slug}
+        round={round}
+        hasInitialReflection={hasInitialReflection}
       />
     </>
   );

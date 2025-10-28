@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { PageTitle } from "@/components/PageTitle";
 import { Post } from "@/app/blog/Blog/Post";
 import { getReflectionBySlug } from '@eptss/data-access';
+import { getAuthUser } from '@/utils/supabase/server';
 import { Metadata } from 'next';
 
 type Props = {
@@ -43,8 +44,12 @@ const ReflectionPage = async ({ params }: Props) => {
 
   const reflection = result.data;
 
-  // Only show public reflections
-  if (!reflection.isPublic) {
+  // Get current user
+  const { userId } = await getAuthUser();
+
+  // Only show public reflections OR private reflections if user is the author
+  const isAuthor = userId === reflection.userId;
+  if (!reflection.isPublic && !isAuthor) {
     notFound();
   }
 

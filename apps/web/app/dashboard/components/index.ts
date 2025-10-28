@@ -3,6 +3,8 @@ export * from './DashboardHero';
 export * from './VerificationAlert';
 export * from './CurrentRoundCard';
 export * from './NextRoundCard';
-export * from './ReflectionCard';
 export * from './TimeRemainingDisplay';
 export * from './URLParamsHandler';
+
+// Import from user-content package
+export { ReflectionCard, ReflectionSkeleton } from '@eptss/user-content';
