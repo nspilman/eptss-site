@@ -42,4 +42,10 @@ export interface RoundInfo {
   // Add count properties
   signupCount?: number;
   submissionCount?: number;
+  // Raw date objects for reflection scheduling
+  signupOpens: Date;
+  votingOpens: Date;
+  coveringBegins: Date;
+  coversDue: Date;
+  listeningParty: Date;
 }

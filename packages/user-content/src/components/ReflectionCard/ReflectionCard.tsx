@@ -20,10 +20,21 @@ export async function ReflectionCard() {
   const reflectionsResult = await getUserReflectionsForRound(userId, currentRound.roundId);
   const reflections = reflectionsResult.status === 'success' ? reflectionsResult.data : [];
 
+  // Serialize dates to strings for client component
+  // (Date objects can't be passed from server to client components)
+  const serializedRound = {
+    ...currentRound,
+    signupOpens: currentRound.signupOpens.toISOString(),
+    votingOpens: currentRound.votingOpens.toISOString(),
+    coveringBegins: currentRound.coveringBegins.toISOString(),
+    coversDue: currentRound.coversDue.toISOString(),
+    listeningParty: currentRound.listeningParty.toISOString(),
+  };
+
   return (
     <ReflectionDisplay
       roundSlug={currentRound.slug}
-      round={currentRound}
+      round={serializedRound}
       reflections={reflections}
     />
   );

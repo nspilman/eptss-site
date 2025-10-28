@@ -35,7 +35,8 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({
       coversDue: new Date(round.coversDue),
       listeningParty: new Date(round.listeningParty),
     },
-    hasInitialReflection
+    hasInitialReflection,
+    round.song
   ) || 'initial';
 
   const handleSubmit = async (e: React.FormEvent) => {

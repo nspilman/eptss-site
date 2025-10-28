@@ -1,9 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { Reflection } from '@eptss/data-access';
+import { deleteReflection } from '@eptss/data-access';
 import { getReflectionSchedule } from '../../utils/reflectionScheduler';
 import type { Round } from '../../types';
+import { DeleteConfirmationModal } from '../DeleteConfirmationModal';
 
 interface ReflectionDisplayProps {
   roundSlug: string;
@@ -12,13 +16,46 @@ interface ReflectionDisplayProps {
 }
 
 export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionDisplayProps) {
+  const router = useRouter();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [reflectionToDelete, setReflectionToDelete] = useState<Reflection | null>(null);
+
   // Determine if user has an initial reflection
   const hasInitialReflection = reflections.some(
     r => r.tags?.includes('reflection-type:initial')
   );
 
+  const handleDeleteClick = (reflection: Reflection) => {
+    setReflectionToDelete(reflection);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!reflectionToDelete) return;
+
+    const result = await deleteReflection(reflectionToDelete.id);
+
+    if (result.status === 'success') {
+      setDeleteModalOpen(false);
+      setReflectionToDelete(null);
+      // Refresh the page to show updated list
+      router.refresh();
+    } else {
+      // Could add error handling UI here
+      console.error('Failed to delete reflection');
+    }
+  };
+
   // Get the reflection schedule based on round dates
   // Ensure dates are Date objects (they might come as strings from the API)
+  console.log('[ReflectionDisplay] Round dates before conversion:', {
+    signupOpens: round.signupOpens,
+    votingOpens: round.votingOpens,
+    coveringBegins: round.coveringBegins,
+    coversDue: round.coversDue,
+    listeningParty: round.listeningParty,
+  });
+
   const schedule = getReflectionSchedule(
     {
       signupOpens: new Date(round.signupOpens),
@@ -27,7 +64,8 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
       coversDue: new Date(round.coversDue),
       listeningParty: new Date(round.listeningParty),
     },
-    hasInitialReflection
+    hasInitialReflection,
+    round.song
   );
 
   // Determine button text and availability
@@ -106,6 +144,15 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
                       </svg>
                       Edit
                     </Link>
+                    <button
+                      onClick={() => handleDeleteClick(reflection)}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-red-400 hover:text-red-300 transition-color cursor-pointer"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
@@ -166,6 +213,18 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setReflectionToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Reflection?"
+        message={`Are you sure you want to delete "${reflectionToDelete?.title}"? This action cannot be undone.`}
+      />
     </div>
   );
 }

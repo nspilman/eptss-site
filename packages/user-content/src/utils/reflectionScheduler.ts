@@ -20,6 +20,11 @@ export interface ReflectionSchedule {
   checkinAvailableDate?: Date;
 }
 
+export interface SongInfo {
+  title: string;
+  artist: string;
+}
+
 export interface RoundDates {
   signupOpens: Date;
   votingOpens: Date;
@@ -45,13 +50,38 @@ export function calculateCheckinDate(coveringBegins: Date, coversDue: Date): Dat
 export function getCurrentPhase(dates: RoundDates, now: Date = new Date()): 'signup' | 'voting' | 'covering' | 'celebration' {
   const currentTime = now.getTime();
 
-  if (currentTime < dates.votingOpens.getTime()) {
+  // Debug: Log raw dates to see what we're receiving
+  console.log('[getCurrentPhase] Raw dates received:', {
+    votingOpens: dates.votingOpens,
+    coveringBegins: dates.coveringBegins,
+    coversDue: dates.coversDue,
+    votingOpens_type: typeof dates.votingOpens,
+    coveringBegins_type: typeof dates.coveringBegins,
+    coversDue_type: typeof dates.coversDue,
+  });
+
+  // Safely get timestamps
+  const votingOpensTime = dates.votingOpens?.getTime?.();
+  const coveringBeginsTime = dates.coveringBegins?.getTime?.();
+  const coversDueTime = dates.coversDue?.getTime?.();
+
+  console.log('[getCurrentPhase] Parsed timestamps:', {
+    currentTime,
+    votingOpensTime,
+    coveringBeginsTime,
+    coversDueTime,
+    isValidVotingOpens: !isNaN(votingOpensTime),
+    isValidCoveringBegins: !isNaN(coveringBeginsTime),
+    isValidCoversDue: !isNaN(coversDueTime),
+  });
+
+  if (!isNaN(votingOpensTime) && currentTime < votingOpensTime) {
     return 'signup';
   }
-  if (currentTime < dates.coveringBegins.getTime()) {
+  if (!isNaN(coveringBeginsTime) && currentTime < coveringBeginsTime) {
     return 'voting';
   }
-  if (currentTime < dates.coversDue.getTime()) {
+  if (!isNaN(coversDueTime) && currentTime < coversDueTime) {
     return 'covering';
   }
   return 'celebration';
@@ -66,11 +96,13 @@ export function getCurrentPhase(dates: RoundDates, now: Date = new Date()): 'sig
  *
  * @param dates - Round date information
  * @param hasInitialReflection - Whether user has already created an initial reflection
+ * @param song - Song information for the round (optional)
  * @param now - Current time (defaults to now, can be overridden for testing)
  */
 export function getReflectionSchedule(
   dates: RoundDates,
   hasInitialReflection: boolean = false,
+  song?: SongInfo,
   now: Date = new Date()
 ): ReflectionSchedule {
   const currentPhase = getCurrentPhase(dates, now);
@@ -81,6 +113,10 @@ export function getReflectionSchedule(
   let canCreateInitial = false;
   let canCreateCheckin = false;
   let availabilityMessage = '';
+
+  // Format song name for messages
+  const songName = song ? `"${song.title}" by ${song.artist}` : 'this round\'s song';
+
   console.log({currentPhase})
   switch (currentPhase) {
     case 'signup':
@@ -89,7 +125,7 @@ export function getReflectionSchedule(
       canCreateCheckin = false;
 
       if (!hasInitialReflection) {
-        availabilityMessage = 'Create your initial reflection to capture your thoughts at the start of this round.';
+        availabilityMessage = `Share your initial impressions of ${songName}. From lyrics to instrumentation to subject matter - we want to hear what you think!`;
       } else {
         availabilityMessage = `Check-in reflections will be available ${formatDate(checkinDate)} (midway through the covering phase).`;
       }
@@ -107,7 +143,7 @@ export function getReflectionSchedule(
         canCreateCheckin = false;
 
         if (!hasInitialReflection) {
-          availabilityMessage = `Create your initial reflection before ${formatDate(checkinDate)}, when check-in reflections become available.`;
+          availabilityMessage = `Share your initial impressions of ${songName}. From lyrics to instrumentation to subject matter - we want to hear what you think!`;
         } else {
           availabilityMessage = `Check-in reflections will be available ${formatDate(checkinDate)}.`;
         }
@@ -138,9 +174,10 @@ export function getReflectionSchedule(
 export function getAvailableReflectionType(
   dates: RoundDates,
   hasInitialReflection: boolean = false,
+  song?: SongInfo,
   now: Date = new Date()
 ): ReflectionType | null {
-  const schedule = getReflectionSchedule(dates, hasInitialReflection, now);
+  const schedule = getReflectionSchedule(dates, hasInitialReflection, song, now);
 
   if (schedule.canCreateCheckin) {
     return 'checkin';

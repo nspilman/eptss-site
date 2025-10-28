@@ -26,6 +26,7 @@ export const roundProvider = async (slug?: string): Promise<RoundInfo> => {
 
   if (roundResult.status !== 'success') {
     // Return default empty round info
+    const now = new Date();
     return {
       roundId: 0,
       slug: '',
@@ -42,7 +43,13 @@ export const roundProvider = async (slug?: string): Promise<RoundInfo> => {
       isVotingOpen: false,
       voteOptions: [],
       submissions: [],
-      signups: []
+      signups: [],
+      // Add default dates
+      signupOpens: now,
+      votingOpens: now,
+      coveringBegins: now,
+      coversDue: now,
+      listeningParty: now,
     };
   }
 
@@ -105,6 +112,12 @@ export const roundProvider = async (slug?: string): Promise<RoundInfo> => {
     submissions,
     playlistUrl,
     signups,
+    // Add raw dates for reflection scheduling
+    signupOpens: roundDates.signupOpens,
+    votingOpens: roundDates.votingOpens,
+    coveringBegins: roundDates.coveringBegins,
+    coversDue: roundDates.coversDue,
+    listeningParty: roundDates.listeningParty,
   }
 };
 
