@@ -8,6 +8,7 @@ import { VotingResultsSection } from "./VotingResultsSection";
 import { SignupsTable } from "./SignupsTable";
 import { RoundNavigationWrapper } from "./RoundNavigationWrapper";
 import { CoveringPhaseSignup } from "./CoveringPhaseSignup";
+import { RoundReflections } from "./RoundReflections";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 
 // Inline the chart utility function to avoid import issues
@@ -184,6 +185,7 @@ export const RoundSummary = async ({ roundId, roundData, voteResults = [], outst
             chartData={chartData}
           />
         )}
+        <RoundReflections roundId={roundId} />
         <RoundNavigationWrapper navigation={navigation} />
       </div>
     );

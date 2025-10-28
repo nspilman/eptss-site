@@ -161,9 +161,48 @@ export const emailRemindersSent = pgTable("email_reminders_sent", {
   errorMessage: text("error_message"),
 });
 
+// User Content Table (for reflections, blog posts, etc.)
+export const userContent = pgTable("user_content", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid).notNull(),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  title: text("title").notNull(),
+  slug: text("slug").unique().notNull(),
+  markdownContent: text("markdown_content").notNull(),
+  isPublic: boolean("is_public").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  publishedAt: timestamp("published_at"),
+});
+
+// Tags Table
+export const tags = pgTable("tags", {
+  id: bigserial("id", { mode: "number" }).primaryKey(),
+  name: text("name").unique().notNull(),
+  slug: text("slug").unique().notNull(),
+  category: text("category"), // 'system', 'technical', 'creative', 'emotional', 'meta'
+  isSystemTag: boolean("is_system_tag").notNull().default(false),
+  useCount: integer("use_count").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Content Tags Junction Table
+export const contentTags = pgTable("content_tags", {
+  contentId: uuid("content_id").references(() => userContent.id, { onDelete: "cascade" }).notNull(),
+  tagId: bigint("tag_id", { mode: "number" }).references(() => tags.id, { onDelete: "cascade" }).notNull(),
+  addedBy: text("added_by").notNull(), // 'user' or 'system'
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type TestRun = typeof testRuns.$inferSelect;
 export type NewTestRun = typeof testRuns.$inferInsert;
 export type Feedback = typeof feedback.$inferSelect;
 export type NewFeedback = typeof feedback.$inferInsert;
 export type EmailReminderSent = typeof emailRemindersSent.$inferSelect;
 export type NewEmailReminderSent = typeof emailRemindersSent.$inferInsert;
+export type UserContent = typeof userContent.$inferSelect;
+export type NewUserContent = typeof userContent.$inferInsert;
+export type Tag = typeof tags.$inferSelect;
+export type NewTag = typeof tags.$inferInsert;
+export type ContentTag = typeof contentTags.$inferSelect;
+export type NewContentTag = typeof contentTags.$inferInsert;

@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import * as schema from "./schema";
 
 // Singleton pattern to prevent connection leaks in development with Next.js hot reloading
 const createPostgresConnection = () => {
@@ -36,8 +37,8 @@ if (process.env.NODE_ENV !== "production" && !globalForPg.pg) {
   globalForPg.pg = client;
 }
 
-// Create drizzle instance
-export const db = drizzle(client);
+// Create drizzle instance with schema
+export const db = drizzle(client, { schema });
 
 // Explicitly handle process termination to close connections
 if (process.env.NODE_ENV !== "test") {

@@ -35,6 +35,23 @@ export {
 } from './services/emailReminderService';
 export { determineRemindersToSend, type ReminderEmailType } from './utils/reminderEmailScheduler';
 export type { Feedback, CreateFeedbackInput } from './services/feedbackService';
+export {
+  createReflection,
+  getReflectionBySlug,
+  getReflectionsByRound,
+  getReflectionsByUser,
+  updateReflection,
+  deleteReflection,
+  getUserInitialReflectionForRound,
+  getUserReflectionsForRound
+} from './services/reflectionService';
+export type { Reflection, CreateReflectionInput, UpdateReflectionInput, ReflectionType } from './services/reflectionService';
+export {
+  createOrGetTag,
+  getTagBySlug,
+  getAllTags,
+  searchTags
+} from './services/tagService';
 
 // Re-export actions
 export * from './actions/signupActions';

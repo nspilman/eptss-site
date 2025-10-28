@@ -6,7 +6,9 @@ import { DashboardHero,
      URLParamsHandler,
       VerificationAlert,
        CurrentRoundCard,
-        NextRoundCard } from './components';
+        NextRoundCard,
+         ReflectionCard,
+          ReflectionSkeleton } from './components';
 
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
@@ -31,6 +33,11 @@ export default async function DashboardPage() {
       {/* Current Round Card - Streams independently */}
       <Suspense fallback={<CurrentRoundSkeleton />}>
         <CurrentRoundCard />
+      </Suspense>
+
+      {/* Reflection Card - Streams independently */}
+      <Suspense fallback={<ReflectionSkeleton />}>
+        <ReflectionCard />
       </Suspense>
 
       {/* Next Round Card - Streams independently */}
