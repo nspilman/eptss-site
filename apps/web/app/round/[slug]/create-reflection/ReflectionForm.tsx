@@ -49,11 +49,13 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({
         reflectionType: 'initial', // Always create as initial reflection
       });
 
-      if (result.success && result.data) {
+      if (result.status === 'success') {
         // Redirect to the reflection page
         router.push(`/reflections/${result.data.slug}`);
+      } else if (result.status === 'error') {
+        setError(result.error.message || 'Failed to create reflection');
       } else {
-        setError(result.error || 'Failed to create reflection');
+        setError('Failed to create reflection');
       }
     } catch (err) {
       setError('An unexpected error occurred');
