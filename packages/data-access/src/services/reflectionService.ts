@@ -209,7 +209,7 @@ export const createReflection = async (
     return createSuccessResult(mapToReflection(newContent, ['type:reflection', `round:${slug}`, `reflection-type:${reflectionType}`]));
   } catch (error) {
     console.error("Error in createReflection:", error);
-    return createErrorResult(`Failed to create reflection: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to create reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -240,7 +240,7 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
     return createSuccessResult(mapToReflection(content, tagSlugs));
   } catch (error) {
     console.error("Error in getReflectionBySlug:", error);
-    return createErrorResult(`Failed to get reflection: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to get reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -271,7 +271,7 @@ export const getReflectionsByRound = async (
     return createSuccessResult(reflections);
   } catch (error) {
     console.error("Error in getReflectionsByRound:", error);
-    return createErrorResult(`Failed to get reflections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to get reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -302,7 +302,7 @@ export const getReflectionsByUser = async (
     return createSuccessResult(reflections);
   } catch (error) {
     console.error("Error in getReflectionsByUser:", error);
-    return createErrorResult(`Failed to get user reflections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to get user reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -339,13 +339,13 @@ export const updateReflection = async (
       .returning();
 
     if (!updated) {
-      return createErrorResult('Reflection not found');
+      return createErrorResult(new Error('Reflection not found'));
     }
 
     return createSuccessResult(mapToReflection(updated));
   } catch (error) {
     console.error("Error in updateReflection:", error);
-    return createErrorResult(`Failed to update reflection: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to update reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -358,7 +358,7 @@ export const deleteReflection = async (id: string): Promise<AsyncResult<void>> =
     return createSuccessResult(undefined);
   } catch (error) {
     console.error("Error in deleteReflection:", error);
-    return createErrorResult(`Failed to delete reflection: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to delete reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -406,7 +406,7 @@ export const getUserInitialReflectionForRound = async (
     return createSuccessResult(mapToReflection(result[0].content));
   } catch (error) {
     console.error("Error in getUserInitialReflectionForRound:", error);
-    return createErrorResult(`Failed to check for initial reflection: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to check for initial reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
 
@@ -432,6 +432,6 @@ export const getUserReflectionsForRound = async (
     return createSuccessResult(reflections);
   } catch (error) {
     console.error("Error in getUserReflectionsForRound:", error);
-    return createErrorResult(`Failed to get user reflections for round: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    return createErrorResult(new Error(`Failed to get user reflections for round: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
