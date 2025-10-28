@@ -281,20 +281,18 @@ export const getReflectionsByUser = async (
   publicOnly = true
 ): Promise<AsyncResult<Reflection[]>> => {
   try {
-    let query = db
+    const whereCondition = publicOnly
+      ? and(
+          eq(userContent.userId, userId),
+          eq(userContent.isPublic, true)
+        )
+      : eq(userContent.userId, userId);
+
+    const results = await db
       .select()
       .from(userContent)
-      .where(eq(userContent.userId, userId))
+      .where(whereCondition)
       .orderBy(desc(userContent.createdAt));
-
-    if (publicOnly) {
-      query = query.where(and(
-        eq(userContent.userId, userId),
-        eq(userContent.isPublic, true)
-      )) as any;
-    }
-
-    const results = await query;
     const reflections = results.map(r => mapToReflection(r));
 
     return createSuccessResult(reflections);
