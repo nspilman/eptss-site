@@ -23,6 +23,10 @@
     "./guards": {
       "import": "./src/guards/index.ts",
       "types": "./src/guards/index.ts"
+    },
+    "./server": {
+      "import": "./src/utils/supabase-server.ts",
+      "types": "./src/utils/supabase-server.ts"
     }
   },
   "scripts": {
