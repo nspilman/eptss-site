@@ -61,6 +61,7 @@ const ReflectionPage = async ({ params }: Props) => {
       title: reflection.title,
       subtitle: '', // Reflections don't have subtitles yet
       date: reflection.publishedAt || reflection.createdAt,
+      author: reflection.authorName,
     },
   };
 

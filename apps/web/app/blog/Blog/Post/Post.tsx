@@ -13,7 +13,7 @@ interface Props {
 
 
 export const Post = ({ post: { content, frontmatter }, prevPost, nextPost }: Props) => {
-  const { title, subtitle, date } = frontmatter;
+  const { title, subtitle, date, author } = frontmatter;
   return (
     <div className="flex flex-col max-w-3xl mx-auto px-4 py-12">
       {/* Back to Blog Link */}
@@ -35,6 +35,11 @@ export const Post = ({ post: { content, frontmatter }, prevPost, nextPost }: Pro
         <h1 className="font-fraunces text-[var(--color-primary)] font-black text-4xl md:text-5xl leading-tight mb-3 tracking-tight">
           {title}
         </h1>
+        {author && (
+          <div className="text-sm font-roboto text-[var(--color-gray-400)] mb-2">
+            by {author}
+          </div>
+        )}
         {subtitle && (
           <div className="text-lg font-roboto text-[var(--color-gray-300)] mb-2">
             {subtitle}

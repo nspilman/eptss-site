@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { userContent, contentTags, tags, roundMetadata, UserContent, NewUserContent } from "../db/schema";
+import { userContent, contentTags, tags, roundMetadata, users, UserContent, NewUserContent } from "../db/schema";
 import { eq, desc, and, inArray, sql } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createErrorResult, createEmptyResult } from '../types/asyncResult';
 import { createOrGetTag } from './tagService';
@@ -11,6 +11,7 @@ export interface Reflection extends Omit<UserContent, 'createdAt' | 'updatedAt' 
   updatedAt: string;
   publishedAt: string | null;
   tags?: string[]; // Tag slugs
+  authorName?: string; // Full name or username as fallback
 }
 
 export type ReflectionType = 'initial' | 'checkin';
@@ -160,7 +161,7 @@ const autoTagReflection = async (
 /**
  * Map database result to Reflection interface
  */
-const mapToReflection = (dbContent: any, tagSlugs?: string[]): Reflection => {
+const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: string): Reflection => {
   return {
     ...dbContent,
     createdAt: dbContent.createdAt instanceof Date ?
@@ -174,6 +175,7 @@ const mapToReflection = (dbContent: any, tagSlugs?: string[]): Reflection => {
         dbContent.publishedAt.toISOString() :
         new Date(dbContent.publishedAt).toISOString()) : null,
     tags: tagSlugs,
+    authorName,
   };
 };
 
@@ -218,15 +220,22 @@ export const createReflection = async (
  */
 export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Reflection | null>> => {
   try {
-    const [content] = await db
-      .select()
+    const result = await db
+      .select({
+        content: userContent,
+        fullName: users.fullName,
+        username: users.username,
+      })
       .from(userContent)
+      .innerJoin(users, eq(userContent.userId, users.userid))
       .where(eq(userContent.slug, slug))
       .limit(1);
 
-    if (!content) {
+    if (result.length === 0) {
       return createSuccessResult(null);
     }
+
+    const { content, fullName, username } = result[0];
 
     // Get associated tags
     const tagResults = await db
@@ -237,7 +246,10 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
 
     const tagSlugs = tagResults.map(t => t.slug);
 
-    return createSuccessResult(mapToReflection(content, tagSlugs));
+    // Use fullName if available, otherwise fallback to username
+    const authorName = fullName || username || undefined;
+
+    return createSuccessResult(mapToReflection(content, tagSlugs, authorName));
   } catch (error) {
     console.error("Error in getReflectionBySlug:", error);
     return createErrorResult(new Error(`Failed to get reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
