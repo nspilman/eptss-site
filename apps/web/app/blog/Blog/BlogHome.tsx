@@ -92,7 +92,19 @@ export const BlogHome = ({ posts, reflections }: { posts: BlogPost[]; reflection
                     {/* Author and Round Info */}
                     <div className="text-sm font-roboto text-[var(--color-gray-400)] mb-4 leading-relaxed">
                       {reflection.authorName && (
-                        <span>by {reflection.authorName}</span>
+                        <span>
+                          by{" "}
+                          {reflection.authorUsername ? (
+                            <Link
+                              href={`/profile/${reflection.authorUsername}`}
+                              className="text-[var(--color-accent-primary)] hover:text-[var(--color-accent-secondary)] transition-colors underline"
+                            >
+                              {reflection.authorName}
+                            </Link>
+                          ) : (
+                            <span>{reflection.authorName}</span>
+                          )}
+                        </span>
                       )}
                       {reflection.authorName && reflection.roundSlug && (
                         <span className="mx-2">•</span>

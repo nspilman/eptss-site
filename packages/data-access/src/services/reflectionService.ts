@@ -12,6 +12,7 @@ export interface Reflection extends Omit<UserContent, 'createdAt' | 'updatedAt' 
   publishedAt: string | null;
   tags?: string[]; // Tag slugs
   authorName?: string; // Full name or username as fallback
+  authorUsername?: string; // Username for profile linking
   roundSlug?: string; // Round slug for linking
 }
 
@@ -162,7 +163,7 @@ const autoTagReflection = async (
 /**
  * Map database result to Reflection interface
  */
-const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: string, roundSlug?: string): Reflection => {
+const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: string, roundSlug?: string, authorUsername?: string): Reflection => {
   return {
     ...dbContent,
     createdAt: dbContent.createdAt instanceof Date ?
@@ -177,6 +178,7 @@ const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: strin
         new Date(dbContent.publishedAt).toISOString()) : null,
     tags: tagSlugs,
     authorName,
+    authorUsername,
     roundSlug,
   };
 };
@@ -251,7 +253,7 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
     // Use fullName if available, otherwise fallback to username
     const authorName = fullName || username || undefined;
 
-    return createSuccessResult(mapToReflection(content, tagSlugs, authorName));
+    return createSuccessResult(mapToReflection(content, tagSlugs, authorName, undefined, username || undefined));
   } catch (error) {
     console.error("Error in getReflectionBySlug:", error);
     return createErrorResult(new Error(`Failed to get reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
@@ -278,7 +280,7 @@ export const getAllPublicReflections = async (): Promise<AsyncResult<Reflection[
 
     const reflections = results.map(({ content, fullName, username, roundSlug }) => {
       const authorName = fullName || username || undefined;
-      return mapToReflection(content, undefined, authorName, roundSlug || undefined);
+      return mapToReflection(content, undefined, authorName, roundSlug || undefined, username || undefined);
     });
 
     return createSuccessResult(reflections);
@@ -473,5 +475,50 @@ export const getUserReflectionsForRound = async (
   } catch (error) {
     console.error("Error in getUserReflectionsForRound:", error);
     return createErrorResult(new Error(`Failed to get user reflections for round: ${error instanceof Error ? error.message : 'Unknown error'}`));
+  }
+};
+
+/**
+ * Get all public reflections by username
+ */
+export const getPublicReflectionsByUsername = async (
+  username: string
+): Promise<AsyncResult<Reflection[]>> => {
+  try {
+    // First get the user ID from username
+    const userResult = await db
+      .select({ userid: users.userid })
+      .from(users)
+      .where(eq(users.username, username))
+      .limit(1);
+
+    if (userResult.length === 0) {
+      return createSuccessResult([]);
+    }
+
+    const userId = userResult[0].userid;
+
+    // Get public reflections with round info
+    const results = await db
+      .select({
+        content: userContent,
+        roundSlug: roundMetadata.slug,
+      })
+      .from(userContent)
+      .innerJoin(roundMetadata, eq(userContent.roundId, roundMetadata.id))
+      .where(and(
+        eq(userContent.userId, userId),
+        eq(userContent.isPublic, true)
+      ))
+      .orderBy(desc(userContent.publishedAt));
+
+    const reflections = results.map(({ content, roundSlug }) =>
+      mapToReflection(content, undefined, undefined, roundSlug || undefined, username)
+    );
+
+    return createSuccessResult(reflections);
+  } catch (error) {
+    console.error("Error in getPublicReflectionsByUsername:", error);
+    return createErrorResult(new Error(`Failed to get public reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };

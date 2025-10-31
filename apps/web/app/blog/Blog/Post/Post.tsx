@@ -2,17 +2,19 @@ import ReactMarkdown from "react-markdown";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { markdownTheme } from "./MarkdownTheme";
 import { BlogPost } from "types/BlogPost";
-import React from "react"
+import React from "react";
+import Link from "next/link";
 
 interface Props {
   post: BlogPost;
   prevPost?: BlogPost | null;
   nextPost?: BlogPost | null;
+  authorUsername?: string; // Username for profile linking
 }
 
 
 
-export const Post = ({ post: { content, frontmatter }, prevPost, nextPost }: Props) => {
+export const Post = ({ post: { content, frontmatter }, prevPost, nextPost, authorUsername }: Props) => {
   const { title, subtitle, date, author } = frontmatter;
   return (
     <div className="flex flex-col max-w-3xl mx-auto px-4 py-12">
@@ -37,7 +39,17 @@ export const Post = ({ post: { content, frontmatter }, prevPost, nextPost }: Pro
         </h1>
         {author && (
           <div className="text-sm font-roboto text-[var(--color-gray-400)] mb-2">
-            by {author}
+            by{" "}
+            {authorUsername ? (
+              <Link
+                href={`/profile/${authorUsername}`}
+                className="text-[var(--color-accent-primary)] hover:text-[var(--color-accent-secondary)] transition-colors underline"
+              >
+                {author}
+              </Link>
+            ) : (
+              <span>{author}</span>
+            )}
           </div>
         )}
         {subtitle && (

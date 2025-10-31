@@ -12,6 +12,38 @@ interface RoundSignups {
   roundMetadata: RoundMetadataSubset | null;
 }
 
+type SubmissionRow = {
+  id: number;
+  created_at: string;
+  soundcloud_url: string;
+  round_id: number;
+  user_id: string;
+  additional_comments: string | null;
+  round_metadata: {
+    id: number;
+    slug: string | null;
+    signup_opens: string | null;
+    covering_begins: string | null;
+    covers_due: string | null;
+    songs: {
+      title: string;
+      artist: string;
+    } | null;
+  } | null;
+};
+
+type VoteQueryRow = {
+  id: number;
+  created_at: string;
+  vote: number;
+  song_id: number;
+  user_id: string;
+  round_id: number;
+  round_metadata: {
+    slug: string | null;
+  } | null;
+};
+
 // Helper function to check authentication and redirect if not authenticated
 async function checkAuthentication() {
   const supabase = await createClient();
@@ -174,7 +206,7 @@ async function fetchUserSubmissions(supabase: any, userId: string) {
   if (!rawSubmissions) return [];
 
   // Map submissions to include song info from round metadata
-  const submissionsWithSongs = rawSubmissions.map((submission) => {
+  const submissionsWithSongs = rawSubmissions.map((submission: SubmissionRow) => {
     const roundMetadata = extractRoundMetadata(submission.round_metadata);
 
     // Get song info from the round's assigned song
@@ -224,10 +256,8 @@ async function fetchUserVotes(supabase: any, userId: string): Promise<GroupedVot
   // Group votes by round_slug
   const votesGroupedByRound: Map<string, VoteRow[]> = new Map();
 
-  rawVotes.forEach((vote) => {
-    const roundSlug = Array.isArray(vote.round_metadata) && vote.round_metadata.length > 0
-      ? vote.round_metadata[0]?.slug
-      : vote.round_metadata?.slug;
+  rawVotes.forEach((vote: VoteQueryRow) => {
+    const roundSlug = vote.round_metadata?.slug;
 
     if (!roundSlug) return;
 

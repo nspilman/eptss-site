@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { users, signUps, submissions, roundMetadata } from "../db/schema";
+import { users, signUps, submissions, roundMetadata, songs } from "../db/schema";
 import { count, eq } from "drizzle-orm";
 import { sql } from "drizzle-orm/sql";
 
@@ -157,13 +157,69 @@ export const getAllUsers = async () => {
  */
 export const getUserInfo = async (userId: string) => {
   const result = await db
-    .select({ 
-      email: users.email, 
-      username: users.username 
+    .select({
+      email: users.email,
+      username: users.username
     })
     .from(users)
     .where(eq(users.userid, userId))
     .limit(1);
-  
+
   return result[0] || null;
+};
+
+/**
+ * Get public profile data by username
+ * Returns user info, public submissions, and public reflections
+ */
+export const getPublicProfileByUsername = async (username: string) => {
+  // Get user basic info
+  const userResult = await db
+    .select({
+      userid: users.userid,
+      username: users.username,
+      fullName: users.fullName,
+    })
+    .from(users)
+    .where(eq(users.username, username))
+    .limit(1);
+
+  if (userResult.length === 0) {
+    return null;
+  }
+
+  const user = userResult[0];
+
+  // Get user's submissions with round and song info
+  const userSubmissions = await db
+    .select({
+      id: submissions.id,
+      soundcloudUrl: submissions.soundcloudUrl,
+      createdAt: submissions.createdAt,
+      roundSlug: roundMetadata.slug,
+      roundId: roundMetadata.id,
+      songTitle: songs.title,
+      songArtist: songs.artist,
+    })
+    .from(submissions)
+    .innerJoin(roundMetadata, eq(submissions.roundId, roundMetadata.id))
+    .innerJoin(songs, eq(roundMetadata.songId, songs.id))
+    .where(eq(submissions.userId, user.userid))
+    .orderBy(sql`${submissions.createdAt} DESC`);
+
+  return {
+    user: {
+      username: user.username,
+      fullName: user.fullName,
+    },
+    submissions: userSubmissions.map(s => ({
+      id: s.id.toString(),
+      soundcloudUrl: s.soundcloudUrl,
+      createdAt: s.createdAt?.toISOString() || null,
+      roundSlug: s.roundSlug,
+      roundId: s.roundId,
+      songTitle: s.songTitle,
+      songArtist: s.songArtist,
+    })),
+  };
 };

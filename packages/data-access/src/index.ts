@@ -20,7 +20,7 @@ export { getUserSignupData } from './services/signupService';
 export { getUnverifiedSignupByEmail } from './services/verificationService';
 export { getAllFeedback, updateFeedbackPublicStatus, deleteFeedback } from './services/feedbackService';
 export { getSignupSongsForRound, setRoundSong } from './services/roundService';
-export { getActiveUsersCount, getUserDetails, getActiveUsers, getAllUsers, getUserInfo } from './services/userService';
+export { getActiveUsersCount, getUserDetails, getActiveUsers, getAllUsers, getUserInfo, getPublicProfileByUsername } from './services/userService';
 export { saveTestRun } from './services/monitoringService';
 export { getSongByTitleAndArtist } from './services/songsService';
 // Note: addToMailingList and createUser are NOT exported from main index
@@ -44,7 +44,8 @@ export {
   deleteReflection,
   getUserInitialReflectionForRound,
   getUserReflectionsForRound,
-  getAllPublicReflections
+  getAllPublicReflections,
+  getPublicReflectionsByUsername
 } from './services/reflectionService';
 export type { Reflection, CreateReflectionInput, UpdateReflectionInput, ReflectionType } from './services/reflectionService';
 export {

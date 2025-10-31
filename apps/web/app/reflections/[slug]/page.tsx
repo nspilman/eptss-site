@@ -68,7 +68,7 @@ const ReflectionPage = async ({ params }: Props) => {
   return (
     <>
       <PageTitle title={reflection.title} />
-      <Post post={post} />
+      <Post post={post} authorUsername={reflection.authorUsername} />
     </>
   );
 };
