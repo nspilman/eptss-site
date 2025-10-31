@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const { userId } = await getAuthUser();
     const body = await request.json();
-    const { username } = body;
+    const { username, fullName } = body;
 
     // Validate username
     if (!username || typeof username !== 'string') {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const trimmedUsername = username.trim();
-    
+
     if (trimmedUsername.length < 2) {
       return NextResponse.json(
         { error: 'Username must be at least 2 characters' },
@@ -43,11 +43,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate full name if provided
+    const trimmedFullName = fullName?.trim() || null;
+    if (trimmedFullName && trimmedFullName.length > 100) {
+      return NextResponse.json(
+        { error: 'Full name must be less than 100 characters' },
+        { status: 400 }
+      );
+    }
+
     // Update user in database
     const { data, error } = await supabase
       .from('users')
       //@ts-ignore
-      .update({ username: trimmedUsername })
+      .update({
+        username: trimmedUsername,
+        full_name: trimmedFullName
+      })
       .eq('userid', userId)
       .select()
       .single();
