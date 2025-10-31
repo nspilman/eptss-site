@@ -5,20 +5,16 @@ import { cn, primitiveComponent } from './utils'
 import { PrimitivePropsWithoutRef } from './types'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-primary)] disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
   {
     variants: {
       variant: {
-        default:
-          'bg-[var(--color-primary)] text-[var(--color-background-primary)] shadow-[var(--shadow-button)] transition-all duration-300 hover:bg-[var(--color-primary)] hover:shadow-[0_0_15px_4px_rgba(var(--color-accent-primary-rgb),0.7)]',
-        destructive:
-          'bg-[var(--color-destructive)] text-white shadow-[var(--shadow-button)] transition-all duration-300 hover:bg-[var(--color-destructive-hover)] hover:shadow-[0_0_10px_2px_rgba(var(--color-destructive-rgb),0.6)]',
-        outline:
-          'border border-[1px] border-[var(--color-gray-700)] bg-transparent text-[var(--color-primary)] shadow-[var(--shadow-button)] transition-all duration-300 hover:border-[var(--color-accent-primary)] hover:shadow-[0_0_10px_2px_rgba(var(--color-accent-primary-rgb),0.3)]',
-        secondary:
-          'bg-[var(--color-accent-primary)] text-[var(--color-background-primary)] shadow-[var(--shadow-button)] transition-all duration-300 hover:bg-[var(--color-accent-primary)] hover:shadow-[0_0_15px_4px_rgba(var(--color-primary-rgb),0.5)]',
-        ghost: 'text-[var(--color-primary)] transition-all duration-300 hover:bg-[var(--color-bg-transparent)] hover:text-[var(--color-accent-primary)]',
-        link: 'text-[var(--color-primary)] underline-offset-4 transition-all duration-300 hover:underline hover:text-[var(--color-accent-primary)]',
+        default: 'shadow-sm hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.4)]',
+        destructive: 'shadow-sm hover:shadow-[0_0_20px_3px_rgba(239,68,68,0.5)]',
+        outline: 'border bg-transparent shadow-sm hover:shadow-[0_0_15px_2px_rgba(226,226,64,0.3)]',
+        secondary: 'shadow-sm hover:shadow-[0_0_20px_4px_rgba(226,226,64,0.6)]',
+        ghost: 'hover:shadow-[0_0_10px_1px_rgba(255,255,255,0.1)]',
+        link: 'underline-offset-4',
       },
       size: {
         // Standardized size tokens
@@ -36,17 +32,49 @@ const buttonVariants = cva(
   }
 )
 
+// Define variant styles that use CSS variables
+const variantStyles: Record<string, React.CSSProperties> = {
+  default: {
+    backgroundColor: 'var(--color-white)',
+    color: 'var(--color-background-primary)',
+  },
+  destructive: {
+    backgroundColor: 'var(--color-destructive)',
+    color: 'white',
+  },
+  outline: {
+    borderColor: 'var(--color-gray-700)',
+    color: 'var(--color-primary)',
+  },
+  secondary: {
+    backgroundColor: 'var(--color-accent-primary)',
+    color: 'var(--color-background-primary)',
+  },
+  ghost: {
+    color: 'var(--color-primary)',
+  },
+  link: {
+    color: 'var(--color-primary)',
+  },
+}
+
 export interface ButtonProps
   extends PrimitivePropsWithoutRef<'button'>,
     VariantProps<typeof buttonVariants> {}
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant = 'default', size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button'
-    // Allow className to be combined with buttonVariants styles
+    // Combine inline styles with variant-specific CSS variable styles
+    const combinedStyle = {
+      ...variantStyles[variant],
+      ...style,
+    }
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size }), className)}
+        style={combinedStyle}
         ref={ref}
         {...props}
       />

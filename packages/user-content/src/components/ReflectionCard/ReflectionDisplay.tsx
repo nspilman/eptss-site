@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { deleteReflection } from '@eptss/data-access';
 import type { Reflection } from '@eptss/data-access';
+import { Button } from '@eptss/ui';
 import { getReflectionSchedule } from '../../utils/reflectionScheduler';
 import type { Round } from '../../types';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal';
@@ -143,15 +144,17 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
                       </svg>
                       Edit
                     </Link>
-                    <button
+                    <Button
                       onClick={() => handleDeleteClick(reflection)}
-                      className="inline-flex items-center gap-2 text-sm font-medium text-red-400 hover:text-red-300 transition-color cursor-pointer"
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-400 hover:text-red-300"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                       Delete
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -166,15 +169,14 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
                   </p>
                 </div>
 
-                <Link
-                  href={`/round/${roundSlug}/create-reflection`}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-accent-primary)] text-white font-medium rounded-lg hover:bg-[var(--color-accent-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] focus:ring-offset-2 focus:ring-offset-[var(--color-background-secondary)] transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  {buttonText}
-                </Link>
+                <Button asChild variant="secondary" size="lg">
+                  <Link href={`/round/${roundSlug}/create-reflection`}>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    {buttonText}
+                  </Link>
+                </Button>
               </div>
             )}
 
@@ -193,15 +195,14 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
             </p>
 
             {canCreateReflection ? (
-              <Link
-                href={`/round/${roundSlug}/create-reflection`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-accent-primary)] text-black font-medium rounded-lg hover:bg-[var(--color-accent-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] focus:ring-offset-2 focus:ring-offset-[var(--color-background-secondary)] transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                {buttonText}
-              </Link>
+              <Button asChild variant="secondary" size="lg">
+                <Link href={`/round/${roundSlug}/create-reflection`}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  {buttonText}
+                </Link>
+              </Button>
             ) : (
               <div className="p-4 bg-[var(--color-gray-900-40)] rounded-lg border border-[var(--color-gray-700)]">
                 <p className="text-sm text-[var(--color-gray-400)]">

@@ -1,6 +1,6 @@
 import type { Preview } from "@storybook/react";
 import React from "react";
-import "@eptss/ui/styles";
+import "../src/styles/index.css";
 
 const preview: Preview = {
   parameters: {
@@ -10,22 +10,26 @@ const preview: Preview = {
         color: /(background|color)$/i,
         date: /Date$/,
       },
+      expanded: true,
     },
-    // backgrounds: {
-    //   default: 'dark',
-    //   values: [
-    //     {
-    //       name: 'dark',
-    //       value: , // --color-primary
-    //     },
-    //     {
-    //       name: 'light',
-    //       value: '#ffffff', // --color-white
-    //     },
-    //   ],
-    // },
     docs: {
       theme: 'dark',
+      source: {
+        type: 'dynamic',
+      },
+    },
+    backgrounds: {
+      default: 'dark',
+      values: [
+        {
+          name: 'dark',
+          value: '#0a0a14',
+        },
+        {
+          name: 'light',
+          value: '#ffffff',
+        },
+      ],
     },
   },
 };

@@ -100,8 +100,9 @@ export function ActionPanel({ data }: PanelProps<ActionPanelData>) {
         {/* CTA Button */}
         <div className="flex justify-start">
           <Button
+            variant="secondary"
             size="lg"
-            className="w-full sm:w-auto px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg font-bold bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 border-none shadow-lg shadow-[var(--color-accent-primary)] hover:shadow-xl hover:shadow-[var(--color-accent-primary)] transition-all"
+            className="w-full sm:w-auto text-base sm:text-lg font-bold"
             asChild
           >
             <Link href={actionHref} className="inline-flex items-center gap-2">

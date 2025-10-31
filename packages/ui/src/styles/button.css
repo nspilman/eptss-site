@@ -1,0 +1,37 @@
+/* Button hover glow effects */
+
+/* Add transition to all buttons/links with variants */
+button[data-variant],
+a[data-variant] {
+  transition: all 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Default variant - white glow */
+button[data-variant="default"]:hover,
+a[data-variant="default"]:hover {
+  box-shadow: 0 0 20px 2px rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Secondary variant - yellow accent glow */
+button[data-variant="secondary"]:hover,
+a[data-variant="secondary"]:hover {
+  box-shadow: 0 0 20px 4px rgba(226, 226, 64, 0.6) !important;
+}
+
+/* Destructive variant - red glow */
+button[data-variant="destructive"]:hover,
+a[data-variant="destructive"]:hover {
+  box-shadow: 0 0 20px 3px rgba(239, 68, 68, 0.5) !important;
+}
+
+/* Outline variant - accent border glow */
+button[data-variant="outline"]:hover,
+a[data-variant="outline"]:hover {
+  box-shadow: 0 0 15px 2px rgba(226, 226, 64, 0.3) !important;
+}
+
+/* Ghost variant - subtle glow on hover */
+button[data-variant="ghost"]:hover,
+a[data-variant="ghost"]:hover {
+  box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.1) !important;
+}

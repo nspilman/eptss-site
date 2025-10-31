@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Button } from '@eptss/ui';
+import Button from '../../src/components/ui/primitives/button';
 import { ThemeSection } from './ThemeSection';
 
 const meta: Meta<typeof Button> = {
