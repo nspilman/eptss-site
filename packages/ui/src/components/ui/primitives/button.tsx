@@ -67,7 +67,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : 'button'
     // Combine inline styles with variant-specific CSS variable styles
     const combinedStyle = {
-      ...variantStyles[variant],
+      ...(variant ? variantStyles[variant] : {}),
       ...style,
     }
 
