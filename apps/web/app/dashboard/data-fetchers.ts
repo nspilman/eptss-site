@@ -247,18 +247,33 @@ export async function fetchReflectionData() {
   if (reflectionsResult.status !== 'success') {
     return {
       roundSlug: currentRound.slug,
+      round: {
+        roundId: currentRound.roundId,
+        slug: currentRound.slug,
+        signupOpens: currentRound.signupOpens,
+        votingOpens: currentRound.votingOpens,
+        coveringBegins: currentRound.coveringBegins,
+        coversDue: currentRound.coversDue,
+        listeningParty: currentRound.listeningParty,
+        song: currentRound.song || { artist: '', title: '' },
+      },
       reflections: [],
     };
   }
 
   return {
     roundSlug: currentRound.slug,
-    reflections: reflectionsResult.data.map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      createdAt: r.createdAt,
-    })),
+    round: {
+      roundId: currentRound.roundId,
+      slug: currentRound.slug,
+      signupOpens: currentRound.signupOpens,
+      votingOpens: currentRound.votingOpens,
+      coveringBegins: currentRound.coveringBegins,
+      coversDue: currentRound.coversDue,
+      listeningParty: currentRound.listeningParty,
+      song: currentRound.song || { artist: '', title: '' },
+    },
+    reflections: reflectionsResult.data,
   };
 }
 

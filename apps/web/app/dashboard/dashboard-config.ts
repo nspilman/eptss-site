@@ -20,9 +20,9 @@ import {
   ActionPanelSkeleton,
   CurrentRoundPanel,
   CurrentRoundSkeleton,
-  ReflectionPanel,
-  ReflectionSkeleton,
 } from '@eptss/dashboard/panels';
+
+import { ReflectionPanelWrapper, ReflectionPanelSkeleton } from './ReflectionPanelWrapper';
 
 /**
  * Main dashboard configuration
@@ -72,8 +72,8 @@ export const eptssDeboardConfig: DashboardConfig = {
         defaultCollapsed: false,
         showSkeleton: true,
       }),
-      ReflectionPanel,
-      { skeleton: ReflectionSkeleton }
+      ReflectionPanelWrapper,
+      { skeleton: ReflectionPanelSkeleton }
     ),
 
     // ============================================
