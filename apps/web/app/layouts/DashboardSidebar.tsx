@@ -76,11 +76,11 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
-        <SidebarItem 
-          href="/profile" 
+        <SidebarItem
+          href={Navigation.Profile}
           icon={<UserIcon className="w-5 h-5" />}
           label="Profile"
-          isActive={pathname === "/profile"}
+          isActive={pathname === Navigation.Profile}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />

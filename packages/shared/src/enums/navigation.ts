@@ -10,7 +10,7 @@ export enum Navigation {
   Login = "/login",
   Home = "/",
   Dashboard = "/dashboard",
-  Profile = "/profile",
+  Profile = "/dashboard/profile",
   Tasks = "/tasks",
   CurrentRound = "/round/current",
   Admin = "/admin"

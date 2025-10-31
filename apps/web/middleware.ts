@@ -1,7 +1,7 @@
 import { createAuthMiddleware } from '@eptss/auth/middleware'
 
 export const middleware = createAuthMiddleware({
-  protectedPaths: ['/dashboard', '/profile', '/submit', '/voting'],
+  protectedPaths: ['/dashboard', '/submit', '/voting'],
   publicPaths: ['/login', '/sign-up'],
   redirectToOnAuth: '/dashboard',
   redirectToOnNoAuth: '/login',

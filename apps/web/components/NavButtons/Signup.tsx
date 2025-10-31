@@ -21,7 +21,7 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
 
   // TODO: I don't love adding "if x route, do y" logic for generic components like this, since it degrades the reusability of the component
   // when we do a UI refactor, we should allow each route to render its own custom header component, and this won't be needed anymore.
-  const isUserProfileRoute = pathname === "/profile";
+  const isUserProfileRoute = pathname === "/dashboard/profile";
 
   return (
     <>
