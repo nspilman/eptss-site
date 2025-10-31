@@ -43,7 +43,8 @@ export {
   updateReflection,
   deleteReflection,
   getUserInitialReflectionForRound,
-  getUserReflectionsForRound
+  getUserReflectionsForRound,
+  getAllPublicReflections
 } from './services/reflectionService';
 export type { Reflection, CreateReflectionInput, UpdateReflectionInput, ReflectionType } from './services/reflectionService';
 export {

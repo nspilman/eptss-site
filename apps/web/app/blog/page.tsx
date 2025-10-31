@@ -1,6 +1,7 @@
 import { PageTitle } from "@/components/PageTitle";
 import { BlogHome } from "@/app/blog/Blog";
 import { blogProvider } from "@eptss/data-access/providers/blogProvider";
+import { getAllPublicReflections } from "@eptss/data-access";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -12,13 +13,18 @@ export const metadata: Metadata = {
   },
 };
 
-const BlogPage = () => {
+const BlogPage = async () => {
   const { posts } = blogProvider();
-console.log("Making sure the web app rebuilds!")
+
+  // Fetch public reflections
+  const reflectionsResult = await getAllPublicReflections();
+  const reflections = reflectionsResult.status === 'success' ? reflectionsResult.data : [];
+
+  console.log("Making sure the web app rebuilds!")
   return (
     <>
       <PageTitle title="Blog Home" />
-      <BlogHome posts={posts} />
+      <BlogHome posts={posts} reflections={reflections} />
     </>
   );
 };
