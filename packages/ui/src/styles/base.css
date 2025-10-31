@@ -3,15 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;700&display=swap');
 
 @import "tailwindcss";
-
-/* Tell Tailwind to scan these paths for classes */
-@source "../components/**/*.{js,jsx,ts,tsx}";
-@source "../**/*.{js,jsx,ts,tsx}";
-
 @import "./theme.css";
 @import "./animations.css";
 @import "./utilities.css";
 @import "./reset.css";
+
+/* Tell Tailwind to scan these paths for classes */
+@source "../components/**/*.{js,jsx,ts,tsx}";
+@source "../**/*.{js,jsx,ts,tsx}";
 
 /* Basic element styling */
 @layer base {
