@@ -88,32 +88,37 @@ export const HowItWorks = () => {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {benefits.map((benefit, index) => (
-              <motion.div
-                key={index}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-[var(--color-background-tertiary)] p-6 rounded-lg border border-[var(--color-gray-800)]"
-              >
-                <div className="mb-4">{benefit.icon}</div>
-                <h4 className="text-xl font-bold mb-2 text-white">{benefit.title}</h4>
-                <p className="text-gray-300">{benefit.description}</p>
-              </motion.div>
+              <Card key={index} asChild>
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <CardContent>
+                    <div className="mb-4">{benefit.icon}</div>
+                    <h4 className="text-xl font-bold mb-2 text-white">{benefit.title}</h4>
+                    <p className="text-gray-300">{benefit.description}</p>
+                  </CardContent>
+                </motion.div>
+              </Card>
             ))}
           </div>
         </div>
 
         {/* Testimonial */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="bg-[var(--color-background-secondary)] p-8 rounded-lg border border-[var(--color-gray-800)] max-w-3xl mx-auto text-center"
-        >
-          <p className="text-xl italic text-gray-300 mb-4">
-          &quot;Everyone Plays the Same Song provides the community and direction I&apos;ve needed to consistently make music and improve for the last two years.&quot;
-          </p>
-          <p className="text-[var(--color-accent-primary)] font-medium">— David, Participant</p>
-        </motion.div>
+        <Card asChild className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+          >
+            <CardContent className="text-center py-8">
+              <p className="text-xl italic text-gray-300 mb-4">
+              &quot;Everyone Plays the Same Song provides the community and direction I&apos;ve needed to consistently make music and improve for the last two years.&quot;
+              </p>
+              <p className="text-[var(--color-accent-primary)] font-medium">— David, Participant</p>
+            </CardContent>
+          </motion.div>
+        </Card>
 
         {/* CTA */}
         <div className="text-center pt-4">

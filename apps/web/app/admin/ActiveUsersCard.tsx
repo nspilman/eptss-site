@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { DataTable, Header } from "@eptss/ui";
+import { DataTable, Header, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 
 type ActiveUser = {
   email: string;
@@ -48,27 +48,31 @@ export function ActiveUsersCard({ users }: ActiveUsersCardProps) {
 
   return (
     <div className="w-full space-y-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="rounded-lg border border-background-tertiary/50 bg-background-secondary/50 w-full"
-      >
-        <div className="p-4 border-b border-background-tertiary/50">
-          <h2 className="text-lg font-semibold text-primary">Active Users</h2>
-          <p className="text-sm text-secondary">Users and their last participation in rounds</p>
-        </div>
-        <DataTable
-          headers={headers}
-          rows={rows}
-          isLoading={isLoading}
-          defaultSortKey={sortKey}
-          defaultSortDirection={sortDirection}
-          onSort={handleSort}
-          maxHeight={400}
-          allowCopy={true}
-        />
-      </motion.div>
+      <Card asChild>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full"
+        >
+          <CardHeader>
+            <CardTitle className="text-primary">Active Users</CardTitle>
+            <p className="text-sm text-secondary">Users and their last participation in rounds</p>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <DataTable
+              headers={headers}
+              rows={rows}
+              isLoading={isLoading}
+              defaultSortKey={sortKey}
+              defaultSortDirection={sortDirection}
+              onSort={handleSort}
+              maxHeight={400}
+              allowCopy={true}
+            />
+          </CardContent>
+        </motion.div>
+      </Card>
     </div>
   );
 }

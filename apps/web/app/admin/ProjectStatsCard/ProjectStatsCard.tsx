@@ -7,6 +7,7 @@ import { UserDetail, RoundDetail, getUserDetails, getRoundDetails } from "@eptss
 import { RoundStatsComponent } from "./RoundStatsComponent";
 import { StatItem } from "./StatItem";
 import { UserStatsComponent } from "./UserStatsCard";
+import { Card, CardContent } from "@eptss/ui";
 
 type Props = {
   totalUsers: number;
@@ -87,15 +88,18 @@ export function ProjectStatsCard({
       </motion.div>
 
       {isLoading && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
-          className="rounded-lg border border-background-tertiary/50 bg-background-secondary/50 w-full p-8 flex justify-center"
-        >
-          <p className="text-secondary">Loading...</p>
-        </motion.div>
+        <Card asChild className="w-full">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <CardContent className="p-8 flex justify-center">
+              <p className="text-secondary">Loading...</p>
+            </CardContent>
+          </motion.div>
+        </Card>
       )}
 
       {!isLoading && selectedStat === "users" && (

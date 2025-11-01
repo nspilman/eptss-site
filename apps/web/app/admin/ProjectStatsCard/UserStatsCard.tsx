@@ -1,4 +1,4 @@
-import { DataTable, Header } from "@eptss/ui";
+import { DataTable, Header, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 import { UserDetail, formatDate } from "@eptss/data-access";
 import { motion } from "framer-motion";
 
@@ -43,27 +43,30 @@ export const UserStatsComponent = ({ detailData, isLoading, sortKey, sortDirecti
     });
   
     return (
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        exit={{ opacity: 0, height: 0 }}
-        transition={{ duration: 0.3 }}
-        className="rounded-lg border border-background-tertiary/50 bg-background-secondary/50 w-full"
-      >
-        <div className="p-4 border-b border-background-tertiary/50">
-          <h2 className="text-lg font-semibold text-primary">User Details</h2>
-        </div>
-        <div className="max-h-[400px] overflow-auto">
-          <DataTable
-            headers={headers}
-            rows={rows}
-            isLoading={isLoading}
-            defaultSortKey={sortKey || undefined}
-            defaultSortDirection={sortDirection}
-            onSort={onSort}
-            allowCopy={true}
-          />
-        </div>
-      </motion.div>
+      <Card asChild className="w-full">
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <CardHeader>
+            <CardTitle className="text-primary">User Details</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="max-h-[400px] overflow-auto">
+              <DataTable
+                headers={headers}
+                rows={rows}
+                isLoading={isLoading}
+                defaultSortKey={sortKey || undefined}
+                defaultSortDirection={sortDirection}
+                onSort={onSort}
+                allowCopy={true}
+              />
+            </div>
+          </CardContent>
+        </motion.div>
+      </Card>
     );
   };
