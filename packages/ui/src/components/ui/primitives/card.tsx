@@ -7,14 +7,14 @@ const Card = React.forwardRef<
     gradient?: boolean
   }
 >(({ className, gradient = false, ...props }, ref) => (
-  <div className="space-y-6 relative group">
+  <div className="relative group">
     {gradient && (
       <div className="absolute -inset-2 bg-[var(--color-gradient-primary)] rounded-lg blur-sm opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
     )}
     <div
       ref={ref}
       className={cn(
-        "relative space-y-6 bg-[var(--color-background-primary)] rounded-lg p-6",
+        "relative bg-[var(--color-background-secondary)] border border-[var(--color-gray-800)] rounded-lg shadow-lg overflow-hidden",
         className
       )}
       {...props}
@@ -29,8 +29,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col !flex-col space-y-2 text-center font-fraunces", className)}
-    style={{ flexDirection: 'column' }}
+    className={cn("flex flex-col space-y-1.5 px-6 py-4 font-fraunces", className)}
     {...props}
   />
 ))
@@ -40,10 +39,10 @@ const CardTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h1
+  <h3
     ref={ref}
     className={cn(
-      "text-3xl text-[var(--color-white)] font-bold text-center bg-clip-text bg-[var(--color-gradient-primary)] pb-1",
+      "text-2xl text-[var(--color-white)] font-semibold leading-none tracking-tight",
       className
     )}
     {...props}
@@ -57,7 +56,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-[var(--color-white)] font-light text-sm mt-2", className)}
+    className={cn("text-sm text-[var(--color-gray-400)]", className)}
     {...props}
   />
 ))
@@ -67,8 +66,20 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("space-y-8", className)} {...props} />
+  <div ref={ref} className={cn("px-6 py-4", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
-export { Card, CardHeader, CardTitle, CardDescription, CardContent }
+const CardFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex items-center px-6 py-4 pt-0", className)}
+    {...props}
+  />
+))
+CardFooter.displayName = "CardFooter"
+
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }

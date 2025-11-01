@@ -58,6 +58,7 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from './card'
 export {
   RadioGroup,
