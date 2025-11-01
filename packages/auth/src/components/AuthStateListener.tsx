@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { createClient } from '@eptss/data-access/utils/supabase/client';
 
@@ -11,15 +11,22 @@ export function AuthStateListener({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
+  // Use ref to track the latest pathname without causing re-renders
+  const pathnameRef = useRef(pathname);
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
   useEffect(() => {
     // Check for auth state immediately on component mount
     const checkInitialAuthState = async () => {
       try {
         const { data } = await supabase.auth.getSession();
         console.log('Initial auth check:', data.session ? 'User is logged in' : 'No session');
-        
+
         // If we have a session but are coming from a magic link or OAuth callback, force a refresh
-        if (data.session && (pathname === '/' || pathname?.includes('/auth/callback'))) {
+        const currentPath = pathnameRef.current;
+        if (data.session && (currentPath === '/' || currentPath?.includes('/auth/callback'))) {
           console.log('Coming from auth callback, refreshing page');
           router.refresh();
         }
@@ -38,7 +45,7 @@ export function AuthStateListener({ children }: { children: React.ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, !!session);
-      
+
       // Force a refresh of the page when auth state changes
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
         console.log('Auth state changed, refreshing page');
@@ -49,7 +56,8 @@ export function AuthStateListener({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [router, supabase, pathname, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - only run once on mount
 
   return <>{children}</>;
 }
