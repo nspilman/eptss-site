@@ -1,48 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Select } from "@eptss/ui";
 import { Edit, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { updateRound, getRoundBySlug } from "@eptss/data-access";
-
-// UI Components
-const Button = ({ children, type, disabled, className }: { children: React.ReactNode, type?: "submit" | "button", disabled?: boolean, className?: string }) => (
-  <button 
-    type={type || "button"} 
-    disabled={disabled} 
-    className={`px-4 py-2 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-md transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className || ''}`}
-  >
-    {children}
-  </button>
-);
-
-const Input = ({ id, value, onChange, required, placeholder, className, type = "text" }: { id: string, value: string, onChange: (e: React.ChangeEvent<HTMLInputElement>) => void, required?: boolean, placeholder?: string, className?: string, type?: string }) => (
-  <input
-    id={id}
-    value={value}
-    onChange={onChange}
-    required={required}
-    placeholder={placeholder}
-    type={type}
-    className={`w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 ${className || ''}`}
-  />
-);
-
-const Label = ({ htmlFor, children, className }: { htmlFor: string, children: React.ReactNode, className?: string }) => (
-  <label htmlFor={htmlFor} className={`block mb-1 ${className || ''}`}>{children}</label>
-);
-
-const Select = ({ id, value, onChange, children, className }: { id: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, children: React.ReactNode, className?: string }) => (
-  <select
-    id={id}
-    value={value}
-    onChange={onChange}
-    className={`w-full p-2 rounded-md bg-background-secondary/50 border border-background-tertiary/50 ${className || ''}`}
-  >
-    {children}
-  </select>
-);
 
 type UpdateRoundFormProps = {
   allRoundSlugs: string[];

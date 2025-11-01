@@ -3,30 +3,7 @@
 import { useState } from "react";
 import { sendTestSignupEmail, sendTestVotingEmail, sendTestSubmissionEmail } from "./actions/sendTestEmail";
 import { motion } from "framer-motion";
-
-const Button = ({ 
-  children, 
-  onClick, 
-  disabled, 
-  className 
-}: { 
-  children: React.ReactNode;
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-}) => (
-  <button 
-    onClick={onClick}
-    disabled={disabled} 
-    className={`px-4 py-2 rounded-md font-medium transition-all ${
-      disabled 
-        ? 'bg-gray-700 text-gray-400 cursor-not-allowed' 
-        : 'bg-gradient-to-r from-[#40e2e2] to-[#e2e240] text-[#0a0a14] hover:opacity-90'
-    } ${className || ''}`}
-  >
-    {children}
-  </button>
-);
+import { Button } from "@eptss/ui";
 
 export function TestEmailButtons() {
   const [isLoading, setIsLoading] = useState<string | null>(null);

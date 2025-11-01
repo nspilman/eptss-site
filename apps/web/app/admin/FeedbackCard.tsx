@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button } from "@eptss/ui";
 import { MessageSquare, Eye, EyeOff, Trash2 } from "lucide-react";
 import { DataTable } from "@eptss/ui";
 import { useState } from "react";
@@ -78,10 +78,11 @@ export const FeedbackCard = ({ feedbackList = [] }: FeedbackCardProps) => {
     ),
     actions: (
       <div className="flex gap-2">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => handleTogglePublic(feedback.id, feedback.isPublic)}
           disabled={isUpdating === feedback.id}
-          className="p-1 hover:bg-accent-primary/20 rounded transition-colors disabled:opacity-50"
           title={feedback.isPublic ? "Make Private" : "Make Public"}
         >
           {feedback.isPublic ? (
@@ -89,15 +90,17 @@ export const FeedbackCard = ({ feedbackList = [] }: FeedbackCardProps) => {
           ) : (
             <Eye className="h-4 w-4" />
           )}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => handleDelete(feedback.id)}
           disabled={isUpdating === feedback.id}
-          className="p-1 hover:bg-red-500/20 rounded transition-colors disabled:opacity-50 text-red-400"
+          className="text-red-400 hover:bg-red-500/20"
           title="Delete Feedback"
         >
           <Trash2 className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
     ),
   }));

@@ -129,7 +129,6 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
           {!isEditing ? (
             <Button
               onClick={() => setIsEditing(true)}
-              className="bg-accent-primary hover:bg-accent-primary/90 text-background-primary"
             >
               Edit Profile
             </Button>
@@ -138,7 +137,6 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
               <Button
                 onClick={handleSave}
                 disabled={isSaving || !username.trim()}
-                className="bg-accent-primary hover:bg-accent-primary/90 text-background-primary disabled:opacity-50"
               >
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -146,7 +144,6 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
                 onClick={handleCancel}
                 disabled={isSaving}
                 variant="outline"
-                className="border-accent-secondary/20 text-primary hover:bg-background-tertiary"
               >
                 Cancel
               </Button>

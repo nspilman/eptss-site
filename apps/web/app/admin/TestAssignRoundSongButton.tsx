@@ -1,24 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button } from "@eptss/ui";
 import { Music, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-
-const Button = ({ children, onClick, disabled, className }: { 
-  children: React.ReactNode; 
-  onClick: () => void; 
-  disabled?: boolean; 
-  className?: string;
-}) => (
-  <button 
-    onClick={onClick} 
-    disabled={disabled} 
-    className={`px-4 py-2 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-md transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className || ''}`}
-  >
-    {children}
-  </button>
-);
 
 export function TestAssignRoundSongButton() {
   const [isLoading, setIsLoading] = useState(false);

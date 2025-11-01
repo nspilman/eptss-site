@@ -1,25 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Label } from "@eptss/ui";
 import { Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { getSignupSongsForRound, setRoundSong } from "@eptss/data-access";
-
-// UI Components
-const Button = ({ children, type, disabled, className }: { children: React.ReactNode, type?: "submit" | "button", disabled?: boolean, className?: string }) => (
-  <button 
-    type={type || "button"} 
-    disabled={disabled} 
-    className={`px-4 py-2 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-md transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className || ''}`}
-  >
-    {children}
-  </button>
-);
-
-const Label = ({ htmlFor, children, className }: { htmlFor: string, children: React.ReactNode, className?: string }) => (
-  <label htmlFor={htmlFor} className={`block mb-1 ${className || ''}`}>{children}</label>
-);
 
 type Song = {
   id: number;

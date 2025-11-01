@@ -6,6 +6,7 @@ import { MarkdownEditor } from '@eptss/rich-text-editor';
 import { updateReflection, deleteReflection } from '@eptss/data-access';
 import type { Reflection } from '../../types';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal';
+import { Button } from '@eptss/ui';
 
 interface ReflectionEditFormProps {
   reflection: Reflection;
@@ -145,30 +146,30 @@ export const ReflectionEditForm: React.FC<ReflectionEditFormProps> = ({
       {/* Action Buttons */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex gap-4">
-          <button
+                <Button
             type="submit"
+            variant="secondary"
             disabled={isSubmitting}
-            className="px-6 py-3 bg-[var(--color-accent-primary)] text-white font-medium rounded-lg hover:bg-[var(--color-accent-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] focus:ring-offset-2 focus:ring-offset-[var(--color-background-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? 'Saving...' : 'Save Changes'}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="outline"
             onClick={() => router.back()}
             disabled={isSubmitting}
-            className="px-6 py-3 bg-[var(--color-gray-800)] text-[var(--color-primary)] font-medium rounded-lg hover:bg-[var(--color-gray-700)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gray-600)] focus:ring-offset-2 focus:ring-offset-[var(--color-background-primary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Cancel
-          </button>
+          </Button>
         </div>
-        <button
+        <Button
           type="button"
+          variant="destructive"
           onClick={() => setDeleteModalOpen(true)}
           disabled={isSubmitting}
-          className="px-6 py-3 bg-red-900/20 text-red-400 font-medium rounded-lg border border-red-700 hover:bg-red-900/30 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Delete Reflection
-        </button>
+        </Button>
       </div>
 
       {/* Delete Confirmation Modal */}

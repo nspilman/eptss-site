@@ -20,9 +20,10 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
       <div className="relative flex flex-row-reverse items-center gap-8 py-8 overflow-x-auto px-8 min-w-full">
         {rounds.map((round) => (
           <div key={round.roundId} className="shrink-0">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setSelectedRound(round)}
-              className={`relative flex flex-col items-center transition-all ${
+              className={`relative flex flex-col items-center transition-all h-auto p-0 ${
                 selectedRound?.roundId === round.roundId
                   ? "scale-110 -translate-y-2"
                   : "hover:scale-105 hover:-translate-y-1"
@@ -32,7 +33,7 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
                 <span className="text-lg font-bold text-[#8B7EF8]">#{round.roundId}</span>
               </div>
               <span className="text-sm text-[#B4B0C5] font-medium">{round.song.title}</span>
-            </button>
+            </Button>
           </div>
         ))}
       </div>
