@@ -29,9 +29,14 @@ export {
   getPublicProfileByUsername,
   getUserPrivacySettings,
   updateUserPrivacySettings,
-  getUserSubmissionPrivacySettings,
-  updateSubmissionPrivacy
+  getUserById
 } from './services/userService';
+export {
+  getUserSignups,
+  getUserSubmissions,
+  getUserVotes,
+  getUserParticipationCounts
+} from './services/profileService';
 export { saveTestRun } from './services/monitoringService';
 export { getSongByTitleAndArtist } from './services/songsService';
 // Note: addToMailingList and createUser are NOT exported from main index

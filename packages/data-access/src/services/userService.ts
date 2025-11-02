@@ -328,3 +328,16 @@ export const updateUserPrivacySettings = async (
   }
 };
 
+/**
+ * Get user by ID with all their data
+ */
+export const getUserById = async (userId: string) => {
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.userid, userId))
+    .limit(1);
+
+  return result[0] || null;
+};
+

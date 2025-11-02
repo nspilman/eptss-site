@@ -1,10 +1,25 @@
-import { createClient } from '@/utils/supabase/server';
+/**
+ * User Management Utilities
+ *
+ * Ensures user records exist in the database after authentication
+ */
+
+import { createClient } from './supabase-server';
 import { User } from '@supabase/supabase-js';
 
+/**
+ * Ensures a user record exists in the users table after authentication
+ *
+ * This function checks if a user exists in the database and creates a new record
+ * if they don't exist. It includes retry logic to handle potential race conditions.
+ *
+ * @param user - The authenticated Supabase user object
+ * @returns Object with success status and optional error
+ */
 export async function ensureUserExists(user: User) {
   try {
     const supabase = await createClient();
-    
+
     // Check if the user already exists in the users table
     const { data: existingUser, error: fetchError } = await supabase
       .from('users')
@@ -16,7 +31,7 @@ export async function ensureUserExists(user: User) {
       console.error('Error checking if user exists:', fetchError);
       return { success: false, error: fetchError };
     }
-    
+
     // If the user doesn't exist, create a new record
     if (!existingUser) {
       // Make sure we have an email
@@ -24,18 +39,18 @@ export async function ensureUserExists(user: User) {
         console.error('Cannot create user record: Email is missing');
         return { success: false, error: 'Email is missing' };
       }
-      
+
       console.log('Creating new user record for:', user.email);
-      
+
       // Extract username from email (before the @)
       const username = user.email.split('@')[0];
-      
+
       // Add a retry mechanism for creating the user
       let retryCount = 0;
       const maxRetries = 3;
       let success = false;
       let lastError = null;
-      
+
       while (!success && retryCount < maxRetries) {
         const { error: insertError } = await (supabase
           .from('users') as any)
@@ -44,7 +59,7 @@ export async function ensureUserExists(user: User) {
             email: user.email,
             username: username,
           });
-          
+
         if (insertError) {
           console.error(`Error creating user record (attempt ${retryCount + 1}):`, insertError);
           lastError = insertError;
@@ -57,7 +72,7 @@ export async function ensureUserExists(user: User) {
           return { success: true };
         }
       }
-      
+
       if (!success) {
         console.error('Failed to create user record after multiple attempts');
         return { success: false, error: lastError };
@@ -66,7 +81,7 @@ export async function ensureUserExists(user: User) {
       console.log('User already exists in database');
       return { success: true };
     }
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error ensuring user exists:', error);

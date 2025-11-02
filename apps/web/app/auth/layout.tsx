@@ -1,4 +1,4 @@
-import AuthStateListener from "@/components/AuthStateListener";
+import { AuthStateListener } from "@eptss/auth";
 
 export default function AuthLayout({
   children,

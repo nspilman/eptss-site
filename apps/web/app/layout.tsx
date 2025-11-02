@@ -1,7 +1,7 @@
 import { Toaster } from "@eptss/ui";
 import { Header } from "@/components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
-import AuthStateListener from "@/components/AuthStateListener";
+import { AuthStateListener } from "@eptss/auth";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
 
 export const metadata = {
