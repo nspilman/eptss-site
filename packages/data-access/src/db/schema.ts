@@ -207,3 +207,21 @@ export type Tag = typeof tags.$inferSelect;
 export type NewTag = typeof tags.$inferInsert;
 export type ContentTag = typeof contentTags.$inferSelect;
 export type NewContentTag = typeof contentTags.$inferInsert;
+
+// User Privacy Settings Table
+export const userPrivacySettings = pgTable("user_privacy_settings", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull().unique(),
+  showStats: boolean("show_stats").notNull().default(true),
+  showSignups: boolean("show_signups").notNull().default(true),
+  showSubmissions: boolean("show_submissions").notNull().default(true),
+  showVotes: boolean("show_votes").notNull().default(false),
+  showEmail: boolean("show_email").notNull().default(false),
+  publicDisplayName: text("public_display_name"),
+  profileBio: text("profile_bio"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type UserPrivacySettings = typeof userPrivacySettings.$inferSelect;
+export type NewUserPrivacySettings = typeof userPrivacySettings.$inferInsert;

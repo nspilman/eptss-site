@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "../db";
-import { users, signUps, submissions, roundMetadata, songs } from "../db/schema";
-import { count, eq } from "drizzle-orm";
+import { users, signUps, submissions, roundMetadata, songs, userPrivacySettings } from "../db/schema";
+import { count, eq, and } from "drizzle-orm";
 import { sql } from "drizzle-orm/sql";
 
 export const getUserCount = async () => {
@@ -207,12 +207,39 @@ export const getPublicProfileByUsername = async (username: string) => {
     .where(eq(submissions.userId, user.userid))
     .orderBy(sql`${submissions.createdAt} DESC`);
 
+  // Get user privacy settings
+  const privacyResult = await db
+    .select()
+    .from(userPrivacySettings)
+    .where(eq(userPrivacySettings.userId, user.userid))
+    .limit(1);
+
+  const privacy = privacyResult[0] || {
+    showStats: true,
+    showSignups: true,
+    showSubmissions: true,
+    showVotes: false,
+    showEmail: false,
+    publicDisplayName: null,
+    profileBio: null,
+  };
+
+  // Filter submissions based on privacy settings
+  // All submissions are now either shown or hidden based on the user's showSubmissions preference
+  const filteredSubmissions = privacy.showSubmissions ? userSubmissions : [];
+
+  // Determine display name based on privacy settings
+  const displayName = privacy.publicDisplayName || user.fullName || user.username;
+
   return {
     user: {
       username: user.username,
       fullName: user.fullName,
+      displayName,
+      bio: privacy.profileBio,
+      showEmail: privacy.showEmail,
     },
-    submissions: userSubmissions.map(s => ({
+    submissions: filteredSubmissions.map(s => ({
       id: s.id.toString(),
       soundcloudUrl: s.soundcloudUrl,
       createdAt: s.createdAt?.toISOString() || null,
@@ -221,5 +248,83 @@ export const getPublicProfileByUsername = async (username: string) => {
       songTitle: s.songTitle,
       songArtist: s.songArtist,
     })),
+    privacy: {
+      showStats: privacy.showStats,
+      showSignups: privacy.showSignups,
+      showSubmissions: privacy.showSubmissions,
+      showVotes: privacy.showVotes,
+    },
   };
 };
+
+/**
+ * Get user privacy settings by user ID
+ */
+export const getUserPrivacySettings = async (userId: string) => {
+  const result = await db
+    .select()
+    .from(userPrivacySettings)
+    .where(eq(userPrivacySettings.userId, userId))
+    .limit(1);
+
+  if (result.length === 0) {
+    // Return default settings if none exist
+    return {
+      showStats: true,
+      showSignups: true,
+      showSubmissions: true,
+      showVotes: false,
+      showEmail: false,
+      publicDisplayName: null,
+      profileBio: null,
+    };
+  }
+
+  return result[0];
+};
+
+/**
+ * Update or create user privacy settings
+ */
+export const updateUserPrivacySettings = async (
+  userId: string,
+  settings: {
+    showStats?: boolean;
+    showSignups?: boolean;
+    showSubmissions?: boolean;
+    showVotes?: boolean;
+    showEmail?: boolean;
+    publicDisplayName?: string | null;
+    profileBio?: string | null;
+  }
+) => {
+  const existingSettings = await db
+    .select()
+    .from(userPrivacySettings)
+    .where(eq(userPrivacySettings.userId, userId))
+    .limit(1);
+
+  if (existingSettings.length === 0) {
+    // Create new settings
+    const result = await db
+      .insert(userPrivacySettings)
+      .values({
+        userId,
+        ...settings,
+      })
+      .returning();
+    return result[0];
+  } else {
+    // Update existing settings
+    const result = await db
+      .update(userPrivacySettings)
+      .set({
+        ...settings,
+        updatedAt: new Date(),
+      })
+      .where(eq(userPrivacySettings.userId, userId))
+      .returning();
+    return result[0];
+  }
+};
+

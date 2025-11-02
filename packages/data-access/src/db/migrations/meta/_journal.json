@@ -106,6 +106,20 @@
       "when": 1759641501393,
       "tag": "0028_fearless_satana",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1761576852992,
+      "tag": "0029_add_performance_indexes",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1762030805615,
+      "tag": "0030_clever_kitty_pryde",
+      "breakpoints": true
     }
   ]
 }

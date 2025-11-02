@@ -20,7 +20,18 @@ export { getUserSignupData } from './services/signupService';
 export { getUnverifiedSignupByEmail } from './services/verificationService';
 export { getAllFeedback, updateFeedbackPublicStatus, deleteFeedback } from './services/feedbackService';
 export { getSignupSongsForRound, setRoundSong } from './services/roundService';
-export { getActiveUsersCount, getUserDetails, getActiveUsers, getAllUsers, getUserInfo, getPublicProfileByUsername } from './services/userService';
+export {
+  getActiveUsersCount,
+  getUserDetails,
+  getActiveUsers,
+  getAllUsers,
+  getUserInfo,
+  getPublicProfileByUsername,
+  getUserPrivacySettings,
+  updateUserPrivacySettings,
+  getUserSubmissionPrivacySettings,
+  updateSubmissionPrivacy
+} from './services/userService';
 export { saveTestRun } from './services/monitoringService';
 export { getSongByTitleAndArtist } from './services/songsService';
 // Note: addToMailingList and createUser are NOT exported from main index
