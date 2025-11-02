@@ -3,6 +3,7 @@ export * from './ui/avatar';
 export * from './ui/label';
 export * from './ui/nav-link';
 export * from './ui/navigation-button';
+export * from './ui/navigation-tabs';
 export * from './ui/separator';
 export * from './ui/switch';
 export * from './ui/toast';

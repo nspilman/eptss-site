@@ -51,6 +51,11 @@ export {
   TabsList,
   TabsTrigger,
 } from './tabs'
+export {
+  tabsListVariants,
+  tabsTriggerVariants,
+  tabsContentVariants,
+} from './tabs-variants'
 
 export {
   Card,
