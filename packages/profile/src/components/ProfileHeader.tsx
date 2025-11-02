@@ -1,7 +1,8 @@
 'use client';
 
-import { Badge, Avatar, AvatarFallback } from "@eptss/ui"
-import { CalendarIcon, EnvelopeClosedIcon } from '@radix-ui/react-icons';
+import Link from 'next/link';
+import { Badge, Avatar, AvatarFallback, Button } from "@eptss/ui"
+import { CalendarIcon, EnvelopeClosedIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 
 export interface User {
@@ -97,6 +98,22 @@ export function ProfileHeader({ user, signupCount, submissionCount, voteCount }:
                 <span className="text-xs text-gray-400">Round{voteCount !== 1 ? 's' : ''} Voted</span>
               </div>
             </div>
+
+            {/* View Public Profile Link */}
+            {user.username && (
+              <div className="pt-3">
+                <Link href={`/profile/${user.username}`} target="_blank" rel="noopener noreferrer">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-[var(--color-accent-primary)]/30 text-[var(--color-accent-primary)] hover:bg-[var(--color-accent-primary)]/10 hover:border-[var(--color-accent-primary)] transition-all"
+                  >
+                    <ExternalLinkIcon className="mr-2 h-4 w-4" />
+                    View Public Profile
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,1 +1,0 @@
-ALTER TABLE "test_runs" ALTER COLUMN "started_at" SET NOT NULL;

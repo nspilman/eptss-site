@@ -18,7 +18,7 @@ export { useRequireAuth } from './hooks/useRequireAuth';
 
 // Utils exports
 export { isAdmin } from './utils/isAdmin';
-export { getAuthUser } from './utils/getAuthUser';
+export { getAuthUser, getCurrentUsername } from './utils/getAuthUser';
 
 // Type exports
 export type { AuthUser, AuthSession } from './types';

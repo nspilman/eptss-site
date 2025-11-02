@@ -1,4 +1,4 @@
-import { songs, roundMetadata, signUps } from "@/db/schema";
+import { songs, roundMetadata, signUps } from "@eptss/data-access/db/schema";
 import { InferSelectModel } from "drizzle-orm";
 import { SignupData } from "./signup";
 

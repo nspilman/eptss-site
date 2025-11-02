@@ -9,6 +9,9 @@ interface PublicProfileProps {
   user: {
     username: string;
     fullName: string | null;
+    displayName: string;
+    bio: string | null;
+    showEmail: boolean;
   };
   submissions: Array<{
     id: string;
@@ -20,22 +23,44 @@ interface PublicProfileProps {
     songArtist: string;
   }>;
   reflections: Reflection[];
+  privacy: {
+    showStats: boolean;
+    showSignups: boolean;
+    showSubmissions: boolean;
+    showVotes: boolean;
+  };
+  isOwnProfile?: boolean;
 }
 
-export const PublicProfile = ({ user, submissions, reflections }: PublicProfileProps) => {
-  const displayName = user.fullName || user.username;
-
+export const PublicProfile = ({ user, submissions, reflections, privacy, isOwnProfile }: PublicProfileProps) => {
   return (
     <div className="flex flex-col w-full max-w-5xl mx-auto px-4 py-8 space-y-12">
       {/* Header Section */}
       <section className="w-full">
         <div className="mb-8">
-          <h1 className="font-fraunces text-[var(--color-primary)] font-black text-4xl md:text-5xl mb-2 tracking-tight">
-            {displayName}
-          </h1>
-          <p className="text-[var(--color-gray-400)] text-lg font-roboto">
-            @{user.username}
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="font-fraunces text-[var(--color-primary)] font-black text-4xl md:text-5xl mb-2 tracking-tight">
+                {user.displayName}
+              </h1>
+              <p className="text-[var(--color-gray-400)] text-lg font-roboto">
+                @{user.username}
+              </p>
+            </div>
+            {isOwnProfile && (
+              <Link
+                href="/dashboard/profile"
+                className="px-4 py-2 bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 rounded-md font-medium transition-opacity whitespace-nowrap"
+              >
+                View My Dashboard
+              </Link>
+            )}
+          </div>
+          {user.bio && (
+            <p className="text-[var(--color-gray-300)] text-base font-roboto mt-4 max-w-2xl">
+              {user.bio}
+            </p>
+          )}
           <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mt-4"></div>
         </div>
       </section>

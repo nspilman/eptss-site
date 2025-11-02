@@ -47,7 +47,7 @@ export async function createClient<DB = Database>() {
 
 /**
  * Gets the authenticated user from Supabase
- * 
+ *
  * Returns userId and email, or empty strings if not authenticated
  */
 export async function getAuthUser() {
@@ -58,6 +58,28 @@ export async function getAuthUser() {
     userId: user?.id || '',
     email: user?.email || ''
   };
+}
+
+/**
+ * Gets the current authenticated user's username from the database
+ *
+ * Returns username or null if not authenticated or not found
+ */
+export async function getCurrentUsername(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('username')
+    .eq('userid', user.id)
+    .single();
+
+  return userData?.username || null;
 }
 
 /**

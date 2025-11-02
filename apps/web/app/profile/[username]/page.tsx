@@ -2,6 +2,7 @@ import { getPublicProfileByUsername, getPublicReflectionsByUsername } from "@ept
 import { PublicProfile } from "./PublicProfile";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { getCurrentUsername } from "@eptss/auth";
 
 type Props = {
   params: Promise<{
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const displayName = profileData.user.fullName || profileData.user.username;
+  const displayName = profileData.user.displayName;
 
   return {
     title: `${displayName} | Everyone Plays the Same Song`,
@@ -33,6 +34,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const PublicProfilePage = async ({ params }: Props) => {
   const { username } = await params;
+
+  // Check if viewing own profile
+  const currentUsername = await getCurrentUsername();
+  const isOwnProfile = currentUsername === username;
 
   // Fetch profile data and reflections in parallel
   const [profileData, reflectionsResult] = await Promise.all([
@@ -51,6 +56,8 @@ const PublicProfilePage = async ({ params }: Props) => {
       user={profileData.user}
       submissions={profileData.submissions}
       reflections={reflections}
+      privacy={profileData.privacy}
+      isOwnProfile={isOwnProfile}
     />
   );
 };

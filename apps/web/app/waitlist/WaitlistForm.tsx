@@ -8,7 +8,7 @@ import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
 import { z } from "zod"
 import { addToWaitlist } from "@/actions/waitlist"
-import { mailingList } from "@/db/schema"
+import { mailingList } from "@eptss/data-access/db/schema"
 import { createInsertSchema } from "drizzle-zod"
 import { FormReturn } from "@/types";
 import { FormBuilder, FieldConfig } from "@eptss/ui";

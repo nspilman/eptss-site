@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import { getAuthUser } from '@/utils/supabase/server';
 import type { VoteRow, GroupedVote, GroupedSignup, SignupItem, RoundMetadataSubset } from '@eptss/profile/types';
-import { ProfilePageClient } from '@eptss/profile';
+import { ProfileHeader, ProfileTabs, OverviewTab } from '@eptss/profile';
 
 // Type definitions for internal data structures
 interface RoundSignups {
@@ -302,12 +302,35 @@ export default async function ProfilePage() {
   // Process signups
   const signups = signupsError ? [] : groupSignupsByRound(rawSignups || []);
 
+  if (!userData) {
+    redirect('/login?redirect=/dashboard/profile');
+  }
+
   return (
-    <ProfilePageClient
-      user={userData}
-      signups={signups}
-      submissions={submissions}
-      votes={votes}
-    />
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      {/* Profile Header with Stats */}
+      <div className="mb-6">
+        <ProfileHeader
+          user={userData}
+          signupCount={signups.length}
+          submissionCount={submissions.length}
+          voteCount={votes.length}
+        />
+      </div>
+
+      {/* Tabs Navigation */}
+      <ProfileTabs
+        signupCount={signups.length}
+        submissionCount={submissions.length}
+        voteCount={votes.length}
+      />
+
+      {/* Overview Tab Content */}
+      <OverviewTab
+        signups={signups}
+        submissions={submissions}
+        votes={votes}
+      />
+    </div>
   );
 }

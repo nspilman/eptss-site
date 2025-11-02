@@ -1,4 +1,4 @@
-import { users, submissions, signUps, songSelectionVotes } from "@/db/schema";
+import { users, submissions, signUps, songSelectionVotes } from "@eptss/data-access/db/schema";
 import { InferSelectModel } from "drizzle-orm";
 
 // Base types from database schema

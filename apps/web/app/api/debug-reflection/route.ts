@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/db';
-import { userContent, contentTags, tags } from '@/db/schema';
+import { db } from '@eptss/data-access/db';
+import { userContent, contentTags, tags } from '@eptss/data-access/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getAuthUser } from '@/utils/supabase/server';
 
