@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { RoundDetails } from "types";
+import { RoundDetails } from "@eptss/data-access/types/roundDetails";
 import Link from "next/link";
 
 export const RoundDisplay = ({

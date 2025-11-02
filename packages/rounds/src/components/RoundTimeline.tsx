@@ -2,14 +2,15 @@
 
 import { Card, Button } from "@eptss/ui";
 import { RoundInfo } from "@eptss/data-access/types/round";
-import { useState } from "react";
-import Link from "next/link";
+import { useState, ComponentType, ReactNode } from "react";
 
 interface RoundTimelineProps {
   rounds: RoundInfo[];
+  LinkComponent?: ComponentType<{ href: string; children: ReactNode }>;
+  onRoundClick?: (round: RoundInfo) => void;
 }
 
-export function RoundTimeline({ rounds }: RoundTimelineProps) {
+export function RoundTimeline({ rounds, LinkComponent, onRoundClick }: RoundTimelineProps) {
   const [selectedRound, setSelectedRound] = useState<RoundInfo | null>(null);
   return (
     <div className="relative w-full overflow-hidden">
@@ -49,11 +50,17 @@ export function RoundTimeline({ rounds }: RoundTimelineProps) {
               </h3>
               <p className="text-[#B4B0C5] relative z-10">by {selectedRound.song.artist}</p>
             </div>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href={`/round/${selectedRound.slug || selectedRound.roundId}`}>
+            {LinkComponent ? (
+              <Button variant="secondary" size="sm" asChild>
+                <LinkComponent href={`/round/${selectedRound.slug || selectedRound.roundId}`}>
+                  View Details
+                </LinkComponent>
+              </Button>
+            ) : onRoundClick ? (
+              <Button variant="secondary" size="sm" onClick={() => onRoundClick(selectedRound)}>
                 View Details
-              </Link>
-            </Button>
+              </Button>
+            ) : null}
           </div>
           <div className="grid gap-6 sm:grid-cols-2 relative z-10">
             <div>

@@ -33,6 +33,7 @@
     "@eptss/email": "workspace:*",
     "@eptss/profile": "workspace:*",
     "@eptss/rich-text-editor": "workspace:*",
+    "@eptss/rounds": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@eptss/user-content": "workspace:*",
