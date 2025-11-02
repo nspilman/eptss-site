@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { HomepageContent } from '../page';
+import HomepageContent from '../page';
 
 export const metadata: Metadata = {
   title: "Home | Everyone Plays the Same Song",

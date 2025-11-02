@@ -21,7 +21,7 @@ interface PrivacySettings {
 interface PrivacySettingsTabProps {
   user: {
     username: string;
-    full_name?: string | null;
+    fullName?: string | null;
   };
 }
 
@@ -158,14 +158,14 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
               <Label htmlFor="publicDisplayName" className="text-[var(--color-primary)] text-sm font-medium">
                 Public Display Name
                 <span className="text-xs text-gray-400 ml-2 font-normal">
-                  (Leave blank to use {user.full_name ? 'full name' : 'username'})
+                  (Leave blank to use {user.fullName ? 'full name' : 'username'})
                 </span>
               </Label>
               <Input
                 id="publicDisplayName"
                 value={settings.publicDisplayName || ''}
                 onChange={(e) => setSettings({ ...settings, publicDisplayName: e.target.value || null })}
-                placeholder={user.full_name || user.username}
+                placeholder={user.fullName || user.username}
                 className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)]"
               />
             </div>

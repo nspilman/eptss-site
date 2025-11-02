@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { PageTitle } from "@/components/PageTitle";
 import { Post } from "@/app/blog/Blog/Post";
 import { getReflectionBySlug } from '@eptss/data-access';
-import { getAuthUser } from '@/utils/supabase/server';
+import { getAuthUser } from '@eptss/auth';
 import { Metadata } from 'next';
 
 type Props = {

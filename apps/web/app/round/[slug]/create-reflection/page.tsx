@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getAuthUser } from '@/utils/supabase/server';
+import { getAuthUser } from '@eptss/auth';
 import { PageTitle } from "@/components/PageTitle";
 import { ReflectionForm } from '@eptss/user-content';
 import { getRoundBySlug, getUserInitialReflectionForRound } from '@eptss/data-access';

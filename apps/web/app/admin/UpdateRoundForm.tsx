@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Select } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@eptss/ui";
 import { Edit, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { updateRound, getRoundBySlug } from "@eptss/data-access";
@@ -134,18 +134,17 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="roundSlug" className="text-primary">Select Round</Label>
-              <Select
-                id="roundSlug"
-                value={selectedSlug}
-                onChange={(e) => setSelectedSlug(e.target.value)}
-                className="text-primary"
-              >
-                <option value="">-- Select a round --</option>
-                {allRoundSlugs.map((slug) => (
-                  <option key={slug} value={slug}>
-                    {slug}
-                  </option>
-                ))}
+              <Select value={selectedSlug} onValueChange={setSelectedSlug}>
+                <SelectTrigger className="text-primary">
+                  <SelectValue placeholder="-- Select a round --" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allRoundSlugs.map((slug) => (
+                    <SelectItem key={slug} value={slug}>
+                      {slug}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
               </Select>
             </div>
 

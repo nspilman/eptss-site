@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@eptss/data-access/db';
 import { userContent, contentTags, tags } from '@eptss/data-access/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { getAuthUser } from '@/utils/supabase/server';
+import { getAuthUser } from '@eptss/auth';
 
 export async function GET() {
   try {

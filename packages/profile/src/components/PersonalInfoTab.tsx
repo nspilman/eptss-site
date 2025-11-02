@@ -14,7 +14,7 @@ interface PersonalInfoTabProps {
 
 export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
   const [username, setUsername] = useState(user.username || '');
-  const [fullName, setFullName] = useState(user.full_name || '');
+  const [fullName, setFullName] = useState(user.fullName || '');
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
       // Optimistically update the user object
       user.username = username;
-      user.full_name = fullName;
+      user.fullName = fullName;
 
       setSuccess(true);
       setIsEditing(false);
@@ -50,7 +50,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       // Revert on error
       setUsername(user.username || '');
-      setFullName(user.full_name || '');
+      setFullName(user.fullName || '');
     } finally {
       setIsSaving(false);
     }
@@ -58,7 +58,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
   const handleCancel = () => {
     setUsername(user.username || '');
-    setFullName(user.full_name || '');
+    setFullName(user.fullName || '');
     setIsEditing(false);
     setError(null);
   };
@@ -124,8 +124,8 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
                   />
                 ) : (
                   <div className="p-3 rounded-lg bg-gray-800/50 border border-gray-700">
-                    <span className={user.full_name ? "text-[var(--color-primary)]" : "text-gray-500 italic"}>
-                      {user.full_name || 'Not set'}
+                    <span className={user.fullName ? "text-[var(--color-primary)]" : "text-gray-500 italic"}>
+                      {user.fullName || 'Not set'}
                     </span>
                   </div>
                 )}
@@ -171,7 +171,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
               <div className="space-y-2">
                 <Label htmlFor="joinDate" className="text-gray-400 text-sm font-medium">Member Since</Label>
                 <div className="p-3 rounded-lg bg-gray-900/30 text-gray-400 border border-gray-700/50">
-                  {user.created_at ? format(new Date(user.created_at), 'MMMM d, yyyy') : 'Unknown'}
+                  {user.createdAt ? format(new Date(user.createdAt), 'MMMM d, yyyy') : 'Unknown'}
                 </div>
               </div>
             </div>

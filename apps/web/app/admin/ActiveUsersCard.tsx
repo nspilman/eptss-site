@@ -48,13 +48,13 @@ export function ActiveUsersCard({ users }: ActiveUsersCardProps) {
 
   return (
     <div className="w-full space-y-4">
-      <Card asChild>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full"
-        >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full"
+      >
+        <Card>
           <CardHeader>
             <CardTitle className="text-primary">Active Users</CardTitle>
             <p className="text-sm text-secondary">Users and their last participation in rounds</p>
@@ -71,8 +71,8 @@ export function ActiveUsersCard({ users }: ActiveUsersCardProps) {
               allowCopy={true}
             />
           </CardContent>
-        </motion.div>
-      </Card>
+        </Card>
+      </motion.div>
     </div>
   );
 }

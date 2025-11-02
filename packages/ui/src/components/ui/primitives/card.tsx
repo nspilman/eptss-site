@@ -1,26 +1,32 @@
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { cn } from "./utils"
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     gradient?: boolean
+    asChild?: boolean
   }
->(({ className, gradient = false, ...props }, ref) => (
-  <div className="relative group">
-    {gradient && (
-      <div className="absolute -inset-2 bg-[var(--color-gradient-primary)] rounded-lg blur-sm opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
-    )}
-    <div
-      ref={ref}
-      className={cn(
-        "relative bg-[var(--color-background-secondary)] border border-[var(--color-gray-800)] rounded-lg shadow-lg overflow-hidden",
-        className
+>(({ className, gradient = false, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div"
+
+  return (
+    <div className="relative group">
+      {gradient && (
+        <div className="absolute -inset-2 bg-[var(--color-gradient-primary)] rounded-lg blur-sm opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700" />
       )}
-      {...props}
-    />
-  </div>
-))
+      <Comp
+        ref={ref}
+        className={cn(
+          "relative bg-[var(--color-background-secondary)] border border-[var(--color-gray-800)] rounded-lg shadow-lg overflow-hidden",
+          className
+        )}
+        {...props}
+      />
+    </div>
+  )
+})
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<

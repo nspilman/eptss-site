@@ -89,7 +89,4 @@ const Homepage = async () => {
   );
 };
 
-// Export as named export for use in /home route
-export { Homepage as HomepageContent };
-
 export default Homepage;

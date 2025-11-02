@@ -9,8 +9,8 @@ export interface User {
   userid: string;
   email: string;
   username: string | null;
-  full_name: string | null;
-  created_at: string | null;
+  fullName: string | null;
+  createdAt: Date | null;
 }
 
 interface ProfileHeaderProps {
@@ -33,8 +33,8 @@ export function ProfileHeader({ user, signupCount, submissionCount, voteCount }:
   };
 
   // Format join date
-  const joinDate = user.created_at
-    ? format(new Date(user.created_at), 'MMMM yyyy')
+  const joinDate = user.createdAt
+    ? format(new Date(user.createdAt), 'MMMM yyyy')
     : 'Unknown';
 
   return (
