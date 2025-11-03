@@ -4,26 +4,6 @@ import { roundProvider, votesProvider, roundsProvider, userParticipationProvider
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 
-// Generate static pages for all rounds at build time
-export async function generateStaticParams() {
-  try {
-    const { allRoundSlugs } = await roundsProvider({ excludeCurrentRound: false });
-
-    // Generate params for all round slugs (except "current" which is always dynamic)
-    return allRoundSlugs
-      .filter(slug => slug !== 'current')
-      .map((slug) => ({
-        slug: slug.toString(),
-      }));
-  } catch (error) {
-    console.error('Error generating static params for rounds:', error);
-    return [];
-  }
-}
-
-// Use ISR to revalidate every hour
-export const revalidate = 3600;
-
 export default async function Round({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   // Handle current round differently if needed
