@@ -2,12 +2,10 @@
 
 import { createClient } from "@eptss/data-access/utils/supabase/server";
 
-export const signout = async () => {
-  "use server";
+/**
+ * Server Action: Sign out the current user
+ */
+export async function signout() {
   const supabase = await createClient();
   return supabase.auth.signOut();
-};
-
-export type Status = "Success" | "Error";
-export type FormReturn = { status: Status; message: string;};
-
+}

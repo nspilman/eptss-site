@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { addToMailingList } from "@eptss/data-access/services/mailingListService";
 
@@ -7,6 +7,9 @@ type WaitlistInput = {
   name: string;
 };
 
+/**
+ * Server Action: Add user to waitlist/mailing list
+ */
 export async function addToWaitlist({ email, name }: WaitlistInput) {
   try {
     return await addToMailingList(email, name);
@@ -14,4 +17,4 @@ export async function addToWaitlist({ email, name }: WaitlistInput) {
     console.error('Error adding to waitlist:', error);
     throw error;
   }
-} 
+}

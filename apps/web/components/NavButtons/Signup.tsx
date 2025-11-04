@@ -2,7 +2,7 @@
 import React, { ReactElement } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { signout } from "@/actions/actions";
+import { signout } from "@eptss/actions";
 import { Button } from "@eptss/ui";
 import { Navigation } from "@eptss/shared";
 import Link from "next/link";
