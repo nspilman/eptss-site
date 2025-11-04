@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@eptss/ui";
 
-import type { Header } from "@/components/DataTable/DataTable";
+import type { Header } from "@eptss/ui";
 
 interface CelebrationTablesProps {
   roundSummaryHeaders: Readonly<Header<string>[]>;

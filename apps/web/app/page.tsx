@@ -2,7 +2,7 @@ import Head from "next/head";
 import { HowItWorks } from "./index/Homepage/HowItWorks";
 import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
-import { RoundInfoDisplay } from "./RoundInfoDisplay";
+import { RoundInfoDisplay } from "@eptss/rounds";
 import { ClientRoundsDisplay } from "./index/Homepage/RoundsDisplay/ClientRoundsDisplay";
 import { roundProvider } from "@eptss/data-access";
 

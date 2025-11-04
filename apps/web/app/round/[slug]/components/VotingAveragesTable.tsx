@@ -1,8 +1,8 @@
 import React from "react";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@eptss/ui";
 import { VoteResults } from "../types";
 
-import type { Header } from "@/components/DataTable/DataTable";
+import type { Header } from "@eptss/ui";
 
 interface VotingAveragesTableProps {
   voteResults: VoteResults[];

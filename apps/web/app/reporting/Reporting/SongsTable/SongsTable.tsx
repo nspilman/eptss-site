@@ -1,5 +1,5 @@
 "use client";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@eptss/ui";
 import { SongDatum, useSongTable } from "./useSongsTable";
 import { Input } from "@eptss/ui";
 

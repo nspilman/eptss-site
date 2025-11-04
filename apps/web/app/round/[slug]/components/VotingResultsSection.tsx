@@ -1,5 +1,5 @@
 import React from "react";
-import { DataTable } from "@/components/DataTable";
+import { DataTable } from "@eptss/ui";
 import { StackedBarChart } from "../StackedBarChart";
 
 interface ClientStackedBarChartProps {
@@ -19,7 +19,7 @@ const ClientStackedBarChart = ({ data, title }: ClientStackedBarChartProps) => {
   return <StackedBarChart data={data} title={title} />;
 };
 
-import type { Header } from "@/components/DataTable/DataTable";
+import type { Header } from "@eptss/ui";
 import type { VoteResults } from "../types";
 
 interface VotingResultsSectionProps {
