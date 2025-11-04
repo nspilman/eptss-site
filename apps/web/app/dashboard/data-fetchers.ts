@@ -139,9 +139,15 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
       };
 
     case 'voting':
-      // Only show action if user has signed up
+      // If user hasn't signed up, offer late signup option
       if (!roundDetails?.hasSignedUp) {
-        return null;
+        return {
+          actionText: 'Join Round (Late Signup)',
+          actionHref: '#late-signup',
+          contextMessage: 'Join this round without selecting a song. You can still participate in voting and covering!',
+          isHighPriority: true,
+          isLateSignup: true,
+        };
       }
 
       return {
@@ -154,9 +160,15 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
       };
 
     case 'covering':
-      // Only show action if user has signed up
+      // If user hasn't signed up, offer late signup option
       if (!roundDetails?.hasSignedUp) {
-        return null;
+        return {
+          actionText: 'Join Round (Late Signup)',
+          actionHref: '#late-signup',
+          contextMessage: 'Join this round without selecting a song. You can still submit a cover!',
+          isHighPriority: true,
+          isLateSignup: true,
+        };
       }
 
       return {

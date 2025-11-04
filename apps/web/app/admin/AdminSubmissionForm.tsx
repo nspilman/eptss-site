@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { adminSubmitCover } from "@eptss/data-access";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Textarea } from "@eptss/ui";
+import { adminSubmitCover } from "@eptss/actions";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Textarea, useToast } from "@eptss/ui";
 import { Music } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -18,6 +18,7 @@ type AdminSubmissionFormProps = {
 };
 
 export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps) => {
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,16 +45,27 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
       const result = await adminSubmitCover(formData);
 
       if (result.status === "Success") {
-        alert(`Success: ${result.message}`);
+        toast({
+          title: "Success",
+          description: result.message,
+        });
         // Reset form
         setSelectedUserId("");
         setSoundcloudUrl("");
         setAdditionalComments("");
       } else {
-        alert(`Error: ${result.message}`);
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      alert("An unexpected error occurred");
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

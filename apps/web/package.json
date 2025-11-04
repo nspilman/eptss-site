@@ -27,6 +27,7 @@
     "@date-fns/tz": "^1.2.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "@eptss/actions": "workspace:*",
     "@eptss/auth": "workspace:*",
     "@eptss/dashboard": "workspace:*",
     "@eptss/data-access": "workspace:*",

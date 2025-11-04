@@ -25,6 +25,9 @@ export interface ActionPanelData {
 
   /** Whether to show this as a high-priority action */
   isHighPriority?: boolean;
+
+  /** Whether this is a late signup action (requires special handling) */
+  isLateSignup?: boolean;
 }
 
 /**

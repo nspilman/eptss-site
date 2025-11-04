@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MarkdownEditor } from '@eptss/rich-text-editor';
 import { createReflection } from '@eptss/data-access';
-import { Button } from '@eptss/ui';
+import { Button, useToast } from '@eptss/ui';
 
 interface ReflectionFormProps {
   userId: string;
@@ -18,6 +18,7 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({
   roundSlug,
 }) => {
   const router = useRouter();
+  const { toast } = useToast();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isPublic, setIsPublic] = useState(false);
@@ -51,6 +52,11 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({
       });
 
       if (result.status === 'success') {
+        // Show success toast
+        toast({
+          title: 'Reflection created successfully!',
+          description: 'Your reflection has been saved.',
+        });
         // Redirect to the reflection page
         router.push(`/reflections/${result.data.slug}`);
       } else if (result.status === 'error') {

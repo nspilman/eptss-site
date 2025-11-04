@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
+import {
   getCurrentRound,
   determineRemindersToSend,
   type ReminderEmailType,
@@ -10,6 +10,14 @@ import {
   getUserInfo,
   formatDate
 } from '@eptss/data-access';
+import {
+  sendVotingClosesTomorrowEmail,
+  sendCoveringHalfwayEmail,
+  sendCoveringOneMonthLeftEmail,
+  sendCoveringLastWeekEmail,
+  sendCoversDueTomorrowEmail,
+  type EmailResult
+} from '@eptss/email';
 
 /**
  * API route to automatically send reminder emails throughout the round
@@ -195,18 +203,82 @@ async function sendReminderEmailsForType(
 
       const userHasSubmitted = await hasUserSubmitted(round.roundId, userId);
 
-      // TODO: Implement email sending when email service is properly exported
-      // For now, just record that we would have sent the email
-      const result = { success: true, error: undefined };
-      
-      console.log(`[send-reminder-emails] Would send ${emailType} to ${user.email} (user: ${user.username})`);
-      
-      // In production, you would call the appropriate email function here
-      // Example:
-      // const roundName = round.slug || `Round ${round.roundId}`;
-      // const songTitle = round.song.title || 'TBD';
-      // const songArtist = round.song.artist || 'TBD';
-      // result = await sendVotingClosesTomorrowEmail({ ... });
+      // Send the appropriate reminder email
+      const roundName = round.slug || `Round ${round.roundId}`;
+      const songTitle = round.song.title || 'TBD';
+      const songArtist = round.song.artist || 'TBD';
+
+      let result: EmailResult;
+
+      switch (emailType) {
+        case 'voting_closes_tomorrow':
+          result = await sendVotingClosesTomorrowEmail({
+            userEmail: user.email,
+            userName: user.username || user.email,
+            roundName,
+            roundSlug: round.slug || round.roundId.toString(),
+            votingCloses: formatDate.full(round.coveringBegins)
+          });
+          break;
+
+        case 'covering_halfway':
+          result = await sendCoveringHalfwayEmail({
+            userEmail: user.email,
+            userName: user.username || user.email,
+            roundName,
+            roundSlug: round.slug || round.roundId.toString(),
+            songTitle,
+            songArtist,
+            coversDue: formatDate.full(round.coversDue)
+          });
+          break;
+
+        case 'covering_one_month_left':
+          result = await sendCoveringOneMonthLeftEmail({
+            userEmail: user.email,
+            userName: user.username || user.email,
+            roundName,
+            roundSlug: round.slug || round.roundId.toString(),
+            songTitle,
+            songArtist,
+            coversDue: formatDate.full(round.coversDue),
+            hasSubmitted: userHasSubmitted
+          });
+          break;
+
+        case 'covering_last_week':
+          result = await sendCoveringLastWeekEmail({
+            userEmail: user.email,
+            userName: user.username || user.email,
+            roundName,
+            roundSlug: round.slug || round.roundId.toString(),
+            songTitle,
+            songArtist,
+            coversDue: formatDate.full(round.coversDue),
+            hasSubmitted: userHasSubmitted
+          });
+          break;
+
+        case 'covers_due_tomorrow':
+          result = await sendCoversDueTomorrowEmail({
+            userEmail: user.email,
+            userName: user.username || user.email,
+            roundName,
+            roundSlug: round.slug || round.roundId.toString(),
+            songTitle,
+            songArtist,
+            coversDue: formatDate.full(round.coversDue),
+            listeningParty: formatDate.full(round.listeningParty),
+            hasSubmitted: userHasSubmitted
+          });
+          break;
+
+        default:
+          console.warn(`[send-reminder-emails] Unknown email type: ${emailType}`);
+          result = { success: false, error: 'Unknown email type' };
+      }
+
+      console.log(`[send-reminder-emails] ${result.success ? 'Sent' : 'Failed to send'} ${emailType} to ${user.email} (user: ${user.username})`);
 
       // Record the email send
       await recordReminderSent(

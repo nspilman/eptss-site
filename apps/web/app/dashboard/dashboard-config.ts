@@ -16,13 +16,13 @@ import {
   HeroSkeleton,
   PhaseStatusPanel,
   PhaseStatusSkeleton,
-  ActionPanel,
   ActionPanelSkeleton,
   CurrentRoundPanel,
   CurrentRoundSkeleton,
 } from '@eptss/dashboard/panels';
 
 import { ReflectionPanelWrapper, ReflectionPanelSkeleton } from './ReflectionPanelWrapper';
+import { ActionPanelWrapper } from './ActionPanelWrapper';
 
 /**
  * Main dashboard configuration
@@ -102,7 +102,7 @@ export const eptssDeboardConfig: DashboardConfig = {
         order: 5,
         showSkeleton: true,
       }),
-      ActionPanel,
+      ActionPanelWrapper,
       { skeleton: ActionPanelSkeleton }
     ),
 

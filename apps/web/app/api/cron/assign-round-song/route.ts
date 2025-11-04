@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  getCurrentRound, 
-  setRoundSong, 
+import {
+  getCurrentRound,
+  setRoundSong,
   getDetailedVoteResults,
-  getSongByTitleAndArtist 
+  getSongByTitleAndArtist
 } from '@eptss/data-access';
+import { sendAdminSongAssignmentNotification } from '@eptss/email';
 
 /**
  * API route to automatically assign the winning song to a round when voting closes
@@ -151,8 +152,36 @@ export async function POST(request: NextRequest) {
 
     console.log(`[assign-round-song] Successfully assigned song to round ${round.roundId} (${round.slug})`);
 
-    // TODO: Add admin notification email when email service is available
-    // For now, just log the assignment
+    // Send admin notification email
+    try {
+      const emailResult = await sendAdminSongAssignmentNotification({
+        roundName: round.slug || `Round ${round.roundId}`,
+        roundSlug: round.slug || round.roundId.toString(),
+        assignedSong: {
+          title: winningSong.title,
+          artist: winningSong.artist,
+          average: winningSong.average,
+          votesCount: winningSong.votesCount,
+          oneStarCount: winningSong.oneStarCount
+        },
+        allResults: sortedResults.map(r => ({
+          title: r.title,
+          artist: r.artist,
+          average: r.average,
+          votesCount: r.votesCount,
+          oneStarCount: r.oneStarCount
+        }))
+      });
+
+      if (emailResult.success) {
+        console.log(`[assign-round-song] Admin notification email sent successfully`);
+      } else {
+        console.warn(`[assign-round-song] Failed to send admin notification email:`, emailResult.error);
+      }
+    } catch (error) {
+      console.error(`[assign-round-song] Error sending admin notification email:`, error);
+      // Don't fail the whole operation if email fails
+    }
 
     return NextResponse.json(
       { 

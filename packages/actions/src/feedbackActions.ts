@@ -1,7 +1,7 @@
 "use server";
 
-import { createFeedback as createFeedbackService } from "../services/feedbackService";
-import type { CreateFeedbackInput } from "../services/feedbackService";
+import { createFeedback as createFeedbackService } from "@eptss/data-access/services/feedbackService";
+import type { CreateFeedbackInput } from "@eptss/data-access";
 import { revalidatePath } from "next/cache";
 
 // Define a serializable response type
@@ -21,10 +21,10 @@ type SerializableFeedbackResponse = {
 export async function submitFeedback(input: CreateFeedbackInput): Promise<SerializableFeedbackResponse> {
   try {
     const result = await createFeedbackService(input);
-    
+
     // Revalidate the feedback page to show updated data
     revalidatePath('/feedback');
-    
+
     if (result.status === 'success') {
       return {
         status: 'success',

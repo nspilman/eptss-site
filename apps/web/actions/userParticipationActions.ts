@@ -1,4 +1,4 @@
-// Re-export user participation actions from data-access
+// Re-export user participation actions from actions package
 // This file configures rate limiters for the web app
 import { setRateLimiters } from "@eptss/data-access";
 import { votingRateLimit, submissionRateLimit, signupRateLimit, emailRateLimit } from "@/lib/ratelimit";
@@ -11,12 +11,13 @@ setRateLimiters({
   email: emailRateLimit,
 });
 
-// Re-export all actions from data-access
+// Re-export all actions from @eptss/actions
 export {
   submitVotes,
   submitCover,
   signup,
   signupWithOTP,
+  signupForRound,
   completeSignupAfterVerification,
   verifySignupByEmail,
-} from "@eptss/data-access";
+} from "@eptss/actions";

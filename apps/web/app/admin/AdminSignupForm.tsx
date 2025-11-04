@@ -1,19 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { adminSignupUser } from "@eptss/data-access";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Textarea } from "@eptss/ui";
+import { adminSignupUser } from "@eptss/actions";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Textarea, useToast } from "@eptss/ui";
 import { UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
-
-const useToast = () => {
-  return {
-    toast: ({ title, description, variant }: { title: string, description: string, variant: string }) => {
-      // Simple implementation that uses alert for now
-      alert(`${title}: ${description}`);
-    }
-  };
-};
 
 type User = {
   userid: string;

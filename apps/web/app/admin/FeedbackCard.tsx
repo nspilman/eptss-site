@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, Button } from "@eptss/ui";
 import { MessageSquare, Eye, EyeOff, Trash2 } from "lucide-react";
 import { DataTable } from "@eptss/ui";
 import { useState } from "react";
-import { updateFeedbackPublicStatus, deleteFeedback } from "@eptss/data-access";
+import { updateFeedbackPublicStatus, deleteFeedback } from "@eptss/actions";
 import { useRouter } from "next/navigation";
 import type { Feedback } from "@eptss/data-access";
 

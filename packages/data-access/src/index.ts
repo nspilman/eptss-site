@@ -71,11 +71,8 @@ export {
   searchTags
 } from './services/tagService';
 
-// Re-export actions
-export * from './actions/signupActions';
-export * from './actions/adminActions';
-export * from './actions/feedbackActions';
-export * from './actions/userParticipationActions';
+// Actions have been moved to @eptss/actions package
+// Import actions from '@eptss/actions' instead
 
 // Re-export rate limiter configuration
 export { setRateLimiters, type RateLimiter } from './config/rateLimiters';
