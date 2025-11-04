@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Base schema with common fields for all signup forms
-export const baseSignupSchema = {
+const baseSignupSchema = {
   songTitle: z.string().min(1, "Song title is required"),
   artist: z.string().min(1, "Artist is required"),
   youtubeLink: z.string().min(1, "Youtube link is required")

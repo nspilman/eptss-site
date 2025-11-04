@@ -1,6 +1,6 @@
 "use client";
 
-import { PasswordAuthForm } from "@/components/client/PasswordAuthForm/PasswordAuthForm";
+import { PasswordAuthForm } from "@eptss/auth/components";
 import { Card } from "@eptss/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

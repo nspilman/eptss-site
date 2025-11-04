@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import { PasswordAuthForm } from "@/components/client/PasswordAuthForm/PasswordAuthForm";
+import { PasswordAuthForm } from "@eptss/auth/components";
 import {
   Dialog,
   DialogContent,

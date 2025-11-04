@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@eptss/data-access": "workspace:*",
+    "@eptss/forms": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@supabase/supabase-js": "^2.45.4",
