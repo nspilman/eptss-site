@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { ReactNode } from "react"
-import { FormReturn } from "@/types"
 import {
   Card,
   CardHeader,

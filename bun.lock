@@ -20,6 +20,7 @@
         "@eptss/dashboard": "workspace:*",
         "@eptss/data-access": "workspace:*",
         "@eptss/email": "workspace:*",
+        "@eptss/forms": "workspace:*",
         "@eptss/profile": "workspace:*",
         "@eptss/rich-text-editor": "workspace:*",
         "@eptss/rounds": "workspace:*",
@@ -211,6 +212,24 @@
       "peerDependencies": {
         "react": "^18.0.0",
         "react-dom": "^18.0.0",
+      },
+    },
+    "packages/forms": {
+      "name": "@eptss/forms",
+      "version": "0.1.0",
+      "dependencies": {
+        "@eptss/ui": "workspace:*",
+        "framer-motion": "^11.11.17",
+        "react-hook-form": "^7.53.0",
+        "zod": "^3.24.1",
+      },
+      "devDependencies": {
+        "@types/react": "^18.3.11",
+        "eslint": "8.26.0",
+        "typescript": "5.1.3",
+      },
+      "peerDependencies": {
+        "react": "^18.3.1",
       },
     },
     "packages/profile": {
@@ -594,6 +613,8 @@
     "@eptss/data-access": ["@eptss/data-access@workspace:packages/data-access"],
 
     "@eptss/email": ["@eptss/email@workspace:packages/email"],
+
+    "@eptss/forms": ["@eptss/forms@workspace:packages/forms"],
 
     "@eptss/profile": ["@eptss/profile@workspace:packages/profile"],
 

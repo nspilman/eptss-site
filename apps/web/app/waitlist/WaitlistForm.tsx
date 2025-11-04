@@ -2,15 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useFormSubmission } from "@/hooks/useFormSubmission"
+import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
 import { Button, Form } from "@eptss/ui"
-import { FormWrapper } from "@/components/client/Forms/FormWrapper"
 import { motion } from "framer-motion"
 import { z } from "zod"
 import { addToWaitlist } from "@eptss/actions"
 import { mailingList } from "@eptss/data-access/db/schema"
 import { createInsertSchema } from "drizzle-zod"
-import { FormReturn } from "@/types";
 import { FormBuilder, FieldConfig } from "@eptss/ui";
 
 // Create Zod schema from Drizzle table
