@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
 import { roundProvider, votesProvider, roundsProvider, userParticipationProvider } from "@eptss/data-access";
+import { getCurrentPhase } from "@eptss/data-access/services/dateService";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 
@@ -29,8 +30,17 @@ export default async function Round({ params }: { params: Promise<{ slug: string
       hasVoted = false;
     }
 
+    // Compute the current phase
+    const currentPhase = getCurrentPhase({
+      signupOpens: roundData.signupOpens,
+      votingOpens: roundData.votingOpens,
+      coveringBegins: roundData.coveringBegins,
+      coversDue: roundData.coversDue,
+      listeningParty: roundData.listeningParty,
+    });
+
     // Only fetch additional data if we're past the signup phase
-    if (roundData.phase !== "signups") {
+    if (currentPhase !== "signups") {
       const { voteResults, outstandingVoters, voteBreakdown } = await votesProvider({ roundSlug: slug });
       const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false });
       

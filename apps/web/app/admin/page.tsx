@@ -1,77 +1,138 @@
-import { isAdmin } from "@eptss/data-access/utils/isAdmin";
-import { notFound } from "next/navigation";
-import { Metadata } from 'next/types';
 import { Suspense } from "react";
-import { RoundSelectorServer } from "./RoundSelectorServer";
-import { AdminTabsShell } from "./components/AdminTabsShell";
-import { PageTitle } from "./PageTitle";
+import { Metadata } from 'next/types';
+import { adminProvider } from "@eptss/admin";
+import { ProjectStatsCard } from "@eptss/admin";
 import { getCurrentRound } from "@eptss/data-access";
+import { getCurrentPhase } from "@eptss/data-access/services/dateService";
 
 export const metadata: Metadata = {
-  title: "Admin Dashboard | Everyone Plays the Same Song",
-  description: "Administrative dashboard for managing Everyone Plays the Same Song rounds, participants, and submissions.",
-  openGraph: {
-    title: "Admin Dashboard | Everyone Plays the Same Song",
-    description: "Administrative dashboard for managing Everyone Plays the Same Song rounds, participants, and submissions.",
-  },
+  title: "Dashboard | Admin | Everyone Plays the Same Song",
+  description: "Administrative dashboard overview",
 };
 
-const AdminPage = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ slug?: string; tab?: string }>;
-}) => {
-  try {
-    const adminCheck = await isAdmin();
-    if (!adminCheck) {
-      return notFound();
-    }
+async function DashboardContent() {
+  const stats = await adminProvider();
+  const currentRoundResult = await getCurrentRound();
+  const currentRound = currentRoundResult.status === 'success' ? currentRoundResult.data : null;
+  const currentPhase = currentRound ? getCurrentPhase({
+    signupOpens: currentRound.signupOpens,
+    votingOpens: currentRound.votingOpens,
+    coveringBegins: currentRound.coveringBegins,
+    coversDue: currentRound.coversDue,
+    listeningParty: currentRound.listeningParty,
+  }) : null;
 
-    // Await searchParams
-    const resolvedSearchParams = await searchParams;
-
-    // Fetch only the current round for default slug
-    const currentRoundResult = await getCurrentRound();
-    const currentRound = currentRoundResult.status === 'success' ? currentRoundResult.data : null;
-    
-    // Use slug from URL, or fall back to current round slug
-    const selectedRoundSlug = resolvedSearchParams.slug || currentRound?.slug || "";
-    const activeTab = resolvedSearchParams.tab || "overview";
-
-    return (
-      <div className="container mx-auto py-8 px-4 space-y-8">
-        <PageTitle title="Admin Dashboard" />
-
-        {/* Round Selector with Suspense */}
-        <Suspense fallback={
-          <div className="h-16 bg-background-secondary/30 animate-pulse rounded" />
-        }>
-          <RoundSelectorServer currentRoundSlug={selectedRoundSlug} />
-        </Suspense>
-
-        {/* Tab shell renders immediately, content streams in */}
-        <AdminTabsShell 
-          initialTab={activeTab}
-          roundSlug={selectedRoundSlug}
-        />
+  return (
+    <div className="space-y-6">
+      {/* Welcome Section */}
+      <div>
+        <h2 className="text-3xl font-bold text-primary mb-2">Dashboard</h2>
+        <p className="text-secondary">Welcome back! Here's what's happening with EPTSS.</p>
       </div>
-    );
-  } catch (error) {
-    console.error("Error in admin page:", error);
-    return (
-      <div className="container mx-auto py-8 px-4 space-y-8">
-        <PageTitle title="Admin Dashboard" />
-        <div className="bg-background-secondary/50 p-6 rounded-lg border border-background-tertiary/50">
-          <h2 className="text-xl font-semibold text-primary mb-4">Database Connection Error</h2>
-          <p className="text-primary mb-4">There was an error connecting to the database. This might be due to incorrect credentials in your .env.local file.</p>
-          <div className="bg-background-primary p-4 rounded border border-background-tertiary/50 overflow-auto">
-            <pre className="text-primary whitespace-pre-wrap">{(error as Error).message}</pre>
+
+      {/* Current Round Info */}
+      {currentRound && (
+        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-secondary mb-1">Current Round</p>
+              <h3 className="text-2xl font-bold text-primary">{currentRound.slug}</h3>
+              {currentPhase && (
+                <p className="text-sm text-secondary mt-2">
+                  Phase: <span className="text-primary font-medium">{currentPhase}</span>
+                </p>
+              )}
+            </div>
+            <a
+              href={`/admin/rounds/${currentRound.slug}`}
+              className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors font-medium"
+            >
+              View Details
+            </a>
           </div>
-          <p className="text-primary mt-4">Please check your database connection settings in .env.local and try again.</p>
+        </div>
+      )}
+
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+          <p className="text-sm text-secondary mb-2">Total Users</p>
+          <p className="text-3xl font-bold text-primary">{stats.totalUsers}</p>
+        </div>
+        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+          <p className="text-sm text-secondary mb-2">Total Rounds</p>
+          <p className="text-3xl font-bold text-primary">{stats.totalRounds}</p>
+        </div>
+        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+          <p className="text-sm text-secondary mb-2">Active Users</p>
+          <p className="text-3xl font-bold text-primary">{stats.activeUsers}</p>
+          <p className="text-xs text-secondary mt-1">Last 3 rounds</p>
+        </div>
+        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+          <p className="text-sm text-secondary mb-2">Completion Rate</p>
+          <p className="text-3xl font-bold text-primary">
+            {Math.round(stats.completionRate * 100)}%
+          </p>
         </div>
       </div>
-    );
-  }
-};
 
-export default AdminPage;
+      {/* Detailed Stats */}
+      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+        <h3 className="text-xl font-semibold text-primary mb-4">Detailed Statistics</h3>
+        <ProjectStatsCard
+          totalUsers={stats.totalUsers}
+          totalRounds={stats.totalRounds}
+          activeUsers={stats.activeUsers}
+          completionRate={stats.completionRate}
+        />
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+        <h3 className="text-xl font-semibold text-primary mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a
+            href="/admin/rounds"
+            className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+          >
+            <h4 className="font-semibold text-primary mb-1">Manage Rounds</h4>
+            <p className="text-sm text-secondary">Create and edit rounds</p>
+          </a>
+          <a
+            href="/admin/users"
+            className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+          >
+            <h4 className="font-semibold text-primary mb-1">View Users</h4>
+            <p className="text-sm text-secondary">See user activity</p>
+          </a>
+          <a
+            href="/admin/tools"
+            className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+          >
+            <h4 className="font-semibold text-primary mb-1">Admin Tools</h4>
+            <p className="text-sm text-secondary">Manual operations</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          <div className="h-12 bg-background-secondary/30 animate-pulse rounded" />
+          <div className="grid grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-32 bg-background-secondary/30 animate-pulse rounded" />
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
+  );
+}

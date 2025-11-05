@@ -1,5 +1,8 @@
-import { cn } from './utils'
+import * as React from 'react'
+import { Slot } from '@radix-ui/react-slot'
+import { cn, primitiveComponent } from './utils'
 import { VariantProps, cva } from 'class-variance-authority'
+import { PrimitivePropsWithoutRef } from './types'
 
 const badgeVariants = cva(
   'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-[var(--color-ring)] focus:ring-offset-2',
@@ -22,13 +25,25 @@ const badgeVariants = cva(
 )
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends PrimitivePropsWithoutRef<'div'>,
     VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  )
-}
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, variant, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'div'
+    return (
+      <Comp
+        className={cn(badgeVariants({ variant }), className)}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
 
-export default Badge
+Badge.displayName = 'Badge'
+
+const BadgeComponent = primitiveComponent(Badge, 'Badge')
+
+export { badgeVariants, BadgeComponent as Badge }
+export default BadgeComponent

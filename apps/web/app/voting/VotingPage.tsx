@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import { z } from "zod"
 import { VoteOption } from "@eptss/data-access/types/vote"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
-import { cn } from "@/lib/utils"
 
 interface Props {
   roundId: number;
@@ -187,11 +186,9 @@ export function VotingPage({
           </div>
           <Button 
             type="submit" 
-            disabled={isLoading} 
-            className={cn(
-              "w-full bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black font-bold",
-              "hover:opacity-90 transition-opacity disabled:opacity-50"
-            )}
+            disabled={isLoading}
+            variant="secondary"
+            size="full"
           >
             {isLoading ? "Submitting votes..." : "Submit Votes"}
           </Button>

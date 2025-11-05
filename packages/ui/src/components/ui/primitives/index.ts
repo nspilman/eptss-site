@@ -2,7 +2,8 @@ export { default as Button } from './button'
 export type { ButtonProps } from './button'
 export { default as Input } from './input'
 export type { InputProps } from './input'
-export { default as Badge } from './badge'
+export { Badge, badgeVariants } from './badge'
+export type { BadgeProps } from './badge'
 export {
   useFormField,
   Form,

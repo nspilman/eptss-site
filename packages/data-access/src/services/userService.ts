@@ -55,13 +55,21 @@ export const getUserDetails = async (): Promise<Array<{
     .having(sql`MAX(${signUps.createdAt}) IS NOT NULL`)
     .orderBy(sql`${users.createdAt} DESC NULLS LAST`);
 
+  // Helper function to safely convert to ISO string
+  const toISOString = (date: Date | string | null | undefined): string | null => {
+    if (!date) return null;
+    if (typeof date === 'string') return date;
+    if (date instanceof Date) return date.toISOString();
+    return null;
+  };
+
   return userStats.map(user => ({
     email: user.email,
-    lastActive: user.lastActive?.toISOString() || null,
+    lastActive: toISOString(user.lastActive),
     totalParticipation: user.totalParticipation || 0,
     totalSubmissions: user.totalSubmissions || 0,
-    lastSubmitted: user.lastSubmitted?.toISOString() || null,
-    lastSignup: user.lastSignup?.toISOString() || null,
+    lastSubmitted: toISOString(user.lastSubmitted),
+    lastSignup: toISOString(user.lastSignup),
   }));
 };
 
