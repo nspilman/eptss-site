@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge, Avatar, AvatarFallback, Button } from "@eptss/ui"
+import { Badge, Avatar, AvatarFallback, AvatarImage, Button } from "@eptss/ui"
 import { CalendarIcon, EnvelopeClosedIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 
@@ -11,6 +11,7 @@ export interface User {
   username: string | null;
   fullName: string | null;
   createdAt: Date | null;
+  profilePictureUrl?: string | null;
 }
 
 interface ProfileHeaderProps {
@@ -48,6 +49,9 @@ export function ProfileHeader({ user, signupCount, submissionCount, voteCount }:
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] rounded-full blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
             <Avatar className="relative h-24 w-24 md:h-28 md:w-28 border-2 border-[var(--color-accent-primary)]">
+              {user.profilePictureUrl && (
+                <AvatarImage src={user.profilePictureUrl} alt={user.username || 'Profile picture'} />
+              )}
               <AvatarFallback className="text-2xl md:text-3xl bg-gray-800 text-[var(--color-accent-primary)] font-bold">
                 {getInitials()}
               </AvatarFallback>

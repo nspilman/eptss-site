@@ -7,6 +7,15 @@ import { Switch } from '@eptss/ui';
 import { Input } from '@eptss/ui';
 import { Textarea } from '@eptss/ui';
 import { Button } from '@eptss/ui';
+import {
+  createSocialLinkAction,
+  updateSocialLinkAction,
+  deleteSocialLinkAction,
+  createEmbeddedMediaAction,
+  updateEmbeddedMediaAction,
+  deleteEmbeddedMediaAction
+} from '@eptss/actions';
+import { profileProvider } from '@eptss/data-access';
 
 interface PrivacySettings {
   showStats: boolean;
@@ -16,10 +25,29 @@ interface PrivacySettings {
   showEmail: boolean;
   publicDisplayName: string | null;
   profileBio: string | null;
+  showSocialLinks: boolean;
+  showEmbeddedMedia: boolean;
+}
+
+interface SocialLink {
+  id: string;
+  platform: string;
+  label: string | null;
+  url: string;
+  displayOrder: number;
+}
+
+interface EmbeddedMedia {
+  id: string;
+  mediaType: 'audio' | 'video' | 'image' | 'embed';
+  embedCode: string;
+  title: string | null;
+  displayOrder: number;
 }
 
 interface PrivacySettingsTabProps {
   user: {
+    userid: string;
     username: string;
     fullName?: string | null;
   };
@@ -32,43 +60,59 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
     showSubmissions: true,
     showVotes: false,
     showEmail: false,
+    showSocialLinks: true,
+    showEmbeddedMedia: true,
     publicDisplayName: null,
     profileBio: null,
   });
+
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
+  const [embeddedMedia, setEmbeddedMedia] = useState<EmbeddedMedia[]>([]);
+  const [newSocialLink, setNewSocialLink] = useState({ platform: '', label: '', url: '' });
+  const [newMedia, setNewMedia] = useState({ mediaType: 'audio' as const, embedCode: '', title: '' });
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  // Load privacy settings on mount
+  // Load privacy settings, social links, and media on mount
   useEffect(() => {
-    const fetchPrivacySettings = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/profile/privacy');
-        if (!response.ok) throw new Error('Failed to load privacy settings');
+        const [privacyResponse, profileData] = await Promise.all([
+          fetch('/api/profile/privacy'),
+          profileProvider({ userId: user.userid })
+        ]);
 
-        const data = await response.json();
+        if (!privacyResponse.ok) throw new Error('Failed to load privacy settings');
+
+        const privacyData = await privacyResponse.json();
         setSettings({
-          showStats: data.privacySettings.showStats ?? true,
-          showSignups: data.privacySettings.showSignups ?? true,
-          showSubmissions: data.privacySettings.showSubmissions ?? true,
-          showVotes: data.privacySettings.showVotes ?? false,
-          showEmail: data.privacySettings.showEmail ?? false,
-          publicDisplayName: data.privacySettings.publicDisplayName,
-          profileBio: data.privacySettings.profileBio,
+          showStats: privacyData.privacySettings.showStats ?? true,
+          showSignups: privacyData.privacySettings.showSignups ?? true,
+          showSubmissions: privacyData.privacySettings.showSubmissions ?? true,
+          showVotes: privacyData.privacySettings.showVotes ?? false,
+          showEmail: privacyData.privacySettings.showEmail ?? false,
+          showSocialLinks: privacyData.privacySettings.showSocialLinks ?? true,
+          showEmbeddedMedia: privacyData.privacySettings.showEmbeddedMedia ?? true,
+          publicDisplayName: privacyData.privacySettings.publicDisplayName,
+          profileBio: privacyData.privacySettings.profileBio,
         });
+
+        setSocialLinks(profileData.socialLinks);
+        setEmbeddedMedia(profileData.embeddedMedia);
 
         setIsLoading(false);
       } catch (err) {
-        console.error('Error loading privacy settings:', err);
-        setError('Failed to load privacy settings');
+        console.error('Error loading profile data:', err);
+        setError('Failed to load profile data');
         setIsLoading(false);
       }
     };
 
-    fetchPrivacySettings();
-  }, []);
+    fetchData();
+  }, [user.userid]);
 
   const handleSaveSettings = async () => {
     setIsSaving(true);
@@ -96,6 +140,78 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  // Social Link Handlers
+  const handleAddSocialLink = async () => {
+    if (!newSocialLink.platform || !newSocialLink.url) {
+      setError('Platform and URL are required');
+      return;
+    }
+
+    const result = await createSocialLinkAction({
+      userId: user.userid,
+      platform: newSocialLink.platform,
+      label: newSocialLink.label || undefined,
+      url: newSocialLink.url,
+      displayOrder: socialLinks.length,
+    });
+
+    if (result.status === 'Success' && result.data) {
+      setSocialLinks([...socialLinks, result.data]);
+      setNewSocialLink({ platform: '', label: '', url: '' });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } else {
+      setError(result.message);
+    }
+  };
+
+  const handleDeleteSocialLink = async (linkId: string) => {
+    const result = await deleteSocialLinkAction({ linkId, userId: user.userid });
+    if (result.status === 'Success') {
+      setSocialLinks(socialLinks.filter(link => link.id !== linkId));
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } else {
+      setError(result.message);
+    }
+  };
+
+  // Embedded Media Handlers
+  const handleAddMedia = async () => {
+    if (!newMedia.embedCode) {
+      setError('Embed code is required');
+      return;
+    }
+
+    const result = await createEmbeddedMediaAction({
+      userId: user.userid,
+      mediaType: newMedia.mediaType,
+      embedCode: newMedia.embedCode,
+      title: newMedia.title || undefined,
+      displayOrder: embeddedMedia.length,
+    });
+
+    if (result.status === 'Success' && result.data) {
+      setEmbeddedMedia([...embeddedMedia, result.data]);
+      setNewMedia({ mediaType: 'audio', embedCode: '', title: '' });
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } else {
+      setError(result.message);
+    }
+  };
+
+  const handleDeleteMedia = async (mediaId: string) => {
+    const result = await deleteEmbeddedMediaAction({ mediaId, userId: user.userid });
+    if (result.status === 'Success') {
+      setEmbeddedMedia(embeddedMedia.filter(media => media.id !== mediaId));
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } else {
+      setError(result.message);
     }
   };
 
@@ -187,81 +303,6 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
               <p className="text-xs text-gray-500">{(settings.profileBio || '').length}/1000 characters</p>
             </div>
 
-            {/* Privacy Toggles */}
-            <div className="space-y-4 pt-4 border-t border-gray-700">
-              <h3 className="text-lg font-semibold text-[var(--color-primary)]">What to Show Publicly</h3>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
-                <div className="flex-1">
-                  <Label htmlFor="showStats" className="text-[var(--color-primary)] cursor-pointer">
-                    Activity Statistics
-                  </Label>
-                  <p className="text-sm text-gray-400">Show counts for signups, submissions, and votes</p>
-                </div>
-                <Switch
-                  id="showStats"
-                  checked={settings.showStats}
-                  onCheckedChange={(checked) => setSettings({ ...settings, showStats: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
-                <div className="flex-1">
-                  <Label htmlFor="showSignups" className="text-[var(--color-primary)] cursor-pointer">
-                    Signup History
-                  </Label>
-                  <p className="text-sm text-gray-400">Show which rounds you've signed up for</p>
-                </div>
-                <Switch
-                  id="showSignups"
-                  checked={settings.showSignups}
-                  onCheckedChange={(checked) => setSettings({ ...settings, showSignups: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
-                <div className="flex-1">
-                  <Label htmlFor="showSubmissions" className="text-[var(--color-primary)] cursor-pointer">
-                    All Submissions
-                  </Label>
-                  <p className="text-sm text-gray-400">Show all your submitted songs (can control individually below)</p>
-                </div>
-                <Switch
-                  id="showSubmissions"
-                  checked={settings.showSubmissions}
-                  onCheckedChange={(checked) => setSettings({ ...settings, showSubmissions: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
-                <div className="flex-1">
-                  <Label htmlFor="showVotes" className="text-[var(--color-primary)] cursor-pointer">
-                    Voting Activity
-                  </Label>
-                  <p className="text-sm text-gray-400">Show which rounds you've voted in</p>
-                </div>
-                <Switch
-                  id="showVotes"
-                  checked={settings.showVotes}
-                  onCheckedChange={(checked) => setSettings({ ...settings, showVotes: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
-                <div className="flex-1">
-                  <Label htmlFor="showEmail" className="text-[var(--color-primary)] cursor-pointer">
-                    Email Address
-                  </Label>
-                  <p className="text-sm text-gray-400">Show your email on your public profile</p>
-                </div>
-                <Switch
-                  id="showEmail"
-                  checked={settings.showEmail}
-                  onCheckedChange={(checked) => setSettings({ ...settings, showEmail: checked })}
-                />
-              </div>
-            </div>
-
             {/* Save Button */}
             <div className="pt-4">
               <Button
@@ -270,7 +311,146 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
                 size="lg"
                 className="bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 shadow-lg shadow-[var(--color-accent-primary)]/50 hover:shadow-xl hover:shadow-[var(--color-accent-primary)]/70 transition-all"
               >
-                {isSaving ? 'Saving...' : 'Save Privacy Settings'}
+                {isSaving ? 'Saving...' : 'Save Profile Settings'}
+              </Button>
+            </div>
+          </CardContent>
+        </div>
+      </Card>
+
+      {/* Social Links Card */}
+      <Card className="w-full bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-xs">
+        <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+        <div className="relative z-10">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-[var(--color-primary)] mb-2">
+              Social Links
+            </CardTitle>
+            <CardDescription className="text-sm text-gray-400">
+              Add links to your social media profiles
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {/* Existing Social Links */}
+            {socialLinks.map((link) => (
+              <div key={link.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                <div className="flex-1">
+                  <div className="text-[var(--color-primary)] font-medium">
+                    {link.label || link.platform}
+                  </div>
+                  <div className="text-sm text-gray-400 truncate">{link.url}</div>
+                </div>
+                <Button
+                  onClick={() => handleDeleteSocialLink(link.id)}
+                  variant="destructive"
+                  size="sm"
+                >
+                  Delete
+                </Button>
+              </div>
+            ))}
+
+            {/* Add New Social Link */}
+            <div className="space-y-3 pt-4 border-t border-gray-700">
+              <h4 className="text-sm font-medium text-[var(--color-primary)]">Add New Link</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Input
+                  placeholder="Platform (e.g., Twitter, Instagram)"
+                  value={newSocialLink.platform}
+                  onChange={(e) => setNewSocialLink({ ...newSocialLink, platform: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)]"
+                />
+                <Input
+                  placeholder="Label (optional)"
+                  value={newSocialLink.label}
+                  onChange={(e) => setNewSocialLink({ ...newSocialLink, label: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)]"
+                />
+                <Input
+                  placeholder="URL"
+                  value={newSocialLink.url}
+                  onChange={(e) => setNewSocialLink({ ...newSocialLink, url: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)]"
+                />
+              </div>
+              <Button
+                onClick={handleAddSocialLink}
+                className="bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900"
+              >
+                Add Social Link
+              </Button>
+            </div>
+          </CardContent>
+        </div>
+      </Card>
+
+      {/* Embedded Media Card */}
+      <Card className="w-full bg-gray-900/50 border-gray-800 relative overflow-hidden backdrop-blur-xs">
+        <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+        <div className="relative z-10">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-[var(--color-primary)] mb-2">
+              Embedded Media
+            </CardTitle>
+            <CardDescription className="text-sm text-gray-400">
+              Add audio, video, or other embeddable media to your profile
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {/* Existing Embedded Media */}
+            {embeddedMedia.map((media) => (
+              <div key={media.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                <div className="flex-1">
+                  <div className="text-[var(--color-primary)] font-medium">
+                    {media.title || `${media.mediaType} embed`}
+                  </div>
+                  <div className="text-sm text-gray-400">Type: {media.mediaType}</div>
+                </div>
+                <Button
+                  onClick={() => handleDeleteMedia(media.id)}
+                  variant="destructive"
+                  size="sm"
+                >
+                  Delete
+                </Button>
+              </div>
+            ))}
+
+            {/* Add New Media */}
+            <div className="space-y-3 pt-4 border-t border-gray-700">
+              <h4 className="text-sm font-medium text-[var(--color-primary)]">Add New Media</h4>
+              <div className="space-y-3">
+                <select
+                  value={newMedia.mediaType}
+                  onChange={(e) => setNewMedia({ ...newMedia, mediaType: e.target.value as any })}
+                  className="w-full p-2 rounded bg-gray-800 border border-gray-700 text-[var(--color-primary)]"
+                >
+                  <option value="audio">Audio</option>
+                  <option value="video">Video</option>
+                  <option value="image">Image</option>
+                  <option value="embed">Other Embed</option>
+                </select>
+                <Input
+                  placeholder="Title (optional)"
+                  value={newMedia.title}
+                  onChange={(e) => setNewMedia({ ...newMedia, title: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)]"
+                />
+                <Textarea
+                  placeholder="Embed code or URL (e.g., SoundCloud iframe, YouTube embed, etc.)"
+                  value={newMedia.embedCode}
+                  onChange={(e) => setNewMedia({ ...newMedia, embedCode: e.target.value })}
+                  rows={4}
+                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)]"
+                />
+              </div>
+              <Button
+                onClick={handleAddMedia}
+                className="bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900"
+              >
+                Add Media
               </Button>
             </div>
           </CardContent>

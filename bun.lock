@@ -117,6 +117,7 @@
       "name": "@eptss/actions",
       "version": "0.1.0",
       "dependencies": {
+        "@eptss/bucket-storage": "workspace:*",
         "@eptss/data-access": "workspace:*",
         "@eptss/email": "workspace:*",
         "@eptss/shared": "workspace:*",
@@ -180,6 +181,18 @@
         "@types/react": "^18.3.11",
         "@types/react-dom": "^18.3.1",
         "typescript": "^5.6.3",
+      },
+    },
+    "packages/bucket-storage": {
+      "name": "@eptss/bucket-storage",
+      "version": "0.1.0",
+      "dependencies": {
+        "@supabase/supabase-js": "^2.45.4",
+      },
+      "devDependencies": {
+        "@types/node": "18.11.3",
+        "eslint": "8.26.0",
+        "typescript": "5.1.3",
       },
     },
     "packages/dashboard": {
@@ -642,6 +655,8 @@
     "@eptss/admin": ["@eptss/admin@workspace:packages/admin"],
 
     "@eptss/auth": ["@eptss/auth@workspace:packages/auth"],
+
+    "@eptss/bucket-storage": ["@eptss/bucket-storage@workspace:packages/bucket-storage"],
 
     "@eptss/dashboard": ["@eptss/dashboard@workspace:packages/dashboard"],
 

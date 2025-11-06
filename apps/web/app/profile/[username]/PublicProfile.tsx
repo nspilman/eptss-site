@@ -5,10 +5,28 @@ import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection } from "@eptss/data-access";
 import { Card, CardContent } from "@eptss/ui";
 
+interface SocialLink {
+  id: string;
+  platform: string;
+  label: string | null;
+  url: string;
+  displayOrder: number;
+}
+
+interface EmbeddedMedia {
+  id: string;
+  mediaType: 'audio' | 'video' | 'image' | 'embed';
+  embedCode: string;
+  title: string | null;
+  displayOrder: number;
+}
+
 interface PublicProfileProps {
   user: {
+    userid: string;
     username: string;
     fullName: string | null;
+    profilePictureUrl?: string | null;
     displayName: string;
     bio: string | null;
     showEmail: boolean;
@@ -23,22 +41,36 @@ interface PublicProfileProps {
     songArtist: string;
   }>;
   reflections: Reflection[];
+  socialLinks: SocialLink[];
+  embeddedMedia: EmbeddedMedia[];
   privacy: {
     showStats: boolean;
     showSignups: boolean;
     showSubmissions: boolean;
     showVotes: boolean;
+    showSocialLinks: boolean;
+    showEmbeddedMedia: boolean;
   };
   isOwnProfile?: boolean;
 }
 
-export const PublicProfile = ({ user, submissions, reflections, privacy, isOwnProfile }: PublicProfileProps) => {
+export const PublicProfile = ({ user, submissions, reflections, socialLinks, embeddedMedia, privacy, isOwnProfile }: PublicProfileProps) => {
   return (
     <div className="flex flex-col w-full max-w-5xl mx-auto px-4 py-8 space-y-12">
       {/* Header Section */}
       <section className="w-full">
         <div className="mb-8">
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-6">
+            {/* Profile Picture */}
+            {user.profilePictureUrl && (
+              <div className="flex-shrink-0">
+                <img
+                  src={user.profilePictureUrl}
+                  alt={user.displayName}
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-[var(--color-accent-primary)]"
+                />
+              </div>
+            )}
             <div className="flex-1">
               <h1 className="font-fraunces text-[var(--color-primary)] font-black text-4xl md:text-5xl mb-2 tracking-tight">
                 {user.displayName}
@@ -64,6 +96,57 @@ export const PublicProfile = ({ user, submissions, reflections, privacy, isOwnPr
           <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mt-4"></div>
         </div>
       </section>
+
+      {/* Social Links Section */}
+      {socialLinks.length > 0 && (
+        <section className="w-full">
+          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-3xl pb-6 self-start tracking-tight">
+            Connect
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {socialLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 border border-gray-700 rounded-lg text-[var(--color-primary)] font-medium transition-all group"
+              >
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                </svg>
+                <span>{link.label || link.platform}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Embedded Media Section */}
+      {embeddedMedia.length > 0 && (
+        <section className="w-full">
+          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-3xl pb-6 self-start tracking-tight">
+            Media
+          </h2>
+          <div className="grid grid-cols-1 gap-6 w-full">
+            {embeddedMedia.map((media) => (
+              <Card key={media.id} className="relative">
+                <CardContent>
+                  {media.title && (
+                    <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-4">
+                      {media.title}
+                    </h3>
+                  )}
+                  <div
+                    className="w-full"
+                    dangerouslySetInnerHTML={{ __html: media.embedCode }}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Submissions Section */}
       {submissions.length > 0 && (
@@ -182,7 +265,7 @@ export const PublicProfile = ({ user, submissions, reflections, privacy, isOwnPr
       )}
 
       {/* Empty State */}
-      {submissions.length === 0 && reflections.length === 0 && (
+      {submissions.length === 0 && reflections.length === 0 && socialLinks.length === 0 && embeddedMedia.length === 0 && (
         <section className="w-full text-center py-12">
           <p className="text-[var(--color-gray-400)] text-lg font-roboto">
             This user hasn't shared any public content yet.

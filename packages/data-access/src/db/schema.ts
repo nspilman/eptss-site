@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   username: text("username").unique().notNull(),
   fullName: text("full_name"),
   adminLevel: integer("admin_level"),
+  profilePictureUrl: text("profile_picture_url"),
 });
 
 // Songs Table
@@ -132,6 +133,9 @@ export const testRuns = pgTable("test_runs", {
 // Feedback Type Enum
 export const feedbackTypeEnum = pgEnum('feedback_type', ['review', 'bug_report', 'feature_request', 'general']);
 
+// Media Type Enum
+export const mediaTypeEnum = pgEnum('media_type', ['audio', 'video', 'image', 'embed']);
+
 // Feedback Table
 export const feedback = pgTable("feedback", {
   id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
@@ -217,6 +221,8 @@ export const userPrivacySettings = pgTable("user_privacy_settings", {
   showSubmissions: boolean("show_submissions").notNull().default(true),
   showVotes: boolean("show_votes").notNull().default(false),
   showEmail: boolean("show_email").notNull().default(false),
+  showSocialLinks: boolean("show_social_links").notNull().default(true),
+  showEmbeddedMedia: boolean("show_embedded_media").notNull().default(true),
   publicDisplayName: text("public_display_name"),
   profileBio: text("profile_bio"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -225,3 +231,33 @@ export const userPrivacySettings = pgTable("user_privacy_settings", {
 
 export type UserPrivacySettings = typeof userPrivacySettings.$inferSelect;
 export type NewUserPrivacySettings = typeof userPrivacySettings.$inferInsert;
+
+// User Social Links Table
+export const userSocialLinks = pgTable("user_social_links", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  platform: text("platform").notNull(), // 'twitter', 'instagram', 'soundcloud', 'custom', etc.
+  label: text("label"), // For custom links, display label
+  url: text("url").notNull(),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type UserSocialLink = typeof userSocialLinks.$inferSelect;
+export type NewUserSocialLink = typeof userSocialLinks.$inferInsert;
+
+// User Embedded Media Table
+export const userEmbeddedMedia = pgTable("user_embedded_media", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  mediaType: mediaTypeEnum("media_type").notNull(),
+  embedCode: text("embed_code").notNull(), // iframe code or URL
+  title: text("title"), // Optional title/description
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type UserEmbeddedMedia = typeof userEmbeddedMedia.$inferSelect;
+export type NewUserEmbeddedMedia = typeof userEmbeddedMedia.$inferInsert;

@@ -1,21 +1,16 @@
 {
-  "name": "@eptss/actions",
+  "name": "@eptss/bucket-storage",
   "version": "0.1.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./adminActions": "./src/adminActions.ts"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
-    "@eptss/bucket-storage": "workspace:*",
-    "@eptss/data-access": "workspace:*",
-    "@eptss/email": "workspace:*",
-    "@eptss/shared": "workspace:*",
-    "next": "15.0.3"
+    "@supabase/supabase-js": "^2.45.4"
   },
   "devDependencies": {
     "@types/node": "18.11.3",

@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
         showSubmissions,
         showVotes,
         showEmail,
+        showSocialLinks,
+        showEmbeddedMedia,
         publicDisplayName,
         profileBio,
       } = body;
@@ -89,6 +91,8 @@ export async function POST(request: NextRequest) {
         showSubmissions,
         showVotes,
         showEmail,
+        showSocialLinks,
+        showEmbeddedMedia,
         publicDisplayName: publicDisplayName?.trim() || null,
         profileBio: profileBio?.trim() || null,
       });

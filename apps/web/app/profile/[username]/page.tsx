@@ -57,6 +57,8 @@ const PublicProfilePage = async ({ params }: Props) => {
       submissions={profileData.submissions}
       reflections={reflections}
       privacy={profileData.privacy}
+      socialLinks={profileData.socialLinks}
+      embeddedMedia={profileData.embeddedMedia}
       isOwnProfile={isOwnProfile}
     />
   );

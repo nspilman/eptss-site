@@ -16,6 +16,8 @@
     "./db/schema": "./src/db/schema.ts"
   },
   "scripts": {
+    "drizzle:generate": "bun drizzle-kit generate",
+    "drizzle:migrate": "bun drizzle-kit migrate",
     "lint": "eslint .",
     "clean": "rm -rf .turbo node_modules"
   },

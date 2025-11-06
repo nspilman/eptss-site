@@ -5,3 +5,4 @@ export * from './feedbackActions';
 export * from './mailingListActions';
 export * from './signupActions';
 export * from './userParticipationActions';
+export * from './profileActions';

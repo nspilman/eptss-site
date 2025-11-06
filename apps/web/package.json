@@ -9,7 +9,6 @@
     "check-types": "tsc --noEmit",
     "drizzle:generate": "bun drizzle-kit generate",
     "drizzle:migrate": "bun drizzle-kit migrate",
-    "drizzle:push": "bun drizzle-kit push",
     "lint": "bun --bun next lint",
     "test": "bun jest --watch",
     "test-coverage": "bun jest --coverage",

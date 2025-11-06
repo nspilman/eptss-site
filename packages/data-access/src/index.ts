@@ -8,6 +8,7 @@ export * from './providers/monitoringProvider/monitoringProvider';
 export * from './providers/feedbackProvider/feedbackProvider';
 export * from './providers/userSessionProvider/userSessionProvider';
 export * from './providers/signupProvider/signupProvider';
+export * from './providers/profileProvider/profileProvider';
 // Note: blogProvider is NOT exported from main index
 // because it uses fs module which is Node.js only.
 // Import it directly from './providers/blogProvider/blogProvider' in server components or API routes only.
@@ -29,7 +30,16 @@ export {
   getPublicProfileByUsername,
   getUserPrivacySettings,
   updateUserPrivacySettings,
-  getUserById
+  getUserById,
+  getUserSocialLinks,
+  createUserSocialLink,
+  updateUserSocialLink,
+  deleteUserSocialLink,
+  getUserEmbeddedMedia,
+  createUserEmbeddedMedia,
+  updateUserEmbeddedMedia,
+  deleteUserEmbeddedMedia,
+  updateUserProfilePicture
 } from './services/userService';
 export {
   getUserSignups,

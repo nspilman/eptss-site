@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "../db";
-import { users, signUps, submissions, roundMetadata, songs, userPrivacySettings } from "../db/schema";
-import { count, eq, and } from "drizzle-orm";
+import { users, signUps, submissions, roundMetadata, songs, userPrivacySettings, userSocialLinks, userEmbeddedMedia } from "../db/schema";
+import { count, eq, and, asc, desc } from "drizzle-orm";
 import { sql } from "drizzle-orm/sql";
 
 export const getUserCount = async () => {
@@ -187,6 +187,7 @@ export const getPublicProfileByUsername = async (username: string) => {
       userid: users.userid,
       username: users.username,
       fullName: users.fullName,
+      profilePictureUrl: users.profilePictureUrl,
     })
     .from(users)
     .where(eq(users.username, username))
@@ -239,10 +240,22 @@ export const getPublicProfileByUsername = async (username: string) => {
   // Determine display name based on privacy settings
   const displayName = privacy.publicDisplayName || user.fullName || user.username;
 
+  // Get social links and embedded media
+  const [socialLinks, embeddedMedia] = await Promise.all([
+    getUserSocialLinks(user.userid),
+    getUserEmbeddedMedia(user.userid),
+  ]);
+
+  // Filter based on privacy settings
+  const filteredSocialLinks = privacy.showSocialLinks ? socialLinks : [];
+  const filteredEmbeddedMedia = privacy.showEmbeddedMedia ? embeddedMedia : [];
+
   return {
     user: {
+      userid: user.userid,
       username: user.username,
       fullName: user.fullName,
+      profilePictureUrl: user.profilePictureUrl,
       displayName,
       bio: privacy.profileBio,
       showEmail: privacy.showEmail,
@@ -256,11 +269,15 @@ export const getPublicProfileByUsername = async (username: string) => {
       songTitle: s.songTitle,
       songArtist: s.songArtist,
     })),
+    socialLinks: filteredSocialLinks,
+    embeddedMedia: filteredEmbeddedMedia,
     privacy: {
       showStats: privacy.showStats,
       showSignups: privacy.showSignups,
       showSubmissions: privacy.showSubmissions,
       showVotes: privacy.showVotes,
+      showSocialLinks: privacy.showSocialLinks ?? true,
+      showEmbeddedMedia: privacy.showEmbeddedMedia ?? true,
     },
   };
 };
@@ -302,6 +319,8 @@ export const updateUserPrivacySettings = async (
     showSubmissions?: boolean;
     showVotes?: boolean;
     showEmail?: boolean;
+    showSocialLinks?: boolean;
+    showEmbeddedMedia?: boolean;
     publicDisplayName?: string | null;
     profileBio?: string | null;
   }
@@ -347,5 +366,160 @@ export const getUserById = async (userId: string) => {
     .limit(1);
 
   return result[0] || null;
+};
+
+/**
+ * Get user's social links ordered by displayOrder
+ */
+export const getUserSocialLinks = async (userId: string) => {
+  const result = await db
+    .select()
+    .from(userSocialLinks)
+    .where(eq(userSocialLinks.userId, userId))
+    .orderBy(asc(userSocialLinks.displayOrder));
+
+  return result;
+};
+
+/**
+ * Create a new social link for a user
+ */
+export const createUserSocialLink = async (data: {
+  userId: string;
+  platform: string;
+  label?: string | null;
+  url: string;
+  displayOrder?: number;
+}) => {
+  const result = await db
+    .insert(userSocialLinks)
+    .values({
+      userId: data.userId,
+      platform: data.platform,
+      label: data.label,
+      url: data.url,
+      displayOrder: data.displayOrder ?? 0,
+    })
+    .returning();
+
+  return result[0];
+};
+
+/**
+ * Update a social link
+ */
+export const updateUserSocialLink = async (
+  linkId: string,
+  data: {
+    platform?: string;
+    label?: string | null;
+    url?: string;
+    displayOrder?: number;
+  }
+) => {
+  const result = await db
+    .update(userSocialLinks)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(userSocialLinks.id, linkId))
+    .returning();
+
+  return result[0];
+};
+
+/**
+ * Delete a social link
+ */
+export const deleteUserSocialLink = async (linkId: string) => {
+  await db
+    .delete(userSocialLinks)
+    .where(eq(userSocialLinks.id, linkId));
+};
+
+/**
+ * Get user's embedded media ordered by displayOrder
+ */
+export const getUserEmbeddedMedia = async (userId: string) => {
+  const result = await db
+    .select()
+    .from(userEmbeddedMedia)
+    .where(eq(userEmbeddedMedia.userId, userId))
+    .orderBy(asc(userEmbeddedMedia.displayOrder));
+
+  return result;
+};
+
+/**
+ * Create a new embedded media item for a user
+ */
+export const createUserEmbeddedMedia = async (data: {
+  userId: string;
+  mediaType: 'audio' | 'video' | 'image' | 'embed';
+  embedCode: string;
+  title?: string | null;
+  displayOrder?: number;
+}) => {
+  const result = await db
+    .insert(userEmbeddedMedia)
+    .values({
+      userId: data.userId,
+      mediaType: data.mediaType,
+      embedCode: data.embedCode,
+      title: data.title,
+      displayOrder: data.displayOrder ?? 0,
+    })
+    .returning();
+
+  return result[0];
+};
+
+/**
+ * Update an embedded media item
+ */
+export const updateUserEmbeddedMedia = async (
+  mediaId: string,
+  data: {
+    mediaType?: 'audio' | 'video' | 'image' | 'embed';
+    embedCode?: string;
+    title?: string | null;
+    displayOrder?: number;
+  }
+) => {
+  const result = await db
+    .update(userEmbeddedMedia)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(userEmbeddedMedia.id, mediaId))
+    .returning();
+
+  return result[0];
+};
+
+/**
+ * Delete an embedded media item
+ */
+export const deleteUserEmbeddedMedia = async (mediaId: string) => {
+  await db
+    .delete(userEmbeddedMedia)
+    .where(eq(userEmbeddedMedia.id, mediaId));
+};
+
+/**
+ * Update user's profile picture URL
+ */
+export const updateUserProfilePicture = async (userId: string, profilePictureUrl: string | null) => {
+  const result = await db
+    .update(users)
+    .set({
+      profilePictureUrl,
+    })
+    .where(eq(users.userid, userId))
+    .returning();
+
+  return result[0];
 };
 
