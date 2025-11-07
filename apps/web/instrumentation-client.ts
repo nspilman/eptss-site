@@ -1,6 +1,11 @@
-import posthog from 'posthog-js'
+/**
+ * Client-side instrumentation
+ *
+ * This file runs on the client before anything else.
+ * Used to initialize observability tools like PostHog.
+ */
 
-posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
-  api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-  defaults: '2025-05-24'
-});
+import { initPostHog } from '@eptss/logger/client';
+
+// Initialize PostHog for client-side tracking
+initPostHog();

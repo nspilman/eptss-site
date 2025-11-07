@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { Navigation } from "@eptss/shared";
 import { signupForRoundSchema } from "@eptss/data-access/schemas/actionSchemas";
 import { signupRateLimit } from "@eptss/data-access/utils/ratelimit";
-import { logger } from "@eptss/data-access/utils/logger";
+import { logger } from "@eptss/logger/server";
 
 /**
  * Sign up a user for a round without song selection

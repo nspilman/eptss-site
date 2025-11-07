@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@eptss/shared": "workspace:*",
+    "@eptss/logger": "workspace:*",
     "@libsql/client": "^0.14.0",
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.4",

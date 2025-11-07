@@ -5,7 +5,7 @@ import { adminSubmitCover as adminSubmitCoverService } from "@eptss/data-access/
 import { createRound as createRoundService } from "@eptss/data-access/services/roundService";
 import { updateFeedbackPublicStatus as updateFeedbackPublicStatusService, deleteFeedback as deleteFeedbackService } from "@eptss/data-access/services/feedbackService";
 import { FormReturn } from "@eptss/data-access/types/index";
-import { logger } from "@eptss/data-access/utils/logger";
+import { logger } from "@eptss/logger/server";
 import { getUserInfo } from "@eptss/data-access";
 import { getRoundById } from "@eptss/data-access/services/roundService";
 import { formatDate } from "@eptss/data-access";

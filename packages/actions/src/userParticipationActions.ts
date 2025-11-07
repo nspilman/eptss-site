@@ -14,7 +14,7 @@ import { revalidatePath } from "next/cache";
 import { signupSchema } from "@eptss/data-access/schemas/signupSchemas";
 import { validateFormData } from "@eptss/data-access/utils/formDataHelpers";
 import { submitVotesSchema, submitCoverSchema, signupWithOTPSchema } from "@eptss/data-access/schemas/actionSchemas";
-import { logger } from "@eptss/data-access/utils/logger";
+import { logger } from "@eptss/logger/server";
 import {
   votingRateLimit,
   submissionRateLimit,

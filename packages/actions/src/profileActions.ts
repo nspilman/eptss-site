@@ -12,7 +12,7 @@ import {
 import { uploadFile, deleteFile, generateProfilePicturePath, BUCKETS } from "@eptss/bucket-storage";
 import { revalidatePath } from "next/cache";
 import { Navigation } from "@eptss/shared";
-import { logger } from "@eptss/data-access/utils/logger";
+import { logger } from "@eptss/logger/server";
 
 // ============================================
 // SOCIAL LINKS ACTIONS

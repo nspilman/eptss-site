@@ -33,6 +33,7 @@
     "@eptss/data-access": "workspace:*",
     "@eptss/email": "workspace:*",
     "@eptss/forms": "workspace:*",
+    "@eptss/logger": "workspace:*",
     "@eptss/profile": "workspace:*",
     "@eptss/rich-text-editor": "workspace:*",
     "@eptss/rounds": "workspace:*",

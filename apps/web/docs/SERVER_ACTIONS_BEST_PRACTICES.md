@@ -224,28 +224,29 @@ export async function myAction(formData: FormData): Promise<FormReturn> {
 
 **Log important events:**
 ```typescript
-import { logger } from "@/lib/logger";
+import { logger } from "@eptss/logger/server";
 
 export async function myAction(formData: FormData): Promise<FormReturn> {
   try {
     // Business logic
-    
+
     logger.info('Action completed', { userId, actionType: 'signup' });
     return { status: "Success", message: "Done" };
-    
+
   } catch (error) {
     logger.error('Action failed', {
-      error: error instanceof Error ? error.message : 'Unknown',
-      stack: error instanceof Error ? error.stack : undefined,
+      error: error instanceof Error ? error : undefined,
       userId,
     });
-    
+
     return { status: "Error", message: "Something went wrong" };
   }
 }
 ```
 
 **Why**: Helps debug issues and monitor application health.
+
+**Note**: Use `@eptss/logger/server` for server-side logging (server actions, API routes). Use `@eptss/logger/client` for client-side logging (React components).
 
 ---
 
