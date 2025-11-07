@@ -41,10 +41,6 @@ export function initPostHog() {
       autocapture: true, // Auto-capture clicks and interactions
     });
 
-//     posthog.init('phc_XHMaIiC8s1hcz8QGVB00BfzrHWgmat2se2JowGMFPbj', {
-//   api_host: 'https://us.i.posthog.com',
-//   defaults: '2025-05-24'
-// })
   } catch (error) {
     console.error('PostHog initialization failed:', error);
   }
