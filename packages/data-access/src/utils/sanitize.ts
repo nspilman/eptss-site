@@ -1,27 +1,52 @@
 /**
  * Robust HTML sanitization utility to prevent XSS attacks
- * Uses DOMPurify for comprehensive protection against XSS vulnerabilities
+ * Uses a simple but effective approach that strips all HTML tags
+ * Works in both browser and Node.js environments without heavy dependencies
  */
-import DOMPurify from 'dompurify';
 
 // Default maximum recursion depth to prevent stack overflows
 const DEFAULT_MAX_DEPTH = 20;
 
 /**
- * Sanitizes a string using DOMPurify to prevent XSS attacks
+ * Sanitizes a string by stripping all HTML tags and escaping special characters
+ * This is a lightweight alternative to DOMPurify that works in all environments
  * @param input The string to sanitize
- * @returns Sanitized string with HTML stripped/sanitized
+ * @returns Sanitized string with HTML stripped
  */
 export function sanitizeHtml(input: string): string {
   if (!input) return '';
-  
-  // Use DOMPurify for robust sanitization
-  // This removes all potentially dangerous HTML instead of just escaping it
-  return DOMPurify.sanitize(input, {
-    USE_PROFILES: { html: true },
-    ALLOWED_TAGS: [], // Strip all HTML tags by default
-    ALLOWED_ATTR: [] // Strip all attributes
-  });
+
+  // Step 1: Remove all HTML tags using regex
+  // This removes anything between < and >
+  let sanitized = input.replace(/<[^>]*>/g, '');
+
+  // Step 2: Decode common HTML entities to prevent double-encoding
+  sanitized = sanitized
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x2F;/g, '/')
+    .replace(/&amp;/g, '&');
+
+  // Step 3: Escape special characters to prevent XSS
+  sanitized = sanitized
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+
+  // Step 4: Remove any remaining potentially dangerous patterns
+  // Remove javascript: protocol
+  sanitized = sanitized.replace(/javascript:/gi, '');
+  // Remove data: protocol (can be used for XSS)
+  sanitized = sanitized.replace(/data:/gi, '');
+  // Remove vbscript: protocol
+  sanitized = sanitized.replace(/vbscript:/gi, '');
+
+  return sanitized.trim();
 }
 
 /**

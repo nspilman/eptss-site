@@ -1,11 +1,14 @@
 {
   "name": "eptss-monorepo",
   "version": "0.1.0",
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "bun@1.2.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -18,11 +21,8 @@
     "build-storybook": "turbo run build-storybook",
     "clean": "turbo run clean && rm -rf node_modules"
   },
-  "devDependencies": {
-    "turbo": "^2.3.3"
-  },
-  "packageManager": "bun@1.2.0",
-  "engines": {
-    "node": ">=18"
-  }
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
