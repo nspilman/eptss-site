@@ -68,7 +68,7 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
           }
         } catch (emailError) {
           logger.error('Failed to send admin signup email', {
-            error: emailError instanceof Error ? emailError.message : 'Unknown error',
+            error: emailError instanceof Error ? emailError : undefined,
             userId,
             roundId,
           });
@@ -86,8 +86,7 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
     return result;
   } catch (error) {
     logger.error('Admin signup error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+      error: error instanceof Error ? error : undefined,
     });
 
     return {
@@ -141,7 +140,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
         }
       } catch (emailError) {
         logger.error('Failed to send admin submission email', {
-          error: emailError instanceof Error ? emailError.message : 'Unknown error',
+          error: emailError instanceof Error ? emailError : undefined,
           userId,
           roundId,
         });
@@ -158,8 +157,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
     return result;
   } catch (error) {
     logger.error('Admin cover submission error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+      error: error instanceof Error ? error : undefined,
     });
 
     return {
@@ -215,8 +213,7 @@ export async function createRoundAction(formData: FormData): Promise<FormReturn>
     }
   } catch (error) {
     logger.error('Admin round creation error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+      error: error instanceof Error ? error : undefined,
     });
 
     return {
@@ -250,7 +247,7 @@ export async function updateFeedbackPublicStatus(
     }
   } catch (error) {
     logger.error('Update feedback public status error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error : undefined,
     });
     return {
       status: "Error",
@@ -280,7 +277,7 @@ export async function deleteFeedback(feedbackId: string): Promise<FormReturn> {
     }
   } catch (error) {
     logger.error('Delete feedback error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error : undefined,
     });
     return {
       status: "Error",

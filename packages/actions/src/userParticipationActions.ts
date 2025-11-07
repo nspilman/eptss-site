@@ -75,7 +75,7 @@ export async function submitVotes(roundId: number, formData: FormData): Promise<
 
   } catch (error) {
     logger.error('Vote submission error', {
-      error: error instanceof Error ? error.message : 'Unknown',
+      error: error instanceof Error ? error : undefined,
       roundId,
     });
 
@@ -151,7 +151,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
   } catch (error) {
     logger.error('Cover submission error', {
-      error: error instanceof Error ? error.message : 'Unknown',
+      error: error instanceof Error ? error : undefined,
     });
 
     return {
@@ -238,7 +238,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
 
   } catch (error) {
     logger.error('OTP signup error', {
-      error: error instanceof Error ? error.message : 'Unknown',
+      error: error instanceof Error ? error : undefined,
     });
 
     return {
@@ -298,7 +298,7 @@ export async function completeSignupAfterVerification(formData: FormData): Promi
 
   } catch (error) {
     logger.error('Signup completion error', {
-      error: error instanceof Error ? error.message : 'Unknown',
+      error: error instanceof Error ? error : undefined,
     });
 
     return {

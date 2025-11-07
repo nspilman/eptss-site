@@ -67,8 +67,7 @@ export async function signupForRound(formData: FormData): Promise<FormReturn> {
 
   } catch (error) {
     logger.error('Signup error', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
+      error: error instanceof Error ? error : undefined,
     });
 
     return {

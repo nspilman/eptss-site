@@ -78,7 +78,7 @@ export async function createSocialLinkAction(data: {
     };
   } catch (error) {
     logger.error("Create social link error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
     });
 
@@ -157,7 +157,7 @@ export async function updateSocialLinkAction(data: {
     };
   } catch (error) {
     logger.error("Update social link error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
       linkId: data.linkId,
     });
@@ -194,7 +194,7 @@ export async function deleteSocialLinkAction(data: {
     };
   } catch (error) {
     logger.error("Delete social link error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
       linkId: data.linkId,
     });
@@ -268,7 +268,7 @@ export async function createEmbeddedMediaAction(data: {
     };
   } catch (error) {
     logger.error("Create embedded media error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
     });
 
@@ -345,7 +345,7 @@ export async function updateEmbeddedMediaAction(data: {
     };
   } catch (error) {
     logger.error("Update embedded media error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
       mediaId: data.mediaId,
     });
@@ -382,7 +382,7 @@ export async function deleteEmbeddedMediaAction(data: {
     };
   } catch (error) {
     logger.error("Delete embedded media error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
       mediaId: data.mediaId,
     });
@@ -470,7 +470,7 @@ export async function uploadProfilePictureAction(data: {
       } catch (deleteError) {
         // Log but don't fail the operation if old file deletion fails
         logger.warn("Failed to delete old profile picture", {
-          error: deleteError instanceof Error ? deleteError.message : "Unknown error",
+          error: deleteError instanceof Error ? deleteError : undefined,
           userId: data.userId,
           oldUrl: data.oldProfilePictureUrl,
         });
@@ -489,7 +489,7 @@ export async function uploadProfilePictureAction(data: {
     };
   } catch (error) {
     logger.error("Upload profile picture error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
     });
 
@@ -553,7 +553,7 @@ export async function deleteProfilePictureAction(data: {
     };
   } catch (error) {
     logger.error("Delete profile picture error", {
-      error: error instanceof Error ? error.message : "Unknown error",
+      error: error instanceof Error ? error : undefined,
       userId: data.userId,
     });
 
