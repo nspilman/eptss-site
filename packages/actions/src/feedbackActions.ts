@@ -3,6 +3,7 @@
 import { createFeedback as createFeedbackService } from "@eptss/data-access/services/feedbackService";
 import type { CreateFeedbackInput } from "@eptss/data-access";
 import { revalidatePath } from "next/cache";
+import { logger } from "@eptss/logger/server";
 
 // Define a serializable response type
 type SerializableFeedbackResponse = {
@@ -19,6 +20,8 @@ type SerializableFeedbackResponse = {
 };
 
 export async function submitFeedback(input: CreateFeedbackInput): Promise<SerializableFeedbackResponse> {
+  logger.action('submitFeedback', 'started', { type: input.type, userId: input.userId });
+
   try {
     const result = await createFeedbackService(input);
 
@@ -26,6 +29,11 @@ export async function submitFeedback(input: CreateFeedbackInput): Promise<Serial
     revalidatePath('/feedback');
 
     if (result.status === 'success') {
+      logger.action('submitFeedback', 'completed', {
+        feedbackId: result.data.id,
+        type: input.type,
+        userId: input.userId
+      });
       return {
         status: 'success',
         data: {
@@ -38,6 +46,11 @@ export async function submitFeedback(input: CreateFeedbackInput): Promise<Serial
         }
       };
     } else {
+      logger.warn('Feedback submission returned error', {
+        type: input.type,
+        userId: input.userId,
+        error: result.error?.message
+      });
       return {
         status: 'error',
         data: null,
@@ -45,7 +58,11 @@ export async function submitFeedback(input: CreateFeedbackInput): Promise<Serial
       };
     }
   } catch (error) {
-    console.error("Error submitting feedback:", error);
+    logger.action('submitFeedback', 'failed', {
+      type: input.type,
+      userId: input.userId,
+      error: error instanceof Error ? error : undefined
+    });
     return {
       status: "error",
       data: null,
