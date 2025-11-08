@@ -15,7 +15,7 @@ async function UsersContent() {
   ]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
         <h2 className="text-3xl font-bold text-primary mb-2">Users Management</h2>
         <p className="text-secondary">Monitor user activity and engagement</p>

@@ -13,6 +13,14 @@ export { FeedbackCard } from './FeedbackCard';
 export { ActiveUsersCard } from './ActiveUsersCard';
 export { RoundScheduleCard } from './RoundScheduleCard';
 
+// Reusable Card Components
+export { DataTableCard } from './DataTableCard';
+export type { DataTableCardProps } from './DataTableCard';
+
+// Layout Components
+export { AdminSection } from './AdminSection';
+export type { AdminSectionProps } from './AdminSection';
+
 // Project Stats Card
 export { ProjectStatsCard } from './ProjectStatsCard/ProjectStatsCard';
 export { UserStatsComponent } from './ProjectStatsCard/UserStatsCard';

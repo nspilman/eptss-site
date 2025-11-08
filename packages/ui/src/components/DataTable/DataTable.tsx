@@ -189,45 +189,26 @@ export function DataTable<T extends string>({
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`bg-background-primary backdrop-blur-md rounded-lg border border-background-secondary p-6 ${className}`}
+      className={`w-full max-w-full ${className}`}
     >
-      <div className="pb-4 flex justify-between items-start">
-        <div>
+      {(title || subtitle) && (
+        <div className="pb-4">
           <h2 className="text-2xl font-bold text-primary mb-2">{title}</h2>
           <p className="text-sm text-secondary">{subtitle}</p>
         </div>
-        {!isEmpty && allowCopy && (
-          <button
-            onClick={() => copyTableAsMarkdown(headers, sortedRows)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-background-secondary hover:bg-background-secondary/80 text-primary text-sm transition-colors"
-            title="Copy table as markdown"
-          >
-            {isCopied ? (
-              <>
-                <Check className="h-4 w-4" />
-                <span>Copied!</span>
-              </>
-            ) : (
-              <>
-                <Clipboard className="h-4 w-4" />
-                <span>Copy as Markdown</span>
-              </>
-            )}
-          </button>
-        )}
-      </div>
-      <div className="border border-background-secondary rounded-md overflow-hidden">
-        <div style={{ maxHeight }} className="overflow-auto">
-          <Table disableWrapper>
+      )}
+      <div className="border border-background-secondary rounded-md w-full overflow-x-auto">
+        <div style={{ maxHeight }} className="overflow-y-auto">
+          <Table disableWrapper className="min-w-full">
             <TableHeader className="sticky top-0 z-10 bg-background-primary shadow-sm">
               <TableRow>
                 {headers.map((header) => (
-                  <TableHead 
-                    key={header.key} 
+                  <TableHead
+                    key={header.key}
                     className={`${header.sortable !== false ? "cursor-pointer select-none" : ""} bg-background-primary border-b border-background-secondary`}
                     onClick={() => handleSort(header.key, header.sortable !== false)}
                   >
@@ -235,28 +216,47 @@ export function DataTable<T extends string>({
                       <span>{header.label}</span>
                       {header.sortable !== false && (
                         <span className="flex flex-col ml-1">
-                          <ChevronUp 
-                            className={`h-3 w-3 ${sortKey === header.key && sortDirection === 'asc' 
-                              ? 'text-accent-primary' 
-                              : 'text-secondary/50'}`} 
+                          <ChevronUp
+                            className={`h-3 w-3 ${sortKey === header.key && sortDirection === 'asc'
+                              ? 'text-accent-primary'
+                              : 'text-secondary/50'}`}
                           />
-                          <ChevronDown 
-                            className={`h-3 w-3 -mt-1 ${sortKey === header.key && sortDirection === 'desc' 
-                              ? 'text-accent-primary' 
-                              : 'text-secondary/50'}`} 
+                          <ChevronDown
+                            className={`h-3 w-3 -mt-1 ${sortKey === header.key && sortDirection === 'desc'
+                              ? 'text-accent-primary'
+                              : 'text-secondary/50'}`}
                           />
                         </span>
                       )}
                     </div>
                   </TableHead>
                 ))}
+                {!isEmpty && allowCopy && (
+                  <TableHead className="bg-background-primary border-b border-background-secondary w-12">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        copyTableAsMarkdown(headers, sortedRows);
+                      }}
+                      className="p-1 rounded hover:bg-background-secondary/50 text-secondary hover:text-primary transition-colors"
+                      title="Copy table as markdown"
+                      aria-label="Copy table as markdown"
+                    >
+                      {isCopied ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Clipboard className="h-4 w-4" />
+                      )}
+                    </button>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
               {isEmpty ? (
                 <TableRow>
-                  <TableCell 
-                    colSpan={headers.length}
+                  <TableCell
+                    colSpan={headers.length + (allowCopy ? 1 : 0)}
                     className="text-center text-secondary"
                   >
                     No data available
@@ -264,7 +264,7 @@ export function DataTable<T extends string>({
                 </TableRow>
               ) : (
                 sortedRows.map((row, i) => (
-                  <motion.tr 
+                  <motion.tr
                     key={i}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -274,6 +274,7 @@ export function DataTable<T extends string>({
                     {headers.map(({ key, displayKey }) => (
                       <TableCell key={key}>{row[displayKey || key]}</TableCell>
                     ))}
+                    {allowCopy && <TableCell className="w-12"></TableCell>}
                   </motion.tr>
                 ))
               )}

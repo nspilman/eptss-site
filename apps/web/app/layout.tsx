@@ -38,6 +38,7 @@ export const metadata = {
 import "@eptss/ui/styles";
 
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { isAdmin } from "@eptss/auth";
 
 export default async function RootLayout({
   children,
@@ -45,6 +46,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { userId } = await getAuthUser();
+  const userIsAdmin = userId ? await isAdmin() : false;
   return (
     <html lang="en">
       <head>
@@ -59,7 +61,7 @@ export default async function RootLayout({
         <AuthStateListener>
           {userId ? (
             // Authenticated users get the dashboard layout with sidebar
-            <DashboardLayout>
+            <DashboardLayout isAdmin={userIsAdmin}>
               {children}
               <Toaster />
             </DashboardLayout>

@@ -4,7 +4,7 @@ import { roundProvider, votesProvider } from "@eptss/data-access";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { SignupsCard, SubmissionsCard } from "@eptss/admin";
+import { SignupsCard, SubmissionsCard, AdminSection } from "@eptss/admin";
 
 async function RoundDetailContent({ slug }: { slug: string }) {
   const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider(slug);
@@ -40,7 +40,7 @@ async function RoundDetailContent({ slug }: { slug: string }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
         <Link
           href="/admin/rounds"
@@ -55,48 +55,34 @@ async function RoundDetailContent({ slug }: { slug: string }) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <SignupsCard signups={signups} />
-        </div>
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <SubmissionsCard submissions={submissions} />
-        </div>
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <h4 className="text-sm font-medium text-secondary mb-2">Voting</h4>
-          <p className="text-2xl font-bold text-primary">{voteResults.length}</p>
-          <p className="text-sm text-secondary mt-1">Total votes</p>
-          <p className="text-sm text-secondary mt-2">Outstanding: {outstandingVoters.length}</p>
-        </div>
+      <div className="w-full max-w-full">
+        <SignupsCard signups={signups} />
+        <SubmissionsCard submissions={submissions} />
       </div>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Round Schedule</h3>
+      <AdminSection title="Round Schedule" titleSize="md">
         <DataTable rows={datesArray} headers={dateHeaders} allowCopy={true} />
-      </div>
+      </AdminSection>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Vote Options</h3>
+      <AdminSection title="Vote Options" titleSize="md">
         <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} allowCopy={true} />
-      </div>
+      </AdminSection>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Outstanding Voters</h3>
+      <AdminSection title="Outstanding Voters" titleSize="md">
         {outstandingVoters.length === 0 ? (
           <p className="text-secondary text-center py-4">All votes are in!</p>
         ) : (
           <DataTable rows={outstandingVoters.map(email => ({ email: email || '' }))} headers={outstandingVotesHeader} allowCopy={true} />
         )}
-      </div>
+      </AdminSection>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Vote Results</h3>
+      <AdminSection title="Vote Results" titleSize="md">
         {voteResults.length === 0 ? (
           <p className="text-secondary text-center py-4">No votes yet</p>
         ) : (
           <DataTable rows={voteResults} headers={voteHeaders} allowCopy={true} />
         )}
-      </div>
+      </AdminSection>
     </div>
   );
 }

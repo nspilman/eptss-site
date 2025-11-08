@@ -58,8 +58,10 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () =
 
 export default function DashboardLayout({
   children,
+  isAdmin = false,
 }: {
   children: React.ReactNode;
+  isAdmin?: boolean;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -83,7 +85,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background-primary via-accent-primary/20 to-accent-secondary/20 flex flex-col">
+    <div className="min-h-screen w-screen overflow-x-hidden bg-gradient-to-br from-background-primary via-accent-primary/20 to-accent-secondary/20 flex flex-col">
       {/* Replace header's mobile menu button with our own */}
       <style jsx global>{`
         /* Hide the main site header and footer completely on dashboard pages */
@@ -103,30 +105,37 @@ export default function DashboardLayout({
           isCollapsed={false}
           toggleCollapse={toggleCollapse}
           onNavigate={() => setIsSidebarOpen(false)}
+          isAdmin={isAdmin}
         />
       </div>
 
-      {/* Container for sidebar and content - this is the sticky container */}
-      <div className="flex flex-col">
-      <div className="flex flex-1 pt-16">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block">
-          <DashboardSidebar
-            isSidebarOpen={true}
-            isCollapsed={isCollapsed}
-            toggleCollapse={toggleCollapse}
-            onNavigate={() => setIsSidebarOpen(false)}
-          />
-        </div>
+      {/* Container for sidebar and content */}
+      <div className="flex flex-col w-full">
+        <div className={`flex-1 pt-16 w-screen transition-all duration-500 ease-in-out ${isCollapsed ? 'md:grid md:grid-cols-[5rem_1fr]' : 'md:grid md:grid-cols-[16rem_1fr]'}`}>
+          {/* Desktop Sidebar - Fixed positioning, extends to bottom */}
+          <div className="hidden md:block">
+            <div className="md:fixed md:left-0 md:top-16 md:bottom-0 md:h-[calc(100vh-4rem)] md:overflow-y-auto" style={{ width: isCollapsed ? '5rem' : '16rem' }}>
+              <DashboardSidebar
+                isSidebarOpen={true}
+                isCollapsed={isCollapsed}
+                toggleCollapse={toggleCollapse}
+                onNavigate={() => setIsSidebarOpen(false)}
+                isAdmin={isAdmin}
+              />
+            </div>
+          </div>
 
-        {/* Main Content and Footer Column */}
-        <div className={`flex-1 flex flex-col transition-all duration-500 ease-in-out md:ml-20`}>
-          <main className="flex-1 p-4 md:pl-0 md:pr-6 md:py-6">
-            {children}
-          </main>
+          {/* Main Content Column - Grid automatically constrains this */}
+          <div className="flex flex-col min-w-0">
+            <main className="flex-1 p-4 md:pl-6 md:pr-6 md:py-6 min-w-0 overflow-x-hidden">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
-      <Footer />
+        {/* Footer offset by sidebar width on desktop */}
+        <div className={`transition-all duration-500 ease-in-out ${isCollapsed ? 'md:ml-20' : 'md:ml-64'}`}>
+          <Footer />
+        </div>
       </div>
     </div>
   );

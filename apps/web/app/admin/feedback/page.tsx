@@ -13,7 +13,7 @@ async function FeedbackContent() {
   const feedbackList = feedbackResult.status === 'success' ? feedbackResult.data : [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
         <h2 className="text-3xl font-bold text-primary mb-2">Feedback Management</h2>
         <p className="text-secondary">

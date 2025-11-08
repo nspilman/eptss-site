@@ -4,6 +4,7 @@ import { adminProvider } from "@eptss/admin";
 import { ProjectStatsCard } from "@eptss/admin";
 import { getCurrentRound } from "@eptss/data-access";
 import { getCurrentPhase } from "@eptss/data-access/services/dateService";
+import { Button } from "@eptss/ui";
 
 export const metadata: Metadata = {
   title: "Dashboard | Admin | Everyone Plays the Same Song",
@@ -23,7 +24,7 @@ async function DashboardContent() {
   }) : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       {/* Welcome Section */}
       <div>
         <h2 className="text-3xl font-bold text-primary mb-2">Dashboard</h2>
@@ -44,37 +45,14 @@ async function DashboardContent() {
               )}
             </div>
             <a
-              href={`/admin/rounds/${currentRound.slug}`}
-              className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors font-medium"
-            >
+              href={`/admin/rounds/${currentRound.slug}`}>
+            <Button className="px-4 py-2 bg-primary text-black rounded-lg hover:bg-primary/90 transition-colors font-medium">
               View Details
+            </Button>
             </a>
           </div>
         </div>
       )}
-
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <p className="text-sm text-secondary mb-2">Total Users</p>
-          <p className="text-3xl font-bold text-primary">{stats.totalUsers}</p>
-        </div>
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <p className="text-sm text-secondary mb-2">Total Rounds</p>
-          <p className="text-3xl font-bold text-primary">{stats.totalRounds}</p>
-        </div>
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <p className="text-sm text-secondary mb-2">Active Users</p>
-          <p className="text-3xl font-bold text-primary">{stats.activeUsers}</p>
-          <p className="text-xs text-secondary mt-1">Last 3 rounds</p>
-        </div>
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <p className="text-sm text-secondary mb-2">Completion Rate</p>
-          <p className="text-3xl font-bold text-primary">
-            {Math.round(stats.completionRate * 100)}%
-          </p>
-        </div>
-      </div>
 
       {/* Detailed Stats */}
       <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">

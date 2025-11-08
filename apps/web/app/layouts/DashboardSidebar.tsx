@@ -3,7 +3,7 @@
 import { Navigation } from "@eptss/shared";
 import Link from "next/link";
 import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Shield } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarItemProps {
@@ -37,9 +37,10 @@ interface DashboardSidebarProps {
   isCollapsed: boolean;
   toggleCollapse: () => void;
   onNavigate: () => void;
+  isAdmin?: boolean;
 }
 
-export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, onNavigate }: DashboardSidebarProps) {
+export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, onNavigate, isAdmin = false }: DashboardSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -92,14 +93,24 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
-        <SidebarItem 
-          href="/feedback" 
+        <SidebarItem
+          href="/feedback"
           icon={<ChatBubbleLeftEllipsisIcon className="w-5 h-5" />}
           label="Feedback"
           isActive={pathname === "/feedback"}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
+        {isAdmin && (
+          <SidebarItem
+            href={Navigation.Admin}
+            icon={<Shield className="w-5 h-5" />}
+            label="Admin"
+            isActive={pathname.startsWith(Navigation.Admin)}
+            onClick={onNavigate}
+            isCollapsed={isCollapsed}
+          />
+        )}
       </nav>
     </aside>
   );

@@ -26,7 +26,7 @@ async function ToolsContent() {
   const roundId = currentRound?.roundId || 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
         <h2 className="text-3xl font-bold text-primary mb-2">Admin Tools</h2>
         <p className="text-secondary">
