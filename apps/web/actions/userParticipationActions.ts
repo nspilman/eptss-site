@@ -13,7 +13,6 @@ setRateLimiters({
 
 // Re-export all actions from @eptss/actions
 export {
-  submitVotes,
   submitCover,
   signup,
   signupWithOTP,

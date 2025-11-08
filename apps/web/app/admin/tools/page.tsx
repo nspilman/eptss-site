@@ -1,10 +1,11 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { getCurrentRound, getAllUsers } from "@eptss/data-access";
-import { 
-  AdminSignupForm, 
+import {
+  AdminSignupForm,
   AdminSubmissionForm,
   TestEmailButtons,
+  TestNotificationButton,
   TestAssignRoundSongButton,
   TestCreateFutureRoundsButton,
   TestSendReminderEmailsButton
@@ -69,6 +70,14 @@ async function ToolsContent() {
           Send test emails to yourself to preview designs and content
         </p>
         <TestEmailButtons />
+      </div>
+
+      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
+        <h3 className="text-xl font-semibold text-primary mb-4">Notification Testing</h3>
+        <p className="text-sm text-secondary mb-4">
+          Create a test notification to verify the notification system is working
+        </p>
+        <TestNotificationButton />
       </div>
 
       <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">

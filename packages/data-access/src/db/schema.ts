@@ -155,6 +155,21 @@ export const reminderEmailTypeEnum = pgEnum('reminder_email_type', [
   'covers_due_tomorrow'
 ]);
 
+// Notification Type Enum
+export const notificationTypeEnum = pgEnum('notification_type', [
+  'signup_confirmation',
+  'vote_confirmation',
+  'submission_confirmation',
+  'round_opened',
+  'round_voting_opened',
+  'round_covering_begins',
+  'round_covers_due',
+  'comment_received',
+  'mention_received',
+  'admin_announcement',
+  'test_notification'
+]);
+
 // Email Reminders Sent Table
 export const emailRemindersSent = pgTable("email_reminders_sent", {
   id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
@@ -164,6 +179,20 @@ export const emailRemindersSent = pgTable("email_reminders_sent", {
   sentAt: timestamp("sent_at").defaultNow().notNull(),
   success: boolean("success").notNull().default(true),
   errorMessage: text("error_message"),
+});
+
+// Notifications Table
+export const notifications = pgTable("notifications", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  type: notificationTypeEnum("type").notNull(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  metadata: text("metadata"), // JSON string for additional data (roundId, songId, etc.)
+  isRead: boolean("is_read").notNull().default(false),
+  isDeleted: boolean("is_deleted").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  readAt: timestamp("read_at"),
 });
 
 // User Content Table (for reflections, blog posts, etc.)
@@ -261,3 +290,6 @@ export const userEmbeddedMedia = pgTable("user_embedded_media", {
 
 export type UserEmbeddedMedia = typeof userEmbeddedMedia.$inferSelect;
 export type NewUserEmbeddedMedia = typeof userEmbeddedMedia.$inferInsert;
+
+export type Notification = typeof notifications.$inferSelect;
+export type NewNotification = typeof notifications.$inferInsert;

@@ -57,6 +57,7 @@ export { AdminNav } from './AdminNav';
 
 // Test buttons
 export { TestEmailButtons } from './TestEmailButton';
+export { TestNotificationButton } from './TestNotificationButton';
 export { TestSendReminderEmailsButton } from './TestSendReminderEmailsButton';
 export { TestCreateFutureRoundsButton } from './TestCreateFutureRoundsButton';
 export { TestAssignRoundSongButton } from './TestAssignRoundSongButton';

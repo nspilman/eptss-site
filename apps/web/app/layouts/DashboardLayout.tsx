@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Footer } from "@/components/Footer/Footer";
+import { NotificationBell } from "@/components/notifications";
 
 // Dashboard header that replaces the regular header's mobile menu button with our sidebar toggle
 const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () => void, isSidebarOpen: boolean }) => {
@@ -48,8 +49,10 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () =
             </Link>
           </div>
 
-          {/* Empty div to match header layout */}
-          <div className="hidden md:block"></div>
+          {/* Notification Bell */}
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+          </div>
         </div>
       </div>
     </header>
@@ -86,15 +89,6 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen w-screen overflow-x-hidden bg-gradient-to-br from-background-primary via-accent-primary/20 to-accent-secondary/20 flex flex-col">
-      {/* Replace header's mobile menu button with our own */}
-      <style jsx global>{`
-        /* Hide the main site header and footer completely on dashboard pages */
-        body > div > header:first-of-type,
-        body > div > footer {
-          display: none;
-        }
-      `}</style>
-
       {/* Custom dashboard header with integrated sidebar toggle */}
       <DashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
 
