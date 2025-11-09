@@ -1,0 +1,34 @@
+{
+  "name": "@eptss/comments",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./actions": "./src/actions/index.ts",
+    "./hooks": "./src/hooks/index.ts",
+    "./types": "./src/types/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@eptss/ui": "workspace:*",
+    "@eptss/data-access": "workspace:*",
+    "@eptss/logger": "workspace:*",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^11.11.17",
+    "lucide-react": "^0.263.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.11",
+    "eslint": "8.26.0",
+    "typescript": "5.1.3"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "next": "^15.0.0"
+  }
+}

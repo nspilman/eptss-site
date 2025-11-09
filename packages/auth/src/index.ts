@@ -18,8 +18,9 @@ export { useRequireAuth } from './hooks/useRequireAuth';
 
 // Utils exports
 export { isAdmin } from './utils/isAdmin';
-export { getAuthUser, getCurrentUsername } from './utils/getAuthUser';
-export { ensureUserExists } from './utils/ensureUserExists';
+
+// Note: Server-side utilities (getAuthUser, getCurrentUsername, ensureUserExists) 
+// are available via @eptss/auth/server to avoid bundling next/headers in client code
 
 // Type exports
 export type { AuthUser, AuthSession } from './types';

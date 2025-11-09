@@ -2,7 +2,7 @@ import { getPublicProfileByUsername, getPublicReflectionsByUsername } from "@ept
 import { PublicProfile } from "./PublicProfile";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { getCurrentUsername } from "@eptss/auth";
+import { getCurrentUsername } from "@eptss/auth/server";
 
 type Props = {
   params: Promise<{

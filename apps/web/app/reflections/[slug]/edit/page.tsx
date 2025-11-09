@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getAuthUser } from '@eptss/auth';
+import { getAuthUser } from '@eptss/auth/server';
 import { PageTitle } from "@/components/PageTitle";
 import { ReflectionEditForm } from '@eptss/user-content';
 import { getReflectionBySlug } from '@eptss/data-access';

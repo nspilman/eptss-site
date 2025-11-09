@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { TOAST_REDIRECT_KEY } from "@eptss/shared";
 import { createClient } from "@eptss/data-access/utils/supabase/server";
-import { ensureUserExists } from "@eptss/auth";
+import { ensureUserExists } from "@eptss/auth/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

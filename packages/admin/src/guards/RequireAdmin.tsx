@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getAuthUser } from "@eptss/auth";
+import { getAuthUser } from "@eptss/auth/server";
 import { isAdmin } from "../utils/isAdmin";
 
 interface RequireAdminProps {

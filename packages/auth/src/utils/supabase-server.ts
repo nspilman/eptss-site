@@ -7,7 +7,6 @@
 
 import { createServerClient } from '@supabase/ssr';
 import { cookies, headers } from 'next/headers';
-import { AUTH_HEADER_KEYS } from '@eptss/shared';
 
 // Type for the database - can be overridden by consumers
 type Database = any;
@@ -19,6 +18,8 @@ type Database = any;
  * and properly handles cookie-based authentication.
  */
 export async function createClient<DB = Database>() {
+  // Dynamic import to avoid module-level evaluation issues
+  const { cookies } = await import('next/headers');
   const cookieStore = await cookies();
 
   return createServerClient<DB>(
@@ -91,3 +92,6 @@ export async function getHeaders() {
   const rawHeaders = await headers();
   return Object.fromEntries(rawHeaders.entries());
 }
+
+// Re-export ensureUserExists for convenience
+export { ensureUserExists } from './ensureUserExists';

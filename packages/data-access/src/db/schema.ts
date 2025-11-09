@@ -293,3 +293,30 @@ export type NewUserEmbeddedMedia = typeof userEmbeddedMedia.$inferInsert;
 
 export type Notification = typeof notifications.$inferSelect;
 export type NewNotification = typeof notifications.$inferInsert;
+
+// Comments Table
+export const comments = pgTable("comments", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  contentId: uuid("content_id").references(() => userContent.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  parentCommentId: uuid("parent_comment_id").references((): any => comments.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  isEdited: boolean("is_edited").notNull().default(false),
+  isDeleted: boolean("is_deleted").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type Comment = typeof comments.$inferSelect;
+export type NewComment = typeof comments.$inferInsert;
+
+// Comment Upvotes Table
+export const commentUpvotes = pgTable("comment_upvotes", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  commentId: uuid("comment_id").references(() => comments.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type CommentUpvote = typeof commentUpvotes.$inferSelect;
+export type NewCommentUpvote = typeof commentUpvotes.$inferInsert;

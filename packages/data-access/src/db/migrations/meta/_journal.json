@@ -141,6 +141,13 @@
       "when": 1762625850011,
       "tag": "0033_nifty_microbe",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1762640120004,
+      "tag": "0034_graceful_human_torch",
+      "breakpoints": true
     }
   ]
 }
