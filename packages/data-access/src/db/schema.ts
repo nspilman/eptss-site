@@ -165,6 +165,8 @@ export const notificationTypeEnum = pgEnum('notification_type', [
   'round_covering_begins',
   'round_covers_due',
   'comment_received',
+  'comment_reply_received',
+  'comment_upvoted',
   'mention_received',
   'admin_announcement',
   'test_notification'

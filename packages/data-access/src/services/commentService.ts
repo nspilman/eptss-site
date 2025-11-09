@@ -146,6 +146,24 @@ function buildCommentTree(comments: CommentWithAuthor[]): CommentWithAuthor[] {
 }
 
 /**
+ * Get a single comment by ID with author info
+ */
+export async function getCommentById(commentId: string): Promise<Comment & { userId: string } | null> {
+  try {
+    const [comment] = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, commentId))
+      .limit(1);
+
+    return comment || null;
+  } catch (error) {
+    logger.error("Failed to get comment by ID", { error, commentId });
+    return null;
+  }
+}
+
+/**
  * Update a comment
  */
 export async function updateComment(

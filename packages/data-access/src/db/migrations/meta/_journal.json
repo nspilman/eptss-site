@@ -148,6 +148,13 @@
       "when": 1762640120004,
       "tag": "0034_graceful_human_torch",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1762660095279,
+      "tag": "0035_fearless_kitty_pryde",
+      "breakpoints": true
     }
   ]
 }

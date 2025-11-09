@@ -7,6 +7,7 @@ import {
   upvoteComment,
   removeUpvote,
   getCommentsByContentId,
+  getCommentById,
 } from "@eptss/data-access/services/commentService";
 import { createNotification } from "@eptss/data-access/services/notificationService";
 import { getUserById } from "@eptss/data-access/services/userService";
@@ -75,22 +76,44 @@ export async function createCommentAction(data: {
       return { success: false, error: "Failed to create comment" };
     }
 
-    // Send notification to content author (if not commenting on own content)
-    if (data.contentAuthorId && data.contentAuthorId !== userId) {
-      const commenter = await getUserById(userId);
-      const commenterName = commenter?.fullName || commenter?.username || "Someone";
+    // Get commenter info for notifications
+    const commenter = await getUserById(userId);
+    const commenterName = commenter?.fullName || commenter?.username || "Someone";
 
-      await createNotification({
-        userId: data.contentAuthorId,
-        type: "comment_received",
-        title: "New comment on your reflection",
-        message: `${commenterName} commented: ${validated.content.substring(0, 100)}${validated.content.length > 100 ? "..." : ""}`,
-        metadata: {
-          commentId: comment.id,
-          contentId: validated.contentId,
-          commenterId: userId,
-        },
-      });
+    // If this is a reply to another comment, notify the parent comment author
+    if (validated.parentCommentId) {
+      const parentComment = await getCommentById(validated.parentCommentId);
+
+      // Only send notification if parent comment exists and replier is not the parent comment author
+      if (parentComment && parentComment.userId !== userId) {
+        await createNotification({
+          userId: parentComment.userId,
+          type: "comment_reply_received",
+          title: "New reply to your comment",
+          message: `${commenterName} replied to your comment: ${validated.content.substring(0, 100)}${validated.content.length > 100 ? "..." : ""}`,
+          metadata: {
+            commentId: comment.id,
+            parentCommentId: validated.parentCommentId,
+            contentId: validated.contentId,
+            replierId: userId,
+          },
+        });
+      }
+    } else {
+      // This is a top-level comment, notify the content author
+      if (data.contentAuthorId && data.contentAuthorId !== userId) {
+        await createNotification({
+          userId: data.contentAuthorId,
+          type: "comment_received",
+          title: "New comment on your reflection",
+          message: `${commenterName} commented: ${validated.content.substring(0, 100)}${validated.content.length > 100 ? "..." : ""}`,
+          metadata: {
+            commentId: comment.id,
+            contentId: validated.contentId,
+            commenterId: userId,
+          },
+        });
+      }
     }
 
     return { success: true, comment };
@@ -199,6 +222,28 @@ export async function toggleUpvoteAction(data: {
 
     if (!success) {
       return { success: false, error: "Failed to toggle upvote" };
+    }
+
+    // Send notification when upvoting (not when removing upvote)
+    if (!data.currentlyUpvoted) {
+      const comment = await getCommentById(validated.commentId);
+
+      // Only send notification if comment exists and upvoter is not the comment author
+      if (comment && comment.userId !== userId) {
+        const upvoter = await getUserById(userId);
+        const upvoterName = upvoter?.fullName || upvoter?.username || "Someone";
+
+        await createNotification({
+          userId: comment.userId,
+          type: "comment_upvoted",
+          title: "Someone liked your comment",
+          message: `${upvoterName} liked your comment: ${comment.content.substring(0, 100)}${comment.content.length > 100 ? "..." : ""}`,
+          metadata: {
+            commentId: validated.commentId,
+            upvoterId: userId,
+          },
+        });
+      }
     }
 
     return { success: true };
