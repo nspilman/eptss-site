@@ -107,7 +107,7 @@ export default function DashboardLayout({
       <div className="flex flex-col w-full">
         <div className={`flex-1 pt-16 w-screen transition-all duration-500 ease-in-out ${isCollapsed ? 'md:grid md:grid-cols-[5rem_1fr]' : 'md:grid md:grid-cols-[16rem_1fr]'}`}>
           {/* Desktop Sidebar - Fixed positioning, extends to bottom */}
-          <div className="hidden md:block">
+          <div className="hidden md:block relative">
             <div className="md:fixed md:left-0 md:top-16 md:bottom-0 md:h-[calc(100vh-4rem)] md:overflow-y-auto" style={{ width: isCollapsed ? '5rem' : '16rem' }}>
               <DashboardSidebar
                 isSidebarOpen={true}
@@ -116,6 +116,26 @@ export default function DashboardLayout({
                 onNavigate={() => setIsSidebarOpen(false)}
                 isAdmin={isAdmin}
               />
+            </div>
+            {/* Collapse/Expand Button - Outside scrollable container */}
+            <div className="md:fixed md:top-40 md:z-50 group/button" style={{ left: isCollapsed ? 'calc(5rem - 0.75rem)' : 'calc(16rem - 0.75rem)' }}>
+              <button
+                onClick={toggleCollapse}
+                className="flex items-center justify-center w-6 h-6 rounded-full bg-white border border-accent-secondary/20 hover:bg-white/90 text-black hover:text-black transition-colors shadow-lg cursor-pointer"
+                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {isCollapsed ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-[3]">
+                    <path d="m9 18 6-6-6-6"></path>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-[3]">
+                    <path d="m15 18-6-6 6-6"></path>
+                  </svg>
+                )}
+              </button>
+              {/* Glowing divider line on button hover */}
+              <div className="absolute left-3 top-0 bottom-0 w-[1px] bg-accent-secondary/20 transition-all duration-300 group-hover/button:shadow-[0_0_15px_4px_rgba(var(--color-accent-primary-rgb),0.7)] group-hover/button:bg-accent-primary pointer-events-none" style={{height: '100vh', top: '-10rem'}}></div>
             </div>
           </div>
 
