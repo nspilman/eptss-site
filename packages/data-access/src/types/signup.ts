@@ -20,6 +20,10 @@ export interface SignupData {
   email: string;
   song: SongData;
   additionalComments?: string;
+  // User profile fields
+  username?: string;
+  publicDisplayName?: string | null;
+  profilePictureUrl?: string | null;
 }
 
 /**

@@ -13,6 +13,7 @@ import { createNotification } from "@eptss/data-access/services/notificationServ
 import { getUserById } from "@eptss/data-access/services/userService";
 import { logger } from "@eptss/logger/server";
 import { getAuthUser } from "@eptss/auth/server";
+import { getDisplayName } from "@eptss/shared";
 import { z } from "zod";
 
 // Validation schemas
@@ -78,7 +79,7 @@ export async function createCommentAction(data: {
 
     // Get commenter info for notifications
     const commenter = await getUserById(userId);
-    const commenterName = commenter?.fullName || commenter?.username || "Someone";
+    const commenterName = getDisplayName(commenter || {}, "Someone");
 
     // If this is a reply to another comment, notify the parent comment author
     if (validated.parentCommentId) {
@@ -231,7 +232,7 @@ export async function toggleUpvoteAction(data: {
       // Only send notification if comment exists and upvoter is not the comment author
       if (comment && comment.userId !== userId) {
         const upvoter = await getUserById(userId);
-        const upvoterName = upvoter?.fullName || upvoter?.username || "Someone";
+        const upvoterName = getDisplayName(upvoter || {}, "Someone");
 
         await createNotification({
           userId: comment.userId,

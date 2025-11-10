@@ -25,7 +25,7 @@ interface PublicProfileProps {
   user: {
     userid: string;
     username: string;
-    fullName: string | null;
+    publicDisplayName: string | null;
     profilePictureUrl?: string | null;
     displayName: string;
     bio: string | null;

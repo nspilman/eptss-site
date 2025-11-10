@@ -7,6 +7,7 @@ import {
   fetchActionData,
   fetchCurrentRoundData,
   fetchReflectionData,
+  fetchParticipantsData,
 } from './data-fetchers';
 
 // Force dynamic rendering for authenticated content
@@ -18,13 +19,14 @@ export default async function DashboardPage() {
   const { userId } = await getAuthUser();
 
   // Fetch data for all panels in parallel
-  const [heroData, phaseStatusData, actionData, currentRoundData, reflectionData] =
+  const [heroData, phaseStatusData, actionData, currentRoundData, reflectionData, participantsData] =
     await Promise.all([
       fetchHeroData(),
       fetchPhaseStatusData(),
       fetchActionData(),
       fetchCurrentRoundData(),
       fetchReflectionData(),
+      fetchParticipantsData(),
     ]);
 
   return (
@@ -37,6 +39,7 @@ export default async function DashboardPage() {
         action: actionData,
         'current-round': currentRoundData,
         reflections: reflectionData,
+        participants: participantsData,
       }}
     />
   );

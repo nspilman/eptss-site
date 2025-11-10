@@ -9,7 +9,7 @@ export interface CommentWithAuthor extends Comment {
   author: {
     userid: string;
     username: string;
-    fullName: string | null;
+    publicDisplayName: string | null;
     profilePictureUrl: string | null;
   };
   upvoteCount: number;
@@ -75,7 +75,7 @@ export async function getCommentsByContentId(
         author: {
           userid: users.userid,
           username: users.username,
-          fullName: users.fullName,
+          publicDisplayName: users.publicDisplayName,
           profilePictureUrl: users.profilePictureUrl,
         },
         upvoteCount: sql<number>`CAST(COUNT(DISTINCT ${commentUpvotes.id}) AS INTEGER)`,
@@ -84,7 +84,7 @@ export async function getCommentsByContentId(
       .leftJoin(users, eq(comments.userId, users.userid))
       .leftJoin(commentUpvotes, eq(comments.id, commentUpvotes.commentId))
       .where(eq(comments.contentId, contentId))
-      .groupBy(comments.id, users.userid, users.username, users.fullName, users.profilePictureUrl)
+      .groupBy(comments.id, users.userid, users.username, users.publicDisplayName, users.profilePictureUrl)
       .orderBy(desc(comments.createdAt));
 
     // If currentUserId is provided, get their upvotes

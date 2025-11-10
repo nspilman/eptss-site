@@ -23,6 +23,7 @@ import {
 
 import { ReflectionPanelWrapper, ReflectionPanelSkeleton } from './ReflectionPanelWrapper';
 import { ActionPanelWrapper } from './ActionPanelWrapper';
+import { RoundParticipantsPanelWrapper, RoundParticipantsPanelSkeleton } from './RoundParticipantsPanelWrapper';
 
 /**
  * Main dashboard configuration
@@ -92,6 +93,21 @@ export const eptssDeboardConfig: DashboardConfig = {
     ),
 
     // ============================================
+    // ROUND PARTICIPANTS - Show other people in the round
+    // ============================================
+    createPanel(
+      definePanelConfig('participants', {
+        name: 'Round Participants',
+        description: 'Shows other people signed up for this round',
+        priority: 'primary',
+        order: 5,
+        showSkeleton: true,
+      }),
+      RoundParticipantsPanelWrapper,
+      { skeleton: RoundParticipantsPanelSkeleton }
+    ),
+
+    // ============================================
     // ACTION PANEL - Submit cover CTA at bottom
     // ============================================
     createPanel(
@@ -99,7 +115,7 @@ export const eptssDeboardConfig: DashboardConfig = {
         name: 'Your Next Action',
         description: 'Shows the primary action user needs to take',
         priority: 'primary',
-        order: 5,
+        order: 6,
         showSkeleton: true,
       }),
       ActionPanelWrapper,

@@ -40,8 +40,7 @@ interface PersonalInfoTabProps {
 
 export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
   const [username, setUsername] = useState(user.username || '');
-  const [fullName, setFullName] = useState(user.fullName || '');
-  const [publicDisplayName, setPublicDisplayName] = useState('');
+  const [publicDisplayName, setPublicDisplayName] = useState(user.publicDisplayName || '');
   const [profileBio, setProfileBio] = useState('');
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(user.profilePictureUrl || null);
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -67,7 +66,6 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
         if (privacyResponse.ok) {
           const privacyData = await privacyResponse.json();
-          setPublicDisplayName(privacyData.privacySettings.publicDisplayName || '');
           setProfileBio(privacyData.privacySettings.profileBio || '');
         }
 
@@ -89,19 +87,18 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
     setSuccess(false);
 
     try {
-      // Save basic info and profile settings in parallel
+      // Save public display name and profile bio in parallel
       const [profileResponse, privacyResponse] = await Promise.all([
         fetch('/api/profile/update', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, fullName }),
+          body: JSON.stringify({ username, publicDisplayName: publicDisplayName || null }),
         }),
         fetch('/api/profile/privacy', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'privacy_settings',
-            publicDisplayName: publicDisplayName || null,
             profileBio: profileBio || null,
           }),
         })
@@ -118,8 +115,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
       }
 
       // Optimistically update the user object
-      user.username = username;
-      user.fullName = fullName;
+      user.publicDisplayName = publicDisplayName;
 
       setSuccess(true);
       setIsEditing(false);
@@ -129,8 +125,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       // Revert on error
-      setUsername(user.username || '');
-      setFullName(user.fullName || '');
+      setPublicDisplayName(user.publicDisplayName || '');
     } finally {
       setIsSaving(false);
     }
@@ -209,8 +204,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
   };
 
   const handleCancel = () => {
-    setUsername(user.username || '');
-    setFullName(user.fullName || '');
+    setPublicDisplayName(user.publicDisplayName || '');
     setIsEditing(false);
     setError(null);
   };
@@ -378,54 +372,33 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
             {/* Editable fields */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* Full Name - Editable */}
+              {/* Public Display Name - Editable */}
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
-                  Full Name
+                <Label htmlFor="publicDisplayName" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
+                  Public Display Name
                   {!isEditing && (
                     <span className="text-xs text-[var(--color-accent-primary)] font-normal">(editable)</span>
                   )}
                 </Label>
-                {isEditing ? (
-                  <Input
-                    id="fullName"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] transition-colors"
-                  />
-                ) : (
-                  <div className="p-3 rounded-lg bg-gray-800/50 border border-gray-700">
-                    <span className={user.fullName ? "text-[var(--color-primary)]" : "text-gray-500 italic"}>
-                      {user.fullName || 'Not set'}
-                    </span>
-                  </div>
-                )}
+                <Input
+                  id="publicDisplayName"
+                  value={publicDisplayName}
+                  onChange={(e) => setPublicDisplayName(e.target.value)}
+                  placeholder={user.username || 'Enter your display name'}
+                  disabled={!isEditing}
+                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                />
               </div>
 
-              {/* Username - Editable */}
+              {/* Username - Read Only */}
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
-                  Username
-                  {!isEditing && (
-                    <span className="text-xs text-[var(--color-accent-primary)] font-normal">(editable)</span>
-                  )}
-                </Label>
-                {isEditing ? (
-                  <Input
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
-                    className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] transition-colors"
-                  />
-                ) : (
-                  <div className="p-3 rounded-lg bg-gray-800/50 border border-gray-700">
-                    <span className={user.username ? "text-[var(--color-primary)]" : "text-gray-500 italic"}>
-                      {user.username || 'Not set'}
-                    </span>
-                  </div>
-                )}
+                <Label htmlFor="username" className="text-gray-400 text-sm font-medium">Username</Label>
+                <Input
+                  id="username"
+                  value={username}
+                  disabled
+                  className="bg-gray-900/30 border-gray-700/50 text-gray-400 cursor-not-allowed"
+                />
               </div>
             </div>
 
@@ -434,42 +407,34 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
               {/* Email - Read Only */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-400 text-sm font-medium">Email</Label>
-                <div className="p-3 rounded-lg bg-gray-900/30 text-gray-400 border border-gray-700/50">
-                  {user.email}
-                </div>
+                <Input
+                  id="email"
+                  value={user.email}
+                  disabled
+                  className="bg-gray-900/30 border-gray-700/50 text-gray-400 cursor-not-allowed"
+                />
               </div>
 
               {/* Join Date - Read Only */}
               <div className="space-y-2">
                 <Label htmlFor="joinDate" className="text-gray-400 text-sm font-medium">Member Since</Label>
-                <div className="p-3 rounded-lg bg-gray-900/30 text-gray-400 border border-gray-700/50">
-                  {user.createdAt ? format(new Date(user.createdAt), 'MMMM d, yyyy') : 'Unknown'}
-                </div>
+                <Input
+                  id="joinDate"
+                  value={user.createdAt ? format(new Date(user.createdAt), 'MMMM d, yyyy') : 'Unknown'}
+                  disabled
+                  className="bg-gray-900/30 border-gray-700/50 text-gray-400 cursor-not-allowed"
+                />
               </div>
             </div>
 
-            {/* Public Display Name */}
+            {/* Profile Bio - Editable */}
             <div className="space-y-2 pt-4 border-t border-gray-700">
-              <Label htmlFor="publicDisplayName" className="text-[var(--color-primary)] text-sm font-medium">
-                Public Display Name
-                <span className="text-xs text-gray-400 ml-2 font-normal">
-                  (Leave blank to use {user.fullName ? 'full name' : 'username'})
-                </span>
-              </Label>
-              <Input
-                id="publicDisplayName"
-                value={publicDisplayName}
-                onChange={(e) => setPublicDisplayName(e.target.value)}
-                placeholder={user.fullName || user.username || ''}
-                className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)]"
-              />
-            </div>
-
-            {/* Profile Bio */}
-            <div className="space-y-2">
-              <Label htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium">
+              <Label htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
                 Profile Bio
                 <span className="text-xs text-gray-400 ml-2 font-normal">(Optional, shown on public profile)</span>
+                {!isEditing && (
+                  <span className="text-xs text-[var(--color-accent-primary)] font-normal">(editable)</span>
+                )}
               </Label>
               <Textarea
                 id="profileBio"
@@ -477,7 +442,8 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
                 onChange={(e) => setProfileBio(e.target.value)}
                 placeholder="Tell people a bit about yourself and your music..."
                 rows={4}
-                className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] resize-none"
+                disabled={!isEditing}
+                className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <p className="text-xs text-gray-500">{profileBio.length}/1000 characters</p>
             </div>
@@ -497,7 +463,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
               <>
                 <Button
                   onClick={handleSave}
-                  disabled={isSaving || !username.trim()}
+                  disabled={isSaving}
                   size="lg"
                   className="bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 disabled:opacity-50 shadow-lg shadow-[var(--color-accent-primary)]/50 hover:shadow-xl hover:shadow-[var(--color-accent-primary)]/70 transition-all"
                 >

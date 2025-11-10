@@ -41,7 +41,10 @@ export const getSignupsByRound = async (roundId: number) => {
         artist: songs.artist
       },
       email: users.email,
-      userId: users.userid
+      userId: users.userid,
+      username: users.username,
+      publicDisplayName: users.publicDisplayName,
+      profilePictureUrl: users.profilePictureUrl
     })
     .from(signUps)
     .leftJoin(songs, eq(signUps.songId, songs.id))
@@ -53,7 +56,7 @@ export const getSignupsByRound = async (roundId: number) => {
 
     const unsortedUrls = data?.map(field => field.youtubeLink) || [];
     const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
-    
+
     // Process the data and throw errors for invalid entries
     return sortedData.map(val => {
       if (!val.userId) {
@@ -62,12 +65,15 @@ export const getSignupsByRound = async (roundId: number) => {
       if (!val.email) {
         throw new Error(`Signup for round ${roundId} has missing email`);
       }
-      
+
       return {
         songId: val.songId,
         youtubeLink: val.youtubeLink,
         userId: val.userId,
         email: val.email,
+        username: val.username || undefined,
+        publicDisplayName: val.publicDisplayName || undefined,
+        profilePictureUrl: val.profilePictureUrl || undefined,
         additionalComments: val.additionalComments || undefined,
         song: {
           title: val.song?.title || "",

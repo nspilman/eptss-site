@@ -7,6 +7,7 @@ import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
 import { deleteCommentAction, toggleUpvoteAction } from "../actions";
 import type { CommentItemProps } from "../types";
+import { getInitials, getDisplayName } from "@eptss/shared";
 
 const MAX_DEPTH = 3;
 
@@ -78,25 +79,23 @@ export function CommentItem({
     }
   };
 
-  const getInitials = (name: string) => {
-    return name.substring(0, 2).toUpperCase();
-  };
+  const authorDisplayName = getDisplayName(comment.author);
 
   return (
     <div className={`flex gap-4 ${depth > 0 ? "ml-0 sm:ml-6 md:ml-10" : ""}`}>
       {/* Avatar */}
       <div
         className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] flex items-center justify-center text-sm font-bold text-white flex-shrink-0 mt-0.5 shadow-lg"
-        aria-label={`${comment.author.fullName || comment.author.username}'s avatar`}
+        aria-label={`${authorDisplayName}'s avatar`}
       >
         {comment.author.profilePictureUrl ? (
           <img
             src={comment.author.profilePictureUrl}
-            alt={comment.author.fullName || comment.author.username}
+            alt={authorDisplayName}
             className="w-full h-full rounded-full object-cover"
           />
         ) : (
-          getInitials(comment.author.fullName || comment.author.username)
+          getInitials(authorDisplayName)
         )}
       </div>
 
@@ -105,7 +104,7 @@ export function CommentItem({
         {/* Header */}
         <div className="flex items-baseline gap-3 mb-2 flex-wrap">
           <span className="font-fraunces font-bold text-[var(--color-primary)] text-sm">
-            {comment.author.fullName || comment.author.username}
+            {authorDisplayName}
           </span>
           <span className="text-xs font-roboto text-[var(--color-gray-400)]">
             {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}

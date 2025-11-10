@@ -4,6 +4,7 @@ import { db } from "../db";
 import { users, signUps, submissions, roundMetadata, songs, userPrivacySettings, userSocialLinks, userEmbeddedMedia } from "../db/schema";
 import { count, eq, and, asc, desc } from "drizzle-orm";
 import { sql } from "drizzle-orm/sql";
+import { getDisplayName } from "@eptss/shared";
 
 export const getUserCount = async () => {
   const result = await db.select({ count: sql<number>`count(*)` }).from(users);
@@ -186,7 +187,7 @@ export const getPublicProfileByUsername = async (username: string) => {
     .select({
       userid: users.userid,
       username: users.username,
-      fullName: users.fullName,
+      publicDisplayName: users.publicDisplayName,
       profilePictureUrl: users.profilePictureUrl,
     })
     .from(users)
@@ -229,7 +230,6 @@ export const getPublicProfileByUsername = async (username: string) => {
     showSubmissions: true,
     showVotes: false,
     showEmail: false,
-    publicDisplayName: null,
     profileBio: null,
   };
 
@@ -237,8 +237,8 @@ export const getPublicProfileByUsername = async (username: string) => {
   // All submissions are now either shown or hidden based on the user's showSubmissions preference
   const filteredSubmissions = privacy.showSubmissions ? userSubmissions : [];
 
-  // Determine display name based on privacy settings
-  const displayName = privacy.publicDisplayName || user.fullName || user.username;
+  // Determine display name (fallback to username if not set)
+  const displayName = getDisplayName(user);
 
   // Get social links and embedded media
   const [socialLinks, embeddedMedia] = await Promise.all([
@@ -254,7 +254,7 @@ export const getPublicProfileByUsername = async (username: string) => {
     user: {
       userid: user.userid,
       username: user.username,
-      fullName: user.fullName,
+      publicDisplayName: user.publicDisplayName,
       profilePictureUrl: user.profilePictureUrl,
       displayName,
       bio: privacy.profileBio,

@@ -5,6 +5,7 @@ import { userContent, contentTags, tags, roundMetadata, users, UserContent, NewU
 import { eq, desc, and, inArray, sql } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createErrorResult, createEmptyResult } from '../types/asyncResult';
 import { createOrGetTag } from './tagService';
+import { getDisplayName } from "@eptss/shared";
 
 export interface Reflection extends Omit<UserContent, 'createdAt' | 'updatedAt' | 'publishedAt'> {
   createdAt: string;
@@ -227,7 +228,7 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
     const result = await db
       .select({
         content: userContent,
-        fullName: users.fullName,
+        publicDisplayName: users.publicDisplayName,
         username: users.username,
       })
       .from(userContent)
@@ -239,7 +240,7 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
       return createSuccessResult(null);
     }
 
-    const { content, fullName, username } = result[0];
+    const { content, publicDisplayName, username } = result[0];
 
     // Get associated tags
     const tagResults = await db
@@ -250,8 +251,8 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
 
     const tagSlugs = tagResults.map(t => t.slug);
 
-    // Use fullName if available, otherwise fallback to username
-    const authorName = fullName || username || undefined;
+    // Use publicDisplayName if available, otherwise fallback to username
+    const authorName = getDisplayName({ publicDisplayName, username });
 
     return createSuccessResult(mapToReflection(content, tagSlugs, authorName, undefined, username || undefined));
   } catch (error) {
@@ -268,7 +269,7 @@ export const getAllPublicReflections = async (): Promise<AsyncResult<Reflection[
     const results = await db
       .select({
         content: userContent,
-        fullName: users.fullName,
+        publicDisplayName: users.publicDisplayName,
         username: users.username,
         roundSlug: roundMetadata.slug,
       })
@@ -278,8 +279,8 @@ export const getAllPublicReflections = async (): Promise<AsyncResult<Reflection[
       .where(eq(userContent.isPublic, true))
       .orderBy(desc(userContent.publishedAt));
 
-    const reflections = results.map(({ content, fullName, username, roundSlug }) => {
-      const authorName = fullName || username || undefined;
+    const reflections = results.map(({ content, publicDisplayName, username, roundSlug }) => {
+      const authorName = getDisplayName({ publicDisplayName, username });
       return mapToReflection(content, undefined, authorName, roundSlug || undefined, username || undefined);
     });
 

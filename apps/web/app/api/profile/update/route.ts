@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const { userId } = await getAuthUser();
     const body = await request.json();
-    const { username, fullName } = body;
+    const { username, publicDisplayName } = body;
 
     // Validate username
     if (!username || typeof username !== 'string') {
@@ -43,11 +43,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate full name if provided
-    const trimmedFullName = fullName?.trim() || null;
-    if (trimmedFullName && trimmedFullName.length > 100) {
+    // Validate public display name if provided
+    const trimmedPublicDisplayName = publicDisplayName?.trim() || null;
+    if (trimmedPublicDisplayName && trimmedPublicDisplayName.length > 100) {
       return NextResponse.json(
-        { error: 'Full name must be less than 100 characters' },
+        { error: 'Public display name must be less than 100 characters' },
         { status: 400 }
       );
     }
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       //@ts-ignore
       .update({
         username: trimmedUsername,
-        full_name: trimmedFullName
+        public_display_name: trimmedPublicDisplayName
       })
       .eq('userid', userId)
       .select()

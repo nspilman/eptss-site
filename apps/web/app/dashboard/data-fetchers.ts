@@ -311,3 +311,18 @@ export async function fetchNextRoundData() {
     nextRoundUserSignup,
   };
 }
+
+/**
+ * Fetch data for the Round Participants Panel
+ */
+export async function fetchParticipantsData() {
+  const roundInfo = await roundProvider();
+
+  if (!roundInfo) {
+    return null;
+  }
+
+  return {
+    roundInfo,
+  };
+}

@@ -23,7 +23,6 @@ interface PrivacySettings {
   showSubmissions: boolean;
   showVotes: boolean;
   showEmail: boolean;
-  publicDisplayName: string | null;
   profileBio: string | null;
   showSocialLinks: boolean;
   showEmbeddedMedia: boolean;
@@ -49,7 +48,7 @@ interface PrivacySettingsTabProps {
   user: {
     userid: string;
     username: string;
-    fullName?: string | null;
+    publicDisplayName?: string | null;
   };
 }
 
@@ -62,7 +61,6 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
     showEmail: false,
     showSocialLinks: true,
     showEmbeddedMedia: true,
-    publicDisplayName: null,
     profileBio: null,
   });
 
@@ -96,7 +94,6 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
           showEmail: privacyData.privacySettings.showEmail ?? false,
           showSocialLinks: privacyData.privacySettings.showSocialLinks ?? true,
           showEmbeddedMedia: privacyData.privacySettings.showEmbeddedMedia ?? true,
-          publicDisplayName: privacyData.privacySettings.publicDisplayName,
           profileBio: privacyData.privacySettings.profileBio,
         });
 
@@ -269,22 +266,7 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
               </div>
             )}
 
-            {/* Display Name */}
-            <div className="space-y-2">
-              <Label htmlFor="publicDisplayName" className="text-[var(--color-primary)] text-sm font-medium">
-                Public Display Name
-                <span className="text-xs text-gray-400 ml-2 font-normal">
-                  (Leave blank to use {user.fullName ? 'full name' : 'username'})
-                </span>
-              </Label>
-              <Input
-                id="publicDisplayName"
-                value={settings.publicDisplayName || ''}
-                onChange={(e) => setSettings({ ...settings, publicDisplayName: e.target.value || null })}
-                placeholder={user.fullName || user.username}
-                className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)]"
-              />
-            </div>
+            {/* Note: Public Display Name is now managed in Personal Info tab */}
 
             {/* Profile Bio */}
             <div className="space-y-2">

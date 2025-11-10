@@ -7,7 +7,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   username: text("username").unique().notNull(),
-  fullName: text("full_name"),
+  publicDisplayName: text("public_display_name"),
   adminLevel: integer("admin_level"),
   profilePictureUrl: text("profile_picture_url"),
 });
@@ -254,7 +254,6 @@ export const userPrivacySettings = pgTable("user_privacy_settings", {
   showEmail: boolean("show_email").notNull().default(false),
   showSocialLinks: boolean("show_social_links").notNull().default(true),
   showEmbeddedMedia: boolean("show_embedded_media").notNull().default(true),
-  publicDisplayName: text("public_display_name"),
   profileBio: text("profile_bio"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
