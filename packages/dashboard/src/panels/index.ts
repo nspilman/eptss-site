@@ -6,6 +6,7 @@ export { ActionPanel, ActionPanelSkeleton } from './ActionPanel';
 export type { ActionPanelData, UrgencyLevel } from './ActionPanel';
 export { CurrentRoundPanel, CurrentRoundSkeleton } from './CurrentRoundPanel';
 export type { CurrentRoundData, Phase } from './CurrentRoundPanel';
+export { ProfileSetupPanel, ProfileSetupSkeleton } from './ProfileSetupPanel';
 
 // Future panels can be added here:
 // export { CommunityPanel, CommunitySkeleton } from './CommunityPanel';

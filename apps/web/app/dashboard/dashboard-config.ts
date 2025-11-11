@@ -15,6 +15,8 @@ import {
   HeroPanel,
   HeroSkeleton,
   ActionPanelSkeleton,
+  ProfileSetupPanel,
+  ProfileSetupSkeleton,
 } from '@eptss/dashboard/panels';
 
 import { ActionPanelWrapper } from './ActionPanelWrapper';
@@ -25,6 +27,21 @@ import { RoundParticipantsPanelWrapper, RoundParticipantsPanelSkeleton } from '.
  */
 export const eptssDeboardConfig: DashboardConfig = {
   panels: [
+    // ============================================
+    // PROFILE SETUP PANEL - Shows first when user hasn't set display name
+    // ============================================
+    createPanel(
+      definePanelConfig('profileSetup', {
+        name: 'Complete Your Profile',
+        description: 'Set up your display name and bio',
+        priority: 'primary',
+        order: 0,
+        showSkeleton: true,
+      }),
+      ProfileSetupPanel,
+      { skeleton: ProfileSetupSkeleton }
+    ),
+
     // ============================================
     // HERO PANEL - Always at top
     // ============================================

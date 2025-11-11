@@ -1,6 +1,7 @@
 import { Dashboard } from '@eptss/dashboard';
 import { eptssDeboardConfig } from './dashboard-config';
 import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
+import { getUserById } from '@eptss/data-access';
 import {
   fetchHeroData,
   fetchActionData,
@@ -16,11 +17,12 @@ export default async function DashboardPage() {
   const { userId } = await getAuthUser();
 
   // Fetch data for all panels in parallel
-  const [heroData, actionData, participantsData] =
+  const [heroData, actionData, participantsData, userData] =
     await Promise.all([
       fetchHeroData(),
       fetchActionData(),
       fetchParticipantsData(),
+      userId ? getUserById(userId) : null,
     ]);
 
   return (
@@ -28,6 +30,12 @@ export default async function DashboardPage() {
       config={eptssDeboardConfig}
       user={userId ? { id: userId, role: 'user' } : undefined}
       panelData={{
+        profileSetup: userData ? {
+          userId: userData.userid,
+          username: userData.username,
+          publicDisplayName: userData.publicDisplayName,
+          profilePictureUrl: userData.profilePictureUrl,
+        } : null,
         hero: heroData,
         action: actionData,
         participants: participantsData,

@@ -17,6 +17,9 @@ import {
   deleteProfilePictureAction
 } from '@eptss/actions';
 import { profileProvider } from '@eptss/data-access';
+import { ProfilePictureSection } from './shared/ProfilePictureSection';
+import { DisplayNameField } from './shared/DisplayNameField';
+import { ProfileBioField } from './shared/ProfileBioField';
 
 interface SocialLink {
   id: string;
@@ -312,83 +315,24 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
           <div className="space-y-6">
             {/* Profile Picture */}
-            <div className="space-y-4 pb-6 border-b border-gray-700">
-              <Label className="text-[var(--color-primary)] text-sm font-medium">Profile Picture</Label>
-              <div className="flex items-center gap-6">
-                <div className="relative">
-                  {profilePictureUrl ? (
-                    <img
-                      src={profilePictureUrl}
-                      alt="Profile"
-                      className="w-24 h-24 rounded-full object-cover border-2 border-[var(--color-accent-primary)]"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center">
-                      <svg className="w-12 h-12 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <div className="flex gap-3">
-                    <label htmlFor="profile-picture-upload">
-                      <input
-                        id="profile-picture-upload"
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                        onChange={handleProfilePictureUpload}
-                        disabled={isUploadingPicture}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        size="sm"
-                        disabled={isUploadingPicture}
-                        className="bg-[var(--color-accent-primary)] hover:opacity-90 text-gray-900 cursor-pointer"
-                        onClick={() => document.getElementById('profile-picture-upload')?.click()}
-                      >
-                        {isUploadingPicture ? 'Uploading...' : profilePictureUrl ? 'Change Photo' : 'Upload Photo'}
-                      </Button>
-                    </label>
-                    {profilePictureUrl && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="destructive"
-                        onClick={handleDeleteProfilePicture}
-                        disabled={isUploadingPicture}
-                      >
-                        Remove
-                      </Button>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    JPG, PNG, WebP or GIF. Max 5MB.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <ProfilePictureSection
+              profilePictureUrl={profilePictureUrl}
+              isUploading={isUploadingPicture}
+              isDisabled={false}
+              onUpload={handleProfilePictureUpload}
+              onDelete={handleDeleteProfilePicture}
+            />
 
             {/* Editable fields */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Public Display Name - Editable */}
-              <div className="space-y-2">
-                <Label htmlFor="publicDisplayName" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
-                  Public Display Name
-                  {!isEditing && (
-                    <span className="text-xs text-[var(--color-accent-primary)] font-normal">(editable)</span>
-                  )}
-                </Label>
-                <Input
-                  id="publicDisplayName"
-                  value={publicDisplayName}
-                  onChange={(e) => setPublicDisplayName(e.target.value)}
-                  placeholder={user.username || 'Enter your display name'}
-                  disabled={!isEditing}
-                  className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              </div>
+              <DisplayNameField
+                value={publicDisplayName}
+                onChange={setPublicDisplayName}
+                placeholder={user.username || 'Enter your display name'}
+                isDisabled={!isEditing}
+                showEditableLabel={!isEditing}
+              />
 
               {/* Username - Read Only */}
               <div className="space-y-2">
@@ -428,25 +372,13 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
             </div>
 
             {/* Profile Bio - Editable */}
-            <div className="space-y-2 pt-4 border-t border-gray-700">
-              <Label htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
-                Profile Bio
-                <span className="text-xs text-gray-400 ml-2 font-normal">(Optional, shown on public profile)</span>
-                {!isEditing && (
-                  <span className="text-xs text-[var(--color-accent-primary)] font-normal">(editable)</span>
-                )}
-              </Label>
-              <Textarea
-                id="profileBio"
-                value={profileBio}
-                onChange={(e) => setProfileBio(e.target.value)}
-                placeholder="Tell people a bit about yourself and your music..."
-                rows={4}
-                disabled={!isEditing}
-                className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-              <p className="text-xs text-gray-500">{profileBio.length}/1000 characters</p>
-            </div>
+            <ProfileBioField
+              value={profileBio}
+              onChange={setProfileBio}
+              isDisabled={!isEditing}
+              showEditableLabel={!isEditing}
+              showBorder={true}
+            />
           </div>
 
           {/* Action Buttons */}
