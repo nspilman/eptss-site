@@ -4,21 +4,17 @@
  * Each function fetches and transforms data for a specific panel
  */
 
-import { 
-  roundProvider, 
-  userParticipationProvider, 
-  getVotesByUserForRoundWithDetails,
+import {
+  roundProvider,
+  userParticipationProvider,
   getNextRoundByVotingDate,
   getUserSignupData,
   getUserReflectionsForRound
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { Navigation } from "@eptss/shared";
-import type { 
-  ActionPanelData, 
-  CurrentRoundData,
-  PhaseStatusData,
-  Phase 
+import type {
+  Phase
 } from "@eptss/dashboard/panels";
 
 /**
@@ -78,40 +74,12 @@ function formatTimeRemaining(phaseCloses: string | undefined): string {
 }
 
 /**
- * Fetch data for the Phase Status Panel
+ * Fetch data for the Action Panel (now includes reflections, phase status, and progress)
  */
-export async function fetchPhaseStatusData(): Promise<PhaseStatusData | null> {
-  const currentRound = await roundProvider();
+export async function fetchActionData() {
+  // Get auth user first to fetch reflections
+  const { userId } = await getAuthUser();
 
-  if (!currentRound) {
-    return null;
-  }
-
-  const { phase, dateLabels } = currentRound;
-  const phaseCloses = dateLabels[phase]?.closes;
-  const timeRemaining = formatTimeRemaining(phaseCloses);
-  const urgencyLevel = calculateUrgencyLevel(phaseCloses);
-
-  // Phase-specific messages
-  const phaseMessages: Record<Phase, string> = {
-    signups: 'Suggest a song and sign up to participate',
-    voting: 'Vote on which song should be covered this round',
-    covering: 'Record and submit your cover of the selected song',
-    celebration: 'Join us for the listening party event!',
-  };
-
-  return {
-    phase: phase as Phase,
-    timeRemaining,
-    urgencyLevel,
-    message: phaseMessages[phase as Phase],
-  };
-}
-
-/**
- * Fetch data for the Action Panel
- */
-export async function fetchActionData(): Promise<ActionPanelData | null> {
   const [currentRound, { roundDetails }] = await Promise.all([
     roundProvider(),
     userParticipationProvider(),
@@ -121,21 +89,58 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
     return null;
   }
 
-  const { phase, roundId, slug } = currentRound;
+  const { phase, roundId, slug, dateLabels } = currentRound;
+
+  // Fetch reflections for this round
+  let reflections = [];
+  if (userId) {
+    const reflectionsResult = await getUserReflectionsForRound(userId, currentRound.roundId);
+    if (reflectionsResult.status === 'success') {
+      reflections = reflectionsResult.data;
+    }
+  }
+
+  // Phase status info
+  const phaseCloses = dateLabels[phase]?.closes;
+  const timeRemaining = formatTimeRemaining(phaseCloses);
+  const urgencyLevel = calculateUrgencyLevel(phaseCloses);
+
+  const phaseNames: Record<Phase, string> = {
+    signups: 'Song Selection & Signups',
+    voting: 'Voting Phase',
+    covering: 'Covering Phase',
+    celebration: 'Listening Party',
+  };
+
+  const phaseMessages: Record<Phase, string> = {
+    signups: 'Suggest a song and sign up to participate',
+    voting: 'Vote on which song should be covered this round',
+    covering: 'Record and submit your cover of the selected song',
+    celebration: 'Join us for the listening party event!',
+  };
 
   // Determine action based on phase and user status
-  // Note: Time remaining is now shown in PhaseStatusPanel, not here
   switch (phase) {
     case 'signups':
       return {
         actionText: roundDetails?.hasSignedUp ? 'Update Song Suggestion' : 'Sign Up for Round',
-        actionHref: roundDetails?.hasSignedUp 
-          ? `${Navigation.SignUp}?update=true` 
+        actionHref: roundDetails?.hasSignedUp
+          ? `${Navigation.SignUp}?update=true`
           : Navigation.SignUp,
         contextMessage: roundDetails?.hasSignedUp
           ? 'Change your song suggestion before signups close.'
           : 'Join the current round and suggest a song for everyone to cover!',
         isHighPriority: true,
+        reflections,
+        roundSlug: slug,
+        phase: phase as Phase,
+        phaseName: phaseNames[phase as Phase],
+        phaseMessage: phaseMessages[phase as Phase],
+        timeRemaining,
+        urgencyLevel,
+        hasSignedUp: roundDetails?.hasSignedUp || false,
+        hasSubmitted: roundDetails?.hasSubmitted || false,
+        hasVoted: roundDetails?.hasVoted || false,
       };
 
     case 'voting':
@@ -147,6 +152,16 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
           contextMessage: 'Join this round without selecting a song. You can still participate in voting and covering!',
           isHighPriority: true,
           isLateSignup: true,
+          reflections,
+          roundSlug: slug,
+          phase: phase as Phase,
+          phaseName: phaseNames[phase as Phase],
+          phaseMessage: phaseMessages[phase as Phase],
+          timeRemaining,
+          urgencyLevel,
+          hasSignedUp: roundDetails?.hasSignedUp || false,
+          hasSubmitted: roundDetails?.hasSubmitted || false,
+          hasVoted: roundDetails?.hasVoted || false,
         };
       }
 
@@ -157,6 +172,16 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
           ? 'Change your votes before voting closes.'
           : 'Vote on which song suggestions should be covered this round!',
         isHighPriority: !roundDetails.hasVoted,
+        reflections,
+        roundSlug: slug,
+        phase: phase as Phase,
+        phaseName: phaseNames[phase as Phase],
+        phaseMessage: phaseMessages[phase as Phase],
+        timeRemaining,
+        urgencyLevel,
+        hasSignedUp: roundDetails?.hasSignedUp || false,
+        hasSubmitted: roundDetails?.hasSubmitted || false,
+        hasVoted: roundDetails?.hasVoted || false,
       };
 
     case 'covering':
@@ -168,6 +193,16 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
           contextMessage: 'Join this round without selecting a song. You can still submit a cover!',
           isHighPriority: true,
           isLateSignup: true,
+          reflections,
+          roundSlug: slug,
+          phase: phase as Phase,
+          phaseName: phaseNames[phase as Phase],
+          phaseMessage: phaseMessages[phase as Phase],
+          timeRemaining,
+          urgencyLevel,
+          hasSignedUp: roundDetails?.hasSignedUp || false,
+          hasSubmitted: roundDetails?.hasSubmitted || false,
+          hasVoted: roundDetails?.hasVoted || false,
         };
       }
 
@@ -178,6 +213,16 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
           ? 'Update your cover submission before the deadline.'
           : 'Record and submit your cover of the selected song!',
         isHighPriority: !roundDetails.hasSubmitted,
+        reflections,
+        roundSlug: slug,
+        phase: phase as Phase,
+        phaseName: phaseNames[phase as Phase],
+        phaseMessage: phaseMessages[phase as Phase],
+        timeRemaining,
+        urgencyLevel,
+        hasSignedUp: roundDetails?.hasSignedUp || false,
+        hasSubmitted: roundDetails?.hasSubmitted || false,
+        hasVoted: roundDetails?.hasVoted || false,
       };
 
     case 'celebration':
@@ -186,107 +231,21 @@ export async function fetchActionData(): Promise<ActionPanelData | null> {
         actionHref: `/round/${slug}`,
         contextMessage: '🎉 Join us for the listening party to celebrate this round!',
         isHighPriority: false,
+        reflections,
+        roundSlug: slug,
+        phase: phase as Phase,
+        phaseName: phaseNames[phase as Phase],
+        phaseMessage: phaseMessages[phase as Phase],
+        timeRemaining,
+        urgencyLevel,
+        hasSignedUp: roundDetails?.hasSignedUp || false,
+        hasSubmitted: roundDetails?.hasSubmitted || false,
+        hasVoted: roundDetails?.hasVoted || false,
       };
 
     default:
       return null;
   }
-}
-
-/**
- * Fetch data for the Current Round Panel
- */
-export async function fetchCurrentRoundData(): Promise<CurrentRoundData | null> {
-  const [currentRound, { roundDetails }, { userId }] = await Promise.all([
-    roundProvider(),
-    userParticipationProvider(),
-    getAuthUser(),
-  ]);
-
-  if (!currentRound) {
-    return null;
-  }
-
-  // Get user votes if in voting phase and has voted
-  let userVotesWithDetails = null;
-  if (currentRound.phase === 'voting' && roundDetails?.hasVoted && currentRound.roundId) {
-    userVotesWithDetails = await getVotesByUserForRoundWithDetails(currentRound.roundId);
-  }
-
-  // Find user's song suggestion if they've signed up
-  let userSongSuggestion = undefined;
-  if (roundDetails?.hasSignedUp && currentRound.signups && userId) {
-    const userSignup = currentRound.signups.find(
-      (signup) => signup.userId === userId
-    );
-    if (userSignup?.song) {
-      userSongSuggestion = {
-        title: userSignup.song.title,
-        artist: userSignup.song.artist,
-      };
-    }
-  }
-
-  return {
-    roundId: currentRound.roundId,
-    phase: currentRound.phase as Phase,
-    hasSignedUp: roundDetails?.hasSignedUp || false,
-    hasSubmitted: roundDetails?.hasSubmitted || false,
-    hasVoted: roundDetails?.hasVoted || false,
-    phaseCloses: currentRound.dateLabels[currentRound.phase]?.closes,
-    currentSignups: currentRound.signups?.length,
-    userSongSuggestion,
-    userVotes: userVotesWithDetails || undefined,
-  };
-}
-
-/**
- * Fetch data for the Reflection Panel
- */
-export async function fetchReflectionData() {
-  const [currentRound, { userId }] = await Promise.all([
-    roundProvider(),
-    getAuthUser(),
-  ]);
-
-  if (!currentRound || !userId) {
-    return null;
-  }
-
-  const reflectionsResult = await getUserReflectionsForRound(userId, currentRound.roundId);
-
-  // Handle AsyncResult
-  if (reflectionsResult.status !== 'success') {
-    return {
-      roundSlug: currentRound.slug,
-      round: {
-        roundId: currentRound.roundId,
-        slug: currentRound.slug,
-        signupOpens: currentRound.signupOpens,
-        votingOpens: currentRound.votingOpens,
-        coveringBegins: currentRound.coveringBegins,
-        coversDue: currentRound.coversDue,
-        listeningParty: currentRound.listeningParty,
-        song: currentRound.song || { artist: '', title: '' },
-      },
-      reflections: [],
-    };
-  }
-
-  return {
-    roundSlug: currentRound.slug,
-    round: {
-      roundId: currentRound.roundId,
-      slug: currentRound.slug,
-      signupOpens: currentRound.signupOpens,
-      votingOpens: currentRound.votingOpens,
-      coveringBegins: currentRound.coveringBegins,
-      coversDue: currentRound.coversDue,
-      listeningParty: currentRound.listeningParty,
-      song: currentRound.song || { artist: '', title: '' },
-    },
-    reflections: reflectionsResult.data,
-  };
 }
 
 /**

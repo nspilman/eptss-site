@@ -14,14 +14,9 @@ import {
 import {
   HeroPanel,
   HeroSkeleton,
-  PhaseStatusPanel,
-  PhaseStatusSkeleton,
   ActionPanelSkeleton,
-  CurrentRoundPanel,
-  CurrentRoundSkeleton,
 } from '@eptss/dashboard/panels';
 
-import { ReflectionPanelWrapper, ReflectionPanelSkeleton } from './ReflectionPanelWrapper';
 import { ActionPanelWrapper } from './ActionPanelWrapper';
 import { RoundParticipantsPanelWrapper, RoundParticipantsPanelSkeleton } from './RoundParticipantsPanelWrapper';
 
@@ -46,80 +41,33 @@ export const eptssDeboardConfig: DashboardConfig = {
     ),
 
     // ============================================
-    // PHASE STATUS - Deadline banner (right after hero)
+    // ACTION PANEL - Main CTA + Phase Status + Reflections (unified command center)
     // ============================================
     createPanel(
-      definePanelConfig('phase-status', {
-        name: 'Phase Status',
-        description: 'Shows current phase and time remaining',
+      definePanelConfig('action', {
+        name: 'Your Next Action',
+        description: 'Shows primary action, phase status, countdown, progress, and reflections',
         priority: 'primary',
         order: 2,
         showSkeleton: true,
       }),
-      PhaseStatusPanel,
-      { skeleton: PhaseStatusSkeleton }
+      ActionPanelWrapper,
+      { skeleton: ActionPanelSkeleton }
     ),
 
     // ============================================
-    // REFLECTIONS - Third position
-    // ============================================
-    createPanel(
-      definePanelConfig('reflections', {
-        name: 'My Reflections',
-        description: 'User reflections and journal entries',
-        priority: 'primary',
-        order: 3,
-        collapsible: true,
-        defaultCollapsed: false,
-        showSkeleton: true,
-      }),
-      ReflectionPanelWrapper,
-      { skeleton: ReflectionPanelSkeleton }
-    ),
-
-    // ============================================
-    // PROGRESS PANEL - Status info, fourth position
-    // ============================================
-    createPanel(
-      definePanelConfig('current-round', {
-        name: 'Your Progress',
-        description: 'Shows phase progress and status',
-        priority: 'primary',
-        order: 4,
-        showSkeleton: true,
-      }),
-      CurrentRoundPanel,
-      { skeleton: CurrentRoundSkeleton }
-    ),
-
-    // ============================================
-    // ROUND PARTICIPANTS - Show other people in the round
+    // ROUND PARTICIPANTS - Community engagement
     // ============================================
     createPanel(
       definePanelConfig('participants', {
         name: 'Round Participants',
         description: 'Shows other people signed up for this round',
         priority: 'primary',
-        order: 5,
+        order: 3,
         showSkeleton: true,
       }),
       RoundParticipantsPanelWrapper,
       { skeleton: RoundParticipantsPanelSkeleton }
-    ),
-
-    // ============================================
-    // ACTION PANEL - Submit cover CTA at bottom
-    // ============================================
-    createPanel(
-      definePanelConfig('action', {
-        name: 'Your Next Action',
-        description: 'Shows the primary action user needs to take',
-        priority: 'primary',
-        order: 6,
-        showSkeleton: true,
-      }),
-      ActionPanelWrapper,
-      { skeleton: ActionPanelSkeleton }
     ),
 
     // ============================================
