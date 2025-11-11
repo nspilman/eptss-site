@@ -9,7 +9,8 @@ import {
   userParticipationProvider,
   getNextRoundByVotingDate,
   getUserSignupData,
-  getUserReflectionsForRound
+  getUserReflectionsForRound,
+  type Reflection
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { Navigation } from "@eptss/shared";
@@ -92,7 +93,7 @@ export async function fetchActionData() {
   const { phase, roundId, slug, dateLabels } = currentRound;
 
   // Fetch reflections for this round
-  let reflections = [];
+  let reflections: Reflection[] = [];
   if (userId) {
     const reflectionsResult = await getUserReflectionsForRound(userId, currentRound.roundId);
     if (reflectionsResult.status === 'success') {
