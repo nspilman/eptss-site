@@ -34,7 +34,7 @@ export function ProfileBioField({
         placeholder="Tell people a bit about yourself and your music..."
         rows={4}
         disabled={isDisabled}
-        className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-gray-800 border-gray-700 text-[var(--color-primary)] placeholder:text-gray-400 focus:border-[var(--color-accent-primary)] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
       />
       <p className="text-xs text-gray-500">{value.length}/1000 characters</p>
     </div>

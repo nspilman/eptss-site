@@ -20,18 +20,19 @@ export function ProfileSetupPanel({ data }: PanelProps<ProfileSetupData>) {
     return null;
   }
 
-  // Don't show if user has already set their display name
-  if (data.publicDisplayName) {
+  const { userId, username, publicDisplayName, profilePictureUrl } = data;
+
+  // Don't show if user has manually set their display name
+  // (if publicDisplayName is null or equals username, they haven't customized it yet)
+  if (publicDisplayName && publicDisplayName !== username) {
     return null;
   }
-
-  const { userId, username, publicDisplayName, profilePictureUrl } = data;
 
   return (
     <ProfileSetupCard
       userId={userId}
       username={username}
-      initialDisplayName={publicDisplayName}
+      initialDisplayName={null} // Always start with empty field to encourage customization
       initialProfilePictureUrl={profilePictureUrl}
       variant="compact"
       onSuccess={() => {
@@ -48,7 +49,7 @@ export function ProfileSetupSkeleton() {
       {/* Rainbow gradient border effect */}
       <div className="absolute -inset-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] rounded-2xl blur opacity-30 transition duration-500"></div>
 
-      <div className="relative z-10 overflow-hidden rounded-xl bg-gray-900/50 p-8 backdrop-blur-xs border border-gray-800 animate-pulse">
+      <div className="relative z-10 overflow-hidden rounded-xl bg-gray-900 p-8 border border-gray-800 animate-pulse">
         <div className="space-y-6">
           <div className="h-6 bg-gray-800 rounded w-1/3" />
           <div className="h-4 bg-gray-800 rounded w-2/3" />

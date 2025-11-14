@@ -32,7 +32,7 @@ export function DisplayNameField({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={isDisabled}
-        className="bg-gray-800 border-gray-700 text-[var(--color-primary)] focus:border-[var(--color-accent-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-gray-800 border-gray-700 text-[var(--color-primary)] placeholder:text-gray-400 focus:border-[var(--color-accent-primary)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       />
     </div>
   );

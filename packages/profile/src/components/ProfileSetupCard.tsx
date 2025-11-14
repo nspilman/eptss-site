@@ -177,7 +177,7 @@ export function ProfileSetupCard({
         <div className="absolute -inset-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] rounded-2xl blur opacity-30 group-hover:opacity-50 transition duration-500"></div>
       )}
 
-      <Card className="relative z-10 w-full p-8 bg-gray-900/50 border-gray-800 overflow-hidden backdrop-blur-xs">
+      <Card className={`relative z-10 w-full p-8 border-gray-800 overflow-hidden ${isCompact ? 'bg-gray-900' : 'bg-gray-900/50 backdrop-blur-xs'}`}>
         {/* Background pattern */}
         <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
 
@@ -234,7 +234,7 @@ export function ProfileSetupCard({
             <DisplayNameField
               value={publicDisplayName}
               onChange={setPublicDisplayName}
-              placeholder={username || 'Enter your display name'}
+              placeholder="Enter your full name or display name"
               isDisabled={!isEditing}
               showEditableLabel={!isEditing}
             />
