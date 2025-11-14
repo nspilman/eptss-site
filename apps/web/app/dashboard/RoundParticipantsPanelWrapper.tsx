@@ -4,17 +4,18 @@ import type { RoundInfo } from '@eptss/data-access/types/round';
 
 interface ParticipantsData {
   roundInfo: RoundInfo;
+  currentUserId?: string;
 }
 
 /**
  * Wrapper to adapt RoundParticipants to the dashboard panel interface
  */
-export function RoundParticipantsPanelWrapper({ data }: PanelProps<ParticipantsData>) {
+export function RoundParticipantsPanelWrapper({ data, user }: PanelProps<ParticipantsData>) {
   if (!data || !data.roundInfo) {
     return null;
   }
 
-  return <RoundParticipants roundInfo={data.roundInfo} />;
+  return <RoundParticipants roundInfo={data.roundInfo} currentUserId={user?.id} />;
 }
 
 export function RoundParticipantsPanelSkeleton() {

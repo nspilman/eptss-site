@@ -9,9 +9,10 @@ import { getDisplayName } from "@eptss/shared";
 
 interface RoundParticipantsProps {
   roundInfo: RoundInfo;
+  currentUserId?: string;
 }
 
-export const RoundParticipants = ({ roundInfo }: RoundParticipantsProps) => {
+export const RoundParticipants = ({ roundInfo, currentUserId }: RoundParticipantsProps) => {
   const { signups } = roundInfo;
 
   // Filter out signups without userId (unverified) and only show unique users
@@ -23,6 +24,14 @@ export const RoundParticipants = ({ roundInfo }: RoundParticipantsProps) => {
       }
       return acc;
     }, [] as typeof signups);
+
+  // Sort so current user is always first
+  const sortedParticipants = currentUserId
+    ? [
+        ...uniqueParticipants.filter(p => p.userId === currentUserId),
+        ...uniqueParticipants.filter(p => p.userId !== currentUserId)
+      ]
+    : uniqueParticipants;
 
   if (uniqueParticipants.length === 0) {
     return null;
@@ -51,7 +60,7 @@ export const RoundParticipants = ({ roundInfo }: RoundParticipantsProps) => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {uniqueParticipants.map((participant, index) => (
+          {sortedParticipants.map((participant, index) => (
             <motion.div
               key={participant.userId}
               initial={{ opacity: 0, y: 20 }}
