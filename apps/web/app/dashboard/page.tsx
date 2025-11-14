@@ -39,6 +39,9 @@ export default async function DashboardPage() {
         hero: heroData,
         action: actionData,
         participants: participantsData,
+        reflections: heroData ? {
+          roundId: heroData.roundId,
+        } : null,
       }}
     />
   );

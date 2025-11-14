@@ -17,6 +17,8 @@ import {
   ActionPanelSkeleton,
   ProfileSetupPanel,
   ProfileSetupSkeleton,
+  RoundReflectionsPanel,
+  RoundReflectionsSkeleton,
 } from '@eptss/dashboard/panels';
 
 import { ActionPanelWrapper } from './ActionPanelWrapper';
@@ -85,6 +87,21 @@ export const eptssDeboardConfig: DashboardConfig = {
       }),
       RoundParticipantsPanelWrapper,
       { skeleton: RoundParticipantsPanelSkeleton }
+    ),
+
+    // ============================================
+    // ROUND REFLECTIONS - Community reflections
+    // ============================================
+    createPanel(
+      definePanelConfig('reflections', {
+        name: 'Community Reflections',
+        description: 'Public reflections from round participants',
+        priority: 'tertiary',
+        order: 1,
+        showSkeleton: true,
+      }),
+      RoundReflectionsPanel,
+      { skeleton: RoundReflectionsSkeleton }
     ),
 
     // ============================================
