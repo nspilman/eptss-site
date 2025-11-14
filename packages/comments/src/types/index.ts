@@ -28,6 +28,7 @@ export interface CommentItemProps {
 export interface CommentFormProps {
   contentId: string;
   parentCommentId?: string;
+  contentAuthorId?: string; // For notifying content author on new top-level comments
   onSuccess?: () => void;
   onCancel?: () => void;
   initialContent?: string;

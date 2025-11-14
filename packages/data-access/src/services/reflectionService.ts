@@ -532,3 +532,22 @@ export const getPublicReflectionsByUsername = async (
     return createErrorResult(new Error(`Failed to get public reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
+
+/**
+ * Get content slug by content ID
+ * Used for notification navigation to link to specific content
+ */
+export const getContentSlugById = async (contentId: string): Promise<AsyncResult<string | null>> => {
+  try {
+    const [content] = await db
+      .select({ slug: userContent.slug })
+      .from(userContent)
+      .where(eq(userContent.id, contentId))
+      .limit(1);
+
+    return createSuccessResult(content?.slug || null);
+  } catch (error) {
+    console.error("Error in getContentSlugById:", error);
+    return createErrorResult(new Error(`Failed to get content slug: ${error instanceof Error ? error.message : 'Unknown error'}`));
+  }
+};

@@ -126,6 +126,7 @@ export function CommentSection({
       {/* Comment form */}
       <CommentForm
         contentId={contentId}
+        contentAuthorId={contentAuthorId}
         onSuccess={handleCommentAdded}
       />
 

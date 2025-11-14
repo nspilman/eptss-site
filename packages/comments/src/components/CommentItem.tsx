@@ -82,7 +82,7 @@ export function CommentItem({
   const authorDisplayName = getDisplayName(comment.author);
 
   return (
-    <div className={`flex gap-4 ${depth > 0 ? "ml-0 sm:ml-6 md:ml-10" : ""}`}>
+    <div id={`comment-${comment.id}`} className={`flex gap-4 ${depth > 0 ? "ml-0 sm:ml-6 md:ml-10" : ""}`}>
       {/* Avatar */}
       <div
         className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] flex items-center justify-center text-sm font-bold text-white flex-shrink-0 mt-0.5 shadow-lg"

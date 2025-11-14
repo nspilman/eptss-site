@@ -3,7 +3,10 @@
 import { Button } from "@eptss/ui";
 import { Check, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import type { Notification } from "@eptss/data-access/db/schema";
+import { getNotificationNavigation, isNotificationClickable } from "@/lib/notification-navigation";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -20,6 +23,8 @@ const notificationIcons: Record<string, string> = {
   round_covering_begins: "🎤",
   round_covers_due: "⏰",
   comment_received: "💬",
+  comment_reply_received: "💬",
+  comment_upvoted: "❤️",
   mention_received: "👋",
   admin_announcement: "📢",
   test_notification: "🔔",
@@ -30,15 +35,54 @@ export function NotificationItem({
   onMarkAsRead,
   onDelete,
 }: NotificationItemProps) {
+  const router = useRouter();
+  const [isNavigating, setIsNavigating] = useState(false);
+
   const icon = notificationIcons[notification.type] || "🔔";
   const timeAgo = formatDistanceToNow(new Date(notification.createdAt), {
     addSuffix: true,
   });
 
+  const isClickable = isNotificationClickable(notification.type);
+
+  const handleClick = async () => {
+    if (!isClickable || isNavigating) return;
+
+    try {
+      setIsNavigating(true);
+
+      const navigationResult = await getNotificationNavigation(notification);
+
+      if (navigationResult.error) {
+        console.error("Navigation error:", navigationResult.error);
+        return;
+      }
+
+      if (!navigationResult.url) {
+        return;
+      }
+
+      // Mark as read if the handler specified
+      if (navigationResult.markAsRead && !notification.isRead) {
+        onMarkAsRead(notification.id);
+      }
+
+      // Navigate to the URL
+      router.push(navigationResult.url);
+    } catch (error) {
+      console.error("Error navigating from notification:", error);
+    } finally {
+      setIsNavigating(false);
+    }
+  };
+
   return (
     <div
-      className={`p-4 hover:bg-background-secondary/50 transition-colors ${
+      onClick={handleClick}
+      className={`p-4 transition-colors ${
         !notification.isRead ? "bg-primary/5" : ""
+      } ${isClickable ? "cursor-pointer hover:bg-background-secondary/50" : ""} ${
+        isNavigating ? "opacity-50" : ""
       }`}
     >
       <div className="flex gap-3">

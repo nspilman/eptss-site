@@ -71,7 +71,8 @@ export {
   getUserInitialReflectionForRound,
   getUserReflectionsForRound,
   getAllPublicReflections,
-  getPublicReflectionsByUsername
+  getPublicReflectionsByUsername,
+  getContentSlugById
 } from './services/reflectionService';
 export type { Reflection, CreateReflectionInput, UpdateReflectionInput, ReflectionType } from './services/reflectionService';
 export {

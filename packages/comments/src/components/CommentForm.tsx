@@ -7,6 +7,7 @@ import type { CommentFormProps } from "../types";
 export function CommentForm({
   contentId,
   parentCommentId,
+  contentAuthorId,
   onSuccess,
   onCancel,
   initialContent = "",
@@ -27,7 +28,12 @@ export function CommentForm({
     try {
       const result = isEditing && commentId
         ? await updateCommentAction({ commentId, content })
-        : await createCommentAction({ contentId, content, parentCommentId });
+        : await createCommentAction({
+            contentId,
+            content,
+            parentCommentId,
+            contentAuthorId
+          });
 
       if (result.success) {
         setContent("");
