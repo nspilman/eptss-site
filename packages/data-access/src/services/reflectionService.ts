@@ -307,11 +307,20 @@ export const getReflectionsByRound = async (
       : eq(userContent.roundId, roundId);
 
     const results = await db
-      .select()
+      .select({
+        content: userContent,
+        publicDisplayName: users.publicDisplayName,
+        username: users.username,
+      })
       .from(userContent)
+      .innerJoin(users, eq(userContent.userId, users.userid))
       .where(whereCondition)
       .orderBy(desc(userContent.createdAt));
-    const reflections = results.map(r => mapToReflection(r));
+
+    const reflections = results.map(({ content, publicDisplayName, username }) => {
+      const authorName = getDisplayName({ publicDisplayName, username });
+      return mapToReflection(content, undefined, authorName, undefined, username || undefined);
+    });
 
     return createSuccessResult(reflections);
   } catch (error) {

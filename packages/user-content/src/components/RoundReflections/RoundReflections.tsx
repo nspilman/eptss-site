@@ -37,6 +37,11 @@ export async function RoundReflections({ roundId }: RoundReflectionsProps) {
                 <h3 className="text-lg font-semibold line-clamp-2">
                   {reflection.title}
                 </h3>
+                {reflection.authorName && (
+                  <p className="text-sm text-gray-400 mt-1">
+                    by {reflection.authorName}
+                  </p>
+                )}
               </CardHeader>
               <CardContent>
                 <div className="text-sm text-gray-400 mb-2">

@@ -4,6 +4,7 @@ import { markdownTheme } from "./MarkdownTheme";
 import { BlogPost } from "types/BlogPost";
 import React from "react";
 import Link from "next/link";
+import { BackButton } from "./BackButton";
 
 interface Props {
   post: BlogPost;
@@ -18,15 +19,8 @@ export const Post = ({ post: { content, frontmatter }, prevPost, nextPost, autho
   const { title, subtitle, date, author } = frontmatter;
   return (
     <div className="flex flex-col max-w-3xl mx-auto px-4 py-12">
-      {/* Back to Blog Link */}
-      <a
-        href="/blog"
-        className="self-start mb-6 flex items-center gap-2 text-sm font-medium text-[var(--color-accent-primary)] hover:text-[var(--color-accent-secondary)] transition-colors duration-200 group"
-        aria-label="Back to Blog Home"
-      >
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="inline-block group-hover:-translate-x-1 transition-transform duration-200"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
-        <span>Back to Blog</span>
-      </a>
+      {/* Back Button */}
+      <BackButton />
       {/* Header Section */}
       <div className="mb-10">
         {date && (
