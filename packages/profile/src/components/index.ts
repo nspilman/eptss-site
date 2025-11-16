@@ -11,5 +11,6 @@ export { OverviewTab } from './OverviewTab';
 export { SignupsTab } from './SignupsTab';
 export { SubmissionsTab } from './SubmissionsTab';
 export { VotesTab } from './VotesTab';
+export { ReferralsTab } from './ReferralsTab';
 
 export type { User } from './ProfileHeader';

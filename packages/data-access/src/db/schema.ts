@@ -56,6 +56,7 @@ export const unverifiedSignups = pgTable("unverified_signups", {
   youtubeLink: text("youtube_link").notNull(),
   additionalComments: text("additional_comments"),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  referralCode: text("referral_code"),
 });
 
 // Submissions Table
@@ -335,3 +336,31 @@ export const botAttempts = pgTable("bot_attempts", {
 
 export type BotAttempt = typeof botAttempts.$inferSelect;
 export type NewBotAttempt = typeof botAttempts.$inferInsert;
+
+// Referral Codes Table
+export const referralCodes = pgTable("referral_codes", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  code: text("code").notNull().unique(),
+  createdByUserId: uuid("created_by_user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  maxUses: integer("max_uses"), // NULL means unlimited uses
+  usesCount: integer("uses_count").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type ReferralCode = typeof referralCodes.$inferSelect;
+export type NewReferralCode = typeof referralCodes.$inferInsert;
+
+// User Referrals Table
+export const userReferrals = pgTable("user_referrals", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  referredUserId: uuid("referred_user_id").references(() => users.userid, { onDelete: "cascade" }).notNull().unique(),
+  referrerUserId: uuid("referrer_user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  referralCodeId: uuid("referral_code_id").references(() => referralCodes.id, { onDelete: "cascade" }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type UserReferral = typeof userReferrals.$inferSelect;
+export type NewUserReferral = typeof userReferrals.$inferInsert;

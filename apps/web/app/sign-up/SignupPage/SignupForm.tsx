@@ -21,6 +21,7 @@ interface SignupFormProps {
   isLoggedIn?: boolean;
   isUpdate?: boolean;
   existingSignup?: UserSignupData;
+  referralCode?: string;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
   signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
 }
@@ -57,7 +58,7 @@ const baseFormFields: FieldConfig[] = [
 ];
 
 // Additional fields for non-logged in users
-const nonLoggedInFields: FieldConfig[] = [
+const getNonLoggedInFields = (referralCode?: string): FieldConfig[] => [
   {
     type: "input",
     name: "email",
@@ -79,6 +80,16 @@ const nonLoggedInFields: FieldConfig[] = [
     placeholder: "Enter your location (optional)",
     description: "City, State, Country",
   },
+  {
+    type: "input",
+    name: "referralCode",
+    label: "Referral Code",
+    placeholder: "Enter your referral code",
+    description: referralCode
+      ? "Referral code detected from link"
+      : "A referral code is required. Ask an existing member for an invite link.",
+    disabled: !!referralCode,
+  },
 ];
 
 export function SignupForm({
@@ -88,6 +99,7 @@ export function SignupForm({
   isLoggedIn = false,
   isUpdate = false,
   existingSignup,
+  referralCode,
   signup,
   signupWithOTP
 }: SignupFormProps) {
@@ -101,7 +113,7 @@ export function SignupForm({
 
   // Determine which schema and fields to use based on login status
   const schema = isLoggedIn ? signupSchema : nonLoggedInSchema;
-  const formFields = isLoggedIn ? baseFormFields : [...nonLoggedInFields, ...baseFormFields];
+  const formFields = isLoggedIn ? baseFormFields : [...getNonLoggedInFields(referralCode), ...baseFormFields];
   
   const form = useForm({
     resolver: zodResolver(schema),
@@ -113,6 +125,7 @@ export function SignupForm({
       email: "",
       name: "",
       location: "",
+      referralCode: referralCode || "",
       roundId,
     },
     mode: "onChange",
@@ -207,7 +220,7 @@ export function SignupForm({
               </div>
               <div className="space-y-5">
                 <FormBuilder
-                  fields={nonLoggedInFields}
+                  fields={getNonLoggedInFields(referralCode)}
                   control={form.control}
                   disabled={isLoading}
                 />

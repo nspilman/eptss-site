@@ -149,6 +149,7 @@ export const getUserSignupData = async (userId: string, roundId: number) => {
 import { signupSchema, nonLoggedInSchema } from "../schemas/signupSchemas";
 import { seededShuffle } from "../utils/seededShuffle";
 import { validateFormData } from "../utils/formDataHelpers";
+import { validateReferralCode } from "./referralService";
 
 // Alias for backward compatibility
 const nonAuthSignupSchema = nonLoggedInSchema;
@@ -219,6 +220,27 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     }
 
     const validData = validation.data;
+
+    // Validate referral code (REQUIRED for all new signups)
+    const referralCode = formData.get('referralCode')?.toString();
+
+    if (!referralCode) {
+      return handleResponse(
+        400,
+        Navigation.SignUp,
+        "A referral code is required to create an account. Please ask an existing member for a referral link."
+      );
+    }
+
+    const referralValidation = await validateReferralCode(referralCode);
+
+    if (!referralValidation.valid) {
+      return handleResponse(
+        400,
+        Navigation.SignUp,
+        referralValidation.message
+      );
+    }
     
     // Get the next unverified signup ID
     const lastUnverifiedSignupId = await db
@@ -242,7 +264,8 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
       artist: validData.artist,
       youtubeLink: validData.youtubeLink,
       additionalComments: validData.additionalComments || "",
-      roundId: validData.roundId
+      roundId: validData.roundId,
+      referralCode: referralCode
     } as any);
     
     // Create a client to send the OTP
@@ -346,17 +369,20 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
   }
   
   try {
+    // Import referral service for recording referrals
+    const { recordReferral } = await import("./referralService");
+
     // Find the unverified signup record by email
     const unverifiedSignup = await db
       .select()
       .from(unverifiedSignups)
       .where(eq(unverifiedSignups.email, email))
       .limit(1);
-    
+
     if (!unverifiedSignup.length) {
       return handleResponse(404, Navigation.SignUp, "No pending signup found for your email");
     }
-    
+
     // Check if user exists in our database
     const existingUser = await db
       .select()
@@ -435,7 +461,16 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       songId: songId,
       userId: userId,
     });
-    
+
+    // Record the referral if a referral code was provided
+    if (signupData.referralCode) {
+      const referralResult = await recordReferral(userId, signupData.referralCode);
+      if (!referralResult.success) {
+        console.error("Failed to record referral:", referralResult.message);
+        // We don't fail the signup if referral recording fails, just log it
+      }
+    }
+
     // Delete the unverified signup record
     await db.delete(unverifiedSignups)
       .where(eq(unverifiedSignups.email, email));

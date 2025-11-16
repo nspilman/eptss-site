@@ -19,6 +19,7 @@ export const nonLoggedInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   name: z.string().min(1, "Name is required"),
   location: z.string().optional(),
+  referralCode: z.string().min(1, "A referral code is required. Please ask an existing member for an invite link."),
 });
 
 // Type definitions derived from schemas

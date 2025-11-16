@@ -6,3 +6,4 @@ export * from './mailingListActions';
 export * from './signupActions';
 export * from './userParticipationActions';
 export * from './profileActions';
+export * from './referralActions';

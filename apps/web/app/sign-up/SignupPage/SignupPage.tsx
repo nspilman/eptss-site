@@ -33,6 +33,7 @@ export function SignupPage({
   const searchParams = useSearchParams();
   const isUpdate = searchParams?.get("update") === "true";
   const showSuccess = searchParams?.get("success") === "true";
+  const referralCode = searchParams?.get("ref") || undefined;
   
   const title = isUpdate 
     ? `Update Your Song for Round ${roundId}` 
@@ -70,6 +71,7 @@ export function SignupPage({
             isLoggedIn={isLoggedIn}
             isUpdate={hasSignedUp && isUpdate}
             existingSignup={userSignup}
+            referralCode={referralCode}
             signup={signup}
             signupWithOTP={signupWithOTP}
           />
