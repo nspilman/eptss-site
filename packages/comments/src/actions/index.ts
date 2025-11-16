@@ -9,7 +9,7 @@ import {
   getCommentsByContentId,
   getCommentById,
 } from "@eptss/data-access/services/commentService";
-import { createNotification } from "@eptss/data-access/services/notificationService";
+import { createNotification, deleteNotificationsByCommentId } from "@eptss/data-access/services/notificationService";
 import { getUserById } from "@eptss/data-access/services/userService";
 import { logger } from "@eptss/logger/server";
 import { getAuthUser } from "@eptss/auth/server";
@@ -168,7 +168,7 @@ export async function updateCommentAction(data: {
 }
 
 /**
- * Delete a comment (soft delete)
+ * Delete a comment (soft delete) and associated notifications
  */
 export async function deleteCommentAction(data: { commentId: string }) {
   try {
@@ -189,6 +189,10 @@ export async function deleteCommentAction(data: { commentId: string }) {
         error: "Failed to delete comment. You can only delete your own comments.",
       };
     }
+
+    // Delete all notifications associated with this comment
+    // This includes: comment_received, comment_reply_received, comment_upvoted
+    await deleteNotificationsByCommentId(validated.commentId);
 
     return { success: true };
   } catch (error) {

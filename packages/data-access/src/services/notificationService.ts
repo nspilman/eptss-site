@@ -216,3 +216,57 @@ export async function getUnreadCount(userId: string): Promise<number> {
     return 0;
   }
 }
+
+/**
+ * Delete all notifications associated with a comment
+ * This includes notifications for:
+ * - comment_received (top-level comments)
+ * - comment_reply_received (replies)
+ * - comment_upvoted (upvotes)
+ */
+export async function deleteNotificationsByCommentId(
+  commentId: string
+): Promise<number> {
+  try {
+    // Find all notifications where commentId is in the metadata
+    const allNotifications = await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.isDeleted, false));
+
+    // Filter notifications that have this commentId in their metadata
+    const notificationsToDelete = allNotifications.filter(notification => {
+      if (!notification.metadata) return false;
+
+      try {
+        const metadata = JSON.parse(notification.metadata);
+        // Check if this notification is about the deleted comment
+        // or if the deleted comment is the parent
+        return metadata.commentId === commentId ||
+               metadata.parentCommentId === commentId;
+      } catch {
+        return false;
+      }
+    });
+
+    // Soft delete all matching notifications
+    let deleteCount = 0;
+    for (const notification of notificationsToDelete) {
+      const success = await deleteNotification(notification.id, notification.userId);
+      if (success) deleteCount++;
+    }
+
+    logger.info("Deleted notifications for comment", {
+      commentId,
+      count: deleteCount,
+    });
+
+    return deleteCount;
+  } catch (error) {
+    logger.error("Failed to delete notifications by comment ID", {
+      error,
+      commentId,
+    });
+    return 0;
+  }
+}
