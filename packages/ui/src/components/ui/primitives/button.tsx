@@ -15,6 +15,8 @@ const buttonVariants = cva(
         secondary: 'shadow-sm hover:shadow-[0_0_20px_4px_rgba(226,226,64,0.6)]',
         ghost: 'hover:shadow-[0_0_10px_1px_rgba(255,255,255,0.1)]',
         link: 'underline-offset-4',
+        action: 'font-roboto text-xs text-[var(--color-gray-400)] transition-colors duration-200 hover:text-[var(--color-accent-primary)]',
+        danger: 'font-roboto text-xs text-[var(--color-gray-400)] transition-colors duration-200 hover:text-red-500',
       },
       size: {
         // Standardized size tokens
@@ -23,6 +25,7 @@ const buttonVariants = cva(
         lg: 'h-10 rounded-lg px-8 py-3 text-base',
         full: 'w-full h-10 rounded-md px-6 py-3',
         icon: 'h-9 w-9 rounded-md',
+        action: 'h-auto px-2 py-1',
       },
     },
     defaultVariants: {
@@ -33,6 +36,7 @@ const buttonVariants = cva(
 )
 
 // Define variant styles that use CSS variables
+// Note: action and danger variants use Tailwind classes for color to support hover states
 const variantStyles: Record<string, React.CSSProperties> = {
   default: {
     backgroundColor: 'var(--color-white)',
@@ -56,6 +60,7 @@ const variantStyles: Record<string, React.CSSProperties> = {
   link: {
     color: 'var(--color-primary)',
   },
+  // action and danger don't use inline styles to allow Tailwind hover classes to work
 }
 
 export interface ButtonProps

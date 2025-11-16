@@ -117,7 +117,7 @@ export async function getCommentsByContentId(
 }
 
 /**
- * Build nested comment tree structure
+ * Build nested comment tree structure and filter out deleted comments without replies
  */
 function buildCommentTree(comments: CommentWithAuthor[]): CommentWithAuthor[] {
   const commentMap = new Map<string, CommentWithAuthor>();
@@ -142,7 +142,27 @@ function buildCommentTree(comments: CommentWithAuthor[]): CommentWithAuthor[] {
     }
   });
 
-  return rootComments;
+  // Third pass: filter out deleted comments without replies
+  return filterDeletedComments(rootComments);
+}
+
+/**
+ * Recursively filter out deleted comments that have no replies
+ * Deleted comments with replies are kept to preserve thread structure
+ */
+function filterDeletedComments(comments: CommentWithAuthor[]): CommentWithAuthor[] {
+  return comments
+    .map(comment => ({
+      ...comment,
+      replies: comment.replies ? filterDeletedComments(comment.replies) : [],
+    }))
+    .filter(comment => {
+      // Keep comment if it's not deleted
+      if (!comment.isDeleted) return true;
+
+      // Keep deleted comment if it has replies (preserves thread structure)
+      return comment.replies && comment.replies.length > 0;
+    });
 }
 
 /**

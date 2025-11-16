@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { MessageCircle, Heart, Pencil } from "lucide-react";
+import { Button } from "@eptss/ui";
 import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
 import { deleteCommentAction, toggleUpvoteAction } from "../actions";
@@ -132,11 +133,13 @@ export function CommentItem({
 
         {/* Actions */}
         {!isDeleted && !isEditing && (
-          <div className="flex items-center gap-6 flex-wrap">
-            <button
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="action"
+              size="action"
               onClick={handleToggleUpvote}
               disabled={isUpvoting}
-              className="group flex items-center gap-2 text-xs font-roboto font-medium text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors duration-200 disabled:opacity-50"
+              className="group gap-2 font-medium"
               aria-label={isUpvoted ? "Unlike" : "Like"}
             >
               <Heart
@@ -148,34 +151,40 @@ export function CommentItem({
                 }`}
               />
               <span>{upvoteCount}</span>
-            </button>
+            </Button>
 
             {depth < MAX_DEPTH && (
-              <button
+              <Button
+                variant="action"
+                size="action"
                 onClick={() => setIsReplying(!isReplying)}
-                className="flex items-center gap-2 text-xs font-roboto font-medium text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors duration-200 group"
+                className="group gap-2 font-medium"
               >
                 <MessageCircle size={16} className="group-hover:text-[var(--color-accent-primary)] transition-colors duration-200" />
                 <span>Reply</span>
-              </button>
+              </Button>
             )}
 
             {isAuthor && !isDeleted && (
               <>
-                <button
+                <Button
+                  variant="action"
+                  size="action"
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 text-xs font-roboto font-medium text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors duration-200 group"
+                  className="group gap-2 font-medium"
                 >
                   <Pencil size={16} className="group-hover:text-[var(--color-accent-primary)] transition-colors duration-200" />
                   <span>Edit</span>
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="danger"
+                  size="action"
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="text-xs font-roboto font-medium text-[var(--color-gray-400)] hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
+                  className="font-medium"
                 >
                   Delete
-                </button>
+                </Button>
               </>
             )}
           </div>
