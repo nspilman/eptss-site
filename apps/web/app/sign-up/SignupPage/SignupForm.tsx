@@ -132,17 +132,17 @@ export function SignupForm({
 
         if (!captchaToken) {
           return {
-            status: 400,
+            status: "Error",
             message: "Security verification failed. Please refresh the page and try again.",
-            redirect: undefined,
+            variant: "destructive",
           };
         }
       } catch (error) {
         console.error('[SignupForm] CAPTCHA execution error:', error);
         return {
-          status: 400,
+          status: "Error",
           message: "Security verification error. Please try again.",
-          redirect: undefined,
+          variant: "destructive",
         };
       }
 
@@ -152,7 +152,8 @@ export function SignupForm({
         setSubmittedEmail(email);
       }
 
-      return await signupWithOTP(formData, captchaToken);
+      // captchaToken is guaranteed to be a string here due to the check above
+      return await signupWithOTP(formData, captchaToken as string);
     }
   }
 
