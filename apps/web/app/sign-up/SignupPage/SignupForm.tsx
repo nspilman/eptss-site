@@ -11,6 +11,7 @@ import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter } from "next/navigation"
 import { UserSignupData } from "@eptss/data-access/types/signup"
+import { useCaptcha } from "@eptss/captcha"
 
 
 interface SignupFormProps {
@@ -21,7 +22,7 @@ interface SignupFormProps {
   isUpdate?: boolean;
   existingSignup?: UserSignupData;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
-  signupWithOTP: (formData: FormData) => Promise<FormReturn>;
+  signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
 }
 
 // Base fields for all users
@@ -80,10 +81,10 @@ const nonLoggedInFields: FieldConfig[] = [
   },
 ];
 
-export function SignupForm({ 
-  roundId, 
-  signupsCloseDateLabel, 
-  onSuccess, 
+export function SignupForm({
+  roundId,
+  signupsCloseDateLabel,
+  onSuccess,
   isLoggedIn = false,
   isUpdate = false,
   existingSignup,
@@ -94,7 +95,10 @@ export function SignupForm({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const router = useRouter();
-  
+
+  // Get CAPTCHA hook (only used for non-logged-in users)
+  const { executeRecaptcha, isReady: isCaptchaReady } = useCaptcha();
+
   // Determine which schema and fields to use based on login status
   const schema = isLoggedIn ? signupSchema : nonLoggedInSchema;
   const formFields = isLoggedIn ? baseFormFields : [...nonLoggedInFields, ...baseFormFields];
@@ -120,12 +124,35 @@ export function SignupForm({
     if (isLoggedIn) {
       return await signup(formData);
     } else {
+      // Execute CAPTCHA for non-logged-in users
+      let captchaToken: string | null = null;
+
+      try {
+        captchaToken = await executeRecaptcha('signup');
+
+        if (!captchaToken) {
+          return {
+            status: 400,
+            message: "Security verification failed. Please refresh the page and try again.",
+            redirect: undefined,
+          };
+        }
+      } catch (error) {
+        console.error('[SignupForm] CAPTCHA execution error:', error);
+        return {
+          status: 400,
+          message: "Security verification error. Please try again.",
+          redirect: undefined,
+        };
+      }
+
       // Save the email for the confirmation screen
       const email = formData.get("email") as string;
       if (email) {
         setSubmittedEmail(email);
       }
-      return await signupWithOTP(formData);
+
+      return await signupWithOTP(formData, captchaToken);
     }
   }
 

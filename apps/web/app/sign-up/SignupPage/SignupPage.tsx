@@ -6,6 +6,7 @@ import { SignupForm } from "./SignupForm";
 import { useSearchParams } from "next/navigation";
 import { UserSignupData } from "@eptss/data-access/types/signup";
 import { FormReturn } from "@/types";
+import { CaptchaProvider } from "@eptss/captcha";
 
 interface Props {
   hasSignedUp: boolean;
@@ -15,7 +16,7 @@ interface Props {
   isLoggedIn?: boolean;
   userSignup?: UserSignupData;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
-  signupWithOTP: (formData: FormData) => Promise<FormReturn>;
+  signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
 }
 
 export function SignupPage({
@@ -62,15 +63,17 @@ export function SignupPage({
           roundId={roundId}
         />
       ) : (
-        <SignupForm
-          roundId={roundId}
-          signupsCloseDateLabel={signupsCloseDateLabel}
-          isLoggedIn={isLoggedIn}
-          isUpdate={hasSignedUp && isUpdate}
-          existingSignup={userSignup}
-          signup={signup}
-          signupWithOTP={signupWithOTP}
-        />
+        <CaptchaProvider>
+          <SignupForm
+            roundId={roundId}
+            signupsCloseDateLabel={signupsCloseDateLabel}
+            isLoggedIn={isLoggedIn}
+            isUpdate={hasSignedUp && isUpdate}
+            existingSignup={userSignup}
+            signup={signup}
+            signupWithOTP={signupWithOTP}
+          />
+        </CaptchaProvider>
       )}
     </>
   );

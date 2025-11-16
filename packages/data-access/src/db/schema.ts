@@ -321,3 +321,17 @@ export const commentUpvotes = pgTable("comment_upvotes", {
 
 export type CommentUpvote = typeof commentUpvotes.$inferSelect;
 export type NewCommentUpvote = typeof commentUpvotes.$inferInsert;
+
+// Bot Attempts Table
+export const botAttempts = pgTable("bot_attempts", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  captchaScore: text("captcha_score"), // Stored as text to preserve decimal precision from reCAPTCHA API
+  attemptType: text("attempt_type").notNull(), // 'signup', 'login', 'vote', etc.
+  metadata: text("metadata"), // JSON string for additional context
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type BotAttempt = typeof botAttempts.$inferSelect;
+export type NewBotAttempt = typeof botAttempts.$inferInsert;
