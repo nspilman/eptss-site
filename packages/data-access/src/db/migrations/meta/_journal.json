@@ -155,6 +155,13 @@
       "when": 1762660095279,
       "tag": "0035_fearless_kitty_pryde",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1763257864886,
+      "tag": "0036_sad_tarantula",
+      "breakpoints": true
     }
   ]
 }
