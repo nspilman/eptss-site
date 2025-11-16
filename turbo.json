@@ -21,7 +21,9 @@
         "GMAIL_CLIENT_ID",
         "GMAIL_CLIENT_SECRET",
         "GMAIL_REFRESH_TOKEN",
-        "GMAIL_USER_EMAIL"
+        "GMAIL_USER_EMAIL",
+        "NEXT_PUBLIC_RECAPTCHA_SITE_KEY",
+        "RECAPTCHA_SECRET_KEY"
       ]
     },
     "dev": {
