@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Force dynamic rendering since this page requires user authentication
+export const dynamic = 'force-dynamic';
+
 const Submit = async () => {
   const {
     roundId,

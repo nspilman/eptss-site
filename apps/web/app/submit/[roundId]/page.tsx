@@ -2,6 +2,9 @@ import { roundProvider, userParticipationProvider } from "@eptss/data-access";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "../SubmitPage";
 
+// Force dynamic rendering since this page requires user authentication
+export const dynamic = 'force-dynamic';
+
 export default async function SignUpForRound({
   params,
 }: {

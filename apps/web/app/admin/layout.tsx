@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Music } from "lucide-react";
 
+// Force dynamic rendering since admin pages require authentication
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: {

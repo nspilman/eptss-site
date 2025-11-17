@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { loginSchema, type LoginInput } from "@eptss/data-access/schemas/user"
-import { userSessionProvider } from "@eptss/data-access"
+import { signInWithOTPAction } from "@eptss/actions"
 import { motion } from "framer-motion"
 import {
   Form,
@@ -28,13 +28,15 @@ interface LoginFormProps {
   titleOverride?: string
   onSuccess?: () => void
   description?: string
+  referralCode?: string
 }
 
-export function LoginForm({ 
-  redirectUrl = "/", 
-  titleOverride, 
+export function LoginForm({
+  redirectUrl = "/",
+  titleOverride,
   onSuccess,
-  description = "Enter your email to receive a magic link"
+  description = "Enter your email to receive a magic link",
+  referralCode
 }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
@@ -51,10 +53,10 @@ export function LoginForm({
     setMessage(null)
 
     try {
-      const { signInWithOTP } = await userSessionProvider()
-      const { error } = await signInWithOTP({ 
-        email: data.email, 
-        redirectUrl 
+      const { error } = await signInWithOTPAction({
+        email: data.email,
+        redirectUrl,
+        referralCode
       })
 
       if (error) {

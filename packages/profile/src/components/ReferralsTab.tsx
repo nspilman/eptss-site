@@ -86,7 +86,7 @@ export function ReferralsTab({ initialCodes = [], initialReferrals = [] }: Refer
   };
 
   const handleCopyCode = async (code: string) => {
-    const referralUrl = `${window.location.origin}/sign-up?ref=${code}`;
+    const referralUrl = `${window.location.origin}/login?ref=${code}`;
     try {
       await navigator.clipboard.writeText(referralUrl);
       setCopiedCode(code);

@@ -35,7 +35,7 @@ export function InviteFriendsCard({ userId }: InviteFriendsCardProps) {
   const handleCopyLink = async () => {
     if (!referralCode) return;
 
-    const referralUrl = `${window.location.origin}/sign-up?ref=${referralCode}`;
+    const referralUrl = `${window.location.origin}/login?ref=${referralCode}`;
     await navigator.clipboard.writeText(referralUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -99,7 +99,7 @@ export function InviteFriendsCard({ userId }: InviteFriendsCardProps) {
                 </label>
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors">
                   <code className="text-sm text-[var(--color-accent-primary)] font-mono break-all block leading-relaxed">
-                    {window.location.origin}/sign-up?ref={referralCode}
+                    {window.location.origin}/login?ref={referralCode}
                   </code>
                 </div>
               </div>
