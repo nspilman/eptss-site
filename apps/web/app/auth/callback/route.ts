@@ -24,22 +24,28 @@ export async function GET(request: NextRequest) {
       });
 
       if (!error && data?.user) {
-        // Ensure user exists in database
-        await ensureUserExists(data.user);
-        
+        // Ensure user exists in database and validate referral code for new users
+        const ensureUserResult = await ensureUserExists(data.user);
+
+        if (!ensureUserResult.success) {
+          // Referral validation failed - redirect with error message
+          targetUrl.searchParams.set(TOAST_REDIRECT_KEY, ensureUserResult.error || 'Account creation failed');
+          return NextResponse.redirect(targetUrl.toString());
+        }
+
         // Add a parameter to indicate successful authentication
         // This will be used by the AuthStateListener to trigger a refresh
         targetUrl.searchParams.set('auth_success', 'true');
-        
+
         // Set cookies for immediate auth state recognition
         const response = NextResponse.redirect(targetUrl.toString());
-        
+
         // Ensure cookies are properly set before redirecting
         if (data?.session) {
           // Wait a moment to ensure auth state is properly established
           await new Promise(resolve => setTimeout(resolve, 100));
         }
-        
+
         return response;
       }
     }

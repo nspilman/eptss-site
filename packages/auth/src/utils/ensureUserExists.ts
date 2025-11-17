@@ -2,10 +2,15 @@
  * User Management Utilities
  *
  * Ensures user records exist in the database after authentication
+ * Enforces referral code requirement for new user creation
  */
 
 import { createClient } from './supabase-server';
 import { User } from '@supabase/supabase-js';
+import { db } from '@eptss/data-access/db';
+import { unverifiedSignups } from '@eptss/data-access/db/schema';
+import { validateReferralCode } from '@eptss/data-access/services/referralService';
+import { eq } from 'drizzle-orm';
 
 /**
  * Ensures a user record exists in the users table after authentication
@@ -41,6 +46,45 @@ export async function ensureUserExists(user: User) {
       }
 
       console.log('Creating new user record for:', user.email);
+
+      // CHECK FOR REFERRAL CODE REQUIREMENT
+      // Query unverifiedSignups table for this email
+      const unverifiedSignup = await db
+        .select()
+        .from(unverifiedSignups)
+        .where(eq(unverifiedSignups.email, user.email))
+        .limit(1);
+
+      // If no unverified signup found, user didn't go through signup flow with referral code
+      if (unverifiedSignup.length === 0) {
+        console.error('No unverified signup found for:', user.email);
+        return {
+          success: false,
+          error: 'Account creation requires a referral code. Please sign up with a valid referral link.'
+        };
+      }
+
+      // Check if referral code exists in the unverified signup
+      const referralCode = unverifiedSignup[0].referralCode;
+      if (!referralCode) {
+        console.error('No referral code found in unverified signup for:', user.email);
+        return {
+          success: false,
+          error: 'Account creation requires a referral code. Please sign up with a valid referral link.'
+        };
+      }
+
+      // Validate the referral code
+      const referralValidation = await validateReferralCode(referralCode);
+      if (!referralValidation.valid) {
+        console.error('Invalid referral code for:', user.email, referralValidation.message);
+        return {
+          success: false,
+          error: referralValidation.message
+        };
+      }
+
+      console.log('Referral code validated successfully for:', user.email);
 
       // Extract username from email (before the @)
       const username = user.email.split('@')[0];
