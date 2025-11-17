@@ -8,6 +8,7 @@ export { CurrentRoundPanel, CurrentRoundSkeleton } from './CurrentRoundPanel';
 export type { CurrentRoundData, Phase } from './CurrentRoundPanel';
 export { ProfileSetupPanel, ProfileSetupSkeleton } from './ProfileSetupPanel';
 export { RoundReflectionsPanel, RoundReflectionsSkeleton } from './RoundReflectionsPanel';
+export { InviteFriendsPanel, InviteFriendsSkeleton } from './InviteFriendsPanel';
 
 // Future panels can be added here:
 // export { CommunityPanel, CommunitySkeleton } from './CommunityPanel';

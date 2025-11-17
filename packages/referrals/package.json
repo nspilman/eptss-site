@@ -1,0 +1,32 @@
+{
+  "name": "@eptss/referrals",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./components": "./src/components/index.ts",
+    "./actions": "./src/actions/index.ts",
+    "./types": "./src/types/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@eptss/ui": "workspace:*",
+    "@eptss/data-access": "workspace:*",
+    "@eptss/logger": "workspace:*",
+    "@eptss/shared": "workspace:*",
+    "lucide-react": "^0.263.1",
+    "zod": "^3.24.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.3",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "eslint": "8.26.0",
+    "typescript": "5.1.3"
+  }
+}

@@ -42,6 +42,9 @@ export default async function DashboardPage() {
         reflections: heroData ? {
           roundId: heroData.roundId,
         } : null,
+        inviteFriends: userId ? {
+          userId: userId,
+        } : null,
       }}
     />
   );

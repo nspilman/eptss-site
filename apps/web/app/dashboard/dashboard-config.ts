@@ -19,6 +19,8 @@ import {
   ProfileSetupSkeleton,
   RoundReflectionsPanel,
   RoundReflectionsSkeleton,
+  InviteFriendsPanel,
+  InviteFriendsSkeleton,
 } from '@eptss/dashboard/panels';
 
 import { ActionPanelWrapper } from './ActionPanelWrapper';
@@ -102,6 +104,21 @@ export const eptssDeboardConfig: DashboardConfig = {
       }),
       RoundReflectionsPanel,
       { skeleton: RoundReflectionsSkeleton }
+    ),
+
+    // ============================================
+    // INVITE FRIENDS - Referral invitation
+    // ============================================
+    createPanel(
+      definePanelConfig('inviteFriends', {
+        name: 'Invite Friends',
+        description: 'Share EPTSS with your friends',
+        priority: 'tertiary',
+        order: 2,
+        showSkeleton: true,
+      }),
+      InviteFriendsPanel,
+      { skeleton: InviteFriendsSkeleton }
     ),
 
     // ============================================
