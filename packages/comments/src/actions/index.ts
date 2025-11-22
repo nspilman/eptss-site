@@ -245,6 +245,7 @@ export async function toggleUpvoteAction(data: {
           message: `${upvoterName} liked your comment: ${comment.content.substring(0, 100)}${comment.content.length > 100 ? "..." : ""}`,
           metadata: {
             commentId: validated.commentId,
+            contentId: comment.contentId,
             upvoterId: userId,
           },
         });

@@ -3,15 +3,16 @@
 import { Button } from "@eptss/ui";
 import { CheckCheck, RefreshCw } from "lucide-react";
 import { NotificationItem } from "./NotificationItem";
-import type { Notification } from "@eptss/data-access/db/schema";
+import type { NotificationWithUrl } from "./NotificationBell";
 
 interface NotificationDropdownProps {
-  notifications: Notification[];
+  notifications: NotificationWithUrl[];
   isLoading: boolean;
   onMarkAsRead: (id: string) => void;
   onMarkAllAsRead: () => void;
   onDelete: (id: string) => void;
   onRefresh: () => void;
+  onClose: () => void;
 }
 
 export function NotificationDropdown({
@@ -21,6 +22,7 @@ export function NotificationDropdown({
   onMarkAllAsRead,
   onDelete,
   onRefresh,
+  onClose,
 }: NotificationDropdownProps) {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -82,6 +84,7 @@ export function NotificationDropdown({
                 notification={notification}
                 onMarkAsRead={onMarkAsRead}
                 onDelete={onDelete}
+                onClose={onClose}
               />
             ))}
           </div>

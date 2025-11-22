@@ -5,9 +5,14 @@ import { Bell } from "lucide-react";
 import { Button, Popover, PopoverTrigger, PopoverContent, Badge } from "@eptss/ui";
 import { NotificationDropdown } from "./NotificationDropdown";
 import type { Notification } from "@eptss/data-access/db/schema";
+import { getNotificationNavigation } from "@/lib/notification-navigation";
+
+export interface NotificationWithUrl extends Notification {
+  resolvedUrl?: string;
+}
 
 export function NotificationBell() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<NotificationWithUrl[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +23,25 @@ export function NotificationBell() {
       const response = await fetch("/api/notifications?limit=10");
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data.notifications);
+        const notificationsData: Notification[] = data.notifications;
+
+        // Preload URLs for all notifications in parallel
+        const notificationsWithUrls = await Promise.all(
+          notificationsData.map(async (notification) => {
+            try {
+              const navigationResult = await getNotificationNavigation(notification);
+              return {
+                ...notification,
+                resolvedUrl: navigationResult.url || undefined,
+              };
+            } catch (error) {
+              console.error("Failed to resolve URL for notification:", notification.id, error);
+              return notification;
+            }
+          })
+        );
+
+        setNotifications(notificationsWithUrls);
       }
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
@@ -104,6 +127,10 @@ export function NotificationBell() {
     }
   }, [isOpen]);
 
+  const closeDropdown = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -132,6 +159,7 @@ export function NotificationBell() {
           onMarkAllAsRead={markAllAsRead}
           onDelete={deleteNotification}
           onRefresh={fetchNotifications}
+          onClose={closeDropdown}
         />
       </PopoverContent>
     </Popover>

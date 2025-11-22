@@ -91,10 +91,29 @@ export function isNotificationClickable(notificationType: string): boolean {
 async function handleCommentNavigation(
   metadata: Record<string, any>
 ): Promise<NavigationResult> {
-  const { contentId, commentId } = metadata;
+  let { contentId, commentId } = metadata;
 
-  if (!contentId || !commentId) {
-    return { error: "Missing contentId or commentId" };
+  if (!commentId) {
+    return { error: "Missing commentId" };
+  }
+
+  // Fallback: if contentId is missing (older notifications), fetch it from the comment
+  if (!contentId) {
+    try {
+      const commentResponse = await fetch(`/api/comments/${commentId}`);
+      if (commentResponse.ok) {
+        const commentData = await commentResponse.json();
+        contentId = commentData.contentId;
+      } else {
+        return { error: "Comment not found" };
+      }
+    } catch (error) {
+      return { error: "Failed to fetch comment" };
+    }
+  }
+
+  if (!contentId) {
+    return { error: "Missing contentId" };
   }
 
   try {
