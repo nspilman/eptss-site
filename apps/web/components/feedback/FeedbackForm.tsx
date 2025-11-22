@@ -20,6 +20,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  FormCheckboxField,
 } from "@eptss/ui";
 import { Button } from "@eptss/ui";
 import { Textarea } from "@eptss/ui";
@@ -179,29 +180,11 @@ export function FeedbackForm({ userId, onSuccess, createFeedback }: FeedbackForm
             )}
           />
 
-          <FormField
+          <FormCheckboxField
             control={form.control}
             name="isPublic"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <input
-                    id="feedback-public"
-                    type="checkbox"
-                    checked={field.value}
-                    onChange={field.onChange}
-                    className="h-4 w-4 mt-1"
-                    aria-describedby="feedback-public-description"
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="text-primary" htmlFor="feedback-public">Make Public</FormLabel>
-                  <FormDescription className="text-secondary" id="feedback-public-description">
-                    Allow your feedback to be displayed publicly on our site.
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
+            label="Make Public"
+            description="Allow your feedback to be displayed publicly on our site."
           />
 
           <Button 

@@ -83,6 +83,7 @@ export {
   CardContent,
   CardFooter,
 } from './card'
+export type { CardProps } from './card'
 export {
   RadioGroup,
   RadioGroupItem,
@@ -98,6 +99,7 @@ export {
   PopoverTrigger,
   PopoverContent,
 } from './popover'
+export { Checkbox } from './checkbox'
 export { RoundCard } from './round-card'
 export type { RoundCardProps } from './round-card'
 export { FeatureCard } from './feature-card'

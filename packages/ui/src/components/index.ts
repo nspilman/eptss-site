@@ -17,6 +17,7 @@ export * from './ui/form-fields/FormBuilder';
 export * from './ui/form-fields/FormInputField';
 export * from './ui/form-fields/FormRadioGroupField';
 export * from './ui/form-fields/FormTextareaField';
+export * from './ui/form-fields/FormCheckboxField';
 
 // Primitives (these are the main exports for common components)
 export * from './ui/primitives';
