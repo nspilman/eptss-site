@@ -3,10 +3,10 @@ import { getCommentById } from "@eptss/data-access/services/commentService";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const commentId = params.id;
+    const { id: commentId } = await params;
 
     if (!commentId) {
       return NextResponse.json(
