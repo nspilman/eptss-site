@@ -25,13 +25,54 @@ export const RoundParticipants = ({ roundInfo, currentUserId }: RoundParticipant
       return acc;
     }, [] as typeof signups);
 
-  // Sort so current user is always first
+  // Sort participants with hierarchy:
+  // 1. Current user
+  // 2. Users with both profile photo and publicDisplayName
+  // 3. Users who have updated their publicDisplayName (without photo)
+  // 4. Everyone else
   const sortedParticipants = currentUserId
     ? [
+        // 1. Current user first
         ...uniqueParticipants.filter(p => p.userId === currentUserId),
-        ...uniqueParticipants.filter(p => p.userId !== currentUserId)
+        // 2. Users with both profile photo and publicDisplayName (not current user)
+        ...uniqueParticipants.filter(p =>
+          p.userId !== currentUserId &&
+          p.profilePictureUrl &&
+          p.profilePictureUrl.trim?.() !== '' &&
+          p.publicDisplayName &&
+          p.publicDisplayName.trim?.() !== ''
+        ),
+        // 3. Users with publicDisplayName but no photo (not current user)
+        ...uniqueParticipants.filter(p =>
+          p.userId !== currentUserId &&
+          (!p.profilePictureUrl || p.profilePictureUrl.trim?.() === '') &&
+          p.publicDisplayName &&
+          p.publicDisplayName.trim?.() !== ''
+        ),
+        // 4. Everyone else (no publicDisplayName or empty publicDisplayName)
+        ...uniqueParticipants.filter(p =>
+          p.userId !== currentUserId &&
+          (!p.publicDisplayName || p.publicDisplayName.trim?.() === '')
+        )
       ]
-    : uniqueParticipants;
+    : [
+        // When no current user, just use the hierarchy without step 1
+        // 1. Users with both profile photo and publicDisplayName
+        ...uniqueParticipants.filter(p =>
+          p.profilePictureUrl &&
+          p.profilePictureUrl.trim?.() !== '' &&
+          p.publicDisplayName &&
+          p.publicDisplayName.trim?.() !== ''
+        ),
+        // 2. Users with publicDisplayName but no photo
+        ...uniqueParticipants.filter(p =>
+          (!p.profilePictureUrl || p.profilePictureUrl.trim?.() === '') &&
+          p.publicDisplayName &&
+          p.publicDisplayName.trim?.() !== ''
+        ),
+        // 3. Everyone else (no publicDisplayName or empty publicDisplayName)
+        ...uniqueParticipants.filter(p => !p.publicDisplayName || p.publicDisplayName.trim?.() === '')
+      ];
 
   if (uniqueParticipants.length === 0) {
     return null;
