@@ -1,5 +1,3 @@
-"use server";
-
 import { redirect } from 'next/navigation';
 import { getAuthUser } from '@eptss/auth/server';
 import { getUserById, getUserSignups, getUserSubmissions, getUserVotes } from '@eptss/data-access';

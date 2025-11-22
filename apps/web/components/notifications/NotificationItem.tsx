@@ -42,7 +42,6 @@ export function NotificationItem({
   });
 
   const isClickable = isNotificationClickable(notification.type);
-  const hasUrl = !!notification.resolvedUrl;
 
   const handleLinkClick = () => {
     // Mark as read when clicking the link
@@ -98,7 +97,7 @@ export function NotificationItem({
     </div>
   );
 
-  if (isClickable && hasUrl) {
+  if (isClickable && notification.resolvedUrl) {
     return (
       <Link
         href={notification.resolvedUrl}
