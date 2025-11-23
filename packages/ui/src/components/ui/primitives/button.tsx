@@ -17,6 +17,7 @@ const buttonVariants = cva(
         link: 'underline-offset-4',
         action: 'font-roboto text-xs text-[var(--color-gray-400)] transition-colors duration-200 hover:text-[var(--color-accent-primary)]',
         danger: 'font-roboto text-xs text-[var(--color-gray-400)] transition-colors duration-200 hover:text-red-500',
+        gradient: 'shadow-sm hover:opacity-90 transition-opacity duration-200',
       },
       size: {
         // Standardized size tokens
@@ -59,6 +60,10 @@ const variantStyles: Record<string, React.CSSProperties> = {
   },
   link: {
     color: 'var(--color-primary)',
+  },
+  gradient: {
+    background: 'linear-gradient(to right, var(--color-accent-secondary), var(--color-accent-primary))',
+    color: 'white',
   },
   // action and danger don't use inline styles to allow Tailwind hover classes to work
 }

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
 import { Navigation } from "@eptss/shared";
 import { useState, useEffect } from "react";
-import { NavLink } from "@eptss/ui";
+import { NavLink, Button } from "@eptss/ui";
 
 interface Props {
   userId: string
@@ -74,8 +74,10 @@ export const Header = ({userId}: Props) => {
           </div>
           
           {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-gray-300 hover:text-[var(--color-accent-primary)] transition-colors"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -84,7 +86,7 @@ export const Header = ({userId}: Props) => {
             ) : (
               <Menu className="h-6 w-6" />
             )}
-          </button>
+          </Button>
         </div>
         
         {/* Mobile Menu */}

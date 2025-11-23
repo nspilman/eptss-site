@@ -3,6 +3,7 @@ import * as React from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { MusicIcon, Disc3, Home } from "lucide-react"
+import { Button } from "@eptss/ui"
 
 export function NotFoundClient() {
   return (
@@ -34,12 +35,12 @@ export function NotFoundClient() {
           whileTap={{ scale: 0.95 }}
           className="flex justify-center"
         >
-          <Link href="/" className="inline-block">
-            <button className="bg-[var(--color-accent-primary)] text-[var(--color-background-primary)] hover:bg-[var(--color-accent-primary)] hover:opacity-90 text-lg py-6 px-10 rounded-full font-semibold transition-all shadow-lg hover:shadow-xl flex items-center">
+          <Button variant="secondary" size="lg" asChild>
+            <Link href="/">
               <Home className="mr-2 h-5 w-5" />
               Return to Home
-            </button>
-          </Link>
+            </Link>
+          </Button>
         </motion.div>
       </motion.div>
 

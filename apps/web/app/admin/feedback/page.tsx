@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { getAllFeedback } from "@eptss/data-access/services/feedbackService";
 import { FeedbackCard } from "@eptss/admin";
+import { Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 
 export const metadata: Metadata = {
   title: "Feedback Management | Admin",
@@ -28,19 +29,23 @@ async function FeedbackContent() {
         </p>
       </div>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-primary">All Feedback</h3>
-          <span className="text-sm text-secondary">
-            {feedbackList.length} total entries
-          </span>
-        </div>
-        {feedbackList.length === 0 ? (
-          <p className="text-secondary text-center py-8">No feedback yet</p>
-        ) : (
-          <FeedbackCard feedbackList={feedbackList} />
-        )}
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl">All Feedback</CardTitle>
+            <span className="text-sm text-secondary">
+              {feedbackList.length} total entries
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {feedbackList.length === 0 ? (
+            <p className="text-secondary text-center py-8">No feedback yet</p>
+          ) : (
+            <FeedbackCard feedbackList={feedbackList} />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

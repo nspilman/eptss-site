@@ -2,6 +2,7 @@
 
 import { Heart, MessageCircle } from "lucide-react"
 import { useState } from "react"
+import { Button } from "@eptss/ui"
 
 interface CommentData {
   id: string
@@ -48,25 +49,27 @@ export default function Comment({ comment, onToggleLike, depth }: CommentProps) 
 
         {/* Actions */}
         <div className="flex items-center gap-6">
-          <button
+          <Button
+            variant="action"
+            size="action"
             onClick={() => onToggleLike(comment.id, null)}
-            className="group flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            className="group gap-2"
             aria-label={comment.liked ? "Unlike" : "Like"}
           >
             <Heart
               size={16}
               className={`transition-all ${
-                comment.liked ? "fill-destructive text-destructive" : "group-hover:text-foreground"
+                comment.liked ? "fill-destructive text-destructive" : "group-hover:text-[var(--color-accent-primary)]"
               }`}
             />
             <span className="font-medium">{comment.likes}</span>
-          </button>
+          </Button>
 
           {depth < maxDepth && (
-            <button className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors group">
-              <MessageCircle size={16} className="group-hover:text-foreground" />
+            <Button variant="action" size="action" className="group gap-2">
+              <MessageCircle size={16} className="group-hover:text-[var(--color-accent-primary)]" />
               <span className="font-medium">Reply</span>
-            </button>
+            </Button>
           )}
         </div>
 

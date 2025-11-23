@@ -10,6 +10,7 @@ import {
   TestCreateFutureRoundsButton,
   TestSendReminderEmailsButton
 } from "@eptss/admin";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@eptss/ui";
 import { AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -47,59 +48,79 @@ async function ToolsContent() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-primary mb-2">Manual Signup</h3>
-          <p className="text-sm text-secondary mb-4">
-            Manually sign up a user for a round. This will send them a confirmation email.
-          </p>
-          <AdminSignupForm roundId={roundId} users={allUsers} />
-        </div>
+        <Card variant="glass">
+          <CardHeader>
+            <CardTitle className="text-lg">Manual Signup</CardTitle>
+            <CardDescription>
+              Manually sign up a user for a round. This will send them a confirmation email.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AdminSignupForm roundId={roundId} users={allUsers} />
+          </CardContent>
+        </Card>
 
-        <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-primary mb-2">Manual Submission</h3>
-          <p className="text-sm text-secondary mb-4">
-            Submit a cover on behalf of a user. This will send them a confirmation email.
-          </p>
-          <AdminSubmissionForm roundId={roundId} users={allUsers} />
-        </div>
+        <Card variant="glass">
+          <CardHeader>
+            <CardTitle className="text-lg">Manual Submission</CardTitle>
+            <CardDescription>
+              Submit a cover on behalf of a user. This will send them a confirmation email.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AdminSubmissionForm roundId={roundId} users={allUsers} />
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Email Testing</h3>
-        <p className="text-sm text-secondary mb-4">
-          Send test emails to yourself to preview designs and content
-        </p>
-        <TestEmailButtons />
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Email Testing</CardTitle>
+          <CardDescription>
+            Send test emails to yourself to preview designs and content
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TestEmailButtons />
+        </CardContent>
+      </Card>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Notification Testing</h3>
-        <p className="text-sm text-secondary mb-4">
-          Create a test notification to verify the notification system is working
-        </p>
-        <TestNotificationButton />
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Notification Testing</CardTitle>
+          <CardDescription>
+            Create a test notification to verify the notification system is working
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TestNotificationButton />
+        </CardContent>
+      </Card>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Development Tools</h3>
-        <p className="text-sm text-secondary mb-4">
-          Utilities for testing and development
-        </p>
-        <div className="space-y-3">
-          <div>
-            <h4 className="text-sm font-medium text-primary mb-2">Assign Round Song</h4>
-            <TestAssignRoundSongButton />
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Development Tools</CardTitle>
+          <CardDescription>
+            Utilities for testing and development
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">Assign Round Song</h4>
+              <TestAssignRoundSongButton />
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">Create Future Rounds</h4>
+              <TestCreateFutureRoundsButton />
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">Send Reminder Emails</h4>
+              <TestSendReminderEmailsButton />
+            </div>
           </div>
-          <div>
-            <h4 className="text-sm font-medium text-primary mb-2">Create Future Rounds</h4>
-            <TestCreateFutureRoundsButton />
-          </div>
-          <div>
-            <h4 className="text-sm font-medium text-primary mb-2">Send Reminder Emails</h4>
-            <TestSendReminderEmailsButton />
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

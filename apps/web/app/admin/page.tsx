@@ -4,7 +4,7 @@ import { adminProvider } from "@eptss/admin";
 import { ProjectStatsCard } from "@eptss/admin";
 import { getCurrentRound } from "@eptss/data-access";
 import { getCurrentPhase } from "@eptss/data-access/services/dateService";
-import { Button } from "@eptss/ui";
+import { Button, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 
 export const metadata: Metadata = {
   title: "Dashboard | Admin | Everyone Plays the Same Song",
@@ -55,43 +55,51 @@ async function DashboardContent() {
       )}
 
       {/* Detailed Stats */}
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Detailed Statistics</h3>
-        <ProjectStatsCard
-          totalUsers={stats.totalUsers}
-          totalRounds={stats.totalRounds}
-          activeUsers={stats.activeUsers}
-          completionRate={stats.completionRate}
-        />
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Detailed Statistics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ProjectStatsCard
+            totalUsers={stats.totalUsers}
+            totalRounds={stats.totalRounds}
+            activeUsers={stats.activeUsers}
+            completionRate={stats.completionRate}
+          />
+        </CardContent>
+      </Card>
 
       {/* Quick Actions */}
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a
-            href="/admin/rounds"
-            className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
-          >
-            <h4 className="font-semibold text-primary mb-1">Manage Rounds</h4>
-            <p className="text-sm text-secondary">Create and edit rounds</p>
-          </a>
-          <a
-            href="/admin/users"
-            className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
-          >
-            <h4 className="font-semibold text-primary mb-1">View Users</h4>
-            <p className="text-sm text-secondary">See user activity</p>
-          </a>
-          <a
-            href="/admin/tools"
-            className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
-          >
-            <h4 className="font-semibold text-primary mb-1">Admin Tools</h4>
-            <p className="text-sm text-secondary">Manual operations</p>
-          </a>
-        </div>
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a
+              href="/admin/rounds"
+              className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+            >
+              <h4 className="font-semibold text-primary mb-1">Manage Rounds</h4>
+              <p className="text-sm text-secondary">Create and edit rounds</p>
+            </a>
+            <a
+              href="/admin/users"
+              className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+            >
+              <h4 className="font-semibold text-primary mb-1">View Users</h4>
+              <p className="text-sm text-secondary">See user activity</p>
+            </a>
+            <a
+              href="/admin/tools"
+              className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+            >
+              <h4 className="font-semibold text-primary mb-1">Admin Tools</h4>
+              <p className="text-sm text-secondary">Manual operations</p>
+            </a>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

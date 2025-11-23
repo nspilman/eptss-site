@@ -5,6 +5,7 @@ import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
 import { roundProvider } from '@eptss/data-access';
 import Link from 'next/link';
 import type { Reflection } from '@eptss/data-access';
+import { Button } from '@eptss/ui';
 
 export interface ActionPanelWrapperData extends ActionPanelData {
   reflections?: Reflection[];
@@ -127,16 +128,19 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
                 </p>
               )}
 
-              <Link
-                href={data.actionHref}
-                className="inline-flex items-center justify-center whitespace-nowrap font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer shadow-sm hover:shadow-[0_0_20px_4px_rgba(226,226,64,0.6)] h-10 rounded-lg px-6 py-2.5 w-full sm:w-auto text-base gap-2"
-                style={{ backgroundColor: 'var(--color-accent-primary)', color: 'var(--color-background-primary)' }}
+              <Button
+                variant="secondary"
+                size="lg"
+                asChild
+                className="w-full sm:w-auto gap-2"
               >
-                <span>{data.actionText}</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
+                <Link href={data.actionHref}>
+                  <span>{data.actionText}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </Button>
             </div>
 
             {/* Divider */}

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { getActiveUsers, getUserDetails } from "@eptss/admin";
 import { ActiveUsersCard, UserStatsComponent } from "@eptss/admin";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@eptss/ui";
 
 export const metadata: Metadata = {
   title: "Users Management | Admin",
@@ -21,23 +22,31 @@ async function UsersContent() {
         <p className="text-secondary">Monitor user activity and engagement</p>
       </div>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Active Users</h3>
-        <p className="text-sm text-secondary mb-4">
-          Users who have participated in recent rounds
-        </p>
-        <ActiveUsersCard users={activeUsers} />
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Active Users</CardTitle>
+          <CardDescription>
+            Users who have participated in recent rounds
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ActiveUsersCard users={activeUsers} />
+        </CardContent>
+      </Card>
 
-      <div className="bg-background-secondary/50 border border-background-tertiary/50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary mb-4">Detailed User Statistics</h3>
-        <p className="text-sm text-secondary mb-4">
-          Comprehensive breakdown of user participation and activity
-        </p>
-        <UserStatsComponent 
-          detailData={userDetails}
-        />
-      </div>
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Detailed User Statistics</CardTitle>
+          <CardDescription>
+            Comprehensive breakdown of user participation and activity
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <UserStatsComponent
+            detailData={userDetails}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

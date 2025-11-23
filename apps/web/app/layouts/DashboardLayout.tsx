@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Footer } from "@/components/Footer/Footer";
 import { NotificationBell } from "@/components/notifications";
+import { Button } from "@eptss/ui";
 
 // Dashboard header that replaces the regular header's mobile menu button with our sidebar toggle
 const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () => void, isSidebarOpen: boolean }) => {
@@ -30,9 +31,11 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () =
           {/* Logo */}
           <div className="flex items-center">
             {/* Mobile menu toggle button - replaces the hamburger in main header */}
-            <button 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleSidebar}
-              className="md:hidden mr-3 text-accent-secondary hover:text-accent-primary transition-colors"
+              className="md:hidden mr-3"
               aria-label="Toggle dashboard menu"
             >
               {isSidebarOpen ? (
@@ -40,7 +43,7 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () =
               ) : (
                 <Menu className="h-6 w-6" />
               )}
-            </button>
+            </Button>
             
             <Link href="/" className="flex items-center gap-2 group">
               <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent-primary to-accent-secondary">
@@ -119,9 +122,11 @@ export default function DashboardLayout({
             </div>
             {/* Collapse/Expand Button - Outside scrollable container */}
             <div className="md:fixed md:top-40 md:z-50 group/button" style={{ left: isCollapsed ? 'calc(5rem - 0.75rem)' : 'calc(16rem - 0.75rem)' }}>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={toggleCollapse}
-                className="flex items-center justify-center w-6 h-6 rounded-full bg-white border border-accent-secondary/20 hover:bg-white/90 text-black hover:text-black transition-colors shadow-lg cursor-pointer"
+                className="w-6 h-6 rounded-full bg-white border border-accent-secondary/20 hover:bg-white/90 text-black hover:text-black shadow-lg"
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {isCollapsed ? (
@@ -133,7 +138,7 @@ export default function DashboardLayout({
                     <path d="m15 18-6-6 6-6"></path>
                   </svg>
                 )}
-              </button>
+              </Button>
               {/* Glowing divider line on button hover */}
               <div className="absolute left-3 top-0 bottom-0 w-[1px] bg-accent-secondary/20 transition-all duration-300 group-hover/button:shadow-[0_0_15px_4px_rgba(var(--color-accent-primary-rgb),0.7)] group-hover/button:bg-accent-primary pointer-events-none" style={{height: '100vh', top: '-10rem'}}></div>
             </div>

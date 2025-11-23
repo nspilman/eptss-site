@@ -19,7 +19,7 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'secondary', 'outline', 'destructive', 'ghost', 'link'],
+      options: ['default', 'secondary', 'outline', 'destructive', 'ghost', 'link', 'gradient', 'action', 'danger'],
       description: 'The visual style of the button'
     },
     size: {
@@ -76,6 +76,13 @@ export const Ghost: Story = {
 export const Link: Story = {
   args: {
     variant: 'link',
+  },
+};
+
+export const Gradient: Story = {
+  args: {
+    variant: 'gradient',
+    children: 'Post Comment',
   },
 };
 
@@ -137,6 +144,10 @@ export const AllVariants: Story = {
           <div className="flex flex-col gap-2 items-center">
             <Button variant="link">Link</Button>
             <span className="text-xs text-primary mt-1">Link</span>
+          </div>
+          <div className="flex flex-col gap-2 items-center">
+            <Button variant="gradient">Gradient</Button>
+            <span className="text-xs text-primary mt-1">Gradient</span>
           </div>
         </div>
         

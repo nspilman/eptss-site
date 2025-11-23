@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createCommentAction, updateCommentAction } from "../actions";
 import type { CommentFormProps } from "../types";
+import { Button } from "@eptss/ui";
 
 export function CommentForm({
   contentId,
@@ -65,22 +66,24 @@ export function CommentForm({
       />
       {error && <p className="text-sm text-red-400 font-roboto">{error}</p>}
       <div className="flex gap-2">
-        <button
+        <Button
           type="submit"
+          variant="gradient"
+          size="md"
           disabled={isSubmitting || !content.trim()}
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-white font-roboto font-semibold text-sm hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity duration-200 shadow-sm"
         >
           {isSubmitting ? "Submitting..." : isEditing ? "Update" : "Post Comment"}
-        </button>
+        </Button>
         {(onCancel || isEditing) && (
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="md"
             onClick={handleCancel}
             disabled={isSubmitting}
-            className="px-4 py-2 rounded-lg border border-[var(--color-gray-700)] text-[var(--color-gray-400)] font-roboto font-semibold text-sm hover:text-[var(--color-primary)] hover:border-[var(--color-gray-600)] disabled:opacity-50 transition-all duration-200"
           >
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>
