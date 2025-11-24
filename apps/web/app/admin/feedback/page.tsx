@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { getAllFeedback } from "@eptss/data-access/services/feedbackService";
 import { FeedbackCard } from "@eptss/admin";
-import { Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
+import { Card, CardHeader, CardTitle, CardContent, AlertBox } from "@eptss/ui";
 
 export const metadata: Metadata = {
   title: "Feedback Management | Admin",
@@ -22,12 +22,10 @@ async function FeedbackContent() {
         </p>
       </div>
 
-      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-        <p className="text-sm text-primary">
-          <strong>Note:</strong> You can toggle feedback visibility to make it public or private, 
-          or delete inappropriate feedback entirely.
-        </p>
-      </div>
+      <AlertBox variant="info" icon={false}>
+        <strong>Note:</strong> You can toggle feedback visibility to make it public or private,
+        or delete inappropriate feedback entirely.
+      </AlertBox>
 
       <Card variant="glass">
         <CardHeader>

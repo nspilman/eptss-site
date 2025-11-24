@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { LoadingSpinner } from '../../src/components/LoadingSpinner';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof LoadingSpinner> = {
-  title: 'Components/LoadingSpinner',
+  title: '3. Feedback/Loading Spinner',
   component: LoadingSpinner,
   parameters: {
     layout: 'padded',

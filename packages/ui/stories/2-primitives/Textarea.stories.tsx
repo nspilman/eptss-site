@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Textarea } from '../../src/components/ui/primitives/textarea';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Textarea> = {
-  title: 'Components/Textarea',
+  title: '2. Primitives/Textarea',
   component: Textarea,
   parameters: {
     layout: 'padded',

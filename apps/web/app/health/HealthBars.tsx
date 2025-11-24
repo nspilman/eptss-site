@@ -2,11 +2,11 @@
 
 import { useRef } from 'react';
 import {
-  Tooltip,
+  TooltipRoot,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@radix-ui/react-tooltip';
+} from '@eptss/ui';
 
 type Run = {
   id: string;
@@ -46,7 +46,7 @@ export default function HealthBars({ runs }: Props) {
           <div className="flex gap-[2px] flex-wrap justify-end">
             {testRuns.map((run) => (
               <TooltipProvider key={run.id}>
-                <Tooltip>
+                <TooltipRoot>
                   <TooltipTrigger asChild>
                     <div
                       id={run.id}
@@ -61,11 +61,10 @@ export default function HealthBars({ runs }: Props) {
                       />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent 
-                    side="top" 
-                    align="center" 
-                    className="bg-[var(--color-gray-900)] text-[var(--color-white)] text-sm rounded-xl py-3 px-4 min-w-[240px] shadow-2xl z-50"
-                    sideOffset={5}
+                  <TooltipContent
+                    side="top"
+                    align="center"
+                    className="min-w-[240px]"
                   >
                     <div className="text-lg mb-3">{run.testName}</div>
                     <div className="space-y-2">
@@ -99,7 +98,7 @@ export default function HealthBars({ runs }: Props) {
                       </div>
                     )}
                   </TooltipContent>
-                </Tooltip>
+                </TooltipRoot>
               </TooltipProvider>
             ))}
           </div>

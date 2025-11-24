@@ -2,10 +2,10 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../src/components/ui/primitives/card';
 import Button from '../../src/components/ui/primitives/button';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Card> = {
-  title: 'Components/Card',
+  title: '4. Display/Card',
   component: Card,
   parameters: {
     layout: 'padded',

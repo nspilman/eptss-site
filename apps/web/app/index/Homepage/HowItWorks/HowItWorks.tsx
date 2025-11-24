@@ -1,8 +1,7 @@
 "use client";
 
 import React from 'react';
-import { motion } from "framer-motion";
-import { Button, Card, CardHeader, CardTitle, CardContent, FeatureCard } from "@eptss/ui";
+import { Button, Card, CardHeader, CardTitle, CardContent, FeatureCard, SectionHeader, Animated, AnimatedList, AnimatedListItem } from "@eptss/ui";
 import { ChevronRight, Music, Calendar, Users, Award } from "lucide-react";
 import Link from 'next/link';
 
@@ -47,29 +46,21 @@ export const HowItWorks = () => {
     <div id="how-it-works" className="py-16 relative group">
       <div className="absolute -inset-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] rounded-lg blur opacity-15 pointer-events-none group-hover:opacity-25 group-hover:blur-lg transition duration-700"></div>
       <div className="relative">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-            How It Works
-          </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            A simple process designed to spark your creativity
-          </p>
+        <div className="mb-12">
+          <SectionHeader
+            size="lg"
+            align="center"
+            title="How It Works"
+            subtitle="A simple process designed to spark your creativity"
+          />
         </div>
         
-        <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="space-y-16"
-      >
+        <Animated variant="fadeIn" duration={0.6} className="space-y-16">
         {/* Process Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <AnimatedList variant="fadeInUp" staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map((step, index) => (
-            <motion.div 
+            <AnimatedListItem
               key={index}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
               className="flex flex-col items-center text-center p-6"
             >
               <div className="w-16 h-16 bg-[var(--color-gray-800)] rounded-full flex items-center justify-center mb-4 border-2 border-[var(--color-accent-primary)]">
@@ -77,47 +68,40 @@ export const HowItWorks = () => {
               </div>
               <h3 className="text-xl font-bold mb-2 text-white">{step.title}</h3>
               <p className="text-gray-300">{step.description}</p>
-            </motion.div>
+            </AnimatedListItem>
           ))}
-        </div>
+        </AnimatedList>
 
         {/* Benefits */}
         <div>
           <h3 className="text-2xl font-bold mb-8 text-center text-white">
             Why Musicians Love Us
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <AnimatedList variant="fadeInUp" staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {benefits.map((benefit, index) => (
               <Card key={index} asChild>
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                >
+                <AnimatedListItem>
                   <CardContent>
                     <div className="mb-4">{benefit.icon}</div>
                     <h4 className="text-xl font-bold mb-2 text-white">{benefit.title}</h4>
                     <p className="text-gray-300">{benefit.description}</p>
                   </CardContent>
-                </motion.div>
+                </AnimatedListItem>
               </Card>
             ))}
-          </div>
+          </AnimatedList>
         </div>
 
         {/* Testimonial */}
         <Card asChild className="max-w-3xl mx-auto">
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-          >
+          <Animated variant="fadeInUp">
             <CardContent className="text-center py-8">
               <p className="text-xl italic text-gray-300 mb-4">
               &quot;Everyone Plays the Same Song provides the community and direction I&apos;ve needed to consistently make music and improve for the last two years.&quot;
               </p>
               <p className="text-[var(--color-accent-primary)] font-medium">— David, Participant</p>
             </CardContent>
-          </motion.div>
+          </Animated>
         </Card>
 
         {/* CTA */}
@@ -137,7 +121,7 @@ export const HowItWorks = () => {
             </Link>
           </div>
         </div>
-      </motion.div>
+      </Animated>
       </div>
     </div>
   );

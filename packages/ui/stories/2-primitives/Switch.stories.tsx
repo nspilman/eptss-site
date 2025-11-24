@@ -2,10 +2,10 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Switch } from '../../src/components/ui/switch';
 import { Label } from '../../src/components/ui/label';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Switch> = {
-  title: 'Components/Switch',
+  title: '2. Primitives/Switch',
   component: Switch,
   parameters: {
     layout: 'padded',

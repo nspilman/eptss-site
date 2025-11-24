@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form } from "@eptss/ui"
+import { Button, Form, SectionHeader } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
 import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/data-access/schemas/signupSchemas"
@@ -214,10 +214,13 @@ export function SignupForm({
           
           {!isLoggedIn && (
             <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
-              <div className="mb-6 border-l-4 border-accent-primary pl-4">
-                <h3 className="text-xl font-medium font-fraunces text-primary">Your Information</h3>
-                <p className="mt-1 text-sm text-accent-primary opacity-90">We&lsquo;ll send you a verification link to complete your signup</p>
-              </div>
+              <SectionHeader
+                variant="accent-border"
+                borderColor="primary"
+                title="Your Information"
+                subtitle="We'll send you a verification link to complete your signup"
+                className="mb-6"
+              />
               <div className="space-y-5">
                 <FormBuilder
                   fields={getNonLoggedInFields(referralCode)}
@@ -229,10 +232,13 @@ export function SignupForm({
           )}
           
           <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
-            <div className="mb-6 border-l-4 border-accent-secondary pl-4">
-              <h3 className="text-xl font-medium font-fraunces text-primary">Round Signup</h3>
-              <p className="mt-1 text-sm text-accent-primary opacity-90">Enter the song you&lsquo;d like to cover for this round</p>
-            </div>
+            <SectionHeader
+              variant="accent-border"
+              borderColor="secondary"
+              title="Round Signup"
+              subtitle="Enter the song you'd like to cover for this round"
+              className="mb-6"
+            />
             <div className="space-y-5">
               <FormBuilder
                 fields={baseFormFields}

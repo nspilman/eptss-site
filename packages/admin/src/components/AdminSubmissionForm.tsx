@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { adminSubmitCover } from "@eptss/actions";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Textarea, useToast } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, Textarea, useToast } from "@eptss/ui";
 import { Music } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -87,7 +87,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="userSearch" className="text-primary">Search Users</Label>
+              <FormLabel htmlFor="userSearch" className="text-primary">Search Users</FormLabel>
               <Input
                 id="userSearch"
                 value={searchTerm}
@@ -96,7 +96,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
                 className="bg-background-secondary/50 border-background-tertiary/50 text-primary mb-2"
               />
               
-              <Label htmlFor="userId" className="text-primary">Select User</Label>
+              <FormLabel htmlFor="userId" className="text-primary">Select User</FormLabel>
               <select
                 id="userId"
                 value={selectedUserId}
@@ -118,7 +118,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="soundcloudUrl" className="text-primary">SoundCloud URL</Label>
+              <FormLabel htmlFor="soundcloudUrl" className="text-primary">SoundCloud URL</FormLabel>
               <Input
                 id="soundcloudUrl"
                 value={soundcloudUrl}
@@ -130,7 +130,7 @@ export const AdminSubmissionForm = ({ roundId, users }: AdminSubmissionFormProps
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="additionalComments" className="text-primary">Additional Comments</Label>
+              <FormLabel htmlFor="additionalComments" className="text-primary">Additional Comments</FormLabel>
               <Textarea
                 id="additionalComments"
                 value={additionalComments}

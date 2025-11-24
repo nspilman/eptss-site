@@ -1,7 +1,7 @@
 'use client';
 
 import { Textarea } from '@eptss/ui';
-import { Label } from '@eptss/ui';
+import { FormLabel } from '@eptss/ui';
 
 interface ProfileBioFieldProps {
   value: string;
@@ -20,13 +20,13 @@ export function ProfileBioField({
 }: ProfileBioFieldProps) {
   return (
     <div className={`space-y-2 ${showBorder ? 'pt-4 border-t border-gray-700' : ''}`}>
-      <Label htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
+      <FormLabel htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium flex items-center gap-2">
         Profile Bio
         <span className="text-xs text-gray-400 ml-2 font-normal">(Optional{showBorder ? ', shown on public profile' : ''})</span>
         {showEditableLabel && (
           <span className="text-xs text-[var(--color-accent-primary)] font-normal">(editable)</span>
         )}
-      </Label>
+      </FormLabel>
       <Textarea
         id="profileBio"
         value={value}

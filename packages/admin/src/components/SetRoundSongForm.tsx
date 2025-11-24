@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Label } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, FormLabel } from "@eptss/ui";
 import { Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { getSignupSongsForRound, setRoundSong } from "@eptss/data-access";
@@ -118,7 +118,7 @@ export function SetRoundSongForm({ roundId, roundSlug }: SetRoundSongFormProps) 
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="songId" className="text-primary">Select Song from Signups</Label>
+                <FormLabel htmlFor="songId" className="text-primary">Select Song from Signups</FormLabel>
                 <select
                   id="songId"
                   value={selectedSongId}

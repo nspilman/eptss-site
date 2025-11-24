@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Avatar, AvatarImage, AvatarFallback } from '../../src/components/ui/avatar';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Avatar> = {
-  title: 'Components/Avatar',
+  title: '4. Display/Avatar',
   component: Avatar,
   parameters: {
     layout: 'padded',

@@ -2,10 +2,10 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../src/components/ui/primitives/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../src/components/ui/primitives/card';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Tabs> = {
-  title: 'Components/Tabs',
+  title: '5. Navigation/Tabs',
   component: Tabs,
   parameters: {
     layout: 'padded',

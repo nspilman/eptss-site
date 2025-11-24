@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Skeleton } from '../../src/components/ui/primitives/skeleton';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Skeleton> = {
-  title: 'Components/Skeleton',
+  title: '3. Feedback/Skeleton',
   component: Skeleton,
   parameters: {
     layout: 'padded',

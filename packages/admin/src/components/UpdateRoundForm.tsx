@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@eptss/ui";
 import { Edit, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { updateRound, getRoundBySlug } from "@eptss/data-access";
@@ -133,7 +133,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="roundSlug" className="text-primary">Select Round</Label>
+              <FormLabel htmlFor="roundSlug" className="text-primary">Select Round</FormLabel>
               <Select value={selectedSlug} onValueChange={setSelectedSlug}>
                 <SelectTrigger className="text-primary">
                   <SelectValue placeholder="-- Select a round --" />
@@ -158,7 +158,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signupOpens" className="text-primary">Signup Opens</Label>
+                    <FormLabel htmlFor="signupOpens" className="text-primary">Signup Opens</FormLabel>
                     <Input
                       id="signupOpens"
                       type="datetime-local"
@@ -170,7 +170,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="votingOpens" className="text-primary">Voting Opens</Label>
+                    <FormLabel htmlFor="votingOpens" className="text-primary">Voting Opens</FormLabel>
                     <Input
                       id="votingOpens"
                       type="datetime-local"
@@ -184,7 +184,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="coveringBegins" className="text-primary">Covering Begins</Label>
+                    <FormLabel htmlFor="coveringBegins" className="text-primary">Covering Begins</FormLabel>
                     <Input
                       id="coveringBegins"
                       type="datetime-local"
@@ -196,7 +196,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="coversDue" className="text-primary">Covers Due</Label>
+                    <FormLabel htmlFor="coversDue" className="text-primary">Covers Due</FormLabel>
                     <Input
                       id="coversDue"
                       type="datetime-local"
@@ -210,7 +210,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="listeningParty" className="text-primary">Listening Party</Label>
+                    <FormLabel htmlFor="listeningParty" className="text-primary">Listening Party</FormLabel>
                     <Input
                       id="listeningParty"
                       type="datetime-local"
@@ -222,7 +222,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="playlistUrl" className="text-primary">Playlist URL</Label>
+                    <FormLabel htmlFor="playlistUrl" className="text-primary">Playlist URL</FormLabel>
                     <Input
                       id="playlistUrl"
                       value={playlistUrl}

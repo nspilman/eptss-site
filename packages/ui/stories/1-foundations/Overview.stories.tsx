@@ -20,14 +20,14 @@ const ThemeOverview = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
-          { title: 'Colors', description: 'Color palette and semantic color tokens', path: '?path=/story/theme-colors--default' },
-          { title: 'Typography', description: 'Font families, sizes, and weights', path: '?path=/story/theme-typography--default' },
-          { title: 'Border Radius', description: 'Border radius tokens for UI elements', path: '?path=/story/theme-border-radius--default' },
-          { title: 'Spacing', description: 'Spacing scale for margins, padding, and gaps', path: '?path=/story/theme-spacing--default' },
-          { title: 'Shadows', description: 'Shadow tokens for depth and elevation', path: '?path=/story/theme-shadows--default' },
-          { title: 'Animations', description: 'Animation keyframes and utility classes', path: '?path=/story/theme-animations--default' },
-          { title: 'Utilities', description: 'Custom utility classes for UI components', path: '?path=/story/theme-utilities--default' },
-          { title: 'Container Queries', description: 'Container query breakpoints', path: '?path=/story/theme-container-queries--default' },
+          { title: 'Colors', description: 'Color palette and semantic color tokens', path: '?path=/story/1-foundations-colors--default' },
+          { title: 'Typography', description: 'Font families, sizes, and weights', path: '?path=/story/1-foundations-typography--default' },
+          { title: 'Border Radius', description: 'Border radius tokens for UI elements', path: '?path=/story/1-foundations-border-radius--default' },
+          { title: 'Spacing', description: 'Spacing scale for margins, padding, and gaps', path: '?path=/story/1-foundations-spacing--default' },
+          { title: 'Shadows', description: 'Shadow tokens for depth and elevation', path: '?path=/story/1-foundations-shadows--default' },
+          { title: 'Animations', description: 'Animation keyframes and utility classes', path: '?path=/story/6-animation-animations--default' },
+          { title: 'Utilities', description: 'Custom utility classes for UI components', path: '?path=/story/6-animation-utilities--default' },
+          { title: 'Container Queries', description: 'Container query breakpoints', path: '?path=/story/6-animation-container-queries--default' },
         ].map((section) => (
           <a 
             key={section.title} 
@@ -44,7 +44,7 @@ const ThemeOverview = () => {
 };
 
 const meta: Meta<typeof ThemeOverview> = {
-  title: 'Theme/Overview',
+  title: '1. Foundations/Overview',
   component: ThemeOverview,
   parameters: {
     layout: 'fullscreen',

@@ -1,4 +1,5 @@
 import { Post } from "@/app/blog/Blog/Post";
+import { PostNavigation } from "@/app/blog/Blog/Post/PostNavigation";
 import { PageTitle } from "@/components/PageTitle";
 import { blogProvider } from "@eptss/data-access/providers/blogProvider";
 import { Metadata } from 'next';
@@ -45,7 +46,8 @@ const BlogPost = async ({ params }: { params: Promise<{ slug: string }> }) => {
   return (
     <>
       <PageTitle title={post.slug} />
-      <Post post={post} prevPost={prevPost} nextPost={nextPost} />
+      <Post post={post} />
+      <PostNavigation prevPost={prevPost} nextPost={nextPost} />
     </>
   );
 };

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { UtilitiesSection } from '../components/UtilitiesSection';
+import { ColorsSection } from '../components/ColorSection';
 
-const meta: Meta<typeof UtilitiesSection> = {
-  title: 'Theme/Utilities',
-  component: UtilitiesSection,
+const meta: Meta<typeof ColorsSection> = {
+  title: '1. Foundations/Colors',
+  component: ColorsSection,
   parameters: {
     layout: 'fullscreen',
     backgrounds: {
@@ -18,6 +18,6 @@ const meta: Meta<typeof UtilitiesSection> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof UtilitiesSection>;
+type Story = StoryObj<typeof ColorsSection>;
 
 export const Default: Story = {};

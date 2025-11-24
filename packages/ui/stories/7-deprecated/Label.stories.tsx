@@ -3,10 +3,10 @@ import { Meta, StoryObj } from '@storybook/react';
 import { Label } from '../../src/components/ui/label';
 import Input from '../../src/components/ui/primitives/input';
 import { Textarea } from '../../src/components/ui/primitives/textarea';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Label> = {
-  title: 'Components/Label',
+  title: '7. Deprecated/Label (Use FormLabel)',
   component: Label,
   parameters: {
     layout: 'padded',

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel } from "@eptss/ui";
 import { Calendar, Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { createRound } from "@eptss/data-access";
@@ -80,7 +80,7 @@ export function CreateRoundForm() {
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="slug" className="text-primary">Round Slug</Label>
+              <FormLabel htmlFor="slug" className="text-primary">Round Slug</FormLabel>
               <Input
                 id="slug"
                 value={slug}
@@ -96,7 +96,7 @@ export function CreateRoundForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="signupOpens" className="text-primary">Signup Opens</Label>
+                <FormLabel htmlFor="signupOpens" className="text-primary">Signup Opens</FormLabel>
                 <Input
                   id="signupOpens"
                   type="datetime-local"
@@ -108,7 +108,7 @@ export function CreateRoundForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="votingOpens" className="text-primary">Voting Opens</Label>
+                <FormLabel htmlFor="votingOpens" className="text-primary">Voting Opens</FormLabel>
                 <Input
                   id="votingOpens"
                   type="datetime-local"
@@ -122,7 +122,7 @@ export function CreateRoundForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="coveringBegins" className="text-primary">Covering Begins</Label>
+                <FormLabel htmlFor="coveringBegins" className="text-primary">Covering Begins</FormLabel>
                 <Input
                   id="coveringBegins"
                   type="datetime-local"
@@ -134,7 +134,7 @@ export function CreateRoundForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="coversDue" className="text-primary">Covers Due</Label>
+                <FormLabel htmlFor="coversDue" className="text-primary">Covers Due</FormLabel>
                 <Input
                   id="coversDue"
                   type="datetime-local"
@@ -148,7 +148,7 @@ export function CreateRoundForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="listeningParty" className="text-primary">Listening Party</Label>
+                <FormLabel htmlFor="listeningParty" className="text-primary">Listening Party</FormLabel>
                 <Input
                   id="listeningParty"
                   type="datetime-local"
@@ -160,7 +160,7 @@ export function CreateRoundForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="playlistUrl" className="text-primary">Playlist URL</Label>
+                <FormLabel htmlFor="playlistUrl" className="text-primary">Playlist URL</FormLabel>
                 <Input
                   id="playlistUrl"
                   value={playlistUrl}

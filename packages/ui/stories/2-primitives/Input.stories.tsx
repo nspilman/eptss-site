@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import Input from '../../src/components/ui/primitives/input';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Input> = {
-  title: 'Components/Input',
+  title: '2. Primitives/Input',
   component: Input,
   parameters: {
     layout: 'padded',

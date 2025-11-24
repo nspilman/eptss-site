@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms";
-import { Button, Form } from "@eptss/ui";
+import { Button, Form, EmptyState } from "@eptss/ui";
 import { motion } from "framer-motion";
 import { z } from "zod"
 import { VoteOption } from "@eptss/data-access/types/vote"
@@ -137,14 +137,13 @@ export function VotingPage({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center space-y-4"
       >
-        <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
-          No songs to vote on yet
-        </h1>
-        <div className="space-y-2 text-gray-300">
-          <p>Please check back later when songs have been submitted.</p>
-        </div>
+        <EmptyState
+          size="lg"
+          icon="🎵"
+          title="No songs to vote on yet"
+          description="Please check back later when songs have been submitted."
+        />
       </motion.div>
     )
   }

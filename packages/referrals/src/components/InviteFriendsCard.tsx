@@ -46,7 +46,7 @@ export function InviteFriendsCard({ userId }: InviteFriendsCardProps) {
       {/* Subtle glow effect */}
       <div className="absolute -inset-1 bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
 
-      <Card className="relative z-10 bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700">
+      <Card gradient className="relative z-10">
         <CardHeader className="pb-6">
           <div className="flex items-start gap-5">
             {/* Icon */}

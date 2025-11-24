@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@eptss/ui';
-import { Label } from '@eptss/ui';
+import { FormLabel } from '@eptss/ui';
 import { Switch } from '@eptss/ui';
 import { Input } from '@eptss/ui';
 import { Textarea } from '@eptss/ui';
@@ -270,10 +270,10 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
 
             {/* Profile Bio */}
             <div className="space-y-2">
-              <Label htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium">
+              <FormLabel htmlFor="profileBio" className="text-[var(--color-primary)] text-sm font-medium">
                 Profile Bio
                 <span className="text-xs text-gray-400 ml-2 font-normal">(Optional, shown on public profile)</span>
-              </Label>
+              </FormLabel>
               <Textarea
                 id="profileBio"
                 value={settings.profileBio || ''}

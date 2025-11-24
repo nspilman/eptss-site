@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import Badge from '../../src/components/ui/primitives/badge';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Badge> = {
-  title: 'Components/Badge',
+  title: '4. Display/Badge',
   component: Badge,
   parameters: {
     layout: 'padded',

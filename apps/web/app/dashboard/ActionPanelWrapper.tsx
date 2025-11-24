@@ -5,7 +5,7 @@ import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
 import { roundProvider } from '@eptss/data-access';
 import Link from 'next/link';
 import type { Reflection } from '@eptss/data-access';
-import { Button } from '@eptss/ui';
+import { Button, AlertBox, GradientDivider, Badge } from '@eptss/ui';
 
 export interface ActionPanelWrapperData extends ActionPanelData {
   reflections?: Reflection[];
@@ -62,12 +62,12 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
             />
           </div>
 
-          <div className="p-3 bg-blue-900/20 border border-blue-600/30 rounded-lg">
-            <p className="text-xs text-blue-200">
+          <AlertBox variant="info" icon={false} className="p-3">
+            <p className="text-xs">
               <strong className="font-semibold">Note:</strong> Since signups have closed, you&apos;ll join without selecting a song.
               You can still participate in all other round activities!
             </p>
-          </div>
+          </AlertBox>
         </div>
       </div>
     );
@@ -144,7 +144,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
+            <GradientDivider />
 
             {/* Reflections Section */}
             <div>
@@ -156,9 +156,9 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
                   Reflections
                 </h3>
                 {reflections.length > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-full bg-[var(--color-accent-secondary)]/20 text-[var(--color-accent-secondary)] font-medium">
+                  <Badge variant="count">
                     {reflections.length}
-                  </span>
+                  </Badge>
                 )}
               </div>
 
@@ -207,7 +207,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
           </div>
 
           {/* Vertical Divider (Desktop Only) */}
-          <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-gray-700 to-transparent" />
+          <GradientDivider orientation="vertical" className="hidden lg:block" />
 
           {/* RIGHT SECTION: Phase Status - Vertical & Compact */}
           <div className="lg:w-44 space-y-4">
@@ -229,7 +229,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
             )}
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
+            <GradientDivider />
 
             {/* Progress Dots - Vertical */}
             <div className="flex flex-col items-center gap-3">

@@ -13,9 +13,16 @@ const cardVariants = cva(
         plain: "bg-[var(--color-background-secondary)] shadow-sm rounded-lg overflow-hidden",
         "gradient-border": "bg-[var(--color-background-primary)] shadow-lg rounded-lg overflow-hidden",
       },
+      hover: {
+        none: "",
+        scale: "transition-all duration-300 group-hover:scale-[1.025] group-hover:shadow-xl",
+        lift: "transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl",
+        glow: "transition-shadow duration-300 group-hover:shadow-xl",
+      },
     },
     defaultVariants: {
       variant: "default",
+      hover: "none",
     },
   }
 )
@@ -28,7 +35,7 @@ export interface CardProps
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, gradient = false, asChild = false, ...props }, ref) => {
+  ({ className, variant, hover, gradient = false, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "div"
     const isGradientBorder = variant === "gradient-border"
 
@@ -42,7 +49,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
         )}
         <Comp
           ref={ref}
-          className={cn(cardVariants({ variant }), className)}
+          className={cn(cardVariants({ variant, hover }), className)}
           {...props}
         />
       </div>

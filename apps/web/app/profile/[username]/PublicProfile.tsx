@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection } from "@eptss/data-access";
-import { Card, CardContent } from "@eptss/ui";
+import { Card, CardContent, SectionHeader, EmptyState, Display, Text } from "@eptss/ui";
 
 interface SocialLink {
   id: string;
@@ -72,12 +72,12 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
               </div>
             )}
             <div className="flex-1">
-              <h1 className="font-fraunces text-[var(--color-primary)] font-black text-4xl md:text-5xl mb-2 tracking-tight">
+              <Display size="md" className="mb-2">
                 {user.displayName}
-              </h1>
-              <p className="text-[var(--color-gray-400)] text-lg font-roboto">
+              </Display>
+              <Text size="lg" color="secondary">
                 @{user.username}
-              </p>
+              </Text>
             </div>
             {isOwnProfile && (
               <Link
@@ -89,9 +89,9 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
             )}
           </div>
           {user.bio && (
-            <p className="text-[var(--color-gray-300)] text-base font-roboto mt-4 max-w-2xl">
+            <Text size="base" color="tertiary" className="mt-4 max-w-2xl">
               {user.bio}
-            </p>
+            </Text>
           )}
           <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mt-4"></div>
         </div>
@@ -100,9 +100,10 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
       {/* Social Links Section */}
       {socialLinks.length > 0 && (
         <section className="w-full">
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-3xl pb-6 self-start tracking-tight">
-            Connect
-          </h2>
+          <SectionHeader
+            title="Connect"
+            className="pb-6"
+          />
           <div className="flex flex-wrap gap-3">
             {socialLinks.map((link) => (
               <a
@@ -125,9 +126,10 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
       {/* Embedded Media Section */}
       {embeddedMedia.length > 0 && (
         <section className="w-full">
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-3xl pb-6 self-start tracking-tight">
-            Media
-          </h2>
+          <SectionHeader
+            title="Media"
+            className="pb-6"
+          />
           <div className="grid grid-cols-1 gap-6 w-full">
             {embeddedMedia.map((media) => (
               <Card key={media.id} className="relative">
@@ -151,20 +153,14 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
       {/* Submissions Section */}
       {submissions.length > 0 && (
         <section className="w-full">
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-3xl pb-6 self-start tracking-tight">
-            Submissions
-          </h2>
+          <SectionHeader
+            title="Submissions"
+            className="pb-6"
+          />
           <div className="grid grid-cols-1 gap-6 w-full">
             {submissions.map((submission) => (
-              <article
-                key={submission.id}
-                className="relative group transition-all duration-300"
-              >
-                {/* Gradient border effect */}
-                <div className="absolute -inset-1 bg-[var(--color-gradient-primary)] rounded-2xl blur-sm opacity-15 group-hover:opacity-35 group-hover:blur-lg transition duration-500"></div>
-
-                {/* Card content */}
-                <Card className="relative group-hover:shadow-xl transition-shadow duration-300">
+              <article key={submission.id} className="group">
+                <Card gradient hover="lift">
                   <CardContent className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-1">
@@ -201,22 +197,19 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
       {/* Reflections Section */}
       {reflections.length > 0 && (
         <section className="w-full">
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-3xl pb-6 self-start tracking-tight">
-            Reflections
-          </h2>
+          <SectionHeader
+            title="Reflections"
+            className="pb-6"
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {reflections.map((reflection) => (
               <Link
                 href={`/reflections/${reflection.slug}`}
-                className="group transition-all duration-300 h-full"
+                className="group h-full"
                 key={reflection.slug}
               >
-                <article className="relative h-full group-hover:scale-[1.025] transition-transform duration-300">
-                  {/* Gradient border effect */}
-                  <div className="absolute -inset-1 bg-[var(--color-gradient-primary)] rounded-2xl blur-sm opacity-15 group-hover:opacity-35 group-hover:blur-lg transition duration-500"></div>
-
-                  {/* Card content */}
-                  <Card className="relative h-full group-hover:shadow-xl transition-shadow duration-300 overflow-visible">
+                <article className="h-full">
+                  <Card gradient hover="scale" className="h-full overflow-visible">
                     <CardContent className="h-full flex flex-col">
                       {/* Date Badge - floating top left */}
                       {reflection.publishedAt && (
@@ -266,10 +259,11 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
 
       {/* Empty State */}
       {submissions.length === 0 && reflections.length === 0 && socialLinks.length === 0 && embeddedMedia.length === 0 && (
-        <section className="w-full text-center py-12">
-          <p className="text-[var(--color-gray-400)] text-lg font-roboto">
-            This user hasn't shared any public content yet.
-          </p>
+        <section className="w-full">
+          <EmptyState
+            size="lg"
+            description="This user hasn't shared any public content yet."
+          />
         </section>
       )}
     </div>

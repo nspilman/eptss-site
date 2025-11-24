@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@eptss/ui';
 import { Input } from '@eptss/ui';
 import { Button } from '@eptss/ui';
-import { Label } from '@eptss/ui';
+import { FormLabel } from '@eptss/ui';
 import { Textarea } from '@eptss/ui';
 import { format } from 'date-fns';
 import type { User } from './ProfileHeader';
@@ -336,7 +336,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
               {/* Username - Read Only */}
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-gray-400 text-sm font-medium">Username</Label>
+                <FormLabel htmlFor="username" className="text-gray-400 text-sm font-medium">Username</FormLabel>
                 <Input
                   id="username"
                   value={username}
@@ -350,7 +350,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Email - Read Only */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-400 text-sm font-medium">Email</Label>
+                <FormLabel htmlFor="email" className="text-gray-400 text-sm font-medium">Email</FormLabel>
                 <Input
                   id="email"
                   value={user.email}
@@ -361,7 +361,7 @@ export function PersonalInfoTab({ user }: PersonalInfoTabProps) {
 
               {/* Join Date - Read Only */}
               <div className="space-y-2">
-                <Label htmlFor="joinDate" className="text-gray-400 text-sm font-medium">Member Since</Label>
+                <FormLabel htmlFor="joinDate" className="text-gray-400 text-sm font-medium">Member Since</FormLabel>
                 <Input
                   id="joinDate"
                   value={user.createdAt ? format(new Date(user.createdAt), 'MMMM d, yyyy') : 'Unknown'}

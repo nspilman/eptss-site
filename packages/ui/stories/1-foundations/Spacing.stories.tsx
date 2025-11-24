@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { ShadowsSection } from '../components/ShadowsSection';
+import { SpacingSection } from '../components/SpacingSection';
 
-const meta: Meta<typeof ShadowsSection> = {
-  title: 'Theme/Shadows',
-  component: ShadowsSection,
+const meta: Meta<typeof SpacingSection> = {
+  title: '1. Foundations/Spacing',
+  component: SpacingSection,
   parameters: {
     layout: 'fullscreen',
     backgrounds: {
@@ -14,6 +14,6 @@ const meta: Meta<typeof ShadowsSection> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ShadowsSection>;
+type Story = StoryObj<typeof SpacingSection>;
 
 export const Default: Story = {};

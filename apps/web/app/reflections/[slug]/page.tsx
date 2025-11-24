@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { PageTitle } from "@/components/PageTitle";
 import { Post } from "@/app/blog/Blog/Post";
+import { PostNavigation } from "@/app/blog/Blog/Post/PostNavigation";
 import { getReflectionBySlug } from '@eptss/data-access';
 import { getAuthUser } from '@eptss/auth/server';
 import { Metadata } from 'next';
@@ -72,13 +73,14 @@ const ReflectionPage = async ({ params }: Props) => {
       <Post post={post} authorUsername={reflection.authorUsername} />
 
       {/* Comments Section */}
-      <div className="px-4 py-12">
         <CommentSection
           contentId={reflection.id}
           contentAuthorId={reflection.userId}
           currentUserId={userId}
         />
-      </div>
+
+        {/* Navigation moved below comments */}
+        <PostNavigation prevPost={null} nextPost={null} />
     </>
   );
 };

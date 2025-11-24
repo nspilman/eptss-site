@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { adminSignupUser } from "@eptss/actions";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Label, Textarea, useToast } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, Textarea, useToast } from "@eptss/ui";
 import { UserPlus } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -111,7 +111,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="userSearch" className="text-primary">Search Users</Label>
+              <FormLabel htmlFor="userSearch" className="text-primary">Search Users</FormLabel>
               <Input
                 id="userSearch"
                 value={searchTerm}
@@ -120,7 +120,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 className="bg-background-secondary/50 border-background-tertiary/50 text-primary mb-2"
               />
               
-              <Label htmlFor="userId" className="text-primary">Select User</Label>
+              <FormLabel htmlFor="userId" className="text-primary">Select User</FormLabel>
               <select
                 id="userId"
                 value={selectedUserId}
@@ -149,15 +149,15 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 onChange={(e) => setSignupWithoutSong(e.target.checked)}
                 className="w-4 h-4 rounded border-background-tertiary/50"
               />
-              <Label htmlFor="signupWithoutSong" className="text-primary cursor-pointer mb-0">
+              <FormLabel htmlFor="signupWithoutSong" className="text-primary cursor-pointer mb-0">
                 Sign up without a song
-              </Label>
+              </FormLabel>
             </div>
 
             {!signupWithoutSong && (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="songTitle" className="text-primary">Song Title</Label>
+                  <FormLabel htmlFor="songTitle" className="text-primary">Song Title</FormLabel>
                   <Input
                     id="songTitle"
                     value={songTitle}
@@ -169,7 +169,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="artist" className="text-primary">Artist</Label>
+                  <FormLabel htmlFor="artist" className="text-primary">Artist</FormLabel>
                   <Input
                     id="artist"
                     value={artist}
@@ -181,7 +181,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="youtubeLink" className="text-primary">YouTube Link</Label>
+                  <FormLabel htmlFor="youtubeLink" className="text-primary">YouTube Link</FormLabel>
                   <Input
                     id="youtubeLink"
                     value={youtubeLink}
@@ -193,7 +193,7 @@ export const AdminSignupForm = ({ roundId, users }: AdminSignupFormProps) => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="additionalComments" className="text-primary">Additional Comments</Label>
+                  <FormLabel htmlFor="additionalComments" className="text-primary">Additional Comments</FormLabel>
                   <Textarea
                     id="additionalComments"
                     value={additionalComments}

@@ -130,11 +130,11 @@ export default function DashboardLayout({
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {isCollapsed ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-[3]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-black stroke-[3]">
                     <path d="m9 18 6-6-6-6"></path>
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-[3]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-black stroke-[3]">
                     <path d="m15 18-6-6 6-6"></path>
                   </svg>
                 )}
@@ -146,7 +146,7 @@ export default function DashboardLayout({
 
           {/* Main Content Column - Grid automatically constrains this */}
           <div className="flex flex-col min-w-0">
-            <main className="flex-1 p-4 md:pl-6 md:pr-6 md:py-6 min-w-0 overflow-x-hidden">
+            <main className="flex-1 p-4 md:pl-6 md:pr-6 md:py-2 min-w-0 overflow-x-hidden">
               {children}
             </main>
           </div>

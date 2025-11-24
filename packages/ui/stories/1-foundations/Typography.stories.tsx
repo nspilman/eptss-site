@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { TypographySection } from '../components/TypographySection';
 
 const meta: Meta<typeof TypographySection> = {
-  title: 'Theme/Typography',
+  title: '1. Foundations/Typography',
   component: TypographySection,
   parameters: {
     layout: 'fullscreen',

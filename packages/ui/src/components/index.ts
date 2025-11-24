@@ -1,7 +1,7 @@
 // UI Components
 export * from './ui/avatar';
 export * from './ui/user-avatar';
-export * from './ui/label';
+export { Label as FormLabel } from './ui/label'; // Form label - for use with htmlFor
 export * from './ui/nav-link';
 export * from './ui/navigation-button';
 export * from './ui/navigation-tabs';

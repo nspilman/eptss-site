@@ -19,16 +19,8 @@ export const BlogHome = ({ posts, reflections }: { posts: BlogPost[]; reflection
             className="group transition-all duration-300 h-full"
             key={slug}
           >
-            <article
-              className={
-                `relative h-full group-hover:scale-[1.025] transition-transform duration-300`
-              }
-            >
-              {/* Gradient border effect */}
-              <div className="absolute -inset-1 bg-[var(--color-gradient-primary)] rounded-2xl blur-sm opacity-15 group-hover:opacity-35 group-hover:blur-lg transition duration-500"></div>
-
-              {/* Card content */}
-              <Card className="relative h-full group-hover:shadow-xl transition-shadow duration-300 overflow-visible">
+            <article className="h-full">
+              <Card gradient hover="scale" className="h-full overflow-visible">
                 <CardContent className="h-full flex flex-col">
                   {/* Date Badge - floating top left */}
                   {date && (
@@ -68,15 +60,8 @@ export const BlogHome = ({ posts, reflections }: { posts: BlogPost[]; reflection
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {reflections.map((reflection) => (
-              <article
-                className="relative h-full group transition-all duration-300 hover:scale-[1.025] transition-transform"
-                key={reflection.slug}
-              >
-                {/* Gradient border effect */}
-                <div className="absolute -inset-1 bg-[var(--color-gradient-primary)] rounded-2xl blur-sm opacity-15 group-hover:opacity-35 group-hover:blur-lg transition duration-500"></div>
-
-                {/* Card content */}
-                <Card className="relative h-full group-hover:shadow-xl transition-shadow duration-300 overflow-visible">
+              <article className="h-full group" key={reflection.slug}>
+                <Card gradient hover="scale" className="h-full overflow-visible">
                   <CardContent className="h-full flex flex-col">
                     {/* Date Badge - floating top left */}
                     {reflection.publishedAt && (

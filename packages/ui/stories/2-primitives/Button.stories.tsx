@@ -1,10 +1,10 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import Button from '../../src/components/ui/primitives/button';
-import { ThemeSection } from './ThemeSection';
+import { ThemeSection } from '../components/ThemeSection';
 
 const meta: Meta<typeof Button> = {
-  title: 'Components/Button',
+  title: '2. Primitives/Button',
   component: Button,
   parameters: {
     layout: 'centered',

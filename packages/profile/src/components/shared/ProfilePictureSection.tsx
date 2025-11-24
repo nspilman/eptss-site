@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@eptss/ui';
-import { Label } from '@eptss/ui';
+import { FormLabel } from '@eptss/ui';
 
 interface ProfilePictureSectionProps {
   profilePictureUrl: string | null;
@@ -22,9 +22,9 @@ export function ProfilePictureSection({
 }: ProfilePictureSectionProps) {
   return (
     <div className="space-y-4 pb-6 border-b border-gray-700">
-      <Label className="text-[var(--color-primary)] text-sm font-medium">
+      <FormLabel className="text-[var(--color-primary)] text-sm font-medium">
         Profile Picture {showOptionalLabel && <span className="text-xs text-gray-400 ml-2 font-normal">(Optional)</span>}
-      </Label>
+      </FormLabel>
       <div className="flex items-center gap-6">
         <div className="relative">
           {profilePictureUrl ? (

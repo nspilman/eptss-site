@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { AnimationsSection } from '../components/AnimationsSection';
 
 const meta: Meta<typeof AnimationsSection> = {
-  title: 'Theme/Animations',
+  title: '6. Animation/Animations',
   component: AnimationsSection,
   parameters: {
     layout: 'fullscreen',

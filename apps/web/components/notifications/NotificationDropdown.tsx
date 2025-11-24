@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@eptss/ui";
+import { Button, EmptyState } from "@eptss/ui";
 import { CheckCheck, RefreshCw } from "lucide-react";
 import { NotificationItem } from "./NotificationItem";
 import type { NotificationWithUrl } from "./NotificationBell";
@@ -69,13 +69,12 @@ export function NotificationDropdown({
             <div className="animate-pulse text-secondary text-sm">Loading...</div>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center">
-            <div className="text-4xl mb-2">🔔</div>
-            <p className="text-sm font-medium text-primary">No notifications</p>
-            <p className="text-xs text-secondary mt-1">
-              You're all caught up!
-            </p>
-          </div>
+          <EmptyState
+            icon="🔔"
+            title="No notifications"
+            description="You're all caught up!"
+            className="py-8"
+          />
         ) : (
           <div className="divide-y divide-border">
             {notifications.map((notification) => (

@@ -10,8 +10,7 @@ import {
   TestCreateFutureRoundsButton,
   TestSendReminderEmailsButton
 } from "@eptss/admin";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@eptss/ui";
-import { AlertTriangle } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, AlertBox } from "@eptss/ui";
 
 export const metadata: Metadata = {
   title: "Admin Tools | Admin",
@@ -36,16 +35,10 @@ async function ToolsContent() {
         </p>
       </div>
 
-      <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 flex items-start gap-3">
-        <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 shrink-0" />
-        <div>
-          <p className="text-sm text-primary font-medium mb-1">Use with caution</p>
-          <p className="text-sm text-secondary">
-            These tools perform direct database operations and send real emails. 
-            Make sure you understand what each tool does before using it.
-          </p>
-        </div>
-      </div>
+      <AlertBox variant="warning" title="Use with caution">
+        These tools perform direct database operations and send real emails.
+        Make sure you understand what each tool does before using it.
+      </AlertBox>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card variant="glass">
