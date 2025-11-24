@@ -18,7 +18,7 @@ export const animationVariants = {
   // Fade in with upward movement
   fadeInUp: {
     initial: { opacity: 0, y: 20 },
-    animate: { opacity: 0, y: 0 },
+    animate: { opacity: 1, y: 0 },
     exit: { opacity: 0, y: -20 },
   },
 
