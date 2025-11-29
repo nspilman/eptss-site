@@ -10,7 +10,7 @@ import type { CommentSectionProps, CommentWithAuthor } from "../types";
 export function CommentSection({
   contentId,
   contentAuthorId,
-  currentUserId = null,
+  currentUserId,
 }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentWithAuthor[]>([]);
   const [error, setError] = useState<string | null>(null);

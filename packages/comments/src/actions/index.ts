@@ -11,6 +11,7 @@ import {
 } from "@eptss/data-access/services/commentService";
 import { createNotification, deleteNotificationsByCommentId } from "@eptss/data-access/services/notificationService";
 import { getUserById } from "@eptss/data-access/services/userService";
+import { getSignupUsersByRound } from "@eptss/data-access/services/signupService";
 import { logger } from "@eptss/logger/server";
 import { getAuthUser } from "@eptss/auth/server";
 import { getDisplayName } from "@eptss/shared";
@@ -18,7 +19,7 @@ import { z } from "zod";
 
 // Validation schemas
 const createCommentSchema = z.object({
-  contentId: z.string().uuid(),
+  contentId: z.string().min(1), // Can be UUID (reflections) or numeric string (rounds)
   content: z.string().min(1).max(10000),
   parentCommentId: z.string().uuid().optional(),
 });
@@ -101,8 +102,42 @@ export async function createCommentAction(data: {
         });
       }
     } else {
-      // This is a top-level comment, notify the content author
-      if (data.contentAuthorId && data.contentAuthorId !== userId) {
+      // This is a top-level comment
+
+      // Check if this is a round discussion (contentId is numeric)
+      const isRoundDiscussion = /^\d+$/.test(validated.contentId);
+
+      if (isRoundDiscussion) {
+        // This is a top-level comment on a round - notify all participants
+        try {
+          const roundId = parseInt(validated.contentId, 10);
+          const participants = await getSignupUsersByRound(roundId);
+
+          // Create notifications for all participants except the commenter
+          const notificationPromises = participants
+            .filter((p) => p.userId !== userId)
+            .map((participant) =>
+              createNotification({
+                userId: participant.userId,
+                type: "comment_received",
+                title: "New discussion in your round",
+                message: `${commenterName} started a discussion: ${validated.content.substring(0, 100)}${validated.content.length > 100 ? "..." : ""}`,
+                metadata: {
+                  commentId: comment.id,
+                  contentId: validated.contentId,
+                  commenterId: userId,
+                  roundId,
+                },
+              })
+            );
+
+          await Promise.all(notificationPromises);
+        } catch (error) {
+          logger.error("Failed to notify round participants", { error, roundId: validated.contentId });
+          // Don't fail the comment creation if notifications fail
+        }
+      } else if (data.contentAuthorId && data.contentAuthorId !== userId) {
+        // This is a comment on a reflection - notify the author
         await createNotification({
           userId: data.contentAuthorId,
           type: "comment_received",

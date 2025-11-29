@@ -3,7 +3,7 @@
 import { Navigation } from "@eptss/shared";
 import Link from "next/link";
 import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
-import { Shield } from "lucide-react";
+import { Shield, MessageSquare } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarItemProps {
@@ -48,7 +48,7 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
       className={`bg-background-primary/50 backdrop-blur-xs h-full px-3 py-4 transition-all duration-500 ease-in-out md:border-r md:border-accent-secondary/20 md:z-40 md:pt-20 ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}
     >
       <nav className="space-y-2 md:sticky md:top-24">
-        <SidebarItem 
+        <SidebarItem
           href={Navigation.Dashboard}
           icon={<HomeIcon className="w-5 h-5" />}
           label="Dashboard"
@@ -56,7 +56,15 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
-        <SidebarItem 
+        <SidebarItem
+          href="/discussions"
+          icon={<MessageSquare className="w-5 h-5" />}
+          label="Discussions"
+          isActive={pathname === "/discussions"}
+          onClick={onNavigate}
+          isCollapsed={isCollapsed}
+        />
+        <SidebarItem
           href="/rounds"
           icon={<HistoryIcon className="w-5 h-5" />}
           label="Past Rounds"

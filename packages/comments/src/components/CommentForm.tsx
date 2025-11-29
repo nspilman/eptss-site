@@ -33,7 +33,7 @@ export function CommentForm({
             contentId,
             content,
             parentCommentId,
-            contentAuthorId
+            contentAuthorId: contentAuthorId || undefined
           });
 
       if (result.success) {
