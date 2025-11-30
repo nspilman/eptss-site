@@ -2,19 +2,19 @@
 
 import { useState } from "react";
 import { createCommentAction, updateCommentAction } from "../actions";
+import { useCommentContext } from "../context/CommentContext";
 import type { CommentFormProps } from "../types";
 import { Button } from "@eptss/ui";
 
 export function CommentForm({
-  contentId,
   parentCommentId,
-  contentAuthorId,
   onSuccess,
   onCancel,
   initialContent = "",
   isEditing = false,
   commentId,
 }: CommentFormProps) {
+  const { userContentId, roundId, contentAuthorId } = useCommentContext();
   const [content, setContent] = useState(initialContent);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +30,8 @@ export function CommentForm({
       const result = isEditing && commentId
         ? await updateCommentAction({ commentId, content })
         : await createCommentAction({
-            contentId,
+            userContentId,
+            roundId,
             content,
             parentCommentId,
             contentAuthorId: contentAuthorId || undefined

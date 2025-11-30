@@ -74,7 +74,7 @@ const ReflectionPage = async ({ params }: Props) => {
 
       {/* Comments Section */}
         <CommentSection
-          contentId={reflection.id}
+          userContentId={reflection.id}
           contentAuthorId={reflection.userId}
           currentUserId={userId}
         />

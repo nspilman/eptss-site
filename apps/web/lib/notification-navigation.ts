@@ -91,19 +91,20 @@ export function isNotificationClickable(notificationType: string): boolean {
 async function handleCommentNavigation(
   metadata: Record<string, any>
 ): Promise<NavigationResult> {
-  let { contentId, commentId } = metadata;
+  let { userContentId, roundId, commentId, contentId } = metadata;
 
   if (!commentId) {
     return { error: "Missing commentId" };
   }
 
-  // Fallback: if contentId is missing (older notifications), fetch it from the comment
-  if (!contentId) {
+  // Fallback: if userContentId/roundId are missing (older notifications), fetch from the comment
+  if (!userContentId && !roundId && !contentId) {
     try {
       const commentResponse = await fetch(`/api/comments/${commentId}`);
       if (commentResponse.ok) {
         const commentData = await commentResponse.json();
-        contentId = commentData.contentId;
+        userContentId = commentData.userContentId;
+        roundId = commentData.roundId;
       } else {
         return { error: "Comment not found" };
       }
@@ -112,29 +113,43 @@ async function handleCommentNavigation(
     }
   }
 
-  if (!contentId) {
-    return { error: "Missing contentId" };
+  // Handle legacy contentId (pre-migration notifications)
+  if (contentId && !userContentId) {
+    userContentId = contentId;
   }
 
-  try {
-    // Fetch the content slug
-    const response = await fetch(`/api/notifications/content-slug?contentId=${contentId}`);
-    if (!response.ok) {
-      return { error: "Failed to fetch content" };
-    }
-
-    const { slug } = await response.json();
-    if (!slug) {
-      return { error: "Content not found" };
-    }
-
+  // Handle round discussion comments
+  if (roundId) {
     return {
-      url: `/reflections/${slug}#comment-${commentId}`,
+      url: `/discussions#comment-${commentId}`,
       markAsRead: true,
     };
-  } catch (error) {
-    return { error: "Failed to load content" };
   }
+
+  // Handle reflection comments
+  if (userContentId) {
+    try {
+      // Fetch the content slug
+      const response = await fetch(`/api/notifications/content-slug?contentId=${userContentId}`);
+      if (!response.ok) {
+        return { error: "Failed to fetch content" };
+      }
+
+      const { slug } = await response.json();
+      if (!slug) {
+        return { error: "Content not found" };
+      }
+
+      return {
+        url: `/reflections/${slug}#comment-${commentId}`,
+        markAsRead: true,
+      };
+    } catch (error) {
+      return { error: "Failed to load content" };
+    }
+  }
+
+  return { error: "Missing content reference" };
 }
 
 /**

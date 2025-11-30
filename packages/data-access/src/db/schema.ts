@@ -299,7 +299,6 @@ export type NewNotification = typeof notifications.$inferInsert;
 // Comments Table
 export const comments = pgTable("comments", {
   id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
-  contentId: uuid("content_id").references(() => userContent.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
   parentCommentId: uuid("parent_comment_id").references((): any => comments.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
@@ -311,6 +310,19 @@ export const comments = pgTable("comments", {
 
 export type Comment = typeof comments.$inferSelect;
 export type NewComment = typeof comments.$inferInsert;
+
+// Comment Associations Table - polymorphic relationship to different content types
+export const commentAssociations = pgTable("comment_associations", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  commentId: uuid("comment_id").references(() => comments.id, { onDelete: "cascade" }).notNull(),
+  // Exactly ONE of these should be non-null (enforced by CHECK constraint in migration)
+  userContentId: uuid("user_content_id").references(() => userContent.id, { onDelete: "cascade" }),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type CommentAssociation = typeof commentAssociations.$inferSelect;
+export type NewCommentAssociation = typeof commentAssociations.$inferInsert;
 
 // Comment Upvotes Table
 export const commentUpvotes = pgTable("comment_upvotes", {

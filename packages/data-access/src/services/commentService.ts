@@ -1,8 +1,16 @@
 "use server";
 
 import { db } from "../db";
-import { comments, commentUpvotes, users, type Comment, type NewComment } from "../db/schema";
-import { eq, and, desc, isNull, sql } from "drizzle-orm";
+import {
+  comments,
+  commentAssociations,
+  commentUpvotes,
+  users,
+  type Comment,
+  type NewComment,
+  type NewCommentAssociation
+} from "../db/schema";
+import { eq, and, desc, isNull, sql, or } from "drizzle-orm";
 import { logger } from "@eptss/logger/server";
 
 export interface CommentWithAuthor extends Comment {
@@ -18,43 +26,67 @@ export interface CommentWithAuthor extends Comment {
 }
 
 /**
- * Create a new comment
+ * Create a new comment with association to content
  */
 export async function createComment({
-  contentId,
   userId,
   content,
   parentCommentId,
+  userContentId,
+  roundId,
 }: {
-  contentId: string;
   userId: string;
   content: string;
   parentCommentId?: string;
+  userContentId?: string;
+  roundId?: number;
 }): Promise<Comment | null> {
   try {
-    const [comment] = await db
-      .insert(comments)
-      .values({
-        contentId,
-        userId,
-        content,
-        parentCommentId: parentCommentId || null,
-      })
-      .returning();
+    // Validate that exactly one content type is provided
+    if (!userContentId && !roundId) {
+      throw new Error("Either userContentId or roundId must be provided");
+    }
+    if (userContentId && roundId) {
+      throw new Error("Only one of userContentId or roundId can be provided");
+    }
+
+    // Create comment and association in a transaction
+    const result = await db.transaction(async (tx) => {
+      // Create the comment
+      const [comment] = await tx
+        .insert(comments)
+        .values({
+          userId,
+          content,
+          parentCommentId: parentCommentId || null,
+        })
+        .returning();
+
+      // Create the association
+      await tx.insert(commentAssociations).values({
+        commentId: comment.id,
+        userContentId: userContentId || null,
+        roundId: roundId || null,
+      });
+
+      return comment;
+    });
 
     logger.info("Comment created", {
-      commentId: comment.id,
+      commentId: result.id,
       userId,
-      contentId,
+      userContentId,
+      roundId,
       parentCommentId,
     });
 
-    return comment;
+    return result;
   } catch (error) {
     logger.error("Failed to create comment", {
       error,
       userId,
-      contentId,
+      userContentId,
+      roundId,
     });
     return null;
   }
@@ -62,12 +94,25 @@ export async function createComment({
 
 /**
  * Get comments for content with author info and upvote counts
+ * Accepts either userContentId or roundId to identify the content
  */
 export async function getCommentsByContentId(
-  contentId: string,
+  params: { userContentId?: string; roundId?: number },
   currentUserId?: string
 ): Promise<CommentWithAuthor[]> {
   try {
+    const { userContentId, roundId } = params;
+
+    // Validate that exactly one content type is provided
+    if (!userContentId && !roundId) {
+      throw new Error("Either userContentId or roundId must be provided");
+    }
+
+    // Build the where condition for associations
+    const associationWhere = userContentId
+      ? eq(commentAssociations.userContentId, userContentId)
+      : eq(commentAssociations.roundId, roundId!);
+
     // Get all comments for this content with author info and upvote counts
     const commentsWithData = await db
       .select({
@@ -81,9 +126,10 @@ export async function getCommentsByContentId(
         upvoteCount: sql<number>`CAST(COUNT(DISTINCT ${commentUpvotes.id}) AS INTEGER)`,
       })
       .from(comments)
+      .innerJoin(commentAssociations, eq(comments.id, commentAssociations.commentId))
       .leftJoin(users, eq(comments.userId, users.userid))
       .leftJoin(commentUpvotes, eq(comments.id, commentUpvotes.commentId))
-      .where(eq(comments.contentId, contentId))
+      .where(associationWhere)
       .groupBy(comments.id, users.userid, users.username, users.publicDisplayName, users.profilePictureUrl)
       .orderBy(desc(comments.createdAt));
 
@@ -111,7 +157,7 @@ export async function getCommentsByContentId(
     // Build tree structure for nested comments
     return buildCommentTree(formattedComments);
   } catch (error) {
-    logger.error("Failed to get comments", { error, contentId });
+    logger.error("Failed to get comments", { error, params });
     return [];
   }
 }
@@ -179,6 +225,37 @@ export async function getCommentById(commentId: string): Promise<Comment & { use
     return comment || null;
   } catch (error) {
     logger.error("Failed to get comment by ID", { error, commentId });
+    return null;
+  }
+}
+
+/**
+ * Get a comment with its association (userContentId or roundId)
+ */
+export async function getCommentWithAssociation(commentId: string): Promise<{
+  comment: Comment & { userId: string };
+  userContentId: string | null;
+  roundId: number | null;
+} | null> {
+  try {
+    const comment = await getCommentById(commentId);
+    if (!comment) {
+      return null;
+    }
+
+    const [association] = await db
+      .select()
+      .from(commentAssociations)
+      .where(eq(commentAssociations.commentId, commentId))
+      .limit(1);
+
+    return {
+      comment,
+      userContentId: association?.userContentId || null,
+      roundId: association?.roundId || null,
+    };
+  } catch (error) {
+    logger.error("Failed to get comment with association", { error, commentId });
     return null;
   }
 }

@@ -6,3 +6,6 @@ export * from "./actions";
 
 // Export types
 export * from "./types";
+
+// Export context
+export * from "./context/CommentContext";

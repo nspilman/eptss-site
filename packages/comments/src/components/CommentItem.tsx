@@ -14,7 +14,6 @@ const MAX_DEPTH = 3;
 
 export function CommentItem({
   comment,
-  contentId,
   currentUserId,
   onCommentAdded,
   depth = 0,
@@ -117,7 +116,6 @@ export function CommentItem({
         {isEditing ? (
           <div className="mb-3">
             <CommentForm
-              contentId={contentId}
               onSuccess={handleEditSuccess}
               onCancel={() => setIsEditing(false)}
               initialContent={comment.content}
@@ -194,7 +192,6 @@ export function CommentItem({
         {isReplying && (
           <div className="mt-4 pl-4 border-l-2 border-[var(--color-gray-800)]">
             <CommentForm
-              contentId={contentId}
               parentCommentId={comment.id}
               onSuccess={handleReplySuccess}
               onCancel={() => setIsReplying(false)}
@@ -207,7 +204,6 @@ export function CommentItem({
           <div className="mt-5 space-y-5">
             <CommentList
               comments={comment.replies!}
-              contentId={contentId}
               currentUserId={currentUserId}
               onCommentAdded={onCommentAdded}
               depth={depth + 1}

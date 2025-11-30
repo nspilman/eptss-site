@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCommentById } from "@eptss/data-access/services/commentService";
+import { getCommentWithAssociation } from "@eptss/data-access/services/commentService";
 
 export async function GET(
   request: NextRequest,
@@ -15,9 +15,9 @@ export async function GET(
       );
     }
 
-    const comment = await getCommentById(commentId);
+    const result = await getCommentWithAssociation(commentId);
 
-    if (!comment) {
+    if (!result) {
       return NextResponse.json(
         { error: "Comment not found" },
         { status: 404 }
@@ -25,8 +25,9 @@ export async function GET(
     }
 
     return NextResponse.json({
-      contentId: comment.contentId,
-      userId: comment.userId
+      userId: result.comment.userId,
+      userContentId: result.userContentId,
+      roundId: result.roundId,
     });
   } catch (error) {
     console.error("Error fetching comment:", error);

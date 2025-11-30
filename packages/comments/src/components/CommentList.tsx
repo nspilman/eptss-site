@@ -1,23 +1,14 @@
 "use client";
 
 import { CommentItem } from "./CommentItem";
-import type { CommentWithAuthor } from "../types";
-
-interface CommentListProps {
-  comments: CommentWithAuthor[];
-  contentId: string;
-  currentUserId: string;
-  onCommentAdded?: () => void;
-  depth?: number;
-}
+import type { CommentListProps } from "../types";
 
 export function CommentList({
   comments,
-  contentId,
   currentUserId,
   onCommentAdded,
   depth = 0,
-}: CommentListProps) {
+}: CommentListProps & { depth?: number }) {
   if (comments.length === 0) {
     return null;
   }
@@ -28,7 +19,6 @@ export function CommentList({
         <CommentItem
           key={comment.id}
           comment={comment}
-          contentId={contentId}
           currentUserId={currentUserId}
           onCommentAdded={onCommentAdded}
           depth={depth}

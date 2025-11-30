@@ -169,6 +169,13 @@
       "when": 1763337301738,
       "tag": "0037_careless_morlun",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1764454111484,
+      "tag": "0038_secret_machine_man",
+      "breakpoints": true
     }
   ]
 }

@@ -103,9 +103,9 @@ export default async function DiscussionsPage() {
         </p>
       </div>
 
-      {/* Comment Section - using round ID as content ID */}
+      {/* Comment Section - using round ID for discussions */}
       <CommentSection
-        contentId={String(currentRound.roundId)}
+        roundId={currentRound.roundId}
         currentUserId={userId}
       />
     </div>
