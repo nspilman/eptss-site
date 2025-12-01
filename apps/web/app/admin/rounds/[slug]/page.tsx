@@ -4,7 +4,7 @@ import { roundProvider, votesProvider } from "@eptss/data-access";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { SignupsCard, SubmissionsCard, AdminSection } from "@eptss/admin";
+import { SignupsCard, SubmissionsCard, AdminSection, CopyEmailsButton } from "@eptss/admin";
 
 async function RoundDetailContent({ slug }: { slug: string }) {
   const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider(slug);
@@ -49,7 +49,10 @@ async function RoundDetailContent({ slug }: { slug: string }) {
           <ArrowLeft className="h-4 w-4" />
           Back to Rounds
         </Link>
-        <h2 className="text-3xl font-bold text-primary mb-2">{slug}</h2>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <h2 className="text-3xl font-bold text-primary">{slug}</h2>
+          <CopyEmailsButton signups={signups} />
+        </div>
         <p className="text-secondary">
           Current Phase: <span className="text-primary font-medium">{phase}</span>
         </p>

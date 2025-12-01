@@ -54,6 +54,7 @@ export { RoundSelectorServer } from './RoundSelectorServer';
 export { PageTitle } from './PageTitle';
 export { AdminNavLink } from './AdminNavLink';
 export { AdminNav } from './AdminNav';
+export { CopyEmailsButton } from './CopyEmailsButton';
 
 // Test buttons
 export { TestEmailButtons } from './TestEmailButton';
