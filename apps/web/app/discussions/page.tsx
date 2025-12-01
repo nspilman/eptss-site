@@ -107,6 +107,7 @@ export default async function DiscussionsPage() {
       <CommentSection
         roundId={currentRound.roundId}
         currentUserId={userId}
+        sortOrder="asc"
       />
     </div>
   );

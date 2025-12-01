@@ -309,11 +309,14 @@ export async function toggleUpvoteAction(data: {
 /**
  * Fetch comments for content
  */
-export async function getCommentsAction(params: { userContentId?: string; roundId?: number }) {
+export async function getCommentsAction(
+  params: { userContentId?: string; roundId?: number },
+  sortOrder: 'asc' | 'desc' = 'desc'
+) {
   try {
     const userId = await getCurrentUserId();
 
-    const comments = await getCommentsByContentId(params, userId || undefined);
+    const comments = await getCommentsByContentId(params, userId || undefined, sortOrder);
 
     return { success: true, comments };
   } catch (error) {

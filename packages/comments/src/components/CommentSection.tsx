@@ -13,6 +13,7 @@ export function CommentSection({
   roundId,
   contentAuthorId,
   currentUserId,
+  sortOrder = 'desc',
 }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentWithAuthor[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +24,7 @@ export function CommentSection({
     const fetchComments = async () => {
       try {
         setIsLoading(true);
-        const result = await getCommentsAction({ userContentId, roundId });
+        const result = await getCommentsAction({ userContentId, roundId }, sortOrder);
         if (result.success) {
           setComments(result.comments);
         } else {
@@ -37,11 +38,11 @@ export function CommentSection({
     };
 
     fetchComments();
-  }, [userContentId, roundId]);
+  }, [userContentId, roundId, sortOrder]);
 
   const fetchComments = async () => {
     try {
-      const result = await getCommentsAction({ userContentId, roundId });
+      const result = await getCommentsAction({ userContentId, roundId }, sortOrder);
       if (result.success) {
         setComments(result.comments);
       } else {

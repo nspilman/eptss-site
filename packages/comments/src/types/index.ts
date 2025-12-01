@@ -9,6 +9,7 @@ export interface CommentSectionProps {
   roundId?: number;
   contentAuthorId?: string; // Optional - for notifying reflection authors on new comments
   currentUserId?: string | null; // Pass from server-side auth
+  sortOrder?: 'asc' | 'desc'; // Optional - controls comment sort order (default: 'desc' - newest first)
 }
 
 export interface CommentListProps {

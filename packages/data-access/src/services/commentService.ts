@@ -10,7 +10,7 @@ import {
   type NewComment,
   type NewCommentAssociation
 } from "../db/schema";
-import { eq, and, desc, isNull, sql, or } from "drizzle-orm";
+import { eq, and, desc, asc, isNull, sql, or } from "drizzle-orm";
 import { logger } from "@eptss/logger/server";
 
 export interface CommentWithAuthor extends Comment {
@@ -98,7 +98,8 @@ export async function createComment({
  */
 export async function getCommentsByContentId(
   params: { userContentId?: string; roundId?: number },
-  currentUserId?: string
+  currentUserId?: string,
+  sortOrder: 'asc' | 'desc' = 'desc'
 ): Promise<CommentWithAuthor[]> {
   try {
     const { userContentId, roundId } = params;
@@ -131,7 +132,7 @@ export async function getCommentsByContentId(
       .leftJoin(commentUpvotes, eq(comments.id, commentUpvotes.commentId))
       .where(associationWhere)
       .groupBy(comments.id, users.userid, users.username, users.publicDisplayName, users.profilePictureUrl)
-      .orderBy(desc(comments.createdAt));
+      .orderBy(sortOrder === 'asc' ? asc(comments.createdAt) : desc(comments.createdAt));
 
     // If currentUserId is provided, get their upvotes
     let userUpvotes: Set<string> = new Set();
