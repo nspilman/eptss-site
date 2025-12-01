@@ -116,6 +116,8 @@ export function NotificationBell() {
   };
 
   useEffect(() => {
+    // Fetch notifications and unread count on mount
+    fetchNotifications();
     fetchUnreadCount();
     const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30 seconds
     return () => clearInterval(interval);
@@ -124,6 +126,10 @@ export function NotificationBell() {
   useEffect(() => {
     if (isOpen) {
       fetchNotifications();
+      // Mark all notifications as read when opening the dropdown
+      if (unreadCount > 0) {
+        markAllAsRead();
+      }
     }
   }, [isOpen]);
 
