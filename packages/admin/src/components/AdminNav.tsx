@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, MessageSquare, Wrench, Music } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Wrench, Music, Bell } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/rounds", label: "Rounds", icon: Music },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/feedback", label: "Feedback", icon: MessageSquare },
+  { href: "/admin/notifications", label: "Notifications", icon: Bell },
   { href: "/admin/tools", label: "Tools", icon: Wrench },
 ];
 

@@ -7,6 +7,8 @@ import { ReportsTab } from "../ReportsTab";
 import { UsersTab } from "./UsersTab";
 import { FeedbackTab } from "./FeedbackTab";
 import { ActionsTab } from "../ActionsTab";
+import { NotificationsTab } from "./NotificationsTab";
+import type { NotificationWithUser } from "@eptss/data-access";
 
 type AdminTabsProps = {
   initialTab: string;
@@ -18,6 +20,10 @@ type AdminTabsProps = {
   allUsers: any[];
   roundData: any;
   votesData: any;
+  allNotifications: NotificationWithUser[];
+  unseenNotifications: NotificationWithUser[];
+  totalNotificationsCount: number;
+  unseenNotificationsCount: number;
 };
 
 const TabLoadingFallback = () => (
@@ -36,6 +42,10 @@ export function AdminTabs({
   allUsers,
   roundData,
   votesData,
+  allNotifications,
+  unseenNotifications,
+  totalNotificationsCount,
+  unseenNotificationsCount,
 }: AdminTabsProps) {
   const [activeTab, setActiveTab] = useState(initialTab || "overview");
 
@@ -69,13 +79,19 @@ export function AdminTabs({
         >
           Users
         </TabsTrigger>
-        <TabsTrigger 
+        <TabsTrigger
           value="feedback"
           className="cursor-pointer data-[state=active]:bg-background-tertiary/70 data-[state=active]:text-primary data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
         >
           Feedback
         </TabsTrigger>
-        <TabsTrigger 
+        <TabsTrigger
+          value="notifications"
+          className="cursor-pointer data-[state=active]:bg-background-tertiary/70 data-[state=active]:text-primary data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
+        >
+          Notifications
+        </TabsTrigger>
+        <TabsTrigger
           value="actions"
           className="cursor-pointer bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/30 data-[state=active]:bg-yellow-500 data-[state=active]:text-black data-[state=active]:underline data-[state=active]:decoration-2 data-[state=active]:underline-offset-4"
         >
@@ -113,6 +129,15 @@ export function AdminTabs({
 
       <TabsContent value="feedback" padding="none">
         <FeedbackTab feedbackList={feedbackList} />
+      </TabsContent>
+
+      <TabsContent value="notifications" padding="none">
+        <NotificationsTab
+          allNotifications={allNotifications}
+          unseenNotifications={unseenNotifications}
+          totalNotificationsCount={totalNotificationsCount}
+          unseenNotificationsCount={unseenNotificationsCount}
+        />
       </TabsContent>
 
       <TabsContent value="actions" padding="none">

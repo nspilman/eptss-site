@@ -75,7 +75,7 @@ async function DashboardContent() {
           <CardTitle className="text-xl">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <a
               href="/admin/rounds"
               className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
@@ -89,6 +89,13 @@ async function DashboardContent() {
             >
               <h4 className="font-semibold text-primary mb-1">View Users</h4>
               <p className="text-sm text-secondary">See user activity</p>
+            </a>
+            <a
+              href="/admin/notifications"
+              className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+            >
+              <h4 className="font-semibold text-primary mb-1">Notifications</h4>
+              <p className="text-sm text-secondary">View all notifications</p>
             </a>
             <a
               href="/admin/tools"

@@ -81,6 +81,12 @@ export {
   getAllTags,
   searchTags
 } from './services/tagService';
+export {
+  getAllNotifications,
+  getAllNotificationsCount
+} from './services/notificationService';
+export type { Notification } from './db/schema';
+export type { NotificationWithUser } from './services/notificationService';
 
 // Actions have been moved to @eptss/actions package
 // Import actions from '@eptss/actions' instead

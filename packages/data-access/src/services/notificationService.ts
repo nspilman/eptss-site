@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { notifications, type Notification, type NewNotification, notificationTypeEnum } from "../db/schema";
+import { notifications, users, type Notification, type NewNotification, notificationTypeEnum } from "../db/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { logger } from "@eptss/logger/server";
 
@@ -267,6 +267,86 @@ export async function deleteNotificationsByCommentId(
       error,
       commentId,
     });
+    return 0;
+  }
+}
+
+interface GetAllNotificationsOptions {
+  unreadOnly?: boolean;
+  limit?: number;
+  offset?: number;
+}
+
+export type NotificationWithUser = Notification & {
+  username: string;
+  displayName: string | null;
+};
+
+/**
+ * Get all notifications across all users (admin view)
+ * Supports filtering by unseen only and pagination
+ * Includes username and display name for linking to user profiles
+ */
+export async function getAllNotifications(
+  options: GetAllNotificationsOptions = {}
+): Promise<NotificationWithUser[]> {
+  try {
+    const { unreadOnly = false, limit = 50, offset = 0 } = options;
+
+    const conditions = [eq(notifications.isDeleted, false)];
+
+    if (unreadOnly) {
+      conditions.push(eq(notifications.isRead, false));
+    }
+
+    const allNotifications = await db
+      .select({
+        id: notifications.id,
+        userId: notifications.userId,
+        type: notifications.type,
+        title: notifications.title,
+        message: notifications.message,
+        metadata: notifications.metadata,
+        isRead: notifications.isRead,
+        isDeleted: notifications.isDeleted,
+        createdAt: notifications.createdAt,
+        readAt: notifications.readAt,
+        username: users.username,
+        displayName: users.publicDisplayName,
+      })
+      .from(notifications)
+      .leftJoin(users, eq(notifications.userId, users.userid))
+      .where(and(...conditions))
+      .orderBy(desc(notifications.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return allNotifications as NotificationWithUser[];
+  } catch (error) {
+    logger.error("Failed to get all notifications", { error });
+    return [];
+  }
+}
+
+/**
+ * Get count of all notifications (admin view)
+ */
+export async function getAllNotificationsCount(unreadOnly: boolean = false): Promise<number> {
+  try {
+    const conditions = [eq(notifications.isDeleted, false)];
+
+    if (unreadOnly) {
+      conditions.push(eq(notifications.isRead, false));
+    }
+
+    const result = await db
+      .select()
+      .from(notifications)
+      .where(and(...conditions));
+
+    return result.length;
+  } catch (error) {
+    logger.error("Failed to get all notifications count", { error });
     return 0;
   }
 }
