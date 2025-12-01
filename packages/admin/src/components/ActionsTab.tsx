@@ -10,6 +10,8 @@ import { TestEmailButtons } from "./TestEmailButton";
 import { TestAssignRoundSongButton } from "./TestAssignRoundSongButton";
 import { TestCreateFutureRoundsButton } from "./TestCreateFutureRoundsButton";
 import { TestSendReminderEmailsButton } from "./TestSendReminderEmailsButton";
+import { TestNotificationEmailsButton } from "./TestNotificationEmailsButton";
+import { TestAdminNotificationEmailButton } from "./TestAdminNotificationEmailButton";
 import { UserDetails } from "@eptss/data-access/types/user";
 
 type ActionsTabProps = {
@@ -36,6 +38,12 @@ export function ActionsTab({ roundId, users, roundSlug, allRoundSlugs }: Actions
             Send test emails to yourself to preview the design and content for each user action.
           </p>
           <TestEmailButtons />
+        </div>
+        <div>
+          <p className="text-sm text-gray-400 mb-3">
+            Test notification emails using your actual unread notifications.
+          </p>
+          <TestAdminNotificationEmailButton />
         </div>
       </section>
 
@@ -82,6 +90,9 @@ export function ActionsTab({ roundId, users, roundSlug, allRoundSlugs }: Actions
           </div>
           <div>
             <TestSendReminderEmailsButton />
+          </div>
+          <div>
+            <TestNotificationEmailsButton />
           </div>
         </div>
       </section>

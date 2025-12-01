@@ -19,3 +19,5 @@ export { RoundSignupConfirmation } from './templates/RoundSignupConfirmation';
 export { SubmissionConfirmation } from './templates/SubmissionConfirmation';
 export { VotingClosesTomorrow } from './templates/VotingClosesTomorrow';
 export { VotingConfirmation } from './templates/VotingConfirmation';
+export { NewNotificationsEmail } from './templates/NewNotificationsEmail';
+export { OutstandingNotificationsEmail } from './templates/OutstandingNotificationsEmail';

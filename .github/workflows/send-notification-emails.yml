@@ -1,0 +1,37 @@
+name: Send Notification Emails
+
+on:
+  # Run every 8 hours (3 times per day)
+  schedule:
+    - cron: '0 */8 * * *'  # At minute 0 past every 8th hour (00:00, 08:00, 16:00 UTC)
+
+  # Allow manual triggering from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  send-notification-emails:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Notification Emails
+        run: |
+          response=$(curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -w "\n%{http_code}" \
+            ${{ secrets.APP_URL }}/api/cron/send-notification-emails)
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: API request failed with status $http_code"
+            exit 1
+          fi
+
+          # Parse the response to show summary
+          emails_sent=$(echo "$body" | grep -o '"emailsSent":[0-9]*' | grep -o '[0-9]*' || echo "0")
+          echo "Emails sent: $emails_sent"

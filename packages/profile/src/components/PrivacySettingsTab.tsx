@@ -26,6 +26,7 @@ interface PrivacySettings {
   profileBio: string | null;
   showSocialLinks: boolean;
   showEmbeddedMedia: boolean;
+  notificationEmailsEnabled: boolean;
 }
 
 interface SocialLink {
@@ -62,6 +63,7 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
     showSocialLinks: true,
     showEmbeddedMedia: true,
     profileBio: null,
+    notificationEmailsEnabled: true,
   });
 
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
@@ -95,6 +97,7 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
           showSocialLinks: privacyData.privacySettings.showSocialLinks ?? true,
           showEmbeddedMedia: privacyData.privacySettings.showEmbeddedMedia ?? true,
           profileBio: privacyData.privacySettings.profileBio,
+          notificationEmailsEnabled: privacyData.privacySettings.notificationEmailsEnabled ?? true,
         });
 
         setSocialLinks(profileData.socialLinks);
@@ -267,6 +270,24 @@ export function PrivacySettingsTab({ user }: PrivacySettingsTabProps) {
             )}
 
             {/* Note: Public Display Name is now managed in Personal Info tab */}
+
+            {/* Notification Email Preference */}
+            <div className="flex items-center justify-between p-4 rounded-lg bg-gray-800/30 border border-gray-700">
+              <div className="flex-1">
+                <FormLabel htmlFor="notificationEmails" className="text-[var(--color-primary)] text-sm font-medium cursor-pointer">
+                  Notification Emails
+                </FormLabel>
+                <p className="text-xs text-gray-400 mt-1">
+                  Receive emails about new notifications and reminders for unread notifications
+                </p>
+              </div>
+              <Switch
+                id="notificationEmails"
+                checked={settings.notificationEmailsEnabled}
+                onCheckedChange={(checked) => setSettings({ ...settings, notificationEmailsEnabled: checked })}
+                className="data-[state=checked]:bg-[var(--color-accent-primary)]"
+              />
+            </div>
 
             {/* Profile Bio */}
             <div className="space-y-2">

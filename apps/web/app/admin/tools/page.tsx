@@ -8,7 +8,8 @@ import {
   TestNotificationButton,
   TestAssignRoundSongButton,
   TestCreateFutureRoundsButton,
-  TestSendReminderEmailsButton
+  TestSendReminderEmailsButton,
+  TestAdminNotificationEmailButton
 } from "@eptss/admin";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, AlertBox } from "@eptss/ui";
 
@@ -74,7 +75,16 @@ async function ToolsContent() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <TestEmailButtons />
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">User Action Emails</h4>
+              <TestEmailButtons />
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">Notification Emails</h4>
+              <TestAdminNotificationEmailButton />
+            </div>
+          </div>
         </CardContent>
       </Card>
 

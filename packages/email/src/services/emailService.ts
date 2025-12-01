@@ -16,6 +16,8 @@ import { CoveringHalfway } from '../templates/CoveringHalfway';
 import { CoveringOneMonthLeft } from '../templates/CoveringOneMonthLeft';
 import { CoveringLastWeek } from '../templates/CoveringLastWeek';
 import { CoversDueTomorrow } from '../templates/CoversDueTomorrow';
+import { NewNotificationsEmail } from '../templates/NewNotificationsEmail';
+import { OutstandingNotificationsEmail } from '../templates/OutstandingNotificationsEmail';
 
 // Initialize Resend client
 const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
@@ -721,6 +723,80 @@ export async function sendCoversDueTomorrowEmail(
   return sendEmail({
     to: userEmail,
     subject: `🚨 FINAL CALL: Covers due tomorrow for ${roundName}`,
+    html,
+  });
+}
+
+/**
+ * Send new notifications email
+ */
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  createdAt: Date;
+  type: string;
+}
+
+export interface NewNotificationsEmailParams {
+  userEmail: string;
+  userName?: string;
+  notifications: NotificationItem[];
+  baseUrl: string;
+  unsubscribeUrl: string;
+}
+
+export async function sendNewNotificationsEmail(
+  params: NewNotificationsEmailParams
+): Promise<EmailResult> {
+  const { userEmail, userName, notifications, baseUrl, unsubscribeUrl } = params;
+
+  const html = await render(
+    React.createElement(NewNotificationsEmail, {
+      userName,
+      notifications,
+      baseUrl,
+      unsubscribeUrl,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `🔔 You have ${notifications.length} new notification${notifications.length === 1 ? '' : 's'} on EPTSS`,
+    html,
+  });
+}
+
+/**
+ * Send outstanding notifications reminder email
+ */
+export interface OutstandingNotificationsEmailParams {
+  userEmail: string;
+  userName?: string;
+  notificationCount: number;
+  oldestNotificationDate: Date;
+  baseUrl: string;
+  unsubscribeUrl: string;
+}
+
+export async function sendOutstandingNotificationsEmail(
+  params: OutstandingNotificationsEmailParams
+): Promise<EmailResult> {
+  const { userEmail, userName, notificationCount, oldestNotificationDate, baseUrl, unsubscribeUrl } = params;
+
+  const html = await render(
+    React.createElement(OutstandingNotificationsEmail, {
+      userName,
+      notificationCount,
+      oldestNotificationDate,
+      baseUrl,
+      unsubscribeUrl,
+    })
+  );
+
+  return sendEmail({
+    to: userEmail,
+    subject: `⏰ Reminder: You have ${notificationCount} unread notification${notificationCount === 1 ? '' : 's'} on EPTSS`,
     html,
   });
 }

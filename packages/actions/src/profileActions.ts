@@ -8,6 +8,8 @@ import {
   updateUserEmbeddedMedia,
   deleteUserEmbeddedMedia,
   updateUserProfilePicture,
+  getUserPrivacySettings,
+  updateUserPrivacySettings,
 } from "@eptss/data-access";
 import { uploadFile, deleteFile, generateProfilePicturePath, BUCKETS } from "@eptss/bucket-storage";
 import { revalidatePath } from "next/cache";
@@ -561,5 +563,92 @@ export async function deleteProfilePictureAction(data: {
       status: "Error" as const,
       message: "Failed to delete profile picture. Please try again.",
     };
+  }
+}
+
+// ============================================
+// NOTIFICATION EMAIL PREFERENCE ACTIONS
+// ============================================
+
+export async function updateNotificationEmailPreferenceAction(data: {
+  userId: string;
+  enabled: boolean;
+}): Promise<{ status: "Success" | "Error"; message: string }> {
+  try {
+    if (!data.userId) {
+      return {
+        status: "Error" as const,
+        message: "User ID is required",
+      };
+    }
+
+    // Get existing privacy settings
+    const existingSettings = await getUserPrivacySettings(data.userId);
+
+    // Update privacy settings with new email preference
+    const updateData = {
+      ...(existingSettings || {}),
+      notificationEmailsEnabled: data.enabled,
+    };
+
+    await updateUserPrivacySettings(data.userId, updateData);
+
+    revalidatePath("/settings/privacy");
+    revalidatePath("/profile");
+
+    logger.info("Notification email preference updated", {
+      userId: data.userId,
+      enabled: data.enabled,
+    });
+
+    return {
+      status: "Success" as const,
+      message: data.enabled
+        ? "You will now receive notification emails"
+        : "You have unsubscribed from notification emails",
+    };
+  } catch (error) {
+    logger.error("Failed to update notification email preference", {
+      error: error instanceof Error ? error : undefined,
+      userId: data.userId,
+    });
+
+    return {
+      status: "Error" as const,
+      message: "Failed to update your preference. Please try again.",
+    };
+  }
+}
+
+export async function unsubscribeFromNotificationEmailsAction(data: {
+  userId: string;
+}): Promise<{ status: "Success" | "Error"; message: string }> {
+  return updateNotificationEmailPreferenceAction({ ...data, enabled: false });
+}
+
+export async function subscribeToNotificationEmailsAction(data: {
+  userId: string;
+}): Promise<{ status: "Success" | "Error"; message: string }> {
+  return updateNotificationEmailPreferenceAction({ ...data, enabled: true });
+}
+
+export async function getNotificationEmailPreferenceAction(
+  userId: string
+): Promise<boolean> {
+  try {
+    if (!userId) {
+      return false;
+    }
+
+    const settings = await getUserPrivacySettings(userId);
+
+    // Default to true if no settings exist
+    return settings?.notificationEmailsEnabled ?? true;
+  } catch (error) {
+    logger.error("Failed to get notification email preference", {
+      error: error instanceof Error ? error : undefined,
+      userId,
+    });
+    return false;
   }
 }

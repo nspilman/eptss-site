@@ -176,6 +176,13 @@
       "when": 1764454111484,
       "tag": "0038_secret_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1764556773930,
+      "tag": "0039_amazing_mister_sinister",
+      "breakpoints": true
     }
   ]
 }

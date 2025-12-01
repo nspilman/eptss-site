@@ -293,14 +293,16 @@ export const getUserPrivacySettings = async (userId: string) => {
     .limit(1);
 
   if (result.length === 0) {
-    // Return default settings if none exist
+    // Return default settings if none exist (matches schema defaults)
     return {
       showStats: true,
       showSignups: true,
       showSubmissions: true,
       showVotes: false,
       showEmail: false,
-      publicDisplayName: null,
+      showSocialLinks: true,
+      showEmbeddedMedia: true,
+      notificationEmailsEnabled: true,
       profileBio: null,
     };
   }

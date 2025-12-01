@@ -173,6 +173,12 @@ export const notificationTypeEnum = pgEnum('notification_type', [
   'test_notification'
 ]);
 
+// Notification Email Type Enum
+export const notificationEmailTypeEnum = pgEnum('notification_email_type', [
+  'new_notifications',
+  'outstanding_reminder'
+]);
+
 // Email Reminders Sent Table
 export const emailRemindersSent = pgTable("email_reminders_sent", {
   id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
@@ -196,6 +202,17 @@ export const notifications = pgTable("notifications", {
   isDeleted: boolean("is_deleted").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   readAt: timestamp("read_at"),
+});
+
+// Notification Emails Sent Table
+export const notificationEmailsSent = pgTable("notification_emails_sent", {
+  id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid).notNull(),
+  emailType: notificationEmailTypeEnum("email_type").notNull(),
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  notificationIds: text("notification_ids").array(),
+  success: boolean("success").notNull().default(true),
+  errorMessage: text("error_message"),
 });
 
 // User Content Table (for reflections, blog posts, etc.)
@@ -255,6 +272,7 @@ export const userPrivacySettings = pgTable("user_privacy_settings", {
   showEmail: boolean("show_email").notNull().default(false),
   showSocialLinks: boolean("show_social_links").notNull().default(true),
   showEmbeddedMedia: boolean("show_embedded_media").notNull().default(true),
+  notificationEmailsEnabled: boolean("notification_emails_enabled").notNull().default(true),
   profileBio: text("profile_bio"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -295,6 +313,8 @@ export type NewUserEmbeddedMedia = typeof userEmbeddedMedia.$inferInsert;
 
 export type Notification = typeof notifications.$inferSelect;
 export type NewNotification = typeof notifications.$inferInsert;
+export type NotificationEmailSent = typeof notificationEmailsSent.$inferSelect;
+export type NewNotificationEmailSent = typeof notificationEmailsSent.$inferInsert;
 
 // Comments Table
 export const comments = pgTable("comments", {
