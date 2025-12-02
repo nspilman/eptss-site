@@ -14,12 +14,15 @@
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
-    "@eptss/ui": "workspace:*",
     "@eptss/data-access": "workspace:*",
     "@eptss/logger": "workspace:*",
+    "@eptss/ui": "workspace:*",
     "date-fns": "^2.30.0",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.263.1",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {

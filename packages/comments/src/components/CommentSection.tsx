@@ -19,6 +19,7 @@ export function CommentSection({
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const hasInitiallyScrolled = useRef(false);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -39,6 +40,19 @@ export function CommentSection({
 
     fetchComments();
   }, [userContentId, roundId, sortOrder]);
+
+  // Scroll to bottom on initial load when using ascending order
+  useEffect(() => {
+    if (!isLoading && sortOrder === 'asc' && !hasInitiallyScrolled.current && scrollContainerRef.current) {
+      // Use setTimeout to ensure DOM has rendered
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+          hasInitiallyScrolled.current = true;
+        }
+      }, 50);
+    }
+  }, [isLoading, sortOrder]);
 
   const fetchComments = async () => {
     try {
@@ -121,6 +135,7 @@ export function CommentSection({
           <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden">
             {/* Comments list - scrollable area */}
             <div
+              ref={scrollContainerRef}
               className="overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900"
               style={{
                 maxHeight: '60vh',

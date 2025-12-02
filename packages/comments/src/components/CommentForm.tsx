@@ -58,13 +58,15 @@ export function CommentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <textarea
-        value={content}
-        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
-        placeholder={parentCommentId ? "Write a reply..." : "Share your thoughts..."}
-        className="w-full min-h-[100px] px-4 py-3 rounded-lg bg-[var(--color-gray-900-40)] border border-[var(--color-gray-700)] text-[var(--color-primary)] font-roboto text-base placeholder:text-[var(--color-gray-400)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] focus:border-transparent transition-all duration-200 resize-none"
-        disabled={isSubmitting}
-      />
+      <div className="space-y-1">
+        <textarea
+          value={content}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
+          placeholder={parentCommentId ? "Write a reply..." : "Share your thoughts..."}
+          className="w-full min-h-[100px] px-4 py-3 rounded-lg bg-[var(--color-gray-900-40)] border border-[var(--color-gray-700)] text-[var(--color-primary)] font-roboto text-base placeholder:text-[var(--color-gray-400)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] focus:border-transparent transition-all duration-200 resize-none"
+          disabled={isSubmitting}
+        />
+      </div>
       {error && <p className="text-sm text-red-400 font-roboto">{error}</p>}
       <div className="flex gap-2">
         <Button

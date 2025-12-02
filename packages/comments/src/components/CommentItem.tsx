@@ -6,6 +6,7 @@ import { MessageCircle, Heart, Pencil } from "lucide-react";
 import { Button } from "@eptss/ui";
 import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
+import { MarkdownContent } from "./MarkdownContent";
 import { deleteCommentAction, toggleUpvoteAction } from "../actions";
 import type { CommentItemProps } from "../types";
 import { getInitials, getDisplayName } from "@eptss/shared";
@@ -124,9 +125,9 @@ export function CommentItem({
             />
           </div>
         ) : (
-          <p className="font-roboto text-[var(--color-primary)] text-base leading-relaxed mb-3 whitespace-pre-wrap">
-            {comment.content}
-          </p>
+          <div className="mb-3">
+            <MarkdownContent content={comment.content} />
+          </div>
         )}
 
         {/* Actions */}
