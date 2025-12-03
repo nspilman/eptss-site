@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { MessageCircle, Heart, Pencil } from "lucide-react";
+import { MessageCircle, Heart, Pencil, ChevronDown, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@eptss/ui";
 import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
@@ -25,10 +26,22 @@ export function CommentItem({
   const [isUpvoted, setIsUpvoted] = useState(comment.hasUserUpvoted || false);
   const [upvoteCount, setUpvoteCount] = useState(comment.upvoteCount);
   const [isUpvoting, setIsUpvoting] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const isAuthor = comment.userId === currentUserId;
   const isDeleted = comment.isDeleted;
   const hasReplies = comment.replies && comment.replies.length > 0;
+  const replyCount = comment.replies?.length || 0;
+
+  // Count total replies (including nested)
+  const countTotalReplies = (replies: typeof comment.replies): number => {
+    if (!replies || replies.length === 0) return 0;
+    return replies.reduce((total, reply) => {
+      return total + 1 + countTotalReplies(reply.replies);
+    }, 0);
+  };
+
+  const totalReplies = countTotalReplies(comment.replies);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
@@ -82,12 +95,17 @@ export function CommentItem({
 
   const authorDisplayName = getDisplayName(comment.author);
 
+  const profileUrl = `/profile/${comment.author.username}`;
+
   return (
     <div id={`comment-${comment.id}`} className={`flex gap-4 ${depth > 0 ? "ml-0 sm:ml-6 md:ml-10" : ""}`}>
       {/* Avatar */}
-      <div
-        className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] flex items-center justify-center text-sm font-bold text-white flex-shrink-0 mt-0.5 shadow-lg"
-        aria-label={`${authorDisplayName}'s avatar`}
+      <Link
+        href={profileUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] flex items-center justify-center text-sm font-bold text-white flex-shrink-0 mt-0.5 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+        aria-label={`View ${authorDisplayName}'s profile`}
       >
         {comment.author.profilePictureUrl ? (
           <img
@@ -98,118 +116,140 @@ export function CommentItem({
         ) : (
           getInitials(authorDisplayName)
         )}
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         {/* Header */}
-        <div className="flex items-baseline gap-3 mb-2 flex-wrap">
-          <span className="font-fraunces font-bold text-[var(--color-primary)] text-sm">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex-shrink-0 p-0.5 hover:bg-[var(--color-gray-800)] rounded transition-colors"
+            aria-label={isCollapsed ? "Expand comment" : "Collapse comment"}
+          >
+            {isCollapsed ? (
+              <ChevronRight size={16} className="text-[var(--color-gray-400)]" />
+            ) : (
+              <ChevronDown size={16} className="text-[var(--color-gray-400)]" />
+            )}
+          </button>
+          <Link
+            href={profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-fraunces font-bold text-[var(--color-primary)] text-sm hover:text-[var(--color-accent-primary)] transition-colors cursor-pointer"
+          >
             {authorDisplayName}
-          </span>
+          </Link>
           <span className="text-xs font-roboto text-[var(--color-gray-400)]">
             {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
             {comment.isEdited && " · edited"}
+            {isCollapsed && totalReplies > 0 && ` · ${totalReplies} ${totalReplies === 1 ? 'reply' : 'replies'}`}
           </span>
         </div>
 
-        {/* Comment text or edit form */}
-        {isEditing ? (
-          <div className="mb-3">
-            <CommentForm
-              onSuccess={handleEditSuccess}
-              onCancel={() => setIsEditing(false)}
-              initialContent={comment.content}
-              isEditing={true}
-              commentId={comment.id}
-            />
-          </div>
-        ) : (
-          <div className="mb-3">
-            <MarkdownContent content={comment.content} />
-          </div>
-        )}
-
-        {/* Actions */}
-        {!isDeleted && !isEditing && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              variant="action"
-              size="action"
-              onClick={handleToggleUpvote}
-              disabled={isUpvoting}
-              className="group gap-2 font-medium"
-              aria-label={isUpvoted ? "Unlike" : "Like"}
-            >
-              <Heart
-                size={16}
-                className={`transition-all duration-200 ${
-                  isUpvoted
-                    ? "fill-[var(--color-accent-primary)] text-[var(--color-accent-primary)]"
-                    : "group-hover:text-[var(--color-accent-primary)]"
-                }`}
-              />
-              <span>{upvoteCount}</span>
-            </Button>
-
-            {depth < MAX_DEPTH && (
-              <Button
-                variant="action"
-                size="action"
-                onClick={() => setIsReplying(!isReplying)}
-                className="group gap-2 font-medium"
-              >
-                <MessageCircle size={16} className="group-hover:text-[var(--color-accent-primary)] transition-colors duration-200" />
-                <span>Reply</span>
-              </Button>
+        {/* Comment content - hidden when collapsed */}
+        {!isCollapsed && (
+          <>
+            {/* Comment text or edit form */}
+            {isEditing ? (
+              <div className="mb-3">
+                <CommentForm
+                  onSuccess={handleEditSuccess}
+                  onCancel={() => setIsEditing(false)}
+                  initialContent={comment.content}
+                  isEditing={true}
+                  commentId={comment.id}
+                />
+              </div>
+            ) : (
+              <div className="mb-3">
+                <MarkdownContent content={comment.content} />
+              </div>
             )}
 
-            {isAuthor && !isDeleted && (
-              <>
+            {/* Actions */}
+            {!isDeleted && !isEditing && (
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button
                   variant="action"
                   size="action"
-                  onClick={() => setIsEditing(true)}
+                  onClick={handleToggleUpvote}
+                  disabled={isUpvoting}
                   className="group gap-2 font-medium"
+                  aria-label={isUpvoted ? "Unlike" : "Like"}
                 >
-                  <Pencil size={16} className="group-hover:text-[var(--color-accent-primary)] transition-colors duration-200" />
-                  <span>Edit</span>
+                  <Heart
+                    size={16}
+                    className={`transition-all duration-200 ${
+                      isUpvoted
+                        ? "fill-[var(--color-accent-primary)] text-[var(--color-accent-primary)]"
+                        : "group-hover:text-[var(--color-accent-primary)]"
+                    }`}
+                  />
+                  <span>{upvoteCount}</span>
                 </Button>
-                <Button
-                  variant="danger"
-                  size="action"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="font-medium"
-                >
-                  Delete
-                </Button>
-              </>
+
+                {depth < MAX_DEPTH && (
+                  <Button
+                    variant="action"
+                    size="action"
+                    onClick={() => setIsReplying(!isReplying)}
+                    className="group gap-2 font-medium"
+                  >
+                    <MessageCircle size={16} className="group-hover:text-[var(--color-accent-primary)] transition-colors duration-200" />
+                    <span>Reply</span>
+                  </Button>
+                )}
+
+                {isAuthor && !isDeleted && (
+                  <>
+                    <Button
+                      variant="action"
+                      size="action"
+                      onClick={() => setIsEditing(true)}
+                      className="group gap-2 font-medium"
+                    >
+                      <Pencil size={16} className="group-hover:text-[var(--color-accent-primary)] transition-colors duration-200" />
+                      <span>Edit</span>
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="action"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                      className="font-medium"
+                    >
+                      Delete
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
-          </div>
-        )}
 
-        {/* Reply form */}
-        {isReplying && (
-          <div className="mt-4 pl-4 border-l-2 border-[var(--color-gray-800)]">
-            <CommentForm
-              parentCommentId={comment.id}
-              onSuccess={handleReplySuccess}
-              onCancel={() => setIsReplying(false)}
-            />
-          </div>
-        )}
+            {/* Reply form */}
+            {isReplying && (
+              <div className="mt-4 pl-4 border-l-2 border-[var(--color-gray-800)]">
+                <CommentForm
+                  parentCommentId={comment.id}
+                  onSuccess={handleReplySuccess}
+                  onCancel={() => setIsReplying(false)}
+                />
+              </div>
+            )}
 
-        {/* Nested replies */}
-        {hasReplies && (
-          <div className="mt-5 space-y-5">
-            <CommentList
-              comments={comment.replies!}
-              currentUserId={currentUserId}
-              onCommentAdded={onCommentAdded}
-              depth={depth + 1}
-            />
-          </div>
+            {/* Nested replies */}
+            {hasReplies && (
+              <div className="mt-5 space-y-5">
+                <CommentList
+                  comments={comment.replies!}
+                  currentUserId={currentUserId}
+                  onCommentAdded={onCommentAdded}
+                  depth={depth + 1}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
