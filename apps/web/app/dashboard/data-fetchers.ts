@@ -105,6 +105,14 @@ export async function fetchActionData() {
   const phaseCloses = dateLabels[phase]?.closes;
   const timeRemaining = formatTimeRemaining(phaseCloses);
   const urgencyLevel = calculateUrgencyLevel(phaseCloses);
+  const dueDate = phaseCloses ? new Date(phaseCloses).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }) : undefined;
 
   const phaseNames: Record<Phase, string> = {
     signups: 'Song Selection & Signups',
@@ -138,6 +146,7 @@ export async function fetchActionData() {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
+        dueDate,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -159,6 +168,7 @@ export async function fetchActionData() {
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
           timeRemaining,
+          dueDate,
           urgencyLevel,
           hasSignedUp: roundDetails?.hasSignedUp || false,
           hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -179,6 +189,7 @@ export async function fetchActionData() {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
+        dueDate,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -200,6 +211,7 @@ export async function fetchActionData() {
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
           timeRemaining,
+          dueDate,
           urgencyLevel,
           hasSignedUp: roundDetails?.hasSignedUp || false,
           hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -220,6 +232,7 @@ export async function fetchActionData() {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
+        dueDate,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -238,6 +251,7 @@ export async function fetchActionData() {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
+        dueDate,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,

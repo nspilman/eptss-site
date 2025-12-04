@@ -7,7 +7,7 @@ import {
   users,
   userPrivacySettings,
 } from "../db/schema";
-import { eq, and, lt, isNull, or } from "drizzle-orm";
+import { eq, and, lt, gt, isNull, or, desc } from "drizzle-orm";
 import { logger } from "@eptss/logger/server";
 import {
   sendNewNotificationsEmail,
@@ -17,8 +17,8 @@ import {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://eptss.com";
 const OUTSTANDING_THRESHOLD_DAYS = 3;
-const NEW_EMAIL_COOLDOWN_HOURS = 24;
-const REMINDER_COOLDOWN_DAYS = 3;
+const NEW_EMAIL_COOLDOWN_DAYS = 7; // Changed from 24 hours to 7 days
+const REMINDER_COOLDOWN_DAYS = 7; // Changed from 3 days to 7 days
 
 interface NotificationEmailResult {
   success: boolean;
@@ -132,32 +132,11 @@ async function getUsersWithEmailsEnabled() {
 /**
  * Check if we should send a "new notifications" email to a user
  * Criteria:
- * - User has unread notifications
- * - Haven't sent a "new notifications" email in the last 24 hours
+ * - User has unread notifications created AFTER the last notification email was sent
  */
 async function shouldSendNewNotificationsEmail(userId: string): Promise<boolean> {
   try {
-    // Check for unread notifications
-    const unreadNotifications = await db
-      .select()
-      .from(notifications)
-      .where(
-        and(
-          eq(notifications.userId, userId),
-          eq(notifications.isRead, false),
-          eq(notifications.isDeleted, false)
-        )
-      )
-      .limit(1);
-
-    if (unreadNotifications.length === 0) {
-      return false;
-    }
-
-    // Check if we've sent a "new notifications" email recently
-    const cutoffTime = new Date();
-    cutoffTime.setHours(cutoffTime.getHours() - NEW_EMAIL_COOLDOWN_HOURS);
-
+    // Get the most recent successful notification email sent to this user
     const recentNewEmail = await db
       .select()
       .from(notificationEmailsSent)
@@ -168,17 +147,44 @@ async function shouldSendNewNotificationsEmail(userId: string): Promise<boolean>
           eq(notificationEmailsSent.success, true)
         )
       )
-      .orderBy(notificationEmailsSent.sentAt)
+      .orderBy(desc(notificationEmailsSent.sentAt))
       .limit(1);
 
+    // Check for unread notifications created AFTER the last email
     if (recentNewEmail.length > 0) {
-      const lastSentAt = new Date(recentNewEmail[0].sentAt);
-      if (lastSentAt > cutoffTime) {
-        return false; // Too soon since last email
-      }
-    }
+      // Only consider notifications created after the last email was sent
+      const lastEmailSentAt = new Date(recentNewEmail[0].sentAt);
 
-    return true;
+      const newUnreadNotifications = await db
+        .select()
+        .from(notifications)
+        .where(
+          and(
+            eq(notifications.userId, userId),
+            eq(notifications.isRead, false),
+            eq(notifications.isDeleted, false),
+            gt(notifications.createdAt, lastEmailSentAt) // Only NEW notifications
+          )
+        )
+        .limit(1);
+
+      return newUnreadNotifications.length > 0;
+    } else {
+      // No previous email - check if there are any unread notifications
+      const unreadNotifications = await db
+        .select()
+        .from(notifications)
+        .where(
+          and(
+            eq(notifications.userId, userId),
+            eq(notifications.isRead, false),
+            eq(notifications.isDeleted, false)
+          )
+        )
+        .limit(1);
+
+      return unreadNotifications.length > 0;
+    }
   } catch (error) {
     logger.error("Error checking if should send new notifications email", {
       userId,
@@ -193,7 +199,7 @@ async function shouldSendNewNotificationsEmail(userId: string): Promise<boolean>
  * Criteria:
  * - User has unread notifications older than OUTSTANDING_THRESHOLD_DAYS
  * - Haven't sent a reminder in the last REMINDER_COOLDOWN_DAYS
- * - Haven't sent a "new notifications" email in the last 24 hours
+ * - Haven't sent a "new notifications" email in the last 7 days
  */
 async function shouldSendOutstandingReminder(userId: string): Promise<boolean> {
   try {
@@ -232,7 +238,7 @@ async function shouldSendOutstandingReminder(userId: string): Promise<boolean> {
           eq(notificationEmailsSent.success, true)
         )
       )
-      .orderBy(notificationEmailsSent.sentAt)
+      .orderBy(desc(notificationEmailsSent.sentAt))
       .limit(1);
 
     if (recentReminder.length > 0) {
@@ -244,7 +250,7 @@ async function shouldSendOutstandingReminder(userId: string): Promise<boolean> {
 
     // Also check we haven't sent a new notifications email very recently
     const newEmailCutoff = new Date();
-    newEmailCutoff.setHours(newEmailCutoff.getHours() - NEW_EMAIL_COOLDOWN_HOURS);
+    newEmailCutoff.setDate(newEmailCutoff.getDate() - NEW_EMAIL_COOLDOWN_DAYS);
 
     const recentNewEmail = await db
       .select()
@@ -256,7 +262,7 @@ async function shouldSendOutstandingReminder(userId: string): Promise<boolean> {
           eq(notificationEmailsSent.success, true)
         )
       )
-      .orderBy(notificationEmailsSent.sentAt)
+      .orderBy(desc(notificationEmailsSent.sentAt))
       .limit(1);
 
     if (recentNewEmail.length > 0) {

@@ -15,6 +15,7 @@ export interface ActionPanelWrapperData extends ActionPanelData {
   phaseName?: string;
   phaseMessage?: string;
   timeRemaining?: string;
+  dueDate?: string;
   urgencyLevel?: 'normal' | 'warning' | 'urgent';
   hasSignedUp?: boolean;
   hasSubmitted?: boolean;
@@ -78,6 +79,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
     phaseName = 'Current Phase',
     phaseMessage,
     timeRemaining,
+    dueDate,
     urgencyLevel = 'normal',
     hasSignedUp = false,
     hasSubmitted = false,
@@ -225,6 +227,11 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
                 <div className={`text-xl font-bold ${urgencyStyles[urgencyLevel]} leading-tight`}>
                   {timeRemaining}
                 </div>
+                {dueDate && (
+                  <div className="text-xs text-gray-400 mt-1">
+                    Due: {dueDate}
+                  </div>
+                )}
               </div>
             )}
 
