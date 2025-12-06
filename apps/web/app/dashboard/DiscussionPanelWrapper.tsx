@@ -1,9 +1,10 @@
 import { CommentSection } from "@eptss/comments";
 import type { PanelProps } from "@eptss/dashboard";
 import { MessageSquare } from "lucide-react";
+import { roundProvider } from "@eptss/data-access";
 
 interface DiscussionPanelData {
-  roundId: string;
+  roundSlug: string;
   currentUserId?: string;
 }
 
@@ -12,8 +13,8 @@ interface DiscussionPanelData {
  *
  * Content-only - PanelCard + DashboardLayout handle sizing/styling
  */
-export function DiscussionPanelWrapper({ data, user }: PanelProps<DiscussionPanelData>) {
-  if (!data || !data.roundId) {
+export async function DiscussionPanelWrapper({ data, user }: PanelProps<DiscussionPanelData>) {
+  if (!data || !data.roundSlug) {
     return null;
   }
 
@@ -32,10 +33,16 @@ export function DiscussionPanelWrapper({ data, user }: PanelProps<DiscussionPane
     );
   }
 
+  // Fetch round to get roundId from slug
+  const round = await roundProvider(data.roundSlug);
+  if (!round) {
+    return null;
+  }
+
   // CommentSection renders content only - no wrapper needed
   return (
     <CommentSection
-      roundId={data.roundId}
+      roundId={round.roundId}
       currentUserId={user.id}
       sortOrder="asc"
       showHeader={false}

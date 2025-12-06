@@ -38,7 +38,7 @@ export default async function DashboardPage() {
         } : null,
         hero: heroData,
         discussions: heroData ? {
-          roundId: heroData.roundId,
+          roundSlug: heroData.roundSlug,
           currentUserId: userId,
         } : null,
         action: actionData,

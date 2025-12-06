@@ -30,6 +30,7 @@ export async function fetchHeroData() {
 
   return {
     roundId: currentRound.roundId,
+    roundSlug: currentRound.slug,
     songTitle: currentRound.song?.title,
     songArtist: currentRound.song?.artist,
   };
