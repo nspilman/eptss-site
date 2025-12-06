@@ -88,25 +88,26 @@ export const RoundParticipants = ({ roundInfo, currentUserId }: RoundParticipant
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center"
+            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: 'var(--color-accent-primary)' }}
           >
             <Users className="w-5 h-5 text-background-primary" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h3 className="text-lg font-bold text-primary">Round Participants</h3>
             <p className="text-sm text-gray-400">{uniqueParticipants.length} {uniqueParticipants.length === 1 ? 'person' : 'people'} signed up</p>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {sortedParticipants.map((participant, index) => (
             <motion.div
               key={participant.userId}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="min-w-0"
             >
               <a
                 href={getProfileUrl(participant)}
@@ -120,8 +121,8 @@ export const RoundParticipants = ({ roundInfo, currentUserId }: RoundParticipant
                   size="md"
                   showHoverEffect
                 />
-                <div className="text-center max-w-full">
-                  <p className="text-sm font-medium text-primary group-hover:text-accent-primary transition-colors truncate max-w-[100px]" title={getDisplayName(participant)}>
+                <div className="text-center w-full min-w-0">
+                  <p className="text-sm font-medium text-primary group-hover:text-accent-primary transition-colors truncate px-1" title={getDisplayName(participant)}>
                     {getDisplayName(participant)}
                   </p>
                 </div>

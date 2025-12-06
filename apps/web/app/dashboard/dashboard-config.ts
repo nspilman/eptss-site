@@ -25,6 +25,7 @@ import {
 
 import { ActionPanelWrapper } from './ActionPanelWrapper';
 import { RoundParticipantsPanelWrapper, RoundParticipantsPanelSkeleton } from './RoundParticipantsPanelWrapper';
+import { DiscussionPanelWrapper, DiscussionPanelSkeleton } from './DiscussionPanelWrapper';
 
 /**
  * Main dashboard configuration
@@ -40,6 +41,8 @@ export const eptssDeboardConfig: DashboardConfig = {
         description: 'Set up your display name and bio',
         priority: 'primary',
         order: 0,
+        layoutZone: 'header',
+        cardVariant: 'card',
         showSkeleton: true,
       }),
       ProfileSetupPanel,
@@ -55,6 +58,8 @@ export const eptssDeboardConfig: DashboardConfig = {
         description: 'Displays current round number and song',
         priority: 'primary',
         order: 1,
+        layoutZone: 'header',
+        cardVariant: 'hero',
         showSkeleton: true,
       }),
       HeroPanel,
@@ -62,14 +67,34 @@ export const eptssDeboardConfig: DashboardConfig = {
     ),
 
     // ============================================
-    // ACTION PANEL - Main CTA + Phase Status + Reflections (unified command center)
+    // DISCUSSION PANEL - Community conversations (Main focus!)
+    // ============================================
+    createPanel(
+      definePanelConfig('discussions', {
+        name: 'Round Discussions',
+        description: 'Community conversations and engagement',
+        priority: 'primary',
+        order: 2,
+        layoutZone: 'main',
+        cardVariant: 'card',
+        minHeight: '60vh',
+        showSkeleton: true,
+      }),
+      DiscussionPanelWrapper,
+      { skeleton: DiscussionPanelSkeleton }
+    ),
+
+    // ============================================
+    // ACTION PANEL - Sidebar widget for next action
     // ============================================
     createPanel(
       definePanelConfig('action', {
         name: 'Your Next Action',
         description: 'Shows primary action, phase status, countdown, progress, and reflections',
-        priority: 'primary',
-        order: 2,
+        priority: 'secondary',
+        order: 1,
+        layoutZone: 'sidebar',
+        cardVariant: 'sidebar',
         showSkeleton: true,
       }),
       ActionPanelWrapper,
@@ -77,14 +102,16 @@ export const eptssDeboardConfig: DashboardConfig = {
     ),
 
     // ============================================
-    // ROUND PARTICIPANTS - Community engagement
+    // ROUND PARTICIPANTS - Collapsible sidebar widget
     // ============================================
     createPanel(
       definePanelConfig('participants', {
         name: 'Round Participants',
-        description: 'Shows other people signed up for this round',
-        priority: 'primary',
-        order: 3,
+        description: 'Shows other people signed up for this round (collapsible)',
+        priority: 'secondary',
+        order: 2,
+        layoutZone: 'sidebar',
+        cardVariant: 'none', // Handles its own card styling for collapse
         showSkeleton: true,
       }),
       RoundParticipantsPanelWrapper,
@@ -100,6 +127,8 @@ export const eptssDeboardConfig: DashboardConfig = {
         description: 'Public reflections from round participants',
         priority: 'tertiary',
         order: 1,
+        layoutZone: 'footer',
+        cardVariant: 'card',
         showSkeleton: true,
       }),
       RoundReflectionsPanel,
@@ -115,6 +144,8 @@ export const eptssDeboardConfig: DashboardConfig = {
         description: 'Share EPTSS with your friends',
         priority: 'tertiary',
         order: 2,
+        layoutZone: 'footer',
+        cardVariant: 'card',
         showSkeleton: true,
       }),
       InviteFriendsPanel,

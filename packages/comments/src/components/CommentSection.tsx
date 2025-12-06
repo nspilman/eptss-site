@@ -14,6 +14,7 @@ export function CommentSection({
   contentAuthorId,
   currentUserId,
   sortOrder = 'desc',
+  showHeader = true,
 }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentWithAuthor[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -82,57 +83,63 @@ export function CommentSection({
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-6">
-          <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-            <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
-            Comments
-          </h2>
-        </div>
-        <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden">
+      <>
+        {showHeader && (
+          <div className="mb-6">
+            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
+            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
+              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
+              Comments
+            </h2>
+          </div>
+        )}
+        <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]">
           <div className="p-6 space-y-4 animate-pulse">
             <div className="h-24 bg-[var(--color-gray-800)] rounded-lg"></div>
             <div className="h-32 bg-[var(--color-gray-800)] rounded-lg"></div>
             <div className="h-32 bg-[var(--color-gray-800)] rounded-lg"></div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-6">
-          <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-            <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
-            Comments
-          </h2>
-        </div>
-        <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm p-6">
+      <>
+        {showHeader && (
+          <div className="mb-6">
+            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
+            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
+              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
+              Comments
+            </h2>
+          </div>
+        )}
+        <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm p-6 min-h-[60vh] flex items-center justify-center">
           <p className="text-red-400 font-roboto text-center">{error}</p>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!currentUserId) {
     return (
       <CommentProvider userContentId={userContentId} roundId={roundId} contentAuthorId={contentAuthorId}>
-        <div className="max-w-3xl mx-auto">
+        <>
           {/* Header with decorative line */}
-          <div className="mb-6">
-            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
-              Comments ({comments.length})
-            </h2>
-          </div>
+          {showHeader && (
+            <div className="mb-6">
+              <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
+              <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
+                <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
+                Comments ({comments.length})
+              </h2>
+            </div>
+          )}
 
           {/* Scrollable comments container */}
-          <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden">
+          <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]">
             {/* Comments list - scrollable area */}
             <div
               ref={scrollContainerRef}
@@ -172,25 +179,27 @@ export function CommentSection({
               </p>
             </div>
           </div>
-        </div>
+        </>
       </CommentProvider>
     );
   }
 
   return (
     <CommentProvider userContentId={userContentId} roundId={roundId} contentAuthorId={contentAuthorId}>
-      <div className="max-w-3xl mx-auto">
+      <>
         {/* Header with decorative line */}
-        <div className="mb-6">
-          <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-          <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-            <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
-            Comments ({comments.length})
-          </h2>
-        </div>
+        {showHeader && (
+          <div className="mb-6">
+            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
+            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
+              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
+              Comments ({comments.length})
+            </h2>
+          </div>
+        )}
 
         {/* Scrollable comments container with sticky input at bottom */}
-        <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden">
+        <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]">
           {/* Comments list - scrollable area */}
           <div
             ref={scrollContainerRef}
@@ -228,7 +237,7 @@ export function CommentSection({
             <CommentForm onSuccess={handleCommentAdded} />
           </div>
         </div>
-      </div>
+      </>
     </CommentProvider>
   );
 }

@@ -10,6 +10,7 @@ export interface CommentSectionProps {
   contentAuthorId?: string; // Optional - for notifying reflection authors on new comments
   currentUserId?: string | null; // Pass from server-side auth
   sortOrder?: 'asc' | 'desc'; // Optional - controls comment sort order (default: 'desc' - newest first)
+  showHeader?: boolean; // Optional - whether to show the "Comments (count)" header (default: true)
 }
 
 export interface CommentListProps {

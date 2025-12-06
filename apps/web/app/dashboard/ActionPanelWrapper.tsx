@@ -24,6 +24,8 @@ export interface ActionPanelWrapperData extends ActionPanelData {
 
 /**
  * Wrapper around ActionPanel that combines primary action with reflections
+ *
+ * Content-only - PanelCard + DashboardLayout handle sizing/styling
  */
 export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPanelWrapperData>) {
   if (!data) return null;
@@ -40,37 +42,33 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
     }
 
     return (
-      <div className="relative overflow-hidden rounded-xl p-5 lg:p-6 backdrop-blur-xs border border-gray-800 bg-gray-900/50">
-        <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
-
-        <div className="relative z-10">
-          <div className="mb-4">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] mb-1.5">
-              🎯 Your Next Action
-            </h2>
-            {data.contextMessage && (
-              <p className="text-sm text-gray-300">
-                {data.contextMessage}
-              </p>
-            )}
-          </div>
-
-          <div className="flex justify-start mb-3">
-            <LateSignupButton
-              roundId={currentRound.roundId}
-              userId={userId}
-              className="w-full sm:w-auto text-base font-semibold"
-            />
-          </div>
-
-          <AlertBox variant="info" icon={false} className="p-3">
-            <p className="text-xs">
-              <strong className="font-semibold">Note:</strong> Since signups have closed, you&apos;ll join without selecting a song.
-              You can still participate in all other round activities!
+      <>
+        <div className="mb-4">
+          <h2 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] mb-1.5">
+            🎯 Your Next Action
+          </h2>
+          {data.contextMessage && (
+            <p className="text-sm text-gray-300">
+              {data.contextMessage}
             </p>
-          </AlertBox>
+          )}
         </div>
-      </div>
+
+        <div className="flex justify-start mb-3">
+          <LateSignupButton
+            roundId={currentRound.roundId}
+            userId={userId}
+            className="w-full sm:w-auto text-base font-semibold"
+          />
+        </div>
+
+        <AlertBox variant="info" icon={false} className="p-3">
+          <p className="text-xs">
+            <strong className="font-semibold">Note:</strong> Since signups have closed, you&apos;ll join without selecting a song.
+            You can still participate in all other round activities!
+          </p>
+        </AlertBox>
+      </>
     );
   }
 
@@ -111,14 +109,65 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
 
   // Render unified action panel with reflections and phase status
   return (
-    <div className="relative overflow-hidden rounded-xl p-5 lg:p-6 backdrop-blur-xs border border-gray-800 bg-gray-900/50">
-      <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+    <>
+      {/* Countdown Section - Top */}
+      {timeRemaining && (
+        <>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <svg className={`w-5 h-5 ${urgencyStyles[urgencyLevel]}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <div className={`text-2xl font-bold ${urgencyStyles[urgencyLevel]} leading-tight`}>
+                  {timeRemaining}
+                </div>
+                {dueDate && (
+                  <div className="text-xs text-gray-400">
+                    Due: {dueDate}
+                  </div>
+                )}
+              </div>
+            </div>
 
-      <div className="relative z-10">
-        {/* Desktop: Two-column layout | Mobile: Stacked */}
-        <div className="flex flex-col lg:flex-row gap-5 lg:gap-6">
-          {/* LEFT SECTION: Actions & Reflections */}
-          <div className="flex-1 space-y-4">
+            {/* Progress Dots - Horizontal */}
+            <div className="flex items-center gap-3">
+              {progressPhases.map((p, index) => {
+                const isCurrent = p.id === phase;
+                return (
+                  <div key={p.id} className="flex flex-col items-center gap-1">
+                    <div
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        p.completed
+                          ? 'bg-[var(--color-accent-secondary)] shadow-sm shadow-[var(--color-accent-secondary)]/50'
+                          : isCurrent
+                            ? 'bg-[var(--color-accent-primary)] animate-pulse shadow-sm shadow-[var(--color-accent-primary)]/50 scale-110'
+                            : 'bg-gray-700'
+                      }`}
+                    />
+                    <span
+                      className={`text-xs transition-colors duration-300 ${
+                        isCurrent
+                          ? 'text-white font-semibold'
+                          : p.completed
+                            ? 'text-[var(--color-accent-secondary)] font-medium'
+                            : 'text-gray-500'
+                      }`}
+                    >
+                      {p.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <GradientDivider />
+        </>
+      )}
+
+      {/* Actions & Reflections Section */}
+      <div className="space-y-4">
             {/* Primary Action Section */}
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] mb-1.5">
@@ -207,80 +256,6 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
               </Link>
             </div>
           </div>
-
-          {/* Vertical Divider (Desktop Only) */}
-          <GradientDivider orientation="vertical" className="hidden lg:block" />
-
-          {/* RIGHT SECTION: Phase Status - Vertical & Compact */}
-          <div className="lg:w-44 space-y-4">
-            {/* Countdown at top */}
-            {timeRemaining && (
-              <div className="text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start gap-1.5 mb-0.5">
-                  <svg className={`w-4 h-4 ${urgencyStyles[urgencyLevel]}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {urgencyLevel === 'urgent' && (
-                    <span className="text-xs text-red-400 font-semibold">⚠️</span>
-                  )}
-                </div>
-                <div className={`text-xl font-bold ${urgencyStyles[urgencyLevel]} leading-tight`}>
-                  {timeRemaining}
-                </div>
-                {dueDate && (
-                  <div className="text-xs text-gray-400 mt-1">
-                    Due: {dueDate}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Divider */}
-            <GradientDivider />
-
-            {/* Progress Dots - Vertical */}
-            <div className="flex flex-col items-center gap-3">
-              {progressPhases.map((p, index) => {
-                const isCurrent = p.id === phase;
-                return (
-                  <div key={p.id} className="flex items-center gap-2.5 w-full">
-                    <div
-                      className={`w-2 h-2 rounded-full transition-all duration-300 flex-shrink-0 ${
-                        p.completed
-                          ? 'bg-[var(--color-accent-secondary)] shadow-sm shadow-[var(--color-accent-secondary)]/50'
-                          : isCurrent
-                            ? 'bg-[var(--color-accent-primary)] animate-pulse shadow-sm shadow-[var(--color-accent-primary)]/50 scale-110'
-                            : 'bg-gray-700'
-                      }`}
-                    />
-                    <span
-                      className={`text-xs transition-colors duration-300 ${
-                        isCurrent
-                          ? 'text-white font-semibold'
-                          : p.completed
-                            ? 'text-[var(--color-accent-secondary)] font-medium'
-                            : 'text-gray-500'
-                      }`}
-                    >
-                      {p.label}
-                    </span>
-                    {/* Vertical connector line */}
-                    {index < progressPhases.length - 1 && (
-                      <div
-                        className={`absolute w-0.5 h-3 translate-y-[14px] -translate-x-[0px] transition-colors duration-300 ${
-                          progressPhases[index + 1].completed || p.completed
-                            ? 'bg-[var(--color-accent-secondary)]/60'
-                            : 'bg-gray-700/50'
-                        }`}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

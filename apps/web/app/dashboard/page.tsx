@@ -37,6 +37,10 @@ export default async function DashboardPage() {
           profilePictureUrl: userData.profilePictureUrl,
         } : null,
         hero: heroData,
+        discussions: heroData ? {
+          roundId: heroData.roundId,
+          currentUserId: userId,
+        } : null,
         action: actionData,
         participants: participantsData,
         reflections: heroData ? {

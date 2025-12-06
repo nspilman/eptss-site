@@ -14,6 +14,16 @@ export type PanelPriority = 'primary' | 'secondary' | 'tertiary';
 export type PanelSize = 'full' | 'half' | 'third' | 'two-thirds';
 
 /**
+ * Layout Zone determines where panel appears in dashboard structure
+ */
+export type LayoutZone = 'header' | 'main' | 'sidebar' | 'footer';
+
+/**
+ * Panel Card Variant for visual styling
+ */
+export type PanelCardVariant = 'hero' | 'card' | 'flat' | 'sidebar' | 'none';
+
+/**
  * Panel Configuration - defines a single dashboard panel
  */
 export interface PanelConfig {
@@ -31,6 +41,18 @@ export interface PanelConfig {
 
   /** Size in grid layout */
   size?: PanelSize;
+
+  /** Layout zone - where this panel appears in the dashboard structure */
+  layoutZone?: LayoutZone;
+
+  /** Card variant - visual styling of the panel container */
+  cardVariant?: PanelCardVariant;
+
+  /** Minimum height constraint (e.g. '60vh', '400px') */
+  minHeight?: string;
+
+  /** Maximum height constraint (e.g. '80vh', '600px') */
+  maxHeight?: string;
 
   /** Order within priority group (lower numbers render first) */
   order: number;

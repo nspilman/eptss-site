@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { PanelConfig } from '../types';
+import { PanelCard } from '../components/PanelCard';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PanelWrapperProps {
@@ -14,23 +15,28 @@ interface PanelWrapperProps {
  *
  * Handles:
  * - Collapsible behavior
- * - Consistent styling
+ * - Visual card container (via PanelCard)
  * - Error boundaries (future enhancement)
- * 
+ *
  * Note: This is a client component for interactivity (collapse/expand)
  * The actual panel content is rendered in the server component (Dashboard)
+ *
+ * DOES NOT handle sizing/layout - that's DashboardLayout's responsibility
  */
 export function PanelWrapper({ config, children }: PanelWrapperProps) {
   const [isCollapsed, setIsCollapsed] = useState(
     config.collapsible ? config.defaultCollapsed ?? false : false
   );
 
+  const cardVariant = config.cardVariant || 'card';
+
   return (
     <div
-      className={`w-full mb-6 ${config.className || ''}`}
+      className={config.className || ''}
       data-panel-id={config.id}
       data-priority={config.priority}
       data-size={config.size}
+      data-layout-zone={config.layoutZone}
     >
       {config.collapsible && (
         <div className="mb-4">
@@ -52,7 +58,11 @@ export function PanelWrapper({ config, children }: PanelWrapperProps) {
         </div>
       )}
 
-      {!isCollapsed && <div>{children}</div>}
+      {!isCollapsed && (
+        <PanelCard variant={cardVariant}>
+          {children}
+        </PanelCard>
+      )}
     </div>
   );
 }
