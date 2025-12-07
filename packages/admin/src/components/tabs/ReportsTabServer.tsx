@@ -1,5 +1,5 @@
 import { unstable_cache } from 'next/cache';
-import { roundProvider, votesProvider } from "@eptss/data-access";
+import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { adminProvider } from "@eptss/data-access";
 import { ReportsTab } from "../ReportsTab";
 
@@ -8,13 +8,14 @@ type ReportsTabServerProps = {
 };
 
 // Cache round data for 60 seconds per round
-const getCachedRoundData = (roundSlug: string) => 
+const getCachedRoundData = (roundSlug: string) =>
   unstable_cache(
     async () => {
+      // TODO: Support multi-project - currently hardcoded to Cover Project
       const [stats, roundData, votesData] = await Promise.all([
         adminProvider(),
-        roundProvider(roundSlug),
-        votesProvider({ roundSlug }),
+        roundProvider(roundSlug, COVER_PROJECT_ID),
+        votesProvider({ projectId: COVER_PROJECT_ID, roundSlug }),
       ]);
       return { stats, roundData, votesData };
     },

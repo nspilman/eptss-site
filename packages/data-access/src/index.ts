@@ -108,3 +108,6 @@ export { verifySignupByEmail } from './services/signupService';
 export * from './schemas/signupSchemas';
 export * from './schemas/submission';
 export * from './schemas/voting';
+
+// Re-export project constants
+export { COVER_PROJECT_ID, ORIGINAL_PROJECT_ID } from './db/schema';

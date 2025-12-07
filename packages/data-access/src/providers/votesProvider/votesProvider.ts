@@ -1,12 +1,13 @@
 import { getCurrentRound, getRoundBySlug, getSignupUsersByRound, getVoteResults, getVotingUsersByRound, getVoteBreakdownBySong, getAllVotesForRound } from "../../services";
 
 interface Props {
+  projectId: string; // Required - must be passed from caller
   roundSlug?: string;
 }
 
-export const votesProvider = async ({ roundSlug }: Props) => {
+export const votesProvider = async ({ projectId, roundSlug }: Props) => {
   try {
-    const roundResult = roundSlug ? await getRoundBySlug(roundSlug) : await getCurrentRound();
+    const roundResult = roundSlug ? await getRoundBySlug(projectId, roundSlug) : await getCurrentRound();
     if (roundResult.status !== 'success') {
       throw new Error(`Failed to get round: ${roundResult.error?.message || 'Unknown error'}`);
     }

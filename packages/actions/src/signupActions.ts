@@ -32,6 +32,16 @@ export async function signupForRound(formData: FormData): Promise<FormReturn> {
 
     const { roundId, userId } = validation.data;
 
+    // Extract projectId
+    const projectId = formData.get("projectId")?.toString();
+    if (!projectId) {
+      logger.warn('Signup missing projectId', { userId, roundId });
+      return {
+        status: "Error",
+        message: "projectId is required"
+      };
+    }
+
     // 2. Rate limit check
     const { success } = await signupRateLimit.limit(`signup:${userId}`);
     if (!success) {
@@ -43,7 +53,7 @@ export async function signupForRound(formData: FormData): Promise<FormReturn> {
     }
 
     // 3. Perform signup
-    const result = await signupUserWithoutSong({ roundId, userId });
+    const result = await signupUserWithoutSong({ projectId, roundId, userId });
 
     if (result.status !== 'Success') {
       logger.error('Signup failed', {

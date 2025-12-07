@@ -174,6 +174,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
 export async function createRoundAction(formData: FormData): Promise<FormReturn> {
   try {
     // Extract and parse form data
+    const projectId = formData.get("projectId")?.toString();
     const slug = formData.get("slug")?.toString() || "";
     const signupOpens = new Date(formData.get("signupOpens")?.toString() || "");
     const votingOpens = new Date(formData.get("votingOpens")?.toString() || "");
@@ -182,9 +183,17 @@ export async function createRoundAction(formData: FormData): Promise<FormReturn>
     const listeningParty = new Date(formData.get("listeningParty")?.toString() || "");
     const playlistUrl = formData.get("playlistUrl")?.toString();
 
-    logger.info('Admin round creation initiated', { slug });
+    if (!projectId) {
+      return {
+        status: "Error",
+        message: "projectId is required"
+      };
+    }
+
+    logger.info('Admin round creation initiated', { projectId, slug });
 
     const result = await createRoundService({
+      projectId,
       slug,
       signupOpens,
       votingOpens,

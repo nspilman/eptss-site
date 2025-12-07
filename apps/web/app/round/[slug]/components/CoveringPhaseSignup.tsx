@@ -10,11 +10,12 @@ import { Navigation } from "@eptss/shared";
 import { useToast } from "@eptss/ui";
 
 interface CoveringPhaseSignupProps {
+  projectId: string;
   roundId: number;
   isSignedUp?: boolean;
 }
 
-export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPhaseSignupProps) => {
+export const CoveringPhaseSignup = ({ projectId, roundId, isSignedUp = false }: CoveringPhaseSignupProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -36,9 +37,10 @@ export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPha
       }
       
       // User is logged in, proceed with signup
-      const result = await signupUserWithoutSong({ 
-        roundId, 
-        userId: session.user.id 
+      const result = await signupUserWithoutSong({
+        projectId,
+        roundId,
+        userId: session.user.id
       }) as FormReturn;
       
       // Convert status to number if it's a string

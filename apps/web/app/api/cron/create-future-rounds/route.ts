@@ -4,7 +4,10 @@ import { getCurrentRound, getFutureRounds, createRound, getNextQuarterlyRounds }
 /**
  * API route to automatically create future rounds
  * This should be called by a cron job (GitHub Actions) daily
- * 
+ *
+ * Query parameters:
+ * - projectId: (required) The project ID to create rounds for
+ *
  * Logic:
  * 1. Get the current round
  * 2. Count how many future rounds exist
@@ -32,6 +35,20 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       );
     }
+
+    // Extract projectId from query parameters
+    const { searchParams } = new URL(request.url);
+    const projectId = searchParams.get('projectId');
+
+    if (!projectId) {
+      console.error('[create-future-rounds] projectId query parameter is required');
+      return NextResponse.json(
+        { error: 'projectId query parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    console.log(`[create-future-rounds] Creating rounds for project: ${projectId}`);
 
     // Get the current round
     const currentRoundResult = await getCurrentRound();
@@ -104,6 +121,7 @@ export async function POST(request: NextRequest) {
         console.log(`[create-future-rounds] Creating round: ${roundDates.slug}`);
         
         const createResult = await createRound({
+          projectId,
           slug: roundDates.slug,
           // No song for future rounds
           signupOpens: roundDates.signupOpens,

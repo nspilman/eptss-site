@@ -2,7 +2,7 @@ import { ActionPanel, ActionPanelData } from '@eptss/dashboard/panels';
 import { PanelProps } from '@eptss/dashboard';
 import { LateSignupButton } from './LateSignupButton';
 import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { roundProvider } from '@eptss/data-access';
+import { roundProvider, COVER_PROJECT_ID } from '@eptss/data-access';
 import Link from 'next/link';
 import type { Reflection } from '@eptss/data-access';
 import { Button, AlertBox, GradientDivider, Badge } from '@eptss/ui';
@@ -56,6 +56,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
 
         <div className="flex justify-start mb-3">
           <LateSignupButton
+            projectId={COVER_PROJECT_ID}
             roundId={currentRound.roundId}
             userId={userId}
             className="w-full sm:w-auto text-base font-semibold"

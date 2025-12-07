@@ -13,10 +13,11 @@ export const signupProvider = async () => {
  * Direct export for convenience
  * Sign up a user for a round without song selection
  */
-export async function signupUserWithoutSong(props: { 
-  roundId: number; 
-  userId: string; 
-  additionalComments?: string 
+export async function signupUserWithoutSong(props: {
+  projectId: string;
+  roundId: number;
+  userId: string;
+  additionalComments?: string
 }): Promise<FormReturn> {
   return signupUserWithoutSongService(props);
 }

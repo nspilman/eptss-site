@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, timestamp, uuid, integer, boolean, bigint, bigserial, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, integer, boolean, bigint, bigserial, pgEnum, index, jsonb, uniqueIndex } from "drizzle-orm/pg-core";
 
 // Users Table
 export const users = pgTable("users", {
@@ -23,7 +23,8 @@ export const songs = pgTable("songs", {
 // Round Metadata Table
 export const roundMetadata = pgTable("round_metadata", {
   id: bigint("id", { mode: "number" }).primaryKey(),
-  slug: text("slug").unique(),
+  projectId: uuid("project_id").references(() => projects.id).notNull(),
+  slug: text("slug"),
   playlistUrl: text("playlist_url"),
   songId: bigint("song_id", { mode: "number" }).references(() => songs.id),
   createdAt: timestamp("created_at").defaultNow(),
@@ -33,11 +34,14 @@ export const roundMetadata = pgTable("round_metadata", {
   coversDue: timestamp("covers_due"),
   listeningParty: timestamp("listening_party"),
 //   roundTypeOverride: varchar()
-});
+}, (table) => ({
+  projectSlugIdx: uniqueIndex("idx_round_metadata_project_slug").on(table.projectId, table.slug),
+}));
 
 // Sign-ups Table
 export const signUps = pgTable("sign_ups", {
   id: bigint("id", { mode: "number" }).primaryKey(),
+  projectId: uuid("project_id").references(() => projects.id).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   youtubeLink: text("youtube_link").notNull(),
   additionalComments: text("additional_comments"),
@@ -62,6 +66,7 @@ export const unverifiedSignups = pgTable("unverified_signups", {
 // Submissions Table
 export const submissions = pgTable("submissions", {
   id: bigint("id", { mode: "number" }).primaryKey().notNull(),
+  projectId: uuid("project_id").references(() => projects.id).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   soundcloudUrl: text("soundcloud_url").notNull(),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
@@ -80,6 +85,7 @@ export const userRoles = pgTable("user_roles", {
 // Song Selection Votes Table
 export const songSelectionVotes = pgTable("song_selection_votes", {
   id: bigint("id", { mode: "number" }).primaryKey(),
+  projectId: uuid("project_id").references(() => projects.id).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   songId: bigint("song_id", { mode: "number" }).references(() => songs.id),
   vote: integer("vote").notNull(),
@@ -182,6 +188,7 @@ export const notificationEmailTypeEnum = pgEnum('notification_email_type', [
 // Email Reminders Sent Table
 export const emailRemindersSent = pgTable("email_reminders_sent", {
   id: uuid().default(sql`gen_random_uuid()`).primaryKey(),
+  projectId: uuid("project_id").references(() => projects.id).notNull(),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
   userId: uuid("user_id").references(() => users.userid).notNull(),
   emailType: reminderEmailTypeEnum("email_type").notNull(),
@@ -396,3 +403,27 @@ export const userReferrals = pgTable("user_referrals", {
 
 export type UserReferral = typeof userReferrals.$inferSelect;
 export type NewUserReferral = typeof userReferrals.$inferInsert;
+
+// ============================================================================
+// PROJECTS TABLE - Multi-project support
+// ============================================================================
+
+// Projects Table - stores project definitions (Cover, Original Songs, etc.)
+export const projects = pgTable("projects", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  config: jsonb("config").notNull().default(sql`'{}'::jsonb`),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+}, (table) => ({
+  slugIdx: index("idx_projects_slug").on(table.slug),
+}));
+
+export type Project = typeof projects.$inferSelect;
+export type NewProject = typeof projects.$inferInsert;
+
+// Project IDs - fixed UUIDs for consistency across migrations
+export const COVER_PROJECT_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+export const ORIGINAL_PROJECT_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';

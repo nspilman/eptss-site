@@ -6,7 +6,11 @@ import { Calendar, Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { createRound } from "@eptss/data-access";
 
-export function CreateRoundForm() {
+type CreateRoundFormProps = {
+  projectId: string; // Required - must be passed from parent
+};
+
+export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   
@@ -26,6 +30,7 @@ export function CreateRoundForm() {
 
     try {
       const result = await createRound({
+        projectId,
         slug,
         signupOpens: new Date(signupOpens),
         votingOpens: new Date(votingOpens),

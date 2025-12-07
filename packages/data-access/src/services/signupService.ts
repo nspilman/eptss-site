@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { signUps, songs, users, unverifiedSignups } from "../db/schema";
+import { signUps, songs, users, unverifiedSignups, roundMetadata } from "../db/schema";
 import { Navigation } from "@eptss/shared";
 import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
@@ -297,10 +297,10 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
 }
 
 // Verify signup with user email
-export async function signupUserWithoutSong(props: { roundId: number, userId: string, additionalComments?: string }): Promise<FormReturn> {
+export async function signupUserWithoutSong(props: { projectId: string, roundId: number, userId: string, additionalComments?: string }): Promise<FormReturn> {
   "use server";
-  
-  const { roundId, userId, additionalComments = "" } = props;
+
+  const { projectId, roundId, userId, additionalComments = "" } = props;
   
   if (!userId) {
     return handleResponse(401, Navigation.SignUp, "User ID is required for signup");
@@ -345,6 +345,7 @@ export async function signupUserWithoutSong(props: { roundId: number, userId: st
       // Insert new signup with songId -1
       await db.insert(signUps).values({
         id: nextSignupId,
+        projectId: projectId,
         youtubeLink: "",
         additionalComments: additionalComments,
         roundId: roundId,
@@ -411,7 +412,20 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     }
     
     const signupData = unverifiedSignup[0];
-    
+
+    // Get the project ID from the round
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, signupData.roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return handleResponse(404, Navigation.SignUp, "Round not found");
+    }
+
+    const projectId = roundResult[0].projectId;
+
     // Get the next song ID
     const lastSongId = await db
       .select({ id: songs.id })
@@ -455,6 +469,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     // Insert the verified signup
     await db.insert(signUps).values({
       id: nextSignupId,
+      projectId: projectId,
       youtubeLink: signupData.youtubeLink,
       additionalComments: signupData.additionalComments,
       roundId: signupData.roundId,
@@ -657,7 +672,20 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
     }
     
     const validData = validation.data;
-    
+
+    // Get the project ID from the round
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, validData.roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return handleResponse(404, Navigation.SignUp, "Round not found");
+    }
+
+    const projectId = roundResult[0].projectId;
+
     // Check if user has already signed up for this round
     const existingSignup = await db
       .select({ id: signUps.id })
@@ -728,6 +756,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       // Then insert the new signup
       await db.insert(signUps).values({
         id: nextSignupId,
+        projectId: projectId,
         youtubeLink: validData.youtubeLink,
         additionalComments: validData.additionalComments,
         roundId: validData.roundId,

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
-import { roundProvider, votesProvider, roundsProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, votesProvider, roundsProvider, userParticipationProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { getCurrentPhase } from "@eptss/data-access/services/dateService";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
@@ -41,18 +41,20 @@ export default async function Round({ params }: { params: Promise<{ slug: string
 
     // Only fetch additional data if we're past the signup phase
     if (currentPhase !== "signups") {
-      const { voteResults, outstandingVoters, voteBreakdown } = await votesProvider({ roundSlug: slug });
+      // TODO: Support multi-project - currently hardcoded to Cover Project
+      const { voteResults, outstandingVoters, voteBreakdown } = await votesProvider({ projectId: COVER_PROJECT_ID, roundSlug: slug });
       const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false });
       
       return (
         <>
           <PageTitle title={`Round ${roundData.roundId} Overview`} />
-          <RoundSummary 
-            roundId={roundData.roundId} 
-            roundData={roundData} 
-            voteResults={voteResults} 
+          <RoundSummary
+            projectId={COVER_PROJECT_ID}
+            roundId={roundData.roundId}
+            roundData={roundData}
+            voteResults={voteResults}
             outstandingVoters={outstandingVoters}
-            roundIds={allRoundSlugs} 
+            roundIds={allRoundSlugs}
             voteBreakdown={voteBreakdown}
             allRounds={roundContent}
             hasVoted={hasVoted}
@@ -65,9 +67,10 @@ export default async function Round({ params }: { params: Promise<{ slug: string
     return (
       <>
         <PageTitle title={`Round ${roundData.roundId} Overview`} />
-        <RoundSummary 
-          roundId={roundData.roundId} 
-          roundData={roundData} 
+        <RoundSummary
+          projectId={COVER_PROJECT_ID}
+          roundId={roundData.roundId}
+          roundData={roundData}
           hasVoted={hasVoted}
         />
       </>

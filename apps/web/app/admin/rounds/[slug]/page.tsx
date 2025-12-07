@@ -1,14 +1,15 @@
 import { Suspense } from "react";
 import { DataTable } from "@eptss/ui";
-import { roundProvider, votesProvider } from "@eptss/data-access";
+import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { SignupsCard, SubmissionsCard, AdminSection, CopyEmailsButton } from "@eptss/admin";
 
 async function RoundDetailContent({ slug }: { slug: string }) {
-  const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider(slug);
-  const { voteResults, outstandingVoters } = await votesProvider({ roundSlug: slug });
+  // TODO: Support multi-project - currently hardcoded to Cover Project
+  const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider(slug, COVER_PROJECT_ID);
+  const { voteResults, outstandingVoters } = await votesProvider({ projectId: COVER_PROJECT_ID, roundSlug: slug });
 
   const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;
   const voteHeaders = voteResultsHeaderKeys.map(key => ({

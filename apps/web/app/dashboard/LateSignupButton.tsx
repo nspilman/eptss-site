@@ -6,12 +6,13 @@ import { signupForRound } from "@/actions/userParticipationActions";
 import { useRouter } from "next/navigation";
 
 interface LateSignupButtonProps {
+  projectId: string;
   roundId: number;
   userId: string;
   className?: string;
 }
 
-export function LateSignupButton({ roundId, userId, className }: LateSignupButtonProps) {
+export function LateSignupButton({ projectId, roundId, userId, className }: LateSignupButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -21,6 +22,7 @@ export function LateSignupButton({ roundId, userId, className }: LateSignupButto
     
     try {
       const formData = new FormData();
+      formData.append("projectId", projectId);
       formData.append("roundId", roundId.toString());
       formData.append("userId", userId);
 

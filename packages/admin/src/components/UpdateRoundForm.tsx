@@ -7,10 +7,11 @@ import { motion } from "framer-motion";
 import { updateRound, getRoundBySlug } from "@eptss/data-access";
 
 type UpdateRoundFormProps = {
+  projectId: string; // Required - must be passed from parent
   allRoundSlugs: string[];
 };
 
-export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
+export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -54,8 +55,8 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
       setMessage(null);
 
       try {
-        const result = await getRoundBySlug(selectedSlug);
-        
+        const result = await getRoundBySlug(projectId, selectedSlug);
+
         if (result.status === "success") {
           const round = result.data;
           setSignupOpens(formatDateForInput(round.signupOpens));
@@ -87,6 +88,7 @@ export function UpdateRoundForm({ allRoundSlugs }: UpdateRoundFormProps) {
 
     try {
       const result = await updateRound({
+        projectId,
         slug: selectedSlug,
         signupOpens: new Date(signupOpens),
         votingOpens: new Date(votingOpens),

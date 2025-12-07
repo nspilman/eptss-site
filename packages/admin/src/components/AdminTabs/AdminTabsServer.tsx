@@ -1,4 +1,4 @@
-import { roundsProvider, roundProvider, votesProvider, adminPageProvider } from "@eptss/data-access";
+import { roundsProvider, roundProvider, votesProvider, adminPageProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { getAllFeedback } from "@eptss/data-access";
 import { getAllUsers as getAllUsersService } from "@eptss/data-access";
 import { getActiveUsers } from "@eptss/data-access";
@@ -36,9 +36,10 @@ export async function AdminTabsServer({ slug, tab }: AdminTabsServerProps) {
   let votesData = null;
 
   if (roundSlug) {
+    // TODO: Support multi-project - currently hardcoded to Cover Project
     [roundData, votesData] = await Promise.all([
-      roundProvider(roundSlug),
-      votesProvider({ roundSlug }),
+      roundProvider(roundSlug, COVER_PROJECT_ID),
+      votesProvider({ projectId: COVER_PROJECT_ID, roundSlug }),
     ]);
   }
 

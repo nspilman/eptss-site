@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { votingCandidateOverrides, songs, songSelectionVotes, users } from "../db/schema";
+import { votingCandidateOverrides, songs, songSelectionVotes, users, roundMetadata } from "../db/schema";
 import { eq, avg, count, sql, desc, and } from "drizzle-orm";
 import { handleResponse } from "../utils";
 import { Navigation } from "@eptss/shared";
@@ -199,6 +199,19 @@ export const submitVotes = async (
   }
 
   try {
+    // Get the project ID from the round
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return handleResponse(404, Navigation.Voting, "Round not found");
+    }
+
+    const projectId = roundResult[0].projectId;
+
     await db.transaction(async (trx) => {
       // Delete existing votes for this user and round
       await trx
@@ -224,6 +237,7 @@ export const submitVotes = async (
         .filter(([key]) => key.startsWith('song-'))
         .map(([key, value]) => ({
           id: nextVoteId++,
+          projectId,
           userId,
           roundId,
           songId: Number(key.replace('song-', '')),

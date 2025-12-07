@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { getCurrentAndPastRounds } from "@eptss/data-access/services/roundService";
+import { COVER_PROJECT_ID } from "@eptss/data-access";
 import { CreateRoundForm, UpdateRoundForm, SetRoundSongForm } from "@eptss/admin";
 import { Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 import Link from "next/link";
@@ -36,7 +37,7 @@ async function RoundsContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <CreateRoundForm />
+            <CreateRoundForm projectId={COVER_PROJECT_ID} />
           </CardContent>
         </Card>
 
@@ -45,7 +46,7 @@ async function RoundsContent() {
             <CardTitle className="text-lg">Update Round</CardTitle>
           </CardHeader>
           <CardContent>
-            <UpdateRoundForm allRoundSlugs={rounds.map(r => r.slug)} />
+            <UpdateRoundForm projectId={COVER_PROJECT_ID} allRoundSlugs={rounds.map(r => r.slug)} />
           </CardContent>
         </Card>
 

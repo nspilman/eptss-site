@@ -6,20 +6,22 @@ import {
   getSignupsByRound,
   getSubmissions,
 } from "../../services";
+import { COVER_PROJECT_ID } from "../../db/schema";
 import { Phase, RoundInfo } from "@eptss/data-access/types/round";
 import { getCurrentPhase, getPhaseDates, RoundDates, formatDate } from "../../services/dateService";
 import { VoteOption } from "@eptss/data-access/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
-export const roundProvider = async (slug?: string): Promise<RoundInfo> => {
+export const roundProvider = async (slug?: string, projectId: string = COVER_PROJECT_ID): Promise<RoundInfo> => {
   let roundResult;
-  
+
   if (slug) {
-    // If slug is provided, use it to fetch the round
-    roundResult = await getRoundBySlug(slug);
+    // If slug is provided, use it to fetch the round for the specified project
+    roundResult = await getRoundBySlug(projectId, slug);
   } else {
     // Get the current round if no slug is provided
+    // TODO: getCurrentRound should also be project-aware in the future
     roundResult = await getCurrentRound();
   }
 

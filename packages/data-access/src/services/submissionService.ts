@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { submissions, users } from "../db/schema";
+import { submissions, users, roundMetadata } from "../db/schema";
 import { Navigation } from "@eptss/shared";
 import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
@@ -54,7 +54,20 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
     if (!soundcloudUrl) {
       return { status: "Error", message: "SoundCloud URL is required" };
     }
-    
+
+    // Get the project ID from the round
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return { status: "Error", message: "Round not found" };
+    }
+
+    const projectId = roundResult[0].projectId;
+
     // Check if user has already submitted for this round
     const existingSubmission = await db
       .select()
@@ -76,6 +89,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
 
     await db.insert(submissions).values({
       id: nextSubmissionId,
+      projectId: projectId,
       roundId: roundId,
       soundcloudUrl: soundcloudUrl,
       userId: userId,
@@ -101,7 +115,20 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
     }
     
     const validData = validation.data;
-    
+
+    // Get the project ID from the round
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, validData.roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return handleResponse(404, Navigation.Submit, "Round not found");
+    }
+
+    const projectId = roundResult[0].projectId;
+
     // Get the next submission ID
     const lastSubmissionId = await db
       .select({ id: submissions.id })
@@ -113,6 +140,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     await db.insert(submissions).values({
       id: nextSubmissionId,
+      projectId: projectId,
       roundId: validData.roundId,
       soundcloudUrl: validData.soundcloudUrl,
       userId: userId || "",

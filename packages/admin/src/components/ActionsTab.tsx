@@ -13,6 +13,7 @@ import { TestSendReminderEmailsButton } from "./TestSendReminderEmailsButton";
 import { TestNotificationEmailsButton } from "./TestNotificationEmailsButton";
 import { TestAdminNotificationEmailButton } from "./TestAdminNotificationEmailButton";
 import { UserDetails } from "@eptss/data-access/types/user";
+import { COVER_PROJECT_ID } from "@eptss/data-access";
 
 type ActionsTabProps = {
   roundId: number;
@@ -65,10 +66,10 @@ export function ActionsTab({ roundId, users, roundSlug, allRoundSlugs }: Actions
         <h2 className="text-xl font-semibold text-primary mb-4">Round Management</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <CreateRoundForm />
+            <CreateRoundForm projectId={COVER_PROJECT_ID} />
           </div>
           <div>
-            <UpdateRoundForm allRoundSlugs={allRoundSlugs} />
+            <UpdateRoundForm projectId={COVER_PROJECT_ID} allRoundSlugs={allRoundSlugs} />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

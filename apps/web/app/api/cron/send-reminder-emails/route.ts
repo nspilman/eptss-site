@@ -8,7 +8,8 @@ import {
   getUsersSignedUpForRound,
   hasUserSubmitted,
   getUserInfo,
-  formatDate
+  formatDate,
+  COVER_PROJECT_ID
 } from '@eptss/data-access';
 import {
   sendVotingClosesTomorrowEmail,
@@ -281,7 +282,9 @@ async function sendReminderEmailsForType(
       console.log(`[send-reminder-emails] ${result.success ? 'Sent' : 'Failed to send'} ${emailType} to ${user.email} (user: ${user.username})`);
 
       // Record the email send
+      // TODO: Support multi-project - currently hardcoded to Cover Project
       await recordReminderSent(
+        COVER_PROJECT_ID,
         round.roundId,
         userId,
         emailType,
@@ -296,7 +299,9 @@ async function sendReminderEmailsForType(
     } catch (error) {
       console.error(`[send-reminder-emails] Error sending to user ${userId}:`, error);
       // Record the failure
+      // TODO: Support multi-project - currently hardcoded to Cover Project
       await recordReminderSent(
+        COVER_PROJECT_ID,
         round.roundId,
         userId,
         emailType,

@@ -38,6 +38,7 @@ export async function hasReminderBeenSent(
  * Record that a reminder email was sent
  */
 export async function recordReminderSent(
+  projectId: string,
   roundId: number,
   userId: string,
   emailType: ReminderEmailType,
@@ -46,6 +47,7 @@ export async function recordReminderSent(
 ): Promise<AsyncResult<void>> {
   try {
     await db.insert(emailRemindersSent).values({
+      projectId,
       roundId,
       userId,
       emailType,

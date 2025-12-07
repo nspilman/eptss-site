@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { getAuthUser } from '@eptss/auth/server';
 import { PageTitle } from "@/components/PageTitle";
 import { ReflectionForm } from '@eptss/user-content';
-import { getRoundBySlug, getUserInitialReflectionForRound } from '@eptss/data-access';
+import { getRoundBySlug, getUserInitialReflectionForRound, COVER_PROJECT_ID } from '@eptss/data-access';
 import { Metadata } from 'next';
 
 type Props = {
@@ -28,7 +28,8 @@ const CreateReflectionPage = async ({ params }: Props) => {
   }
 
   // Get round data
-  const roundResult = await getRoundBySlug(resolvedParams.slug);
+  // TODO: Support multi-project - currently hardcoded to Cover Project
+  const roundResult = await getRoundBySlug(COVER_PROJECT_ID, resolvedParams.slug);
   if (roundResult.status !== 'success' || !roundResult.data) {
     redirect('/rounds');
   }

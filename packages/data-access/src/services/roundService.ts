@@ -2,7 +2,7 @@
 
 import { defaultDateString } from "@eptss/shared";
 import { db } from "../db";
-import { roundMetadata, songs, songSelectionVotes, signUps, submissions } from "../db/schema";
+import { roundMetadata, songs, songSelectionVotes, signUps, submissions, COVER_PROJECT_ID } from "../db/schema";
 import { eq, gte, asc, desc, and, or, sql, avg } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '../types/asyncResult';
 
@@ -36,10 +36,15 @@ const queryRoundById = (roundId: number) => {
     .where(eq(roundMetadata.id, roundId));
 };
 
-// Query by slug
-const queryRoundBySlug = (slug: string) => {
+// Query by slug - now requires projectId for composite unique constraint
+const queryRoundBySlug = (projectId: string, slug: string) => {
   return createBaseRoundQuery()
-    .where(eq(roundMetadata.slug, slug));
+    .where(
+      and(
+        eq(roundMetadata.projectId, projectId),
+        eq(roundMetadata.slug, slug)
+      )
+    );
 };
 
 // Query current round
@@ -141,17 +146,22 @@ export const getRoundById = async (roundId: number): Promise<AsyncResult<Round>>
   }
 };
 
-export const getRoundBySlug = async (slug: string): Promise<AsyncResult<Round>> => {
+export const getRoundBySlug = async (projectId: string, slug: string): Promise<AsyncResult<Round>> => {
   try {
+    // Validate projectId
+    if (!projectId || typeof projectId !== 'string') {
+      return createErrorResult(new Error(`Invalid projectId: ${projectId}`));
+    }
+
     // Validate slug is not empty
     if (!slug || typeof slug !== 'string') {
       return createErrorResult(new Error(`Invalid slug: ${slug}`));
     }
 
-    const roundData = await queryRoundBySlug(slug);
+    const roundData = await queryRoundBySlug(projectId, slug);
 
     if (!roundData.length) {
-      return createEmptyResult(`No round found with slug ${slug}`);
+      return createEmptyResult(`No round found with slug ${slug} for project ${projectId}`);
     }
 
     const round = mapToRound(roundData[0]);
@@ -474,6 +484,7 @@ export const setRoundSong = async (roundId: number, songId: number): Promise<Asy
 };
 
 type CreateRoundInput = {
+  projectId: string; // Required - no defaults
   slug: string;
   song?: {
     title: string;
@@ -490,23 +501,32 @@ type CreateRoundInput = {
 export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<Round>> => {
   try {
     // Validate input
+    if (!input.projectId) {
+      return createErrorResult(new Error('Missing required field: projectId is required'));
+    }
+
     if (!input.slug) {
       return createErrorResult(new Error('Missing required field: slug is required'));
     }
-    
+
     // Validate song if provided
     if (input.song && (!input.song.title || !input.song.artist)) {
       return createErrorResult(new Error('If song is provided, both title and artist are required'));
     }
 
-    // Check if slug already exists
+    // Check if slug already exists for this project
     const existingRound = await db
       .select({ id: roundMetadata.id })
       .from(roundMetadata)
-      .where(eq(roundMetadata.slug, input.slug));
+      .where(
+        and(
+          eq(roundMetadata.projectId, input.projectId),
+          eq(roundMetadata.slug, input.slug)
+        )
+      );
 
     if (existingRound.length > 0) {
-      return createErrorResult(new Error(`A round with slug "${input.slug}" already exists`));
+      return createErrorResult(new Error(`A round with slug "${input.slug}" already exists for this project`));
     }
 
     // Start a transaction
@@ -561,6 +581,7 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
         .insert(roundMetadata)
         .values({
           id: nextRoundId, // Use incremental ID
+          projectId: input.projectId, // Required project association
           slug: input.slug,
           songId: songId, // This will be null if no song was provided
           signupOpens: input.signupOpens,
@@ -597,6 +618,7 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
 };
 
 type UpdateRoundInput = {
+  projectId: string; // Required - no defaults
   slug: string;
   signupOpens?: Date;
   votingOpens?: Date;
@@ -609,18 +631,27 @@ type UpdateRoundInput = {
 export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<Round>> => {
   try {
     // Validate input
+    if (!input.projectId) {
+      return createErrorResult(new Error('Missing required field: projectId is required'));
+    }
+
     if (!input.slug) {
       return createErrorResult(new Error('Missing required field: slug is required'));
     }
 
-    // Check if round exists
+    // Check if round exists for this project
     const existingRound = await db
       .select({ id: roundMetadata.id })
       .from(roundMetadata)
-      .where(eq(roundMetadata.slug, input.slug));
+      .where(
+        and(
+          eq(roundMetadata.projectId, input.projectId),
+          eq(roundMetadata.slug, input.slug)
+        )
+      );
 
     if (existingRound.length === 0) {
-      return createErrorResult(new Error(`Round with slug "${input.slug}" not found`));
+      return createErrorResult(new Error(`Round with slug "${input.slug}" not found for this project`));
     }
 
     const roundId = existingRound[0].id;
@@ -641,7 +672,7 @@ export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<
       .where(eq(roundMetadata.id, roundId));
 
     // Get the updated round
-    const updatedRound = await getRoundBySlug(input.slug);
+    const updatedRound = await getRoundBySlug(input.projectId, input.slug);
 
     if (updatedRound.status !== 'success') {
       return createErrorResult(new Error('Failed to retrieve updated round'));
