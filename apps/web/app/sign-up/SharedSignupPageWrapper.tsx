@@ -18,7 +18,7 @@ export const SharedSignupPageWrapper = async ({
   const { userId } = await getAuthUser();
   const isLoggedIn = !!userId;
   // If slug is provided, use it directly, otherwise get current round info
-  const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider(slug);
+  const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider({ slug });
 
   // Handle case when no slug is provided and round has started
   if (!slug && hasRoundStarted) {

@@ -8,7 +8,7 @@ import { SignupsCard, SubmissionsCard, AdminSection, CopyEmailsButton } from "@e
 
 async function RoundDetailContent({ slug }: { slug: string }) {
   // TODO: Support multi-project - currently hardcoded to Cover Project
-  const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider(slug, COVER_PROJECT_ID);
+  const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider({ slug, projectId: COVER_PROJECT_ID });
   const { voteResults, outstandingVoters } = await votesProvider({ projectId: COVER_PROJECT_ID, roundSlug: slug });
 
   const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;

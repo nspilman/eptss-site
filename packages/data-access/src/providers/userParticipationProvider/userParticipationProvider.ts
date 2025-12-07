@@ -17,6 +17,7 @@ import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 
 interface Props {
   roundId?: number;
+  projectId?: string;
 }
 
 interface UserParticipationData {

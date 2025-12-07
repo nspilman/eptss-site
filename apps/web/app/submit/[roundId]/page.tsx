@@ -18,7 +18,7 @@ export default async function SignUpForRound({
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider(roundId);
+  } = await roundProvider({ slug: roundId });
 
   const {roundDetails} = await userParticipationProvider({
     roundId,

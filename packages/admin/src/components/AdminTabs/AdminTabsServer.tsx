@@ -38,7 +38,7 @@ export async function AdminTabsServer({ slug, tab }: AdminTabsServerProps) {
   if (roundSlug) {
     // TODO: Support multi-project - currently hardcoded to Cover Project
     [roundData, votesData] = await Promise.all([
-      roundProvider(roundSlug, COVER_PROJECT_ID),
+      roundProvider({ slug: roundSlug, projectId: COVER_PROJECT_ID }),
       votesProvider({ projectId: COVER_PROJECT_ID, roundSlug }),
     ]);
   }

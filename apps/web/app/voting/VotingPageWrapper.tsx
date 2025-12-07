@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default async function VotingPageWrapper({ slug, searchParams }: Props) {
-  const roundData = slug ? await roundProvider(slug) : await roundProvider();
+  const roundData = slug ? await roundProvider({ slug }) : await roundProvider({});
   const {
     roundId,
     dateLabels: {

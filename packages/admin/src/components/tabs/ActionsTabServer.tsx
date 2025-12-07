@@ -20,7 +20,7 @@ const getCachedActionsData = (roundSlug: string) =>
 
       let roundId = 0;
       if (roundSlug) {
-        const roundData = await roundProvider(roundSlug);
+        const roundData = await roundProvider({ slug: roundSlug });
         roundId = roundData.roundId;
       }
 

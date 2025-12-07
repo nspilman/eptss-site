@@ -1,34 +1,52 @@
 import { Dashboard } from '@eptss/dashboard';
-import { eptssDeboardConfig } from './dashboard-config';
+import { eptssDeboardConfig } from '@/app/dashboard/dashboard-config';
 import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { getUserById, COVER_PROJECT_ID } from '@eptss/data-access';
+import { getUserById, getProjectIdFromSlug, isValidProjectSlug } from '@eptss/data-access';
+import { notFound, redirect } from 'next/navigation';
 import {
   fetchHeroData,
   fetchActionData,
   fetchParticipantsData,
-} from './data-fetchers';
+} from '@/app/dashboard/data-fetchers';
 
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
-export default async function DashboardPage() {
-  // Fetch user for role-based panel visibility
-  const { userId } = await getAuthUser();
+interface ProjectDashboardPageProps {
+  params: Promise<{ slug: string }>;
+}
 
-  // Fetch data for all panels in parallel (defaulting to Cover Project for backwards compatibility)
+export default async function ProjectDashboardPage({ params }: ProjectDashboardPageProps) {
+  const resolvedParams = await params;
+  const { slug } = resolvedParams;
+
+  // Validate project slug
+  if (!isValidProjectSlug(slug)) {
+    notFound();
+  }
+
+  const projectId = getProjectIdFromSlug(slug);
+
+  // Require authentication for dashboard
+  const { userId } = await getAuthUser();
+  if (!userId) {
+    redirect(`/login?redirect=/project/${slug}/dashboard`);
+  }
+
+  // Fetch data for all panels in parallel
   const [heroData, actionData, participantsData, userData] =
     await Promise.all([
-      fetchHeroData(COVER_PROJECT_ID),
-      fetchActionData(COVER_PROJECT_ID, 'cover'),
-      fetchParticipantsData(COVER_PROJECT_ID),
-      userId ? getUserById(userId) : null,
+      fetchHeroData(projectId),
+      fetchActionData(projectId, slug),
+      fetchParticipantsData(projectId),
+      getUserById(userId),
     ]);
 
   return (
     <Dashboard
       config={eptssDeboardConfig}
-      user={userId ? { id: userId, role: 'user' } : undefined}
+      user={{ id: userId, role: 'user' }}
       panelData={{
         profileSetup: userData ? {
           userId: userData.userid,
@@ -55,9 +73,9 @@ export default async function DashboardPage() {
         reflections: heroData ? {
           roundId: heroData.roundId,
         } : null,
-        inviteFriends: userId ? {
+        inviteFriends: {
           userId: userId,
-        } : null,
+        },
       }}
     />
   );

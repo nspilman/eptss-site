@@ -34,7 +34,7 @@ export async function DiscussionPanelWrapper({ data, user }: PanelProps<Discussi
   }
 
   // Fetch round to get roundId from slug
-  const round = await roundProvider(data.roundSlug);
+  const round = await roundProvider({ slug: data.roundSlug });
   if (!round) {
     return null;
   }

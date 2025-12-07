@@ -13,7 +13,13 @@ import { VoteOption } from "@eptss/data-access/types/vote";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
-export const roundProvider = async (slug?: string, projectId: string = COVER_PROJECT_ID): Promise<RoundInfo> => {
+export interface RoundProviderParams {
+  slug?: string;
+  projectId?: string;
+}
+
+export const roundProvider = async (params?: RoundProviderParams): Promise<RoundInfo> => {
+  const { slug, projectId = COVER_PROJECT_ID } = params || {};
   let roundResult;
 
   if (slug) {

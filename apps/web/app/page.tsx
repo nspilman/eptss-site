@@ -61,7 +61,7 @@ async function getRoundsData() {
 
 // Static homepage with data fetched at build time
 const Homepage = async () => {
-  const roundInfo = await roundProvider();
+  const roundInfo = await roundProvider({});
   const { rounds, currentRoundId, isVotingPhase } = await getRoundsData();
   
   return (

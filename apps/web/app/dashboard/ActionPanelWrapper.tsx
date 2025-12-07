@@ -35,7 +35,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
   // If this is a late signup action, render custom UI
   if (data.isLateSignup) {
     const { userId } = await getAuthUser();
-    const currentRound = await roundProvider();
+    const currentRound = await roundProvider({});
 
     if (!userId || !currentRound?.roundId) {
       return null;

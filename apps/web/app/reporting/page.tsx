@@ -4,7 +4,7 @@ import { reportingProvider } from "@eptss/data-access/providers/reportingProvide
 import { Reporting } from "./Reporting";
 
 const ReportingPage = async () => {
-  const { roundId, phase } = await roundProvider();
+  const { roundId, phase } = await roundProvider({});
   const roundIdToRemove = ["signups", "voting"].includes(phase) ? roundId : -1;
   const { allSongsData } = await reportingProvider({ roundIdToRemove });
 

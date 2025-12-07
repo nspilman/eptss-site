@@ -36,7 +36,7 @@ export default async function DiscussionsPage() {
   }
 
   // Get current round
-  const currentRound = await roundProvider();
+  const currentRound = await roundProvider({});
 
   if (!currentRound) {
     return (

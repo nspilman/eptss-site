@@ -8,12 +8,12 @@ export async function GET(request: NextRequest) {
         
         // If slug is provided, use it as the identifier
         if (slugParam) {
-            const round = await roundProvider(slugParam)
+            const round = await roundProvider({ slug: slugParam })
             return NextResponse.json(round)
         }
         
         // If no slug is provided, get the current round
-        const round = await roundProvider()
+        const round = await roundProvider({})
         return NextResponse.json(round)
         
     } catch (error) {

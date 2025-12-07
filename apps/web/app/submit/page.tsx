@@ -24,7 +24,7 @@ const Submit = async () => {
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider();
+  } = await roundProvider({});
 
   if (!roundId) {
     return <div>Round not found</div>;

@@ -14,7 +14,7 @@ const getCachedRoundData = (roundSlug: string) =>
       // TODO: Support multi-project - currently hardcoded to Cover Project
       const [stats, roundData, votesData] = await Promise.all([
         adminProvider(),
-        roundProvider(roundSlug, COVER_PROJECT_ID),
+        roundProvider({ slug: roundSlug, projectId: COVER_PROJECT_ID }),
         votesProvider({ projectId: COVER_PROJECT_ID, roundSlug }),
       ]);
       return { stats, roundData, votesData };

@@ -2,7 +2,7 @@ import { roundProvider, roundsProvider } from "@eptss/data-access";
 import { WaitlistPageClient } from "./WaitlistPageClient";
 
 export default async function WaitlistPage() {
-  const currentRound = await roundProvider();
+  const currentRound = await roundProvider({});
   
   // Get all rounds to find the next one
   const { roundContent } = await roundsProvider({ excludeCurrentRound: false });
@@ -15,7 +15,7 @@ export default async function WaitlistPage() {
   
   // Get the next round if available, otherwise use the current round
   const nextRound = currentRoundIndex !== -1 && currentRoundIndex < sortedRounds.length - 1 
-    ? await roundProvider(sortedRounds[currentRoundIndex + 1].slug)
+    ? await roundProvider({ slug: sortedRounds[currentRoundIndex + 1].slug })
     : currentRound;
   
   const roundToDisplay = currentRound.hasRoundStarted ? nextRound : currentRound;

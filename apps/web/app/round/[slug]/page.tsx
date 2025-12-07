@@ -18,7 +18,7 @@ export default async function Round({ params }: { params: Promise<{ slug: string
     // Use the slug parameter directly
     const slug = resolvedParams.slug;
     // Fetch all data at the page level
-    const roundData = await roundProvider(slug);
+    const roundData = await roundProvider({ slug });
 
     // Fetch user participation for this round
     let hasVoted = false;
@@ -97,7 +97,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   try {
-    const roundData = await roundProvider(resolvedParams.slug);
+    const roundData = await roundProvider({ slug: resolvedParams.slug });
     
     let title = `Round ${roundData.roundId}`;
     let description = "Everyone Plays the Same Song round details.";

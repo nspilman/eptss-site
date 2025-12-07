@@ -14,16 +14,18 @@ import {
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { Navigation } from "@eptss/shared";
+import { getProjectRoute } from "@/lib/projects";
 import type {
   Phase
 } from "@eptss/dashboard/panels";
 
 /**
  * Fetch data for the Hero Panel
+ * @param projectId - Project ID to scope data to a specific project
  */
-export async function fetchHeroData() {
-  const currentRound = await roundProvider();
-  
+export async function fetchHeroData(projectId: string) {
+  const currentRound = await roundProvider({ projectId });
+
   if (!currentRound) {
     return null;
   }
@@ -77,14 +79,16 @@ function formatTimeRemaining(phaseCloses: string | undefined): string {
 
 /**
  * Fetch data for the Action Panel (now includes reflections, phase status, and progress)
+ * @param projectId - Project ID to scope data to a specific project
+ * @param projectSlug - Project slug for generating project-scoped URLs (e.g., 'cover', 'original')
  */
-export async function fetchActionData() {
+export async function fetchActionData(projectId: string, projectSlug: string) {
   // Get auth user first to fetch reflections
   const { userId } = await getAuthUser();
 
   const [currentRound, { roundDetails }] = await Promise.all([
-    roundProvider(),
-    userParticipationProvider(),
+    roundProvider({ projectId }),
+    userParticipationProvider({ projectId }),
   ]);
 
   if (!currentRound) {
@@ -129,14 +133,20 @@ export async function fetchActionData() {
     celebration: 'Join us for the listening party event!',
   };
 
+  // Generate project-scoped URLs
+  const signupUrl = getProjectRoute(projectSlug, 'sign-up');
+  const votingUrl = getProjectRoute(projectSlug, 'voting');
+  const submitUrl = getProjectRoute(projectSlug, 'submit');
+  const roundUrl = getProjectRoute(projectSlug, `round/${slug}`);
+
   // Determine action based on phase and user status
   switch (phase) {
     case 'signups':
       return {
         actionText: roundDetails?.hasSignedUp ? 'Update Song Suggestion' : 'Sign Up for Round',
         actionHref: roundDetails?.hasSignedUp
-          ? `${Navigation.SignUp}?update=true`
-          : Navigation.SignUp,
+          ? `${signupUrl}?update=true`
+          : signupUrl,
         contextMessage: roundDetails?.hasSignedUp
           ? 'Change your song suggestion before signups close.'
           : 'Join the current round and suggest a song for everyone to cover!',
@@ -179,7 +189,7 @@ export async function fetchActionData() {
 
       return {
         actionText: roundDetails.hasVoted ? 'Update Your Votes' : 'Cast Your Votes',
-        actionHref: `${Navigation.Voting}?update=true`,
+        actionHref: `${votingUrl}?update=true`,
         contextMessage: roundDetails.hasVoted
           ? 'Change your votes before voting closes.'
           : 'Vote on which song suggestions should be covered this round!',
@@ -222,7 +232,7 @@ export async function fetchActionData() {
 
       return {
         actionText: roundDetails.hasSubmitted ? 'Update Submission' : 'Submit Your Cover',
-        actionHref: Navigation.Submit,
+        actionHref: submitUrl,
         contextMessage: roundDetails.hasSubmitted
           ? 'Update your cover submission before the deadline.'
           : 'Record and submit your cover of the selected song!',
@@ -243,7 +253,7 @@ export async function fetchActionData() {
     case 'celebration':
       return {
         actionText: 'View Listening Party Details',
-        actionHref: `/round/${slug}`,
+        actionHref: roundUrl,
         contextMessage: '🎉 Join us for the listening party to celebrate this round!',
         isHighPriority: false,
         reflections,
@@ -289,9 +299,10 @@ export async function fetchNextRoundData() {
 
 /**
  * Fetch data for the Round Participants Panel
+ * @param projectId - Project ID to scope data to a specific project
  */
-export async function fetchParticipantsData() {
-  const roundInfo = await roundProvider();
+export async function fetchParticipantsData(projectId: string) {
+  const roundInfo = await roundProvider({ projectId });
 
   if (!roundInfo) {
     return null;
