@@ -29,7 +29,7 @@ export function DashboardLayout({
 
   const gapClasses = {
     sm: 'gap-3',
-    md: 'gap-5',
+    md: 'gap-6',
     lg: 'gap-8',
   };
 
@@ -119,9 +119,9 @@ export function DashboardLayout({
       ))}
 
       {/* Main + Sidebar Layout */}
-      <div className={`flex flex-col lg:flex-row ${gapClass}`}>
+      <div className={`flex flex-col md:flex-row ${gapClass}`}>
         {/* Sidebar Zone - Left (stacks on top on mobile) */}
-        <aside className={`w-full lg:w-1/2 flex flex-col ${gapClass} min-w-0`}>
+        <aside className={`w-full md:w-1/2 flex flex-col ${gapClass} min-w-0`}>
           {sidebarPanels.map((p, i) => (
             <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
               {p.child}
@@ -130,7 +130,7 @@ export function DashboardLayout({
         </aside>
 
         {/* Main Zone - Right */}
-        <div className={`w-full lg:w-1/2 flex flex-col ${gapClass} min-w-0`}>
+        <div className={`w-full md:w-1/2 flex flex-col ${gapClass} min-w-0`}>
           {mainPanels.map((p, i) => (
             <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
               {p.child}

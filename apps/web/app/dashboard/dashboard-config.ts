@@ -26,6 +26,7 @@ import {
 import { ActionPanelWrapper } from './ActionPanelWrapper';
 import { RoundParticipantsPanelWrapper, RoundParticipantsPanelSkeleton } from './RoundParticipantsPanelWrapper';
 import { DiscussionPanelWrapper, DiscussionPanelSkeleton } from './DiscussionPanelWrapper';
+import { CountdownBarWrapper, CountdownBarSkeleton } from './CountdownBarWrapper';
 
 /**
  * Main dashboard configuration
@@ -67,6 +68,23 @@ export const eptssDeboardConfig: DashboardConfig = {
     ),
 
     // ============================================
+    // COUNTDOWN BAR - Slim progress indicator
+    // ============================================
+    createPanel(
+      definePanelConfig('countdown', {
+        name: 'Round Progress',
+        description: 'Shows time remaining and phase progress',
+        priority: 'primary',
+        order: 2,
+        layoutZone: 'header',
+        cardVariant: 'dark',
+        showSkeleton: true,
+      }),
+      CountdownBarWrapper,
+      { skeleton: CountdownBarSkeleton }
+    ),
+
+    // ============================================
     // DISCUSSION PANEL - Community conversations (Main focus!)
     // ============================================
     createPanel(
@@ -74,7 +92,7 @@ export const eptssDeboardConfig: DashboardConfig = {
         name: 'Round Discussions',
         description: 'Community conversations and engagement',
         priority: 'primary',
-        order: 2,
+        order: 3,
         layoutZone: 'main',
         cardVariant: 'card',
         minHeight: '60vh',

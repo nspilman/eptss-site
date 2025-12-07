@@ -78,7 +78,7 @@ export function RoundParticipantsPanelWrapper({ data, user }: PanelProps<Partici
     const previewParticipants = uniqueParticipants.slice(0, 5);
 
     return (
-      <Card className="w-full bg-background-primary/60 backdrop-blur-sm border-gray-800 cursor-pointer hover:border-[var(--color-accent-primary)]/50 transition-colors">
+      <Card className="w-full bg-gray-900/30 backdrop-blur-sm border-gray-800 cursor-pointer hover:border-[var(--color-accent-primary)]/50 transition-colors">
         <button
           onClick={() => setIsExpanded(true)}
           className="w-full text-left"

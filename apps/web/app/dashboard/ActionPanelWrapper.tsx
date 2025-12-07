@@ -108,67 +108,9 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
     urgent: 'text-red-400',
   };
 
-  // Render unified action panel with reflections and phase status
+  // Render action panel with reflections (countdown moved to separate CountdownBar)
   return (
-    <>
-      {/* Countdown Section - Top */}
-      {timeRemaining && (
-        <>
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <svg className={`w-5 h-5 ${urgencyStyles[urgencyLevel]}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div>
-                <div className={`text-2xl font-bold ${urgencyStyles[urgencyLevel]} leading-tight`}>
-                  {timeRemaining}
-                </div>
-                {dueDate && (
-                  <div className="text-xs text-gray-400">
-                    Due: {dueDate}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Progress Dots - Horizontal */}
-            <div className="flex items-center gap-3">
-              {progressPhases.map((p, index) => {
-                const isCurrent = p.id === phase;
-                return (
-                  <div key={p.id} className="flex flex-col items-center gap-1">
-                    <div
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        p.completed
-                          ? 'bg-[var(--color-accent-secondary)] shadow-sm shadow-[var(--color-accent-secondary)]/50'
-                          : isCurrent
-                            ? 'bg-[var(--color-accent-primary)] animate-pulse shadow-sm shadow-[var(--color-accent-primary)]/50 scale-110'
-                            : 'bg-gray-700'
-                      }`}
-                    />
-                    <span
-                      className={`text-xs transition-colors duration-300 ${
-                        isCurrent
-                          ? 'text-white font-semibold'
-                          : p.completed
-                            ? 'text-[var(--color-accent-secondary)] font-medium'
-                            : 'text-gray-500'
-                      }`}
-                    >
-                      {p.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          <GradientDivider />
-        </>
-      )}
-
-      {/* Actions & Reflections Section */}
-      <div className="space-y-4">
+    <div className="space-y-5">
             {/* Primary Action Section */}
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-[var(--color-accent-primary)] mb-1.5">
@@ -256,7 +198,6 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
                 Create New Reflection
               </Link>
             </div>
-          </div>
-    </>
+    </div>
   );
 }

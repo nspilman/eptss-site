@@ -21,7 +21,7 @@ export type LayoutZone = 'header' | 'main' | 'sidebar' | 'footer';
 /**
  * Panel Card Variant for visual styling
  */
-export type PanelCardVariant = 'hero' | 'card' | 'flat' | 'sidebar' | 'none';
+export type PanelCardVariant = 'hero' | 'card' | 'flat' | 'sidebar' | 'dark' | 'none';
 
 /**
  * Panel Configuration - defines a single dashboard panel
