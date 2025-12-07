@@ -32,12 +32,16 @@
     "postgres": "^3.4.5",
     "zod": "^3.24.1",
     "date-fns": "^2.30.0",
-    "@date-fns/tz": "^1.2.0"
+    "@date-fns/tz": "^1.2.0",
+    "next": "16.0.7",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@types/node": "18.11.3",
     "drizzle-kit": "^0.30.2",
-    "eslint": "8.26.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.7",
     "typescript": "5.1.3"
   }
 }
