@@ -20,5 +20,4 @@ export {
   completeSignupAfterVerification,
   verifySignupByEmail,
   signout,
-  addToWaitlist,
 } from "@eptss/actions";

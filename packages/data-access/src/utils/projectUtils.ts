@@ -42,3 +42,24 @@ export function getProjectIdFromSlug(slug: ProjectSlug): string {
 export function getProjectSlugFromId(id: string): ProjectSlug | null {
   return PROJECT_ID_TO_SLUG[id] || null;
 }
+
+/**
+ * Get all valid project slugs
+ */
+export function getAllProjectSlugs(): ProjectSlug[] {
+  return Object.keys(PROJECT_SLUG_TO_ID) as ProjectSlug[];
+}
+
+/**
+ * Get all project IDs
+ */
+export function getAllProjectIds(): string[] {
+  return Object.values(PROJECT_SLUG_TO_ID);
+}
+
+/**
+ * Check if a project ID is valid
+ */
+export function isValidProjectId(id: string): boolean {
+  return Object.values(PROJECT_SLUG_TO_ID).includes(id);
+}

@@ -111,5 +111,15 @@ export * from './schemas/signupSchemas';
 export * from './schemas/submission';
 export * from './schemas/voting';
 
+// Re-export project utils
+export {
+  getAllProjectSlugs,
+  getAllProjectIds,
+  isValidProjectId,
+} from './utils/projectUtils';
+
 // Re-export project constants
 export { COVER_PROJECT_ID, ORIGINAL_PROJECT_ID } from './db/schema';
+
+// Note: db and schema are generally kept internal.
+// For special packages like @eptss/project-config, import from '@eptss/data-access/db'

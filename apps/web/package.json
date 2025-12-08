@@ -36,6 +36,7 @@
     "@eptss/forms": "workspace:*",
     "@eptss/logger": "workspace:*",
     "@eptss/profile": "workspace:*",
+    "@eptss/project-config": "workspace:*",
     "@eptss/rich-text-editor": "workspace:*",
     "@eptss/rounds": "workspace:*",
     "@eptss/shared": "workspace:*",

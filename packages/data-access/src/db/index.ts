@@ -40,6 +40,12 @@ if (process.env.NODE_ENV !== "production" && !globalForPg.pg) {
 // Create drizzle instance with schema
 export const db = drizzle(client, { schema });
 
+// Export schema tables for special use cases (like @eptss/project-config)
+export { projects } from "./schema";
+
+// Export commonly used operators
+export { eq } from "drizzle-orm";
+
 // Explicitly handle process termination to close connections
 if (process.env.NODE_ENV !== "test") {
   // Handle various termination signals
