@@ -80,6 +80,16 @@ export const emailConfigSchema = z.object({
 // ============================================================================
 
 /**
+ * Project landing page metadata for project index/listing pages
+ */
+export const projectMetadataSchema = z.object({
+  description: z.string().default("A music community project"),
+  tagline: z.string().optional(),
+  icon: z.enum(["music", "vote", "trophy", "users", "sparkles"]).default("music"),
+  accentColor: z.string().default("#3b82f6"), // For card highlights/gradients
+}).default({});
+
+/**
  * Page copy and descriptions per project
  */
 export const pageContentSchema = z.object({
@@ -143,6 +153,7 @@ export const projectConfigSchema = z.object({
   ui: uiConfigSchema,
   businessRules: businessRulesSchema,
   email: emailConfigSchema,
+  metadata: projectMetadataSchema,
   content: z.object({
     pages: pageContentSchema,
     faq: faqContentSchema,
@@ -158,6 +169,7 @@ export type FeatureFlags = z.infer<typeof featureFlagsSchema>;
 export type UIConfig = z.infer<typeof uiConfigSchema>;
 export type BusinessRules = z.infer<typeof businessRulesSchema>;
 export type EmailConfig = z.infer<typeof emailConfigSchema>;
+export type ProjectMetadata = z.infer<typeof projectMetadataSchema>;
 export type PageContent = z.infer<typeof pageContentSchema>;
 export type FAQContent = z.infer<typeof faqContentSchema>;
 
