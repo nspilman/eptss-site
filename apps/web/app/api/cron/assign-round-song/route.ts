@@ -3,7 +3,8 @@ import {
   getCurrentRound,
   setRoundSong,
   getDetailedVoteResults,
-  getSongByTitleAndArtist
+  getSongByTitleAndArtist,
+  COVER_PROJECT_ID
 } from '@eptss/data-access';
 import { sendAdminSongAssignmentNotification } from '@eptss/email';
 
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the current round
-    const currentRoundResult = await getCurrentRound();
+    const currentRoundResult = await getCurrentRound(COVER_PROJECT_ID);
     
     if (currentRoundResult.status !== 'success') {
       console.log('[assign-round-song] No current round found');

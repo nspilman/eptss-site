@@ -29,11 +29,12 @@ export default async function ProjectLayout({ children, params }: ProjectLayoutP
 }
 
 /**
- * Generate static params for both projects
+ * Generate static params for all projects
  */
 export async function generateStaticParams() {
   return [
     { slug: 'cover' },
     { slug: 'original' },
+    { slug: 'monthly-original' },
   ];
 }

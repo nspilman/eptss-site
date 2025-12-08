@@ -15,20 +15,19 @@ const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
 export interface RoundProviderParams {
   slug?: string;
-  projectId?: string;
+  projectId: string;
 }
 
-export const roundProvider = async (params?: RoundProviderParams): Promise<RoundInfo> => {
-  const { slug, projectId = COVER_PROJECT_ID } = params || {};
+export const roundProvider = async (params: RoundProviderParams): Promise<RoundInfo> => {
+  const { slug, projectId } = params;
   let roundResult;
 
   if (slug) {
     // If slug is provided, use it to fetch the round for the specified project
     roundResult = await getRoundBySlug(projectId, slug);
   } else {
-    // Get the current round if no slug is provided
-    // TODO: getCurrentRound should also be project-aware in the future
-    roundResult = await getCurrentRound();
+    // Get the current round for the specified project
+    roundResult = await getCurrentRound(projectId);
   }
 
 

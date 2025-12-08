@@ -14,7 +14,7 @@ export async function AdminTabsServer({ slug, tab }: AdminTabsServerProps) {
   // Fetch all data in parallel
   const [adminData, roundsData, feedbackResult, allUsers, activeUsers, allNotifications, unseenNotifications, totalNotificationsCount, unseenNotificationsCount] = await Promise.all([
     adminPageProvider(),
-    roundsProvider({}),
+    roundsProvider({ projectId: COVER_PROJECT_ID, excludeCurrentRound: false }),
     getAllFeedback(100, 0),
     getAllUsersService(),
     getActiveUsers(),

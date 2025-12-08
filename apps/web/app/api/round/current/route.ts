@@ -1,10 +1,10 @@
-import { roundProvider } from "@eptss/data-access";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     // Get the current round
-    const round = await roundProvider({});
+    const round = await roundProvider({ projectId: COVER_PROJECT_ID });
     return NextResponse.json(round);
   } catch (error) {
     console.error('Error fetching current round:', error);

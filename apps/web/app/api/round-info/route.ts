@@ -1,19 +1,19 @@
-import { roundProvider } from "@eptss/data-access";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url)
         const slugParam = searchParams.get('slug')
-        
+
         // If slug is provided, use it as the identifier
         if (slugParam) {
-            const round = await roundProvider({ slug: slugParam })
+            const round = await roundProvider({ slug: slugParam, projectId: COVER_PROJECT_ID })
             return NextResponse.json(round)
         }
-        
+
         // If no slug is provided, get the current round
-        const round = await roundProvider({})
+        const round = await roundProvider({ projectId: COVER_PROJECT_ID })
         return NextResponse.json(round)
         
     } catch (error) {

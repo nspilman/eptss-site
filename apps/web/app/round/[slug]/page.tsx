@@ -10,15 +10,15 @@ export default async function Round({ params }: { params: Promise<{ slug: string
   // Handle current round differently if needed
   if(resolvedParams.slug === "current") {
     // Get the current round and redirect to its slug
-    const currentRoundData = await roundProvider();
+    const currentRoundData = await roundProvider({ projectId: COVER_PROJECT_ID });
     return redirect(`/round/${currentRoundData.slug || currentRoundData.roundId}`);
   }
-  
+
   try {
     // Use the slug parameter directly
     const slug = resolvedParams.slug;
     // Fetch all data at the page level
-    const roundData = await roundProvider({ slug });
+    const roundData = await roundProvider({ slug, projectId: COVER_PROJECT_ID });
 
     // Fetch user participation for this round
     let hasVoted = false;
@@ -43,7 +43,7 @@ export default async function Round({ params }: { params: Promise<{ slug: string
     if (currentPhase !== "signups") {
       // TODO: Support multi-project - currently hardcoded to Cover Project
       const { voteResults, outstandingVoters, voteBreakdown } = await votesProvider({ projectId: COVER_PROJECT_ID, roundSlug: slug });
-      const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false });
+      const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false, projectId: COVER_PROJECT_ID });
       
       return (
         <>
@@ -97,7 +97,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   try {
-    const roundData = await roundProvider({ slug: resolvedParams.slug });
+    const roundData = await roundProvider({ slug: resolvedParams.slug, projectId: COVER_PROJECT_ID });
     
     let title = `Round ${roundData.roundId}`;
     let description = "Everyone Plays the Same Song round details.";

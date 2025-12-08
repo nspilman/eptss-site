@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "../SubmitPage";
 
@@ -18,7 +18,7 @@ export default async function SignUpForRound({
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider({ slug: roundId });
+  } = await roundProvider({ slug: roundId, projectId: COVER_PROJECT_ID });
 
   const {roundDetails} = await userParticipationProvider({
     roundId,

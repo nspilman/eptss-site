@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { submitVotes } from "@eptss/data-access/services/votesService";
 import { VotingPage } from "./VotingPage";
 import { notFound } from "next/navigation";
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default async function VotingPageWrapper({ slug, searchParams }: Props) {
-  const roundData = slug ? await roundProvider({ slug }) : await roundProvider({});
+  const roundData = slug ? await roundProvider({ slug, projectId: COVER_PROJECT_ID }) : await roundProvider({ projectId: COVER_PROJECT_ID });
   const {
     roundId,
     dateLabels: {

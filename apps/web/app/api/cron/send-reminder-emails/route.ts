@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the current round
-    const currentRoundResult = await getCurrentRound();
+    const currentRoundResult = await getCurrentRound(COVER_PROJECT_ID);
     
     if (currentRoundResult.status !== 'success') {
       console.log('[send-reminder-emails] No current round found');

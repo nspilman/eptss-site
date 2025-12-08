@@ -4,7 +4,7 @@
 
 import { COVER_PROJECT_ID, ORIGINAL_PROJECT_ID } from "../db/schema";
 
-export type ProjectSlug = 'cover' | 'original';
+export type ProjectSlug = 'cover' | 'original' | 'monthly-original';
 
 /**
  * Map of project slugs to their fixed UUIDs
@@ -12,6 +12,7 @@ export type ProjectSlug = 'cover' | 'original';
 export const PROJECT_SLUG_TO_ID: Record<ProjectSlug, string> = {
   cover: COVER_PROJECT_ID,
   original: ORIGINAL_PROJECT_ID,
+  'monthly-original': ORIGINAL_PROJECT_ID,
 };
 
 /**
@@ -26,7 +27,7 @@ export const PROJECT_ID_TO_SLUG: Record<string, ProjectSlug> = {
  * Validate if a slug is a valid project slug
  */
 export function isValidProjectSlug(slug: string): slug is ProjectSlug {
-  return slug === 'cover' || slug === 'original';
+  return slug === 'cover' || slug === 'original' || slug === 'monthly-original';
 }
 
 /**

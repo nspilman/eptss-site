@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentRound, getFutureRounds, createRound, getNextQuarterlyRounds } from '@eptss/data-access';
+import { getCurrentRound, getFutureRounds, createRound, getNextQuarterlyRounds, COVER_PROJECT_ID } from '@eptss/data-access';
 
 /**
  * API route to automatically create future rounds
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     console.log(`[create-future-rounds] Creating rounds for project: ${projectId}`);
 
     // Get the current round
-    const currentRoundResult = await getCurrentRound();
+    const currentRoundResult = await getCurrentRound(COVER_PROJECT_ID);
     
     if (currentRoundResult.status !== 'success') {
       console.log('[create-future-rounds] No current round found');
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     console.log(`[create-future-rounds] Current round: ${currentRound.slug} (ID: ${currentRound.roundId})`);
 
     // Get existing future rounds
-    const futureRoundsResult = await getFutureRounds();
+    const futureRoundsResult = await getFutureRounds(COVER_PROJECT_ID);
     const existingFutureRounds = futureRoundsResult.status === 'success' ? futureRoundsResult.data : [];
     
     console.log(`[create-future-rounds] Found ${existingFutureRounds.length} existing future rounds`);

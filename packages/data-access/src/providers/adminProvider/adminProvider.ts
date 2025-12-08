@@ -1,14 +1,15 @@
 "use server";
 
-import { 
-  getCurrentAndPastRounds, 
-  getUserCount, 
-  getCurrentRound, 
+import {
+  getCurrentAndPastRounds,
+  getUserCount,
+  getCurrentRound,
   getAllUsers as getAllUsersService,
   getActiveUsersCount,
   getUserDetails as getUserDetailsService,
   getActiveUsers as getActiveUsersService
 } from "../../services";
+import { COVER_PROJECT_ID } from "../../db/schema";
 
 export type AdminStats = {
   totalUsers: number;
@@ -51,7 +52,7 @@ export const adminProvider = async (): Promise<AdminStats> => {
   // Get all stats using service layer
   const [totalUsers, rounds, activeUsersCount] = await Promise.all([
     getUserCount(),
-    getCurrentAndPastRounds(),
+    getCurrentAndPastRounds(COVER_PROJECT_ID),
     getActiveUsersCount(3) // Last 3 rounds
   ]);
 
@@ -81,7 +82,7 @@ export const getUserDetails = async (): Promise<UserDetail[]> => {
 
 export const getRoundDetails = async (): Promise<RoundDetail[]> => {
   // Use service layer - getCurrentAndPastRounds already includes counts
-  const rounds = await getCurrentAndPastRounds();
+  const rounds = await getCurrentAndPastRounds(COVER_PROJECT_ID);
   
   if (rounds.status !== 'success' || !rounds.data.length) {
     return [];
@@ -116,7 +117,7 @@ export const adminPageProvider = async (): Promise<AdminPageData> => {
   // Fetch all data in parallel for better performance
   const [stats, currentRoundResult, allUsers, activeUsers] = await Promise.all([
     adminProvider(),
-    getCurrentRound(),
+    getCurrentRound(COVER_PROJECT_ID),
     getAllUsersService(),
     getActiveUsers(),
   ]);

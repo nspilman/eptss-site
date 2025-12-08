@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 async function RoundsContent() {
-  const roundsResult = await getCurrentAndPastRounds();
+  const roundsResult = await getCurrentAndPastRounds(COVER_PROJECT_ID);
   const rounds = roundsResult.status === 'success' ? roundsResult.data : [];
   const currentRound = rounds.length > 0 ? rounds[0] : null;
 

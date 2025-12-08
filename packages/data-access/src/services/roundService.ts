@@ -47,12 +47,13 @@ const queryRoundBySlug = (projectId: string, slug: string) => {
     );
 };
 
-// Query current round
-const queryCurrentRound = () => {
+// Query current round - requires projectId
+const queryCurrentRound = (projectId: string) => {
   const now = new Date();
   return createBaseRoundQuery()
     .where(
       and(
+        eq(roundMetadata.projectId, projectId),
         sql`${roundMetadata.signupOpens} IS NOT NULL`,
         sql`${roundMetadata.listeningParty} IS NOT NULL`,
         sql`${roundMetadata.signupOpens} <= ${now.toISOString()}`,
@@ -107,9 +108,9 @@ export interface NextRoundData {
   coveringBegins: Date | string | null;
 }
 
-export const getCurrentRoundId = async (): Promise<AsyncResult<number>> => {
+export const getCurrentRoundId = async (projectId: string): Promise<AsyncResult<number>> => {
   try {
-    const currentRound = await queryCurrentRound();
+    const currentRound = await queryCurrentRound(projectId);
 
     if (!currentRound?.length) {
       return createEmptyResult('No current round found');
@@ -171,9 +172,9 @@ export const getRoundBySlug = async (projectId: string, slug: string): Promise<A
   }
 };
 
-export const getCurrentRound = async (): Promise<AsyncResult<Round>> => {
+export const getCurrentRound = async (projectId: string): Promise<AsyncResult<Round>> => {
   try {
-    const roundData = await queryCurrentRound();
+    const roundData = await queryCurrentRound(projectId);
 
     if (!roundData.length) {
       return createEmptyResult('No current round found');
@@ -186,9 +187,9 @@ export const getCurrentRound = async (): Promise<AsyncResult<Round>> => {
   }
 };
 
-export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
+export const getCurrentAndFutureRounds = async (projectId: string): Promise<AsyncResult<Round[]>> => {
   try {
-    const currentRoundResult = await getCurrentRoundId();
+    const currentRoundResult = await getCurrentRoundId(projectId);
     if (currentRoundResult.status !== 'success') {
       return createSuccessResult([]);
     }
@@ -196,7 +197,12 @@ export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>>
     const rounds = await db
       .select()
       .from(roundMetadata)
-      .where(gte(roundMetadata.id, currentRoundResult.data))
+      .where(
+        and(
+          eq(roundMetadata.projectId, projectId),
+          gte(roundMetadata.id, currentRoundResult.data)
+        )
+      )
       .orderBy(asc(roundMetadata.id));
 
     if (!rounds.length) {
@@ -214,9 +220,9 @@ export const getCurrentAndFutureRounds = async (): Promise<AsyncResult<Round[]>>
   }
 };
 
-export const getFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
+export const getFutureRounds = async (projectId: string): Promise<AsyncResult<Round[]>> => {
   try {
-    const currentRoundResult = await getCurrentRoundId();
+    const currentRoundResult = await getCurrentRoundId(projectId);
     if (currentRoundResult.status !== 'success') {
       return createSuccessResult([]);
     }
@@ -226,7 +232,12 @@ export const getFutureRounds = async (): Promise<AsyncResult<Round[]>> => {
       .select()
       .from(roundMetadata)
       .leftJoin(songs, eq(roundMetadata.songId, songs.id))
-      .where(sql`${roundMetadata.id} > ${currentRoundResult.data}`)
+      .where(
+        and(
+          eq(roundMetadata.projectId, projectId),
+          sql`${roundMetadata.id} > ${currentRoundResult.data}`
+        )
+      )
       .orderBy(asc(roundMetadata.id));
 
     if (!rounds.length) {
@@ -273,18 +284,24 @@ export const getNextRoundByVotingDate = async (): Promise<AsyncResult<NextRoundD
   }
 };
 
-export const getCurrentAndPastRounds = async (): Promise<AsyncResult<Round[]>> => {
+export const getCurrentAndPastRounds = async (projectId: string): Promise<AsyncResult<Round[]>> => {
   try {
     const now = new Date();
-    const currentRoundResult = await getCurrentRoundId();
-    
+    const currentRoundResult = await getCurrentRoundId(projectId);
+
     // Build the where clause - if we have a current round, use it; otherwise just get past rounds by voting date
-    const whereClause = currentRoundResult.status === 'success'
+    const baseWhereClause = currentRoundResult.status === 'success'
       ? or(
           sql`${roundMetadata.id} <= ${currentRoundResult.data}`,
           sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now.toISOString()}::timestamp`
         )
       : sql`${roundMetadata.votingOpens} IS NOT NULL AND ${roundMetadata.votingOpens}::timestamp <= ${now.toISOString()}::timestamp`;
+
+    // Combine with project filter
+    const whereClause = and(
+      eq(roundMetadata.projectId, projectId),
+      baseWhereClause
+    );
 
     // Get all rounds
     const rounds = await db

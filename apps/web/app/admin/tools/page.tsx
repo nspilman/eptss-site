@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
-import { getCurrentRound, getAllUsers } from "@eptss/data-access";
+import { getCurrentRound, getAllUsers, COVER_PROJECT_ID } from "@eptss/data-access";
 import {
   AdminSignupForm,
   AdminSubmissionForm,
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 async function ToolsContent() {
   const [currentRoundResult, allUsers] = await Promise.all([
-    getCurrentRound(),
+    getCurrentRound(COVER_PROJECT_ID),
     getAllUsers(),
   ]);
 

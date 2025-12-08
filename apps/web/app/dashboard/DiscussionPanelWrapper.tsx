@@ -1,7 +1,7 @@
 import { CommentSection } from "@eptss/comments";
 import type { PanelProps } from "@eptss/dashboard";
 import { MessageSquare } from "lucide-react";
-import { roundProvider } from "@eptss/data-access";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 
 interface DiscussionPanelData {
   roundSlug: string;
@@ -34,7 +34,7 @@ export async function DiscussionPanelWrapper({ data, user }: PanelProps<Discussi
   }
 
   // Fetch round to get roundId from slug
-  const round = await roundProvider({ slug: data.roundSlug });
+  const round = await roundProvider({ slug: data.roundSlug, projectId: COVER_PROJECT_ID });
   if (!round) {
     return null;
   }

@@ -1,6 +1,6 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { SignupPage } from "./SignupPage/SignupPage";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { UserSignupData } from "@eptss/data-access/types/signup";
@@ -18,7 +18,7 @@ export const SharedSignupPageWrapper = async ({
   const { userId } = await getAuthUser();
   const isLoggedIn = !!userId;
   // If slug is provided, use it directly, otherwise get current round info
-  const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider({ slug });
+  const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider({ slug, projectId: COVER_PROJECT_ID });
 
   // Handle case when no slug is provided and round has started
   if (!slug && hasRoundStarted) {

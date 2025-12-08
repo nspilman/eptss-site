@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { getAllUsers as getAllUsersService } from "@eptss/data-access";
-import { roundsProvider, roundProvider } from "@eptss/data-access";
+import { roundsProvider, roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { ActionsTab } from "../ActionsTab";
 
 type ActionsTabServerProps = {
@@ -13,14 +13,14 @@ const getCachedActionsData = (roundSlug: string) =>
     async () => {
       const [allUsers, roundsData] = await Promise.all([
         getAllUsersService(),
-        roundsProvider({}),
+        roundsProvider({ projectId: COVER_PROJECT_ID, excludeCurrentRound: false }),
       ]);
 
       const { allRoundSlugs } = roundsData;
 
       let roundId = 0;
       if (roundSlug) {
-        const roundData = await roundProvider({ slug: roundSlug });
+        const roundData = await roundProvider({ slug: roundSlug, projectId: COVER_PROJECT_ID });
         roundId = roundData.roundId;
       }
 

@@ -1,5 +1,5 @@
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { CommentSection } from "@eptss/comments";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";
@@ -36,7 +36,7 @@ export default async function DiscussionsPage() {
   }
 
   // Get current round
-  const currentRound = await roundProvider({});
+  const currentRound = await roundProvider({ projectId: COVER_PROJECT_ID });
 
   if (!currentRound) {
     return (

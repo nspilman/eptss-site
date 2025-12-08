@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "./SubmitPage";
 import { Metadata } from 'next';
@@ -24,7 +24,7 @@ const Submit = async () => {
       celebration: { closes: listeningPartyLabel },
     },
     song,
-  } = await roundProvider({});
+  } = await roundProvider({ projectId: COVER_PROJECT_ID });
 
   if (!roundId) {
     return <div>Round not found</div>;

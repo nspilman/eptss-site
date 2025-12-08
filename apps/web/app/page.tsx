@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "@eptss/rounds";
 import { ClientRoundsDisplay } from "./index/Homepage/RoundsDisplay/ClientRoundsDisplay";
-import { roundProvider } from "@eptss/data-access";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
@@ -61,7 +61,7 @@ async function getRoundsData() {
 
 // Static homepage with data fetched at build time
 const Homepage = async () => {
-  const roundInfo = await roundProvider({});
+  const roundInfo = await roundProvider({ projectId: COVER_PROJECT_ID });
   const { rounds, currentRoundId, isVotingPhase } = await getRoundsData();
   
   return (

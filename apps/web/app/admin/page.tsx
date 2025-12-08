@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { adminProvider } from "@eptss/admin";
 import { ProjectStatsCard } from "@eptss/admin";
-import { getCurrentRound } from "@eptss/data-access";
+import { getCurrentRound, COVER_PROJECT_ID } from "@eptss/data-access";
 import { getCurrentPhase } from "@eptss/data-access/services/dateService";
 import { Button, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 async function DashboardContent() {
   const stats = await adminProvider();
-  const currentRoundResult = await getCurrentRound();
+  const currentRoundResult = await getCurrentRound(COVER_PROJECT_ID);
   const currentRound = currentRoundResult.status === 'success' ? currentRoundResult.data : null;
   const currentPhase = currentRound ? getCurrentPhase({
     signupOpens: currentRound.signupOpens,

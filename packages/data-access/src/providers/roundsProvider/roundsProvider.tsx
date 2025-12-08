@@ -7,13 +7,15 @@ import {
 
 interface Props {
   excludeCurrentRound?: boolean;
+  projectId: string;
 }
 
 export const roundsProvider = async ({
   excludeCurrentRound = false,
+  projectId,
 }: Props) => {
-  const roundsResult = await getCurrentAndPastRounds();
-  const currentRoundResult = await getCurrentRound();
+  const roundsResult = await getCurrentAndPastRounds(projectId);
+  const currentRoundResult = await getCurrentRound(projectId);
   
   const currentRoundId = currentRoundResult.status === 'success' ? currentRoundResult.data.roundId : null;
   
