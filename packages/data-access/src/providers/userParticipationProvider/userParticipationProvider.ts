@@ -32,6 +32,7 @@ interface UserParticipationData {
  */
 export const userParticipationProvider = async (props?: Props): Promise<UserParticipationData> => {
   const roundIdOverride = props?.roundId;
+  const projectId = props?.projectId;
   const { userId } = await getAuthUser();
 
   // If no user is logged in, return empty data
@@ -40,7 +41,8 @@ export const userParticipationProvider = async (props?: Props): Promise<UserPart
   }
 
   // Get the round ID (either from props or current round)
-  const roundIdResult = await getCurrentRoundId();
+  // If projectId is not provided, getCurrentRoundId will need to be called with a default or throw
+  const roundIdResult = projectId ? await getCurrentRoundId(projectId) : { status: 'error' as const };
   
   // If we can't get a round ID, return empty data
   if (roundIdResult.status !== 'success') {

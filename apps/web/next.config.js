@@ -57,10 +57,62 @@ const nextConfig = {
   // },
   async redirects() {
     return [
+      // Legacy signup redirect
       {
         source: '/signup',
         destination: '/sign-up',
         permanent: true,
+      },
+      // Redirect legacy routes to cover project
+      {
+        source: '/voting',
+        destination: '/projects/cover/voting',
+        permanent: false,
+      },
+      {
+        source: '/voting/:slug',
+        destination: '/projects/cover/voting/:slug',
+        permanent: false,
+      },
+      {
+        source: '/submit',
+        destination: '/projects/cover/submit',
+        permanent: false,
+      },
+      {
+        source: '/submit/:roundId',
+        destination: '/projects/cover/submit/:roundId',
+        permanent: false,
+      },
+      {
+        source: '/sign-up',
+        destination: '/projects/cover/sign-up',
+        permanent: false,
+      },
+      {
+        source: '/sign-up/:slug',
+        destination: '/projects/cover/sign-up/:slug',
+        permanent: false,
+      },
+      {
+        source: '/round/:slug',
+        destination: '/projects/cover/round/:slug',
+        permanent: false,
+      },
+      {
+        source: '/rounds',
+        destination: '/projects/cover/rounds',
+        permanent: false,
+      },
+      {
+        source: '/discussions',
+        destination: '/projects/cover/discussions',
+        permanent: false,
+      },
+      {
+        source: '/reporting',
+        destination: '/projects/cover/reporting',
+        permanent: false,
       },
     ];
   },

@@ -1,4 +1,4 @@
-import { getUserReflectionsForRound, roundProvider } from "@eptss/data-access";
+import { getUserReflectionsForRound, roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { ReflectionDisplay } from "./ReflectionDisplay";
 
@@ -7,7 +7,7 @@ export async function ReflectionCard() {
     currentRound,
     { userId }
   ] = await Promise.all([
-    roundProvider(),
+    roundProvider({ projectId: COVER_PROJECT_ID }),
     getAuthUser()
   ]);
 

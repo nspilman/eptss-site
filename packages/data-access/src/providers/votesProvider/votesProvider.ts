@@ -7,7 +7,7 @@ interface Props {
 
 export const votesProvider = async ({ projectId, roundSlug }: Props) => {
   try {
-    const roundResult = roundSlug ? await getRoundBySlug(projectId, roundSlug) : await getCurrentRound();
+    const roundResult = roundSlug ? await getRoundBySlug(projectId, roundSlug) : await getCurrentRound(projectId);
     if (roundResult.status !== 'success') {
       throw new Error(`Failed to get round: ${roundResult.error?.message || 'Unknown error'}`);
     }
