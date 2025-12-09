@@ -11,20 +11,25 @@ import { Button } from "@eptss/ui";
 // Dashboard header that replaces the regular header's mobile menu button with our sidebar toggle
 const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () => void, isSidebarOpen: boolean }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  
+  const [mounted, setMounted] = useState(false);
+
   // Handle scroll effect, matching the main header's behavior
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    
+
+    // Set initial scroll state
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 ${isScrolled ? 'bg-background-primary/95 backdrop-blur-md shadow-lg' : 'bg-transparent'} transition-all duration-300`}
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 ${mounted && isScrolled ? 'bg-background-primary/95 backdrop-blur-md shadow-lg' : 'bg-transparent'} transition-all duration-300`}
     >
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
