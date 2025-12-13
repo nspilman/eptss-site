@@ -98,7 +98,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-16">
-          <MonthlyOriginalHero />
+          <MonthlyOriginalHero projectSlug={projectSlug} />
           <div className="flex justify-center md:justify-end">
             <OriginalRoundInfo roundInfo={roundInfo} />
           </div>

@@ -42,6 +42,7 @@ export const businessRulesSchema = z.object({
   maxSubmissionsPerRound: z.number().int().positive().default(1),
   maxVotesPerUser: z.number().int().positive().default(3),
   requireEmailVerification: z.boolean().default(true),
+  requireSongOnSignup: z.boolean().default(true),
   minVotingDurationDays: z.number().int().positive().default(3),
   maxVotingDurationDays: z.number().int().positive().default(14),
   defaultRoundDurationWeeks: z.number().int().positive().default(4),

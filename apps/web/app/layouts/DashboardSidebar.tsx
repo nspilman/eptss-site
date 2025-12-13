@@ -16,16 +16,16 @@ interface SidebarItemProps {
 }
 
 const SidebarItem = ({ href, icon, label, isActive, onClick, isCollapsed }: SidebarItemProps) => (
-  <Link 
+  <Link
     href={href}
     onClick={onClick}
     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all
-      ${isActive 
-        ? "bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black" 
+      ${isActive
+        ? "bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black"
         : "hover:bg-white/30 text-accent-secondary hover:text-white"
       }
       ${isCollapsed ? "justify-center" : ""}`}
-    title={isCollapsed ? label : undefined}
+    title={isCollapsed ? label : ""}
   >
     {icon}
     {!isCollapsed && <span className="font-medium">{label}</span>}

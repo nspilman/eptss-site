@@ -32,12 +32,12 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
       const result = await createRound({
         projectId,
         slug,
-        signupOpens: new Date(signupOpens),
-        votingOpens: new Date(votingOpens),
-        coveringBegins: new Date(coveringBegins),
-        coversDue: new Date(coversDue),
-        listeningParty: new Date(listeningParty),
-        playlistUrl
+        signupOpens: signupOpens ? new Date(signupOpens) : undefined,
+        votingOpens: votingOpens ? new Date(votingOpens) : undefined,
+        coveringBegins: coveringBegins ? new Date(coveringBegins) : undefined,
+        coversDue: coversDue ? new Date(coversDue) : undefined,
+        listeningParty: listeningParty ? new Date(listeningParty) : undefined,
+        playlistUrl: playlistUrl || undefined
       });
 
       if (result.status === "success") {
@@ -107,45 +107,43 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
                   type="datetime-local"
                   value={signupOpens}
                   onChange={(e) => setSignupOpens(e.target.value)}
-                  required
                   className="text-primary"
                 />
               </div>
 
               <div className="space-y-2">
-                <FormLabel htmlFor="votingOpens" className="text-primary">Voting Opens</FormLabel>
+                <FormLabel htmlFor="votingOpens" className="text-primary">Voting Opens (Optional)</FormLabel>
                 <Input
                   id="votingOpens"
                   type="datetime-local"
                   value={votingOpens}
                   onChange={(e) => setVotingOpens(e.target.value)}
-                  required
                   className="text-primary"
                 />
+                <p className="text-xs text-secondary">Leave empty for projects without voting</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <FormLabel htmlFor="coveringBegins" className="text-primary">Covering Begins</FormLabel>
+                <FormLabel htmlFor="coveringBegins" className="text-primary">Covering Begins (Optional)</FormLabel>
                 <Input
                   id="coveringBegins"
                   type="datetime-local"
                   value={coveringBegins}
                   onChange={(e) => setCoveringBegins(e.target.value)}
-                  required
                   className="text-primary"
                 />
+                <p className="text-xs text-secondary">For cover projects only</p>
               </div>
 
               <div className="space-y-2">
-                <FormLabel htmlFor="coversDue" className="text-primary">Covers Due</FormLabel>
+                <FormLabel htmlFor="coversDue" className="text-primary">Submissions Due</FormLabel>
                 <Input
                   id="coversDue"
                   type="datetime-local"
                   value={coversDue}
                   onChange={(e) => setCoversDue(e.target.value)}
-                  required
                   className="text-primary"
                 />
               </div>
@@ -153,13 +151,12 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <FormLabel htmlFor="listeningParty" className="text-primary">Listening Party</FormLabel>
+                <FormLabel htmlFor="listeningParty" className="text-primary">Listening Party (Optional)</FormLabel>
                 <Input
                   id="listeningParty"
                   type="datetime-local"
                   value={listeningParty}
                   onChange={(e) => setListeningParty(e.target.value)}
-                  required
                   className="text-primary"
                 />
               </div>

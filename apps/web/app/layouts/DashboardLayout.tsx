@@ -75,21 +75,22 @@ export default function DashboardLayout({
   isAdmin?: boolean;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Initialize collapsed state from localStorage to prevent hydration mismatch
-  const [isCollapsed, setIsCollapsed] = useState(() => {
-    // Only access localStorage on client-side
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('sidebarCollapsed');
-      return saved === 'true';
+  // Load collapsed state from localStorage after mount to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+    const saved = localStorage.getItem('sidebarCollapsed');
+    if (saved === 'true') {
+      setIsCollapsed(true);
     }
-    return false;
-  });
-  
+  }, []);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  
+
   const toggleCollapse = () => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);

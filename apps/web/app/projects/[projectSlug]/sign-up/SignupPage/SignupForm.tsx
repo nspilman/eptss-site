@@ -6,7 +6,7 @@ import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
 import { Button, Form, SectionHeader } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
-import { signupSchema, nonLoggedInSchema, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/data-access/schemas/signupSchemas"
+import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/data-access/schemas/signupSchemas"
 import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter } from "next/navigation"
@@ -24,6 +24,7 @@ interface SignupFormProps {
   referralCode?: string;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
   signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
+  requireSongOnSignup?: boolean;
 }
 
 // Base fields for all users
@@ -101,7 +102,8 @@ export function SignupForm({
   existingSignup,
   referralCode,
   signup,
-  signupWithOTP
+  signupWithOTP,
+  requireSongOnSignup = true,
 }: SignupFormProps) {
   // State to track if the form has been submitted (for non-logged in users)
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -111,9 +113,21 @@ export function SignupForm({
   // Get CAPTCHA hook (only used for non-logged-in users)
   const { executeRecaptcha, isReady: isCaptchaReady } = useCaptcha();
 
-  // Determine which schema and fields to use based on login status
-  const schema = isLoggedIn ? signupSchema : nonLoggedInSchema;
-  const formFields = isLoggedIn ? baseFormFields : [...getNonLoggedInFields(referralCode), ...baseFormFields];
+  // Determine which schema and fields to use based on login status and requireSongOnSignup
+  const schema = requireSongOnSignup
+    ? (isLoggedIn ? signupSchema : nonLoggedInSchema)
+    : (isLoggedIn ? signupSchemaNoSong : nonLoggedInSchemaNoSong);
+
+  // Filter out song fields if not required
+  const filteredBaseFields = requireSongOnSignup
+    ? baseFormFields
+    : baseFormFields.filter(field =>
+        !['songTitle', 'artist', 'youtubeLink'].includes(field.name)
+      );
+
+  const formFields = isLoggedIn
+    ? filteredBaseFields
+    : [...getNonLoggedInFields(referralCode), ...filteredBaseFields];
   
   const form = useForm({
     resolver: zodResolver(schema),
@@ -231,22 +245,36 @@ export function SignupForm({
             </div>
           )}
           
-          <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
-            <SectionHeader
-              variant="accent-border"
-              borderColor="secondary"
-              title="Round Signup"
-              subtitle="Enter the song you'd like to cover for this round"
-              className="mb-6"
-            />
-            <div className="space-y-5">
-              <FormBuilder
-                fields={baseFormFields}
-                control={form.control}
-                disabled={isLoading}
+          {requireSongOnSignup && (
+            <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
+              <SectionHeader
+                variant="accent-border"
+                borderColor="secondary"
+                title="Round Signup"
+                subtitle="Enter the song you'd like to cover for this round"
+                className="mb-6"
               />
+              <div className="space-y-5">
+                <FormBuilder
+                  fields={baseFormFields.filter(field => ['songTitle', 'artist', 'youtubeLink'].includes(field.name))}
+                  control={form.control}
+                  disabled={isLoading}
+                />
+              </div>
             </div>
-          </div>
+          )}
+
+          {filteredBaseFields.some(field => field.name === 'additionalComments') && (
+            <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
+              <div className="space-y-5">
+                <FormBuilder
+                  fields={baseFormFields.filter(field => field.name === 'additionalComments')}
+                  control={form.control}
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          )}
           
           <Button 
             type="submit" 

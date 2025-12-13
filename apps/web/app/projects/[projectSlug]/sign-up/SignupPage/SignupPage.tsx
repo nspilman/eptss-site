@@ -17,6 +17,7 @@ interface Props {
   userSignup?: UserSignupData;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
   signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
+  requireSongOnSignup?: boolean;
 }
 
 export function SignupPage({
@@ -28,6 +29,7 @@ export function SignupPage({
   userSignup,
   signup,
   signupWithOTP,
+  requireSongOnSignup = true,
 }: Props) {
   // Check URL parameters
   const searchParams = useSearchParams();
@@ -74,6 +76,7 @@ export function SignupPage({
             referralCode={referralCode}
             signup={signup}
             signupWithOTP={signupWithOTP}
+            requireSongOnSignup={requireSongOnSignup}
           />
         </CaptchaProvider>
       )}

@@ -3,10 +3,13 @@
 import { Button } from "@eptss/ui";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Navigation } from "@eptss/shared";
 import { Sparkles, Mic, Palette } from "lucide-react";
 
-export const MonthlyOriginalHero = () => {
+interface MonthlyOriginalHeroProps {
+  projectSlug: string;
+}
+
+export const MonthlyOriginalHero = ({ projectSlug }: MonthlyOriginalHeroProps) => {
   return (
     <div className="max-w-2xl md:mb-0 flex flex-col items-center md:items-start relative">
       {/* Decorative elements */}
@@ -57,7 +60,7 @@ export const MonthlyOriginalHero = () => {
         transition={{ duration: 0.5, delay: 0.04 }}
         className="flex flex-col sm:flex-row gap-4 items-center md:items-start relative z-10"
       >
-        <Link href={Navigation.SignUp}>
+        <Link href={`/projects/${projectSlug}/sign-up`}>
           <Button variant="default" size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
             <Mic className="mr-2 h-5 w-5" />
             Start Creating

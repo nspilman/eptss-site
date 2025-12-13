@@ -1,11 +1,12 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, type ProjectSlug } from "@eptss/data-access";
 import { SignupPage } from "./SignupPage/SignupPage";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { UserSignupData } from "@eptss/data-access/types/signup";
 import { getNextRoundByVotingDate, getUserSignupData } from "@eptss/data-access";
 import { signup, signupWithOTP } from "@/actions/userParticipationActions";
+import { getProjectBusinessRules } from "@eptss/project-config";
 
 interface SharedSignupPageWrapperProps {
   projectId: string;
@@ -21,6 +22,9 @@ export const SharedSignupPageWrapper = async ({
   // Check if user is logged in
   const { userId } = await getAuthUser();
   const isLoggedIn = !!userId;
+
+  // Fetch project business rules
+  const businessRules = await getProjectBusinessRules(projectSlug as ProjectSlug);
 
   // If slug is provided, use it directly, otherwise get current round info
   const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider({ slug, projectId });
@@ -64,6 +68,7 @@ export const SharedSignupPageWrapper = async ({
       userSignup={userSignup}
       signup={signup}
       signupWithOTP={signupWithOTP}
+      requireSongOnSignup={businessRules.requireSongOnSignup}
     />
   );
 };
