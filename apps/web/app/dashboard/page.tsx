@@ -1,64 +1,48 @@
-import { Dashboard } from '@eptss/dashboard';
-import { eptssDeboardConfig } from './dashboard-config';
 import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { getUserById, COVER_PROJECT_ID } from '@eptss/data-access';
-import {
-  fetchHeroData,
-  fetchActionData,
-  fetchParticipantsData,
-} from './data-fetchers';
+import { getUserProjects } from '@eptss/data-access';
+import { redirect } from 'next/navigation';
+import { ProjectDashboardPicker } from './ProjectDashboardPicker';
 
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export default async function DashboardPage() {
-  // Fetch user for role-based panel visibility
+  // Get authenticated user
   const { userId } = await getAuthUser();
 
-  // Fetch data for all panels in parallel (defaulting to Cover Project for backwards compatibility)
-  const [heroData, actionData, participantsData, userData] =
-    await Promise.all([
-      fetchHeroData(COVER_PROJECT_ID),
-      fetchActionData(COVER_PROJECT_ID, 'cover'),
-      fetchParticipantsData(COVER_PROJECT_ID),
-      userId ? getUserById(userId) : null,
-    ]);
+  if (!userId) {
+    // Not logged in - redirect to home or login
+    redirect('/');
+  }
 
-  return (
-    <Dashboard
-      config={eptssDeboardConfig}
-      user={userId ? { id: userId, role: 'user' } : undefined}
-      panelData={{
-        profileSetup: userData ? {
-          userId: userData.userid,
-          username: userData.username,
-          publicDisplayName: userData.publicDisplayName,
-          profilePictureUrl: userData.profilePictureUrl,
-        } : null,
-        hero: heroData,
-        countdown: actionData ? {
-          phase: actionData.phase,
-          timeRemaining: actionData.timeRemaining,
-          dueDate: actionData.dueDate,
-          urgencyLevel: actionData.urgencyLevel,
-          hasSignedUp: actionData.hasSignedUp,
-          hasVoted: actionData.hasVoted,
-          hasSubmitted: actionData.hasSubmitted,
-        } : null,
-        discussions: heroData ? {
-          roundSlug: heroData.roundSlug,
-          currentUserId: userId,
-        } : null,
-        action: actionData,
-        participants: participantsData,
-        reflections: heroData ? {
-          roundId: heroData.roundId,
-        } : null,
-        inviteFriends: userId ? {
-          userId: userId,
-        } : null,
-      }}
-    />
-  );
+  // Get user's project memberships
+  const userProjects = await getUserProjects(userId);
+
+  if (userProjects.length === 0) {
+    // No projects - show message or redirect to home
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-8">
+        <h1 className="text-2xl font-bold mb-4">No Projects Yet</h1>
+        <p className="text-secondary mb-6">
+          You haven't participated in any projects yet. Sign up for a round to get started!
+        </p>
+        <a
+          href="/"
+          className="px-6 py-3 bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Browse Projects
+        </a>
+      </div>
+    );
+  }
+
+  if (userProjects.length === 1) {
+    // Single project: redirect to that project's dashboard
+    const projectSlug = userProjects[0].slug;
+    redirect(`/projects/${projectSlug}/dashboard`);
+  }
+
+  // Multiple projects: show project picker
+  return <ProjectDashboardPicker projects={userProjects} />;
 }

@@ -14,26 +14,20 @@ export {
 
 /**
  * Generate project-scoped routes
+ * Use getProjectRoute from @eptss/shared for dynamic route building
  */
 export function getProjectRoute(slug: string, path: string = ''): string {
-  const basePath = `/project/${slug}`;
+  const basePath = `/projects/${slug}`;
   return path ? `${basePath}/${path}` : basePath;
 }
 
 /**
- * Project display names
+ * Get display name for a project
+ * Projects now store their display name in the database
+ * Use project.name from ProjectInfo instead of this utility
+ *
+ * @deprecated Use project.name from ProjectInfo directly
  */
-export const PROJECT_DISPLAY_NAMES = {
-  cover: 'Cover Project',
-  original: 'Original Songs',
-} as const;
-
-/**
- * Get display name for a project slug
- */
-export function getProjectDisplayName(slug: string): string {
-  if (slug === 'cover' || slug === 'original') {
-    return PROJECT_DISPLAY_NAMES[slug];
-  }
-  return slug;
+export function getProjectDisplayName(projectName: string): string {
+  return projectName;
 }

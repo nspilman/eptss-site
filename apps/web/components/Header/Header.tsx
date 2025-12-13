@@ -56,24 +56,19 @@ export const Header = ({userId}: Props) => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
             <nav className="flex items-center gap-1">
-              <NavLink 
-                href={Navigation.HowItWorks} 
-                label="How It Works" 
+              <NavLink
+                href={Navigation.HowItWorks}
+                label="How It Works"
                 icon={<Info className="h-4 w-4" />}
                 variant="glowing"
               />
-              <NavLink 
-                href={Navigation.Rounds} 
-                label="Rounds" 
-                icon={<Music className="h-4 w-4" />}
-              />
-              <NavLink 
-                href={Navigation.FAQ} 
-                label="FAQ" 
+              <NavLink
+                href={Navigation.FAQ}
+                label="FAQ"
                 icon={<Info className="h-4 w-4" />}
               />
             </nav>
-            
+
             <div className="pl-2 border-l border-[var(--color-gray-700)]">
               <SignupButton isLoggedIn={!!userId} />
             </div>
@@ -105,22 +100,16 @@ export const Header = ({userId}: Props) => {
             className="md:hidden mt-4 py-4 border-t border-[var(--color-gray-800)]"
           >
             <nav className="flex flex-col gap-2">
-              <NavLink 
-                href={Navigation.HowItWorks} 
-                label="How It Works" 
+              <NavLink
+                href={Navigation.HowItWorks}
+                label="How It Works"
                 icon={<Info className="h-4 w-4" />}
                 variant="glowing"
                 onClick={() => setMobileMenuOpen(false)}
               />
-              <NavLink 
-                href={Navigation.Rounds} 
-                label="Rounds" 
-                icon={<Music className="h-4 w-4" />}
-                onClick={() => setMobileMenuOpen(false)}
-              />
-              <NavLink 
-                href={Navigation.FAQ} 
-                label="FAQ" 
+              <NavLink
+                href={Navigation.FAQ}
+                label="FAQ"
                 icon={<Info className="h-4 w-4" />}
                 onClick={() => setMobileMenuOpen(false)}
               />

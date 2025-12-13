@@ -9,8 +9,10 @@ import {
   hasUserSubmitted,
   getUserInfo,
   formatDate,
-  COVER_PROJECT_ID
+  getAllProjects
 } from '@eptss/data-access';
+import { getProjectAutomation } from '@eptss/project-config';
+import type { ProjectSlug } from '@eptss/data-access';
 import {
   sendVotingClosesTomorrowEmail,
   sendCoveringHalfwayEmail,
@@ -23,13 +25,15 @@ import {
 /**
  * API route to automatically send reminder emails throughout the round
  * This should be called by a cron job (GitHub Actions) daily
- * 
+ *
  * Logic:
- * 1. Get the current round
- * 2. Determine which reminder emails should be sent today
- * 3. For each email type, get the list of recipients
- * 4. Check if we've already sent this email to each user
- * 5. Send emails and record them in the database
+ * 1. Loop through all active projects
+ * 2. Check if email reminders are enabled for each project
+ * 3. Get the current round for each enabled project
+ * 4. Determine which reminder emails should be sent today
+ * 5. For each email type, get the list of recipients
+ * 6. Check if we've already sent this email to each user
+ * 7. Send emails and record them in the database
  */
 export async function POST(request: NextRequest) {
   try {
@@ -53,81 +57,116 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the current round
-    const currentRoundResult = await getCurrentRound(COVER_PROJECT_ID);
-    
-    if (currentRoundResult.status !== 'success') {
-      console.log('[send-reminder-emails] No current round found');
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: 'No current round found',
-          action: 'none'
-        },
-        { status: 200 }
-      );
-    }
+    // Get all active projects
+    const allProjects = await getAllProjects();
+    const activeProjects = allProjects.filter(p => p.isActive);
 
-    const round = currentRoundResult.data;
-    console.log(`[send-reminder-emails] Current round: ${round.slug} (ID: ${round.roundId})`);
+    console.log(`[send-reminder-emails] Processing ${activeProjects.length} active project(s)`);
 
-    // Determine which reminders should be sent
-    const triggers = determineRemindersToSend(round);
+    const projectResults = [];
+    let totalEmailsSent = 0;
 
-    if (triggers.length === 0) {
-      console.log('[send-reminder-emails] No reminders to send today');
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: 'No reminders triggered for today',
-          action: 'none',
+    // Loop through each project
+    for (const project of activeProjects) {
+      try {
+        // Check if email reminders are enabled for this project
+        const automation = await getProjectAutomation(project.slug as ProjectSlug);
+
+        if (!automation.enableEmailReminders) {
+          console.log(`[send-reminder-emails] Email reminders disabled for project: ${project.slug}`);
+          projectResults.push({
+            project: project.slug,
+            skipped: true,
+            reason: 'Email reminders disabled'
+          });
+          continue;
+        }
+
+        // Get the current round for this project
+        const currentRoundResult = await getCurrentRound(project.id);
+
+        if (currentRoundResult.status !== 'success') {
+          console.log(`[send-reminder-emails] No current round found for project: ${project.slug}`);
+          projectResults.push({
+            project: project.slug,
+            skipped: true,
+            reason: 'No current round'
+          });
+          continue;
+        }
+
+        const round = currentRoundResult.data;
+        console.log(`[send-reminder-emails] [${project.slug}] Current round: ${round.slug} (ID: ${round.roundId})`);
+
+        // Determine which reminders should be sent
+        const triggers = determineRemindersToSend(round);
+
+        if (triggers.length === 0) {
+          console.log(`[send-reminder-emails] [${project.slug}] No reminders to send today`);
+          projectResults.push({
+            project: project.slug,
+            round: {
+              id: round.roundId,
+              slug: round.slug
+            },
+            triggered: false
+          });
+          continue;
+        }
+
+        console.log(`[send-reminder-emails] [${project.slug}] ${triggers.length} reminder type(s) triggered:`, triggers.map(t => t.emailType));
+
+        const results = {
+          sent: [] as Array<{ emailType: string; recipientCount: number }>,
+          errors: [] as Array<{ emailType: string; error: string }>,
+        };
+
+        // Process each reminder type
+        for (const trigger of triggers) {
+          try {
+            const emailsSent = await sendReminderEmailsForType(project.id, round, trigger.emailType);
+            results.sent.push({
+              emailType: trigger.emailType,
+              recipientCount: emailsSent
+            });
+            totalEmailsSent += emailsSent;
+            console.log(`[send-reminder-emails] [${project.slug}] Sent ${emailsSent} ${trigger.emailType} emails`);
+          } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+            console.error(`[send-reminder-emails] [${project.slug}] Error sending ${trigger.emailType}:`, errorMsg);
+            results.errors.push({
+              emailType: trigger.emailType,
+              error: errorMsg
+            });
+          }
+        }
+
+        projectResults.push({
+          project: project.slug,
           round: {
             id: round.roundId,
             slug: round.slug
-          }
-        },
-        { status: 200 }
-      );
-    }
-
-    console.log(`[send-reminder-emails] ${triggers.length} reminder type(s) triggered:`, triggers.map(t => t.emailType));
-
-    const results = {
-      sent: [] as Array<{ emailType: string; recipientCount: number }>,
-      errors: [] as Array<{ emailType: string; error: string }>,
-    };
-
-    // Process each reminder type
-    for (const trigger of triggers) {
-      try {
-        const emailsSent = await sendReminderEmailsForType(round, trigger.emailType);
-        results.sent.push({
-          emailType: trigger.emailType,
-          recipientCount: emailsSent
+          },
+          triggered: true,
+          results
         });
-        console.log(`[send-reminder-emails] Sent ${emailsSent} ${trigger.emailType} emails`);
+
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        console.error(`[send-reminder-emails] Error sending ${trigger.emailType}:`, errorMsg);
-        results.errors.push({
-          emailType: trigger.emailType,
+        console.error(`[send-reminder-emails] Error processing project ${project.slug}:`, errorMsg);
+        projectResults.push({
+          project: project.slug,
           error: errorMsg
         });
       }
     }
 
-    const totalSent = results.sent.reduce((sum, r) => sum + r.recipientCount, 0);
-
     return NextResponse.json(
-      { 
-        success: true, 
-        message: `Sent ${totalSent} reminder email(s)`,
+      {
+        success: true,
+        message: `Processed ${activeProjects.length} project(s), sent ${totalEmailsSent} total email(s)`,
         action: 'sent',
-        round: {
-          id: round.roundId,
-          slug: round.slug
-        },
-        results
+        projectResults
       },
       { status: 200 }
     );
@@ -135,8 +174,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[send-reminder-emails] Unexpected error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred'
       },
       { status: 500 }
@@ -148,6 +187,7 @@ export async function POST(request: NextRequest) {
  * Send reminder emails for a specific type
  */
 async function sendReminderEmailsForType(
+  projectId: string,
   round: any,
   emailType: ReminderEmailType
 ): Promise<number> {
@@ -282,9 +322,8 @@ async function sendReminderEmailsForType(
       console.log(`[send-reminder-emails] ${result.success ? 'Sent' : 'Failed to send'} ${emailType} to ${user.email} (user: ${user.username})`);
 
       // Record the email send
-      // TODO: Support multi-project - currently hardcoded to Cover Project
       await recordReminderSent(
-        COVER_PROJECT_ID,
+        projectId,
         round.roundId,
         userId,
         emailType,
@@ -299,9 +338,8 @@ async function sendReminderEmailsForType(
     } catch (error) {
       console.error(`[send-reminder-emails] Error sending to user ${userId}:`, error);
       // Record the failure
-      // TODO: Support multi-project - currently hardcoded to Cover Project
       await recordReminderSent(
-        COVER_PROJECT_ID,
+        projectId,
         round.roundId,
         userId,
         emailType,

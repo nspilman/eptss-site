@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { projects, signUps, submissions, songSelectionVotes } from "../db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, inArray } from "drizzle-orm";
 import {
   isValidProjectSlug,
   getProjectIdFromSlug,
@@ -96,7 +96,7 @@ export async function getUserProjects(userId: string): Promise<ProjectInfo[]> {
   const projectResults = await db
     .select()
     .from(projects)
-    .where(sql`${projects.id} = ANY(${projectIds})`)
+    .where(inArray(projects.id, projectIds))
     .orderBy(projects.name);
 
   return projectResults.map(project => ({

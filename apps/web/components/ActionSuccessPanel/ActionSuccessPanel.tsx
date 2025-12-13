@@ -1,4 +1,4 @@
-import { Navigation } from "@eptss/shared";
+import { getProjectRoute } from "@eptss/shared";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent, Button } from "@eptss/ui";
@@ -16,6 +16,7 @@ interface Props {
   };
   action?: "signups";
   roundId: number;
+  projectSlug: string;
 }
 
 export const ActionSuccessPanel = ({
@@ -23,6 +24,7 @@ export const ActionSuccessPanel = ({
   image: { src, alt, blurSrc },
   action,
   roundId,
+  projectSlug,
 }: Props) => {
   return (
     <Card gradient className="max-w-4xl mx-auto">
@@ -47,9 +49,9 @@ export const ActionSuccessPanel = ({
           {thankyou}
         </p>
         <div className="flex justify-center">
-          <Link href={action === "signups" ? Navigation.Voting : "/#rounds"}>
+          <Link href={action === "signups" ? getProjectRoute.voting(projectSlug) : "/"}>
             <Button>
-              {action === "signups" && roundId === 21 ? "Voting" : "Home"}
+              {action === "signups" ? "Go to Voting" : "Home"}
             </Button>
           </Link>
         </div>

@@ -507,11 +507,11 @@ type CreateRoundInput = {
     title: string;
     artist: string;
   };
-  signupOpens: Date;
-  votingOpens: Date;
-  coveringBegins: Date;
-  coversDue: Date;
-  listeningParty: Date;
+  signupOpens?: Date;
+  votingOpens?: Date;
+  coveringBegins?: Date;
+  coversDue?: Date;
+  listeningParty?: Date;
   playlistUrl?: string;
 };
 
@@ -601,11 +601,11 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
           projectId: input.projectId, // Required project association
           slug: input.slug,
           songId: songId, // This will be null if no song was provided
-          signupOpens: input.signupOpens,
-          votingOpens: input.votingOpens,
-          coveringBegins: input.coveringBegins,
-          coversDue: input.coversDue,
-          listeningParty: input.listeningParty,
+          signupOpens: input.signupOpens || null,
+          votingOpens: input.votingOpens || null,
+          coveringBegins: input.coveringBegins || null,
+          coversDue: input.coversDue || null,
+          listeningParty: input.listeningParty || null,
           playlistUrl: input.playlistUrl || null,
         })
         .returning();

@@ -111,7 +111,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
     const validation = validateFormData(formData, submissionFormSchema);
     
     if (!validation.success) {
-      return handleResponse(400, Navigation.Submit, validation.error);
+      return handleResponse(400, Navigation.Dashboard, validation.error);
     }
     
     const validData = validation.data;
@@ -124,7 +124,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.Submit, "Round not found");
+      return handleResponse(404, Navigation.Dashboard, "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -152,8 +152,8 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       }),
     });
     
-    return handleResponse(201, Navigation.Submit, "");
+    return handleResponse(201, Navigation.Dashboard, "");
   } catch (error) {
-    return handleResponse(500, Navigation.Submit, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 }

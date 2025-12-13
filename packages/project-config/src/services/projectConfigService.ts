@@ -7,6 +7,7 @@ import {
   FeatureFlags,
   UIConfig,
   BusinessRules,
+  Automation,
   EmailConfig,
   PageContent,
   FAQContent,
@@ -109,6 +110,14 @@ export async function getProjectUIConfig(slug: ProjectSlug): Promise<UIConfig> {
 export async function getProjectBusinessRules(slug: ProjectSlug): Promise<BusinessRules> {
   const config = await getProjectConfig(slug);
   return config.businessRules;
+}
+
+/**
+ * Get automation configuration for a project
+ */
+export async function getProjectAutomation(slug: ProjectSlug): Promise<Automation> {
+  const config = await getProjectConfig(slug);
+  return config.automation;
 }
 
 /**

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { getAllProjects, type ProjectInfo } from "@eptss/data-access/services/projectService";
 import { safeParseProjectConfig, type ProjectConfig } from "@eptss/project-config";
 import { updateProjectConfig } from "./actions";
-import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, HelpCircle } from "lucide-react";
+import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, HelpCircle, Zap } from "lucide-react";
 import { Tooltip } from "@eptss/ui";
 
 export function ProjectConfigEditor() {
@@ -228,6 +228,25 @@ export function ProjectConfigEditor() {
             </ConfigSection>
           </div>
 
+          {/* Automation Group */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Zap className="h-5 w-5 text-blue-500" />
+              <h3 className="text-lg font-bold text-blue-500 uppercase tracking-wide">Automation & Cron Jobs</h3>
+            </div>
+            <ConfigSection
+              title="Automation Configuration"
+              description="Configure automated tasks and background jobs"
+              variant="blue"
+              icon={<Zap className="h-5 w-5" />}
+            >
+              <AutomationConfigEditor
+                automation={config.automation}
+                onChange={(automation) => updateConfig(["automation"], automation)}
+              />
+            </ConfigSection>
+          </div>
+
           {/* Save Button - Sticky at bottom */}
           <div className="sticky bottom-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 shadow-2xl border-2 border-blue-500/30">
             <div className="flex items-center justify-between">
@@ -286,7 +305,7 @@ function ConfigSection({
   title: string;
   description: string;
   children: React.ReactNode;
-  variant?: "purple" | "pink" | "orange" | "green" | "default";
+  variant?: "purple" | "pink" | "orange" | "green" | "blue" | "default";
   icon?: React.ReactNode;
 }) {
   const variantStyles = {
@@ -294,6 +313,7 @@ function ConfigSection({
     pink: "bg-pink-500/5 border-2 border-pink-500/20 hover:border-pink-500/40",
     orange: "bg-orange-500/5 border-2 border-orange-500/20 hover:border-orange-500/40",
     green: "bg-green-500/5 border-2 border-green-500/20 hover:border-green-500/40",
+    blue: "bg-blue-500/5 border-2 border-blue-500/20 hover:border-blue-500/40",
     default: "bg-background-secondary border-2 border-border",
   };
 
@@ -302,6 +322,7 @@ function ConfigSection({
     pink: "text-pink-500",
     orange: "text-orange-500",
     green: "text-green-500",
+    blue: "text-blue-500",
     default: "text-primary",
   };
 
@@ -852,6 +873,93 @@ function ProjectMetadataEditor({
             placeholder="#3b82f6"
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Automation Config Editor
+function AutomationConfigEditor({
+  automation,
+  onChange,
+}: {
+  automation: ProjectConfig["automation"];
+  onChange: (automation: ProjectConfig["automation"]) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-4">
+        <p className="text-sm text-blue-600 dark:text-blue-400">
+          ⚡ Control which automated tasks run for this project. Cron jobs will check these settings before executing.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2 cursor-pointer flex-1">
+            <input
+              type="checkbox"
+              checked={automation.enableEmailReminders ?? true}
+              onChange={(e) => onChange({ ...automation, enableEmailReminders: e.target.checked })}
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <span className="text-sm font-medium">Enable Email Reminders</span>
+          </label>
+          <Tooltip content={<div className="max-w-xs">Automated reminder emails for signups, voting deadlines, and submissions. Sent by cron job.</div>} side="right">
+            <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
+          </Tooltip>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2 cursor-pointer flex-1">
+            <input
+              type="checkbox"
+              checked={automation.enableRoundAutoCreation ?? false}
+              onChange={(e) => onChange({ ...automation, enableRoundAutoCreation: e.target.checked })}
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <span className="text-sm font-medium">Enable Round Auto-Creation</span>
+          </label>
+          <Tooltip content={<div className="max-w-xs">Automatically create future rounds based on schedule. Useful for recurring projects with predictable cadence.</div>} side="right">
+            <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
+          </Tooltip>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2 cursor-pointer flex-1">
+            <input
+              type="checkbox"
+              checked={automation.enableSongAssignment ?? false}
+              onChange={(e) => onChange({ ...automation, enableSongAssignment: e.target.checked })}
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <span className="text-sm font-medium">Enable Song Auto-Assignment</span>
+          </label>
+          <Tooltip content={<div className="max-w-xs">Automatically assign the winning song to the round after voting closes. Only applicable to cover projects.</div>} side="right">
+            <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
+          </Tooltip>
+        </div>
+      </div>
+
+      <div className={!automation.enableRoundAutoCreation ? "opacity-50" : ""}>
+        <LabelWithTooltip
+          label="Round Creation Lead Time (days)"
+          tooltip="How many days before a round starts should it be auto-created. Only applies when Round Auto-Creation is enabled."
+        />
+        <input
+          type="number"
+          min="1"
+          max="90"
+          value={automation.roundCreationLeadTimeDays ?? 30}
+          onChange={(e) =>
+            onChange({ ...automation, roundCreationLeadTimeDays: parseInt(e.target.value) || 30 })
+          }
+          disabled={!automation.enableRoundAutoCreation}
+          className="w-full px-3 py-2 rounded border border-border bg-background disabled:cursor-not-allowed"
+        />
+        {!automation.enableRoundAutoCreation && (
+          <p className="text-xs text-secondary mt-1">⚠️ Enable Round Auto-Creation above to use this setting</p>
+        )}
       </div>
     </div>
   );

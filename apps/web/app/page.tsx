@@ -4,7 +4,8 @@ import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "@eptss/rounds";
 import { ClientRoundsDisplay } from "./index/Homepage/RoundsDisplay/ClientRoundsDisplay";
-import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { roundProvider, getAllProjects } from "@eptss/data-access";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
@@ -61,9 +62,31 @@ async function getRoundsData() {
 
 // Static homepage with data fetched at build time
 const Homepage = async () => {
-  const roundInfo = await roundProvider({ projectId: COVER_PROJECT_ID });
+  // Get all active projects
+  const allProjects = await getAllProjects();
+  const activeProjects = allProjects.filter(p => p.isActive);
+
+  // Get round info for each project
+  const projectsWithRounds = await Promise.all(
+    activeProjects.map(async (project) => {
+      try {
+        const roundInfo = await roundProvider({ projectId: project.id });
+        return {
+          ...project,
+          roundInfo,
+        };
+      } catch (error) {
+        console.error(`Error fetching round for project ${project.slug}:`, error);
+        return {
+          ...project,
+          roundInfo: null,
+        };
+      }
+    })
+  );
+
   const { rounds, currentRoundId, isVotingPhase } = await getRoundsData();
-  
+
   return (
     <div className="max-w-7xl mx-auto">
       <Head>
@@ -71,17 +94,32 @@ const Homepage = async () => {
       </Head>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-16">
         <StaticHero />
-        <div className="flex justify-center md:justify-end">
-          <RoundInfoDisplay roundInfo={roundInfo} />
+        <div className="flex flex-col gap-6">
+          {/* Show all active projects */}
+          {projectsWithRounds.map((project) => (
+            <Link
+              key={project.id}
+              href={`/projects/${project.slug}/dashboard`}
+              className="block"
+            >
+              <div className="bg-background-secondary border-2 border-border rounded-xl p-6 hover:border-accent-primary transition-all duration-300 hover:shadow-lg hover:shadow-accent-primary/20">
+                <h3 className="text-xl font-bold mb-2">{project.name}</h3>
+                {project.config?.metadata?.description && (
+                  <p className="text-secondary text-sm mb-4">{project.config.metadata.description}</p>
+                )}
+                {project.roundInfo && <RoundInfoDisplay roundInfo={project.roundInfo} />}
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
       <div className="space-y-24 mt-16 md:mt-24">
         <HowItWorks />
         <section id="rounds">
-          <ClientRoundsDisplay 
-            rounds={rounds} 
-            currentRoundId={currentRoundId} 
-            isVotingPhase={isVotingPhase} 
+          <ClientRoundsDisplay
+            rounds={rounds}
+            currentRoundId={currentRoundId}
+            isVotingPhase={isVotingPhase}
           />
         </section>
       </div>

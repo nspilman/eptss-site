@@ -2,11 +2,11 @@ import { redirect } from 'next/navigation';
 import { getAuthUser } from '@eptss/auth/server';
 import { PageTitle } from "@/components/PageTitle";
 import { ReflectionForm } from '@eptss/user-content';
-import { getRoundBySlug, getUserInitialReflectionForRound, COVER_PROJECT_ID } from '@eptss/data-access';
+import { getRoundBySlug, getUserInitialReflectionForRound, getProjectIdFromSlug, type ProjectSlug } from '@eptss/data-access';
 import { Metadata } from 'next';
 
 type Props = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ projectSlug: string; slug: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -24,14 +24,16 @@ const CreateReflectionPage = async ({ params }: Props) => {
   // Check authentication
   const { userId } = await getAuthUser();
   if (!userId) {
-    redirect(`/login?redirect=/round/${resolvedParams.slug}/create-reflection`);
+    redirect(`/login?redirect=/projects/${resolvedParams.projectSlug}/round/${resolvedParams.slug}/create-reflection`);
   }
 
+  // Get project ID from slug
+  const projectId = getProjectIdFromSlug(resolvedParams.projectSlug as ProjectSlug);
+
   // Get round data
-  // TODO: Support multi-project - currently hardcoded to Cover Project
-  const roundResult = await getRoundBySlug(COVER_PROJECT_ID, resolvedParams.slug);
+  const roundResult = await getRoundBySlug(projectId, resolvedParams.slug);
   if (roundResult.status !== 'success' || !roundResult.data) {
-    redirect('/rounds');
+    redirect(`/projects/${resolvedParams.projectSlug}/rounds`);
   }
 
   const round = roundResult.data;

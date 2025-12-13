@@ -34,9 +34,9 @@ export const StaticHero = () => {
         transition={{ duration: 0.5, delay: 0.03 }}
         className="flex flex-col items-center md:items-start"
       >
-        <Link href={Navigation.SignUp}>
+        <Link href={Navigation.HowItWorks}>
           <Button variant="default" size="lg">
-            Join Next Round
+            Learn How It Works
           </Button>
         </Link>
         <div className="text-sm text-[var(--color-gray-400)] mt-2 text-center md:text-left">No commitment required</div>

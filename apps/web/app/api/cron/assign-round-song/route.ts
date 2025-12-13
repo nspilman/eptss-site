@@ -4,20 +4,24 @@ import {
   setRoundSong,
   getDetailedVoteResults,
   getSongByTitleAndArtist,
-  COVER_PROJECT_ID
+  getAllProjects,
+  type ProjectSlug
 } from '@eptss/data-access';
+import { getProjectAutomation } from '@eptss/project-config';
 import { sendAdminSongAssignmentNotification } from '@eptss/email';
 
 /**
  * API route to automatically assign the winning song to a round when voting closes
  * This should be called by a cron job (GitHub Actions or Vercel Cron)
- * 
+ *
  * Logic:
- * 1. Check if current round has started covering phase (now >= coveringBegins)
- * 2. Check if round already has a song assigned
- * 3. If not, get vote results and assign the highest-voted song
- * 4. Tie-breaking: highest average, then fewest 1-star votes
- * 5. Log results (email notification removed for now)
+ * 1. Loop through all active projects
+ * 2. Check if song auto-assignment is enabled for each project
+ * 3. Check if current round has started covering phase (now >= coveringBegins)
+ * 4. Check if round already has a song assigned
+ * 5. If not, get vote results and assign the highest-voted song
+ * 6. Tie-breaking: highest average, then fewest 1-star votes
+ * 7. Send admin notification email
  */
 export async function POST(request: NextRequest) {
   try {
@@ -41,165 +45,196 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the current round
-    const currentRoundResult = await getCurrentRound(COVER_PROJECT_ID);
-    
-    if (currentRoundResult.status !== 'success') {
-      console.log('[assign-round-song] No current round found');
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: 'No current round found',
-          action: 'none'
-        },
-        { status: 200 }
-      );
-    }
+    // Get all active projects
+    const allProjects = await getAllProjects();
+    const activeProjects = allProjects.filter(p => p.isActive);
 
-    const round = currentRoundResult.data;
+    console.log(`[assign-round-song] Processing ${activeProjects.length} active project(s)`);
+
+    const projectResults = [];
+    let totalSongsAssigned = 0;
     const now = new Date();
 
-    // Check if we've reached the covering phase
-    const hasReachedCoveringPhase = now >= round.coveringBegins;
+    // Loop through each project
+    for (const project of activeProjects) {
+      try {
+        // Check if song auto-assignment is enabled for this project
+        const automation = await getProjectAutomation(project.slug as ProjectSlug);
 
-    if (!hasReachedCoveringPhase) {
-      console.log(`[assign-round-song] Round ${round.roundId} (${round.slug}) has not reached covering phase yet`);
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: `Round ${round.slug} has not reached covering phase yet`,
-          action: 'none',
-          roundPhase: {
-            coveringBegins: round.coveringBegins.toISOString(),
-            now: now.toISOString()
+        if (!automation.enableSongAssignment) {
+          console.log(`[assign-round-song] Song auto-assignment disabled for project: ${project.slug}`);
+          projectResults.push({
+            project: project.slug,
+            skipped: true,
+            reason: 'Song auto-assignment disabled'
+          });
+          continue;
+        }
+
+        console.log(`[assign-round-song] [${project.slug}] Processing project`);
+
+        // Get the current round
+        const currentRoundResult = await getCurrentRound(project.id);
+
+        if (currentRoundResult.status !== 'success') {
+          console.log(`[assign-round-song] [${project.slug}] No current round found`);
+          projectResults.push({
+            project: project.slug,
+            skipped: true,
+            reason: 'No current round found'
+          });
+          continue;
+        }
+
+        const round = currentRoundResult.data;
+
+        // Check if we've reached the covering phase
+        const hasReachedCoveringPhase = now >= round.coveringBegins;
+
+        if (!hasReachedCoveringPhase) {
+          console.log(`[assign-round-song] [${project.slug}] Round ${round.roundId} (${round.slug}) has not reached covering phase yet`);
+          projectResults.push({
+            project: project.slug,
+            action: 'none',
+            reason: 'Round has not reached covering phase yet',
+            roundPhase: {
+              coveringBegins: round.coveringBegins.toISOString(),
+              now: now.toISOString()
+            }
+          });
+          continue;
+        }
+
+        // Check if round already has a song assigned
+        if (round.song.title && round.song.artist) {
+          console.log(`[assign-round-song] [${project.slug}] Round ${round.roundId} (${round.slug}) already has song assigned: ${round.song.title} - ${round.song.artist}`);
+          projectResults.push({
+            project: project.slug,
+            action: 'none',
+            reason: 'Round already has song assigned',
+            assignedSong: round.song
+          });
+          continue;
+        }
+
+        // Get detailed vote results for this round (includes 1-star counts)
+        const voteResults = await getDetailedVoteResults(round.roundId);
+
+        if (voteResults.length === 0) {
+          console.warn(`[assign-round-song] [${project.slug}] No votes found for round ${round.roundId} (${round.slug})`);
+          projectResults.push({
+            project: project.slug,
+            action: 'none',
+            reason: 'No votes found for round'
+          });
+          continue;
+        }
+
+        // Find the winning song
+        // Tie-breaking: highest average, then fewest 1-star votes
+        const sortedResults = [...voteResults].sort((a, b) => {
+          // First, sort by average (descending)
+          if (b.average !== a.average) {
+            return b.average - a.average;
           }
-        },
-        { status: 200 }
-      );
-    }
+          // If averages are equal, sort by fewest 1-star votes (ascending)
+          return a.oneStarCount - b.oneStarCount;
+        });
 
-    // Check if round already has a song assigned
-    if (round.song.title && round.song.artist) {
-      console.log(`[assign-round-song] Round ${round.roundId} (${round.slug}) already has song assigned: ${round.song.title} - ${round.song.artist}`);
-      return NextResponse.json(
-        { 
-          success: true, 
-          message: `Round ${round.slug} already has song assigned`,
-          action: 'none',
-          assignedSong: round.song
-        },
-        { status: 200 }
-      );
-    }
+        const winningSong = sortedResults[0];
 
-    // Get detailed vote results for this round (includes 1-star counts)
-    const voteResults = await getDetailedVoteResults(round.roundId);
+        console.log(`[assign-round-song] [${project.slug}] Winning song for round ${round.roundId} (${round.slug}): ${winningSong.title} - ${winningSong.artist} (avg: ${winningSong.average}, votes: ${winningSong.votesCount}, 1-star: ${winningSong.oneStarCount})`);
 
-    if (voteResults.length === 0) {
-      console.warn(`[assign-round-song] No votes found for round ${round.roundId} (${round.slug})`);
-      return NextResponse.json(
-        { 
-          success: false, 
-          message: `No votes found for round ${round.slug}`,
-          action: 'none'
-        },
-        { status: 200 }
-      );
-    }
+        // Find the song ID in the database
+        const songId = await getSongByTitleAndArtist(winningSong.title, winningSong.artist);
 
-    // Find the winning song
-    // Tie-breaking: highest average, then fewest 1-star votes
-    const sortedResults = [...voteResults].sort((a, b) => {
-      // First, sort by average (descending)
-      if (b.average !== a.average) {
-        return b.average - a.average;
+        if (!songId) {
+          console.error(`[assign-round-song] [${project.slug}] Song not found in database: ${winningSong.title} - ${winningSong.artist}`);
+          projectResults.push({
+            project: project.slug,
+            error: 'Winning song not found in database',
+            winningSong
+          });
+          continue;
+        }
+
+        // Assign the song to the round
+        const setResult = await setRoundSong(round.roundId, songId);
+
+        if (setResult.status !== 'success') {
+          console.error(`[assign-round-song] [${project.slug}] Failed to set song for round ${round.roundId}:`, setResult.message);
+          projectResults.push({
+            project: project.slug,
+            error: setResult.message || 'Failed to assign song to round'
+          });
+          continue;
+        }
+
+        console.log(`[assign-round-song] [${project.slug}] Successfully assigned song to round ${round.roundId} (${round.slug})`);
+        totalSongsAssigned++;
+
+        // Send admin notification email
+        try {
+          const emailResult = await sendAdminSongAssignmentNotification({
+            roundName: round.slug || `Round ${round.roundId}`,
+            roundSlug: round.slug || round.roundId.toString(),
+            assignedSong: {
+              title: winningSong.title,
+              artist: winningSong.artist,
+              average: winningSong.average,
+              votesCount: winningSong.votesCount,
+              oneStarCount: winningSong.oneStarCount
+            },
+            allResults: sortedResults.map(r => ({
+              title: r.title,
+              artist: r.artist,
+              average: r.average,
+              votesCount: r.votesCount,
+              oneStarCount: r.oneStarCount
+            }))
+          });
+
+          if (emailResult.success) {
+            console.log(`[assign-round-song] [${project.slug}] Admin notification email sent successfully`);
+          } else {
+            console.warn(`[assign-round-song] [${project.slug}] Failed to send admin notification email:`, emailResult.error);
+          }
+        } catch (error) {
+          console.error(`[assign-round-song] [${project.slug}] Error sending admin notification email:`, error);
+          // Don't fail the whole operation if email fails
+        }
+
+        projectResults.push({
+          project: project.slug,
+          action: 'assigned',
+          round: {
+            id: round.roundId,
+            slug: round.slug
+          },
+          assignedSong: {
+            title: winningSong.title,
+            artist: winningSong.artist,
+            average: winningSong.average,
+            votesCount: winningSong.votesCount,
+            oneStarCount: winningSong.oneStarCount
+          }
+        });
+
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        console.error(`[assign-round-song] Error processing project ${project.slug}:`, errorMsg);
+        projectResults.push({
+          project: project.slug,
+          error: errorMsg
+        });
       }
-      // If averages are equal, sort by fewest 1-star votes (ascending)
-      return a.oneStarCount - b.oneStarCount;
-    });
-
-    const winningSong = sortedResults[0];
-
-    console.log(`[assign-round-song] Winning song for round ${round.roundId} (${round.slug}): ${winningSong.title} - ${winningSong.artist} (avg: ${winningSong.average}, votes: ${winningSong.votesCount}, 1-star: ${winningSong.oneStarCount})`);
-
-    // Find the song ID in the database
-    const songId = await getSongByTitleAndArtist(winningSong.title, winningSong.artist);
-
-    if (!songId) {
-      console.error(`[assign-round-song] Song not found in database: ${winningSong.title} - ${winningSong.artist}`);
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Winning song not found in database',
-          winningSong
-        },
-        { status: 500 }
-      );
-    }
-
-    // Assign the song to the round
-    const setResult = await setRoundSong(round.roundId, songId);
-
-    if (setResult.status !== 'success') {
-      console.error(`[assign-round-song] Failed to set song for round ${round.roundId}:`, setResult.message);
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: setResult.message || 'Failed to assign song to round'
-        },
-        { status: 500 }
-      );
-    }
-
-    console.log(`[assign-round-song] Successfully assigned song to round ${round.roundId} (${round.slug})`);
-
-    // Send admin notification email
-    try {
-      const emailResult = await sendAdminSongAssignmentNotification({
-        roundName: round.slug || `Round ${round.roundId}`,
-        roundSlug: round.slug || round.roundId.toString(),
-        assignedSong: {
-          title: winningSong.title,
-          artist: winningSong.artist,
-          average: winningSong.average,
-          votesCount: winningSong.votesCount,
-          oneStarCount: winningSong.oneStarCount
-        },
-        allResults: sortedResults.map(r => ({
-          title: r.title,
-          artist: r.artist,
-          average: r.average,
-          votesCount: r.votesCount,
-          oneStarCount: r.oneStarCount
-        }))
-      });
-
-      if (emailResult.success) {
-        console.log(`[assign-round-song] Admin notification email sent successfully`);
-      } else {
-        console.warn(`[assign-round-song] Failed to send admin notification email:`, emailResult.error);
-      }
-    } catch (error) {
-      console.error(`[assign-round-song] Error sending admin notification email:`, error);
-      // Don't fail the whole operation if email fails
     }
 
     return NextResponse.json(
-      { 
-        success: true, 
-        message: `Successfully assigned song to round ${round.slug}`,
-        action: 'assigned',
-        round: {
-          id: round.roundId,
-          slug: round.slug
-        },
-        assignedSong: {
-          title: winningSong.title,
-          artist: winningSong.artist,
-          average: winningSong.average,
-          votesCount: winningSong.votesCount,
-          oneStarCount: winningSong.oneStarCount
-        }
+      {
+        success: true,
+        message: `Processed ${activeProjects.length} project(s), assigned ${totalSongsAssigned} song(s)`,
+        projectResults
       },
       { status: 200 }
     );

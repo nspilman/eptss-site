@@ -207,7 +207,7 @@ export const submitVotes = async (
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.Voting, "Round not found");
+      return handleResponse(404, Navigation.Dashboard, "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -246,14 +246,14 @@ export const submitVotes = async (
         }));
 
       if (votes.length === 0) {
-        return handleResponse(400, Navigation.Voting, "No votes submitted");
+        return handleResponse(400, Navigation.Dashboard, "No votes submitted");
       }
 
       await trx.insert(songSelectionVotes).values(votes);
     });
 
-    return handleResponse(201, Navigation.Voting, "");
+    return handleResponse(201, Navigation.Dashboard, "");
   } catch (error) {
-    return handleResponse(500, Navigation.Voting, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 };

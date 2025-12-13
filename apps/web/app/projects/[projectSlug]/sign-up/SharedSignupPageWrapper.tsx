@@ -64,6 +64,7 @@ export const SharedSignupPageWrapper = async ({
       roundId={roundId}
       hasSignedUp={roundDetails?.hasSignedUp || false}
       slug={slug || currentSlug}
+      projectSlug={projectSlug}
       isLoggedIn={isLoggedIn}
       userSignup={userSignup}
       signup={signup}

@@ -14,12 +14,12 @@ export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 interface ProjectDashboardPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ projectSlug: string }>;
 }
 
 export default async function ProjectDashboardPage({ params }: ProjectDashboardPageProps) {
   const resolvedParams = await params;
-  const { slug } = resolvedParams;
+  const { projectSlug: slug } = resolvedParams;
 
   // Validate project slug
   if (!isValidProjectSlug(slug)) {

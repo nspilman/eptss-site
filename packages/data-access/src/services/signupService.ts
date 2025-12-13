@@ -183,7 +183,7 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
 
         return handleResponse(
           400,
-          Navigation.SignUp,
+          Navigation.Dashboard,
           "We detected unusual activity. Please try again or contact support if this persists."
         );
       }
@@ -206,7 +206,7 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
 
         return handleResponse(
           400,
-          Navigation.SignUp,
+          Navigation.Dashboard,
           "Security verification required. Please refresh the page and try again."
         );
       }
@@ -216,7 +216,7 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     const validation = validateFormData(formData, nonAuthSignupSchema);
 
     if (!validation.success) {
-      return handleResponse(400, Navigation.SignUp, validation.error);
+      return handleResponse(400, Navigation.Dashboard, validation.error);
     }
 
     const validData = validation.data;
@@ -227,7 +227,7 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     if (!referralCode) {
       return handleResponse(
         400,
-        Navigation.SignUp,
+        Navigation.Dashboard,
         "A referral code is required to create an account. Please ask an existing member for a referral link."
       );
     }
@@ -237,7 +237,7 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     if (!referralValidation.valid) {
       return handleResponse(
         400,
-        Navigation.SignUp,
+        Navigation.Dashboard,
         referralValidation.message
       );
     }
@@ -287,12 +287,12 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     if (error) {
       // Clean up the unverified signup if OTP fails
       await db.delete(unverifiedSignups).where(eq(unverifiedSignups.email, validData.email.trim()));
-      return handleResponse(400, Navigation.SignUp, error.message);
+      return handleResponse(400, Navigation.Dashboard, error.message);
     }
     
-    return handleResponse(200, Navigation.SignUp, "Please check your email for a verification link to complete your signup.");
+    return handleResponse(200, Navigation.Dashboard, "Please check your email for a verification link to complete your signup.");
   } catch (error) {
-    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 }
 
@@ -303,7 +303,7 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
   const { projectId, roundId, userId, additionalComments = "" } = props;
   
   if (!userId) {
-    return handleResponse(401, Navigation.SignUp, "User ID is required for signup");
+    return handleResponse(401, Navigation.Dashboard, "User ID is required for signup");
   }
   
   try {
@@ -356,7 +356,7 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
       return handleResponse(200, Navigation.Dashboard, "You have successfully signed up for this round!");
     }
   } catch (error) {
-    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 }
 
@@ -366,7 +366,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
   const { userId, email } = await getAuthUser();
   
   if (!userId || !email) {
-    return handleResponse(401, Navigation.SignUp, "You must be authenticated to complete signup");
+    return handleResponse(401, Navigation.Dashboard, "You must be authenticated to complete signup");
   }
   
   try {
@@ -381,7 +381,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       .limit(1);
 
     if (!unverifiedSignup.length) {
-      return handleResponse(404, Navigation.SignUp, "No pending signup found for your email");
+      return handleResponse(404, Navigation.Dashboard, "No pending signup found for your email");
     }
 
     // Check if user exists in our database
@@ -421,7 +421,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.SignUp, "Round not found");
+      return handleResponse(404, Navigation.Dashboard, "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -492,7 +492,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
 
     return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
   } catch (error) {
-    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 }
 
@@ -509,7 +509,7 @@ export async function completeSignupAfterVerification(params: {
   const { userId } = await getAuthUser();
   
   if (!userId) {
-    return handleResponse(401, Navigation.SignUp, "You must be authenticated to complete signup");
+    return handleResponse(401, Navigation.Dashboard, "You must be authenticated to complete signup");
   }
   
   try {
@@ -527,7 +527,7 @@ export async function completeSignupAfterVerification(params: {
     // This will mark the signup as verified since we're providing a userId
     return await signup(formData, userId);
   } catch (error) {
-    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 }
 
@@ -660,7 +660,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
   const userId = providedUserId || authUserId;
   
   if (!userId) {
-    return handleResponse(401, Navigation.SignUp, "User ID is required for signup");
+    return handleResponse(401, Navigation.Dashboard, "User ID is required for signup");
   }
   
   try {
@@ -668,7 +668,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
     const validation = validateFormData(formData, signupSchema);
     
     if (!validation.success) {
-      return handleResponse(400, Navigation.SignUp, validation.error);
+      return handleResponse(400, Navigation.Dashboard, validation.error);
     }
     
     const validData = validation.data;
@@ -681,7 +681,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.SignUp, "Round not found");
+      return handleResponse(404, Navigation.Dashboard, "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -767,6 +767,6 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
     }
   } catch (error) {
-    return handleResponse(500, Navigation.SignUp, (error as Error).message);
+    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
   }
 }

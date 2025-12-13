@@ -52,13 +52,8 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href={Navigation.Rounds} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
-                  Past Rounds
-                </Link>
-              </li>
-              <li>
-                <Link href={Navigation.CurrentRound} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
-                  Current Round
+                <Link href={Navigation.Dashboard} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
+                  Dashboard
                 </Link>
               </li>
             </ul>

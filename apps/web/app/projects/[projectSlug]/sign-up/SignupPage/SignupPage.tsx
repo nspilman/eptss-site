@@ -13,6 +13,7 @@ interface Props {
   roundId: number;
   signupsCloseDateLabel: string;
   slug: string;
+  projectSlug: string;
   isLoggedIn?: boolean;
   userSignup?: UserSignupData;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
@@ -25,6 +26,7 @@ export function SignupPage({
   roundId,
   signupsCloseDateLabel,
   slug,
+  projectSlug,
   isLoggedIn = false,
   userSignup,
   signup,
@@ -64,6 +66,8 @@ export function SignupPage({
           text={signupSuccessText}
           image={signupSuccessImage}
           roundId={roundId}
+          projectSlug={projectSlug}
+          action="signups"
         />
       ) : (
         <CaptchaProvider>

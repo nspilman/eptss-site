@@ -51,6 +51,20 @@ export const businessRulesSchema = z.object({
 }).default({});
 
 // ============================================================================
+// AUTOMATION & CRON JOBS
+// ============================================================================
+
+/**
+ * Automation and cron job configuration per project
+ */
+export const automationSchema = z.object({
+  enableEmailReminders: z.boolean().default(true),
+  enableRoundAutoCreation: z.boolean().default(false),
+  enableSongAssignment: z.boolean().default(false),
+  roundCreationLeadTimeDays: z.number().int().positive().default(30),
+}).default({});
+
+// ============================================================================
 // EMAIL TEMPLATES
 // ============================================================================
 
@@ -153,6 +167,7 @@ export const projectConfigSchema = z.object({
   features: featureFlagsSchema,
   ui: uiConfigSchema,
   businessRules: businessRulesSchema,
+  automation: automationSchema,
   email: emailConfigSchema,
   metadata: projectMetadataSchema,
   content: z.object({
@@ -169,6 +184,7 @@ export type ProjectConfig = z.infer<typeof projectConfigSchema>;
 export type FeatureFlags = z.infer<typeof featureFlagsSchema>;
 export type UIConfig = z.infer<typeof uiConfigSchema>;
 export type BusinessRules = z.infer<typeof businessRulesSchema>;
+export type Automation = z.infer<typeof automationSchema>;
 export type EmailConfig = z.infer<typeof emailConfigSchema>;
 export type ProjectMetadata = z.infer<typeof projectMetadataSchema>;
 export type PageContent = z.infer<typeof pageContentSchema>;
