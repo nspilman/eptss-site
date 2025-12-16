@@ -8,6 +8,14 @@ interface CountdownBarData {
   hasSignedUp?: boolean;
   hasVoted?: boolean;
   hasSubmitted?: boolean;
+  terminology?: {
+    phaseShortNames: {
+      signups: string;
+      voting: string;
+      covering: string;
+      celebration: string;
+    };
+  };
 }
 
 /**
@@ -16,11 +24,16 @@ interface CountdownBarData {
  * Content-only - PanelCard handles styling
  */
 export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
+  console.log('[CountdownBarWrapper] Rendering with data:', JSON.stringify(data, null, 2));
+
   if (!data) {
+    console.log('[CountdownBarWrapper] No data provided');
     return null;
   }
 
-  const { phase, timeRemaining, dueDate, urgencyLevel = 'normal', hasSignedUp, hasVoted, hasSubmitted } = data;
+  const { phase, timeRemaining, dueDate, urgencyLevel = 'normal', hasSignedUp, hasVoted, hasSubmitted, terminology } = data;
+
+  console.log('[CountdownBarWrapper] Extracted terminology:', JSON.stringify(terminology, null, 2));
 
   const urgencyStyles = {
     normal: 'text-[var(--color-accent-primary)]',
@@ -28,13 +41,31 @@ export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
     urgent: 'text-red-400',
   };
 
-  // Progress phases with completion status
+  // Progress phases with completion status - use terminology if available
   const progressPhases = [
-    { id: 'signups', label: 'Sign Up', completed: hasSignedUp || false },
-    { id: 'voting', label: 'Vote', completed: hasVoted || false },
-    { id: 'covering', label: 'Cover', completed: hasSubmitted || false },
-    { id: 'celebration', label: 'Listen', completed: phase === 'celebration' },
+    {
+      id: 'signups',
+      label: terminology?.phaseShortNames?.signups || 'Sign Up',
+      completed: hasSignedUp || false
+    },
+    {
+      id: 'voting',
+      label: terminology?.phaseShortNames?.voting || 'Vote',
+      completed: hasVoted || false
+    },
+    {
+      id: 'covering',
+      label: terminology?.phaseShortNames?.covering || 'Cover',
+      completed: hasSubmitted || false
+    },
+    {
+      id: 'celebration',
+      label: terminology?.phaseShortNames?.celebration || 'Listen',
+      completed: phase === 'celebration'
+    },
   ];
+
+  console.log('[CountdownBarWrapper] Progress phases with labels:', progressPhases.map(p => `${p.id}: ${p.label}`).join(', '));
 
   return (
     <div className="flex items-center justify-between py-2">

@@ -10,11 +10,13 @@ import {
   getNextRoundByVotingDate,
   getUserSignupData,
   getUserReflectionsForRound,
-  type Reflection
+  type Reflection,
+  type ProjectSlug,
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { Navigation } from "@eptss/shared";
 import { getProjectRoute } from "@/lib/projects";
+import { getProjectFeatures, getProjectTerminology } from "@eptss/project-config";
 import type {
   Phase
 } from "@eptss/dashboard/panels";
@@ -22,20 +24,35 @@ import type {
 /**
  * Fetch data for the Hero Panel
  * @param projectId - Project ID to scope data to a specific project
+ * @param projectSlug - Project slug for fetching terminology
  */
-export async function fetchHeroData(projectId: string) {
-  const currentRound = await roundProvider({ projectId });
+export async function fetchHeroData(projectId: string, projectSlug: string) {
+  console.log('[fetchHeroData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
+
+  const [currentRound, terminology] = await Promise.all([
+    roundProvider({ projectId }),
+    getProjectTerminology(projectSlug as ProjectSlug),
+  ]);
+
+  console.log('[fetchHeroData] Fetched terminology:', JSON.stringify(terminology, null, 2));
 
   if (!currentRound) {
+    console.log('[fetchHeroData] No current round found');
     return null;
   }
 
-  return {
+  const heroData = {
     roundId: currentRound.roundId,
     roundSlug: currentRound.slug,
     songTitle: currentRound.song?.title,
     songArtist: currentRound.song?.artist,
+    currentPhase: currentRound.phase,
+    terminology,
   };
+
+  console.log('[fetchHeroData] Returning heroData:', JSON.stringify(heroData, null, 2));
+
+  return heroData;
 }
 
 /**
@@ -83,19 +100,28 @@ function formatTimeRemaining(phaseCloses: string | undefined): string {
  * @param projectSlug - Project slug for generating project-scoped URLs (e.g., 'cover', 'original')
  */
 export async function fetchActionData(projectId: string, projectSlug: string) {
+  console.log('[fetchActionData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
+
   // Get auth user first to fetch reflections
   const { userId } = await getAuthUser();
 
-  const [currentRound, { roundDetails }] = await Promise.all([
+  const [currentRound, { roundDetails }, features, terminology] = await Promise.all([
     roundProvider({ projectId }),
     userParticipationProvider({ projectId }),
+    getProjectFeatures(projectSlug as ProjectSlug),
+    getProjectTerminology(projectSlug as ProjectSlug),
   ]);
 
+  console.log('[fetchActionData] Fetched terminology:', JSON.stringify(terminology, null, 2));
+  console.log('[fetchActionData] Features:', JSON.stringify(features, null, 2));
+
   if (!currentRound) {
+    console.log('[fetchActionData] No current round found');
     return null;
   }
 
   const { phase, roundId, slug, dateLabels } = currentRound;
+  console.log('[fetchActionData] Current phase:', phase);
 
   // Fetch reflections for this round
   let reflections: Reflection[] = [];
@@ -119,19 +145,23 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
     hour12: true
   }) : undefined;
 
+  // Use project-specific terminology
   const phaseNames: Record<Phase, string> = {
-    signups: 'Song Selection & Signups',
-    voting: 'Voting Phase',
-    covering: 'Covering Phase',
-    celebration: 'Listening Party',
+    signups: terminology.phases.signups,
+    voting: terminology.phases.voting,
+    covering: terminology.phases.covering,
+    celebration: terminology.phases.celebration,
   };
 
   const phaseMessages: Record<Phase, string> = {
-    signups: 'Suggest a song and sign up to participate',
-    voting: 'Vote on which song should be covered this round',
-    covering: 'Record and submit your cover of the selected song',
-    celebration: 'Join us for the listening party event!',
+    signups: terminology.phaseDescriptions.signups,
+    voting: terminology.phaseDescriptions.voting,
+    covering: terminology.phaseDescriptions.covering,
+    celebration: terminology.phaseDescriptions.celebration,
   };
+
+  console.log('[fetchActionData] Phase names:', JSON.stringify(phaseNames, null, 2));
+  console.log('[fetchActionData] Phase messages:', JSON.stringify(phaseMessages, null, 2));
 
   // Generate project-scoped URLs
   const signupUrl = getProjectRoute(projectSlug, 'sign-up');
@@ -165,6 +195,51 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
       };
 
     case 'voting':
+      // If voting is disabled for this project, show a message about the next phase
+      if (!features.enableVoting) {
+        // If user hasn't signed up, offer late signup option
+        if (!roundDetails?.hasSignedUp) {
+          return {
+            actionText: 'Join Round (Late Signup)',
+            actionHref: '#late-signup',
+            contextMessage: `Join this round and participate!`,
+            isHighPriority: true,
+            isLateSignup: true,
+            reflections,
+            roundSlug: slug,
+            phase: phase as Phase,
+            phaseName: phaseNames[phase as Phase],
+            phaseMessage: phaseMessages[phase as Phase],
+            timeRemaining,
+            dueDate,
+            urgencyLevel,
+            hasSignedUp: roundDetails?.hasSignedUp || false,
+            hasSubmitted: roundDetails?.hasSubmitted || false,
+            hasVoted: roundDetails?.hasVoted || false,
+          };
+        }
+
+        // For projects with voting disabled, encourage inviting others during preparation
+        return {
+          actionText: 'Invite Friends to Join',
+          actionHref: '#invite-friends',
+          contextMessage: 'The prompt will be revealed soon. Invite your friends to participate!',
+          isHighPriority: true,
+          showInviteLink: true, // Flag to trigger invite link generation in the UI
+          reflections,
+          roundSlug: slug,
+          phase: phase as Phase,
+          phaseName: phaseNames[phase as Phase],
+          phaseMessage: phaseMessages[phase as Phase],
+          timeRemaining,
+          dueDate,
+          urgencyLevel,
+          hasSignedUp: roundDetails?.hasSignedUp || false,
+          hasSubmitted: roundDetails?.hasSubmitted || false,
+          hasVoted: roundDetails?.hasVoted || false,
+        };
+      }
+
       // If user hasn't signed up, offer late signup option
       if (!roundDetails?.hasSignedUp) {
         return {

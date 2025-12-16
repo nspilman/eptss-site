@@ -1,6 +1,7 @@
 import { ActionPanel, ActionPanelData } from '@eptss/dashboard/panels';
 import { PanelProps } from '@eptss/dashboard';
 import { LateSignupButton } from './LateSignupButton';
+import { InviteScrollButton } from './InviteScrollButton';
 import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
 import { roundProvider, COVER_PROJECT_ID } from '@eptss/data-access';
 import Link from 'next/link';
@@ -20,6 +21,7 @@ export interface ActionPanelWrapperData extends ActionPanelData {
   hasSignedUp?: boolean;
   hasSubmitted?: boolean;
   hasVoted?: boolean;
+  showInviteLink?: boolean;
 }
 
 /**
@@ -28,9 +30,16 @@ export interface ActionPanelWrapperData extends ActionPanelData {
  * Content-only - PanelCard + DashboardLayout handle sizing/styling
  */
 export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPanelWrapperData>) {
-  if (!data) return null;
+  console.log('[ActionPanelWrapper] Rendering with data:', JSON.stringify(data, null, 2));
+
+  if (!data) {
+    console.log('[ActionPanelWrapper] No data provided');
+    return null;
+  }
 
   const { reflections = [], roundSlug = '' } = data;
+
+  console.log('[ActionPanelWrapper] phaseName:', data.phaseName, 'phaseMessage:', data.phaseMessage);
 
   // If this is a late signup action, render custom UI
   if (data.isLateSignup) {
@@ -83,6 +92,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
     hasSignedUp = false,
     hasSubmitted = false,
     hasVoted = false,
+    showInviteLink = false,
   } = data;
 
   // Progress phases
@@ -122,19 +132,23 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
                 </p>
               )}
 
-              <Button
-                variant="secondary"
-                size="lg"
-                asChild
-                className="w-full sm:w-auto gap-2"
-              >
-                <Link href={data.actionHref}>
-                  <span>{data.actionText}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </Link>
-              </Button>
+              {showInviteLink ? (
+                <InviteScrollButton actionText={data.actionText} />
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  asChild
+                  className="w-full sm:w-auto gap-2"
+                >
+                  <Link href={data.actionHref}>
+                    <span>{data.actionText}</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </Link>
+                </Button>
+              )}
             </div>
 
             {/* Divider */}

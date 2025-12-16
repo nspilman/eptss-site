@@ -7,6 +7,7 @@ import { Button, Form } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
 import { submissionSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
+import { PageContent } from "@eptss/project-config";
 import { useProject } from "../../ProjectContext";
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
     listeningPartyLabel: string;
   };
   submitCover: (formData: FormData) => Promise<FormReturn>;
+  submitContent: PageContent['submit'];
 }
 
 const getFormFields = (isOriginal: boolean): FieldConfig[] => [
@@ -68,9 +70,9 @@ export const SubmitPage = ({
   song,
   dateStrings,
   submitCover,
+  submitContent,
 }: Props) => {
   const { projectSlug } = useProject();
-  const isOriginalProject = projectSlug === 'monthly-original';
   const { coverClosesLabel, listeningPartyLabel } = dateStrings;
 
   const form = useForm<SubmissionInput>({
@@ -87,9 +89,7 @@ export const SubmitPage = ({
     reValidateMode: "onChange"
   })
 
-  const successMessage = isOriginalProject
-    ? "Your original song has been submitted successfully"
-    : "Your cover has been submitted successfully";
+  const successMessage = submitContent.successMessage;
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {
     const result = await submitCover(formData)
@@ -122,15 +122,16 @@ export const SubmitPage = ({
     )
   }
 
-  const formTitle = isOriginalProject
-    ? `Submit your original song`
-    : `Submit your cover of ${song.title} by ${song.artist}`;
+  // Use template for form title
+  const formTitle = song.title
+    ? submitContent.formTitleWithSong
+        .replace('{{songTitle}}', song.title)
+        .replace('{{songArtist}}', song.artist)
+    : submitContent.formTitleNoSong;
 
-  const formDescription = isOriginalProject
-    ? `Submit your song by ${coverClosesLabel}`
-    : `Submit your cover by ${coverClosesLabel}`;
+  const formDescription = `${submitContent.formDescriptionPrefix} ${coverClosesLabel}`;
 
-  const submitButtonText = isOriginalProject ? "Submit Song" : "Submit Cover";
+  const submitButtonText = submitContent.submitButtonText;
 
   return (
     <FormWrapper
@@ -147,12 +148,12 @@ export const SubmitPage = ({
         >
           <input type="hidden" name="roundId" value={roundId} />
           <FormBuilder
-            fields={getFormFields(isOriginalProject)}
+            fields={getFormFields(song.title !== null)}
             control={form.control}
             disabled={isLoading}
           />
           <Button type="submit" disabled={isLoading} size="full">
-            {isLoading ? "Submitting..." : submitButtonText}
+            {isLoading ? submitContent.submittingText : submitButtonText}
           </Button>
         </motion.div>
       </Form>

@@ -1,4 +1,5 @@
-import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from "@eptss/data-access";
+import { getProjectSEOMetadata, getPageContent } from "@eptss/project-config";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "./SubmitPage";
 import { Metadata } from 'next';
@@ -11,23 +12,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const { projectSlug } = resolvedParams;
 
-  if (projectSlug === 'monthly-original') {
+  // Validate slug
+  if (!isValidProjectSlug(projectSlug)) {
     return {
-      title: "Submit Your Original Song | Monthly Original Challenge",
-      description: "Submit your original song for the current monthly challenge. Share your creative work with our songwriting community.",
-      openGraph: {
-        title: "Submit Your Original Song | Monthly Original Challenge",
-        description: "Submit your original song for the current monthly challenge. Share your creative work with our songwriting community.",
-      },
+      title: "Submit | Project Not Found",
+      description: "The requested project could not be found",
     };
   }
 
+  // Get SEO metadata from config
+  const seoMetadata = await getProjectSEOMetadata(projectSlug as ProjectSlug);
+  const { submitPage } = seoMetadata;
+
   return {
-    title: "Submit Your Cover | Everyone Plays the Same Song",
-    description: "Submit your unique cover version for the current round of Everyone Plays the Same Song. Share your musical interpretation with our community.",
+    title: submitPage.title,
+    description: submitPage.description,
     openGraph: {
-      title: "Submit Your Cover | Everyone Plays the Same Song",
-      description: "Submit your unique cover version for the current round of Everyone Plays the Same Song. Share your musical interpretation with our community.",
+      title: submitPage.ogTitle || submitPage.title,
+      description: submitPage.ogDescription || submitPage.description,
     },
   };
 }
@@ -39,6 +41,9 @@ const Submit = async ({ params }: Props) => {
   const resolvedParams = await params;
   const { projectSlug } = resolvedParams;
   const projectId = getProjectIdFromSlug(projectSlug as ProjectSlug);
+
+  // Get submit page content from config
+  const submitContent = await getPageContent(projectSlug as ProjectSlug, 'submit');
 
   const {
     roundId,
@@ -68,6 +73,7 @@ const Submit = async ({ params }: Props) => {
         listeningPartyLabel,
       }}
       submitCover={submitCover}
+      submitContent={submitContent}
     />
   );
 };

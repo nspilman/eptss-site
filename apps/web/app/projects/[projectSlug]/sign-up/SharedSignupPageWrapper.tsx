@@ -25,6 +25,8 @@ export const SharedSignupPageWrapper = async ({
 
   // Fetch project business rules
   const businessRules = await getProjectBusinessRules(projectSlug as ProjectSlug);
+  console.log('[SharedSignupPageWrapper] Project:', projectSlug, 'Business Rules:', JSON.stringify(businessRules, null, 2));
+  console.log('[SharedSignupPageWrapper] requireSongOnSignup:', businessRules.requireSongOnSignup);
 
   // If slug is provided, use it directly, otherwise get current round info
   const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider({ slug, projectId });

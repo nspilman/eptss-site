@@ -14,8 +14,8 @@ export interface SongData {
  * Interface for signup data as stored in the database and used in the API
  */
 export interface SignupData {
-  songId: number;
-  youtubeLink: string;
+  songId: number | null;
+  youtubeLink: string | null;
   userId: string;
   email: string;
   song: SongData;

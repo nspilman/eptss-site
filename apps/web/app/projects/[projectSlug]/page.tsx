@@ -1,11 +1,18 @@
 import { Metadata } from 'next';
 import { roundProvider, roundsProvider } from "@eptss/data-access";
-import { getProjectIdFromSlug, isValidProjectSlug } from '@eptss/data-access';
+import { getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from '@eptss/data-access';
+import {
+  getProjectPageContent,
+  getProjectSEOMetadata,
+  getHowItWorksContent,
+  getRoundInfoLabels,
+  getSubmissionsGalleryContent
+} from '@eptss/project-config';
 import { notFound } from 'next/navigation';
-import { MonthlyOriginalHero } from './components/MonthlyOriginalHero';
-import { OriginalHowItWorks } from './components/OriginalHowItWorks';
+import { ProjectHero } from './components/ProjectHero';
+import { ConfigDrivenHowItWorks } from './components/ConfigDrivenHowItWorks';
 import { SubmissionsGallery } from './components/SubmissionsGallery';
-import { OriginalRoundInfo } from './components/OriginalRoundInfo';
+import { RoundInfoCard } from './components/RoundInfoCard';
 
 interface ProjectPageProps {
   params: Promise<{ projectSlug: string }>;
@@ -15,28 +22,33 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const resolvedParams = await params;
   const { projectSlug } = resolvedParams;
 
-  if (projectSlug === 'monthly-original') {
+  // Validate slug
+  if (!isValidProjectSlug(projectSlug)) {
     return {
-      title: "Monthly Original Song Challenge | Create Your Own Music",
-      description: "Join our monthly original songwriting challenge. Write and record an original song every month with a supportive community of musicians and songwriters.",
-      openGraph: {
-        title: "Monthly Original Song Challenge | Create Your Own Music",
-        description: "Join our monthly original songwriting challenge. Write and record an original song every month with a supportive community of musicians and songwriters.",
-        images: [
-          {
-            url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`,
-            width: 1200,
-            height: 630,
-            alt: "Monthly Original Song Challenge",
-          },
-        ],
-      },
+      title: "Project Not Found",
+      description: "The requested project could not be found",
     };
   }
 
+  // Get SEO metadata from config
+  const seoMetadata = await getProjectSEOMetadata(projectSlug as ProjectSlug);
+  const { landingPage } = seoMetadata;
+
   return {
-    title: "Project | Everyone Plays the Same Song",
-    description: "Join our creative music community",
+    title: landingPage.title,
+    description: landingPage.description,
+    openGraph: {
+      title: landingPage.ogTitle || landingPage.title,
+      description: landingPage.ogDescription || landingPage.description,
+      images: [
+        {
+          url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: landingPage.title,
+        },
+      ],
+    },
   };
 }
 
@@ -86,49 +98,39 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   // Get project ID
   const projectId = getProjectIdFromSlug(projectSlug);
 
+  // Fetch project content from config
+  const pageContent = await getProjectPageContent(projectSlug as ProjectSlug);
+  const howItWorksContent = await getHowItWorksContent(projectSlug as ProjectSlug);
+  const roundInfoLabels = await getRoundInfoLabels(projectSlug as ProjectSlug);
+  const submissionsGalleryContent = await getSubmissionsGalleryContent(projectSlug as ProjectSlug);
+
   // Fetch round info for this project
   const roundInfo = await roundProvider({ projectId });
 
   // Fetch rounds data
   const { rounds, currentRoundId, isVotingPhase } = await getProjectRoundsData(projectId);
 
-  // Render monthly-original page
-  if (projectSlug === 'monthly-original') {
-    return (
-      <div className="max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-16">
-          <MonthlyOriginalHero projectSlug={projectSlug} />
-          <div className="flex justify-center md:justify-end">
-            <OriginalRoundInfo roundInfo={roundInfo} />
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="space-y-24 mt-16 md:mt-24">
-          <OriginalHowItWorks />
-
-          <section id="submissions">
-            <SubmissionsGallery submissions={rounds} />
-          </section>
+  // Render generic project landing page with project-specific content
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Hero Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-16">
+        <ProjectHero
+          projectSlug={projectSlug}
+          content={pageContent.home.hero}
+        />
+        <div className="flex justify-center md:justify-end">
+          <RoundInfoCard roundInfo={roundInfo} labels={roundInfoLabels} />
         </div>
       </div>
-    );
-  }
 
-  // For cover project, redirect to /projects/cover/rounds or show a simple landing page
-  // TODO: Create cover project landing page
-  return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      <h1 className="text-4xl font-bold mb-4">Everyone Plays the Same Song</h1>
-      <p className="text-lg mb-6">
-        Every quarter, our community picks one song. Everyone creates their own unique cover version.
-        Then we celebrate with a virtual listening party!
-      </p>
-      <div className="space-y-4">
-        <a href="/projects/cover/sign-up" className="inline-block px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90">
-          Sign Up for Next Round
-        </a>
+      {/* Main Content */}
+      <div className="space-y-24 mt-16 md:mt-24">
+        <ConfigDrivenHowItWorks content={howItWorksContent} projectSlug={projectSlug} />
+
+        <section id="submissions">
+          <SubmissionsGallery submissions={rounds} content={submissionsGalleryContent} />
+        </section>
       </div>
     </div>
   );

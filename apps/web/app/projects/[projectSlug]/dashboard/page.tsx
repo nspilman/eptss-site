@@ -21,12 +21,16 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
   const resolvedParams = await params;
   const { projectSlug: slug } = resolvedParams;
 
+  console.log('[ProjectDashboardPage] Loading dashboard for projectSlug:', slug);
+
   // Validate project slug
   if (!isValidProjectSlug(slug)) {
+    console.log('[ProjectDashboardPage] Invalid project slug:', slug);
     notFound();
   }
 
   const projectId = getProjectIdFromSlug(slug);
+  console.log('[ProjectDashboardPage] Project ID:', projectId);
 
   // Require authentication for dashboard
   const { userId } = await getAuthUser();
@@ -34,14 +38,34 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
     redirect(`/login?redirect=/project/${slug}/dashboard`);
   }
 
+  console.log('[ProjectDashboardPage] User ID:', userId);
+
   // Fetch data for all panels in parallel
+  console.log('[ProjectDashboardPage] Fetching panel data...');
   const [heroData, actionData, participantsData, userData] =
     await Promise.all([
-      fetchHeroData(projectId),
+      fetchHeroData(projectId, slug),
       fetchActionData(projectId, slug),
       fetchParticipantsData(projectId),
       getUserById(userId),
     ]);
+
+  console.log('[ProjectDashboardPage] heroData:', JSON.stringify(heroData, null, 2));
+  console.log('[ProjectDashboardPage] actionData phase:', actionData?.phase, 'phaseName:', actionData?.phaseName);
+
+  const countdownData = actionData ? {
+    phase: actionData.phase,
+    timeRemaining: actionData.timeRemaining,
+    dueDate: actionData.dueDate,
+    urgencyLevel: actionData.urgencyLevel,
+    hasSignedUp: actionData.hasSignedUp,
+    hasVoted: actionData.hasVoted,
+    hasSubmitted: actionData.hasSubmitted,
+    terminology: heroData?.terminology,
+  } : null;
+
+  console.log('[ProjectDashboardPage] countdown panel data:', JSON.stringify(countdownData, null, 2));
+  console.log('[ProjectDashboardPage] countdown terminology:', JSON.stringify(countdownData?.terminology, null, 2));
 
   return (
     <Dashboard
@@ -55,15 +79,7 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
           profilePictureUrl: userData.profilePictureUrl,
         } : null,
         hero: heroData,
-        countdown: actionData ? {
-          phase: actionData.phase,
-          timeRemaining: actionData.timeRemaining,
-          dueDate: actionData.dueDate,
-          urgencyLevel: actionData.urgencyLevel,
-          hasSignedUp: actionData.hasSignedUp,
-          hasVoted: actionData.hasVoted,
-          hasSubmitted: actionData.hasSubmitted,
-        } : null,
+        countdown: countdownData,
         discussions: heroData ? {
           roundSlug: heroData.roundSlug,
           currentUserId: userId,

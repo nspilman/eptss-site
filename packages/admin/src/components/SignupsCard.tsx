@@ -11,8 +11,8 @@ type SignupData = {
     title: string;
     artist: string;
   };
-  songId: number;
-  youtubeLink: string;
+  songId: number | null;
+  youtubeLink: string | null;
   userId?: string;
 }
 
@@ -30,7 +30,7 @@ export const SignupsCard = ({ signups }: SignupsCardProps) => {
   const signupRows = signups.map(signup => ({
     email: signup.email || 'Unknown',
     song: `${signup.song.title} - ${signup.song.artist}`,
-    youtubeLink: signup.youtubeLink,
+    youtubeLink: signup.youtubeLink || 'Not provided',
   }))
 
   return (

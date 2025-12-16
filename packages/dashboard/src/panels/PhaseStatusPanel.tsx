@@ -20,6 +20,22 @@ export interface PhaseStatusData {
   hasSignedUp?: boolean;
   hasSubmitted?: boolean;
   hasVoted?: boolean;
+
+  /** Project-specific terminology */
+  terminology?: {
+    phases: {
+      signups: string;
+      voting: string;
+      covering: string;
+      celebration: string;
+    };
+    phaseShortNames: {
+      signups: string;
+      voting: string;
+      covering: string;
+      celebration: string;
+    };
+  };
 }
 
 /**
@@ -40,10 +56,11 @@ export function PhaseStatusPanel({ data }: PanelProps<PhaseStatusData>) {
     hasSignedUp = false,
     hasSubmitted = false,
     hasVoted = false,
+    terminology,
   } = data;
 
-  // Phase display names
-  const phaseNames: Record<Phase, string> = {
+  // Phase display names - use terminology if available, otherwise defaults
+  const phaseNames: Record<Phase, string> = terminology?.phases || {
     signups: 'Song Selection & Signups',
     voting: 'Voting Phase',
     covering: 'Covering Phase',
@@ -82,7 +99,15 @@ export function PhaseStatusPanel({ data }: PanelProps<PhaseStatusData>) {
 
   const styles = urgencyStyles[urgencyLevel];
 
-  const phaseLabels = ['Sign Up', 'Vote', 'Cover', 'Listen'];
+  // Phase labels - use terminology if available, otherwise defaults
+  const phaseLabels = terminology?.phaseShortNames
+    ? [
+        terminology.phaseShortNames.signups,
+        terminology.phaseShortNames.voting,
+        terminology.phaseShortNames.covering,
+        terminology.phaseShortNames.celebration,
+      ]
+    : ['Sign Up', 'Vote', 'Cover', 'Listen'];
 
   return (
     <div

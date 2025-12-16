@@ -1,15 +1,24 @@
 "use client";
 
-import { Button } from "@eptss/ui";
+import { Button, Display, Text, Label } from "@eptss/ui";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Sparkles, Mic, Palette } from "lucide-react";
 
-interface MonthlyOriginalHeroProps {
+interface ProjectHeroProps {
   projectSlug: string;
+  content: {
+    tagline: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    ctaPrimary: string;
+    ctaSecondary: string;
+    benefits: string;
+  };
 }
 
-export const MonthlyOriginalHero = ({ projectSlug }: MonthlyOriginalHeroProps) => {
+export const ProjectHero = ({ projectSlug, content }: ProjectHeroProps) => {
   return (
     <div className="max-w-2xl md:mb-0 flex flex-col items-center md:items-start relative">
       {/* Decorative elements */}
@@ -24,35 +33,36 @@ export const MonthlyOriginalHero = ({ projectSlug }: MonthlyOriginalHeroProps) =
       >
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-6 h-6 text-[var(--color-accent-primary)]" />
-          <span className="text-sm font-semibold text-[var(--color-accent-primary)] uppercase tracking-wide">
-            Monthly Songwriting Challenge
-          </span>
+          <Label size="sm" color="accent" className="uppercase tracking-wide">
+            {content.tagline}
+          </Label>
         </div>
       </motion.div>
 
-      <motion.h1
+      <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.02 }}
         className="text-center md:text-left mb-6 relative z-10"
       >
-        <span className="text-4xl sm:text-6xl text-[var(--color-white)] block mb-2">
-          Create Your Own
-        </span>
-        <span className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-          Original Song
-        </span>
-      </motion.h1>
+        <Display size="lg" className="block mb-2">
+          {content.title}
+        </Display>
+        <Display size="lg" gradient className="block">
+          {content.subtitle}
+        </Display>
+      </motion.div>
 
-      <motion.p
+      <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.03 }}
-        className="text-xl text-[var(--color-gray-300)] mb-8 text-center md:text-left relative z-10"
+        className="mb-8 text-center md:text-left relative z-10"
       >
-        Every month, write and record an original song. Share your creativity
-        with a supportive community of songwriters and musicians.
-      </motion.p>
+        <Text size="xl" color="tertiary">
+          {content.description}
+        </Text>
+      </motion.div>
 
       <motion.div
         initial={{ y: 20, opacity: 0 }}
@@ -63,13 +73,13 @@ export const MonthlyOriginalHero = ({ projectSlug }: MonthlyOriginalHeroProps) =
         <Link href={`/projects/${projectSlug}/sign-up`}>
           <Button variant="default" size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
             <Mic className="mr-2 h-5 w-5" />
-            Start Creating
+            {content.ctaPrimary}
           </Button>
         </Link>
         <Link href="#how-it-works">
           <Button variant="outline" size="lg">
             <Palette className="mr-2 h-5 w-5" />
-            Learn More
+            {content.ctaSecondary}
           </Button>
         </Link>
       </motion.div>
@@ -78,9 +88,11 @@ export const MonthlyOriginalHero = ({ projectSlug }: MonthlyOriginalHeroProps) =
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.05 }}
-        className="mt-6 text-sm text-[var(--color-gray-400)] text-center md:text-left relative z-10"
+        className="mt-6 text-center md:text-left relative z-10"
       >
-        No experience required • All genres welcome • Free to join
+        <Text size="sm" color="secondary">
+          {content.benefits}
+        </Text>
       </motion.div>
     </div>
   );

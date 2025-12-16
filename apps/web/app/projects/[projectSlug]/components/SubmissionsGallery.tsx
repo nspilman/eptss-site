@@ -1,7 +1,8 @@
 "use client";
 
-import { Card, CardContent, Badge, SectionHeader, Animated, AnimatedList, AnimatedListItem } from "@eptss/ui";
+import { Card, CardContent, Badge, SectionHeader, Animated, AnimatedList, AnimatedListItem, EmptyState, Heading, Text } from "@eptss/ui";
 import { Music, Calendar, User, ExternalLink } from "lucide-react";
+import { SubmissionsGallery as SubmissionsGalleryConfig } from "@eptss/project-config";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -16,9 +17,10 @@ interface Submission {
 
 interface SubmissionsGalleryProps {
   submissions: Submission[];
+  content: SubmissionsGalleryConfig;
 }
 
-export const SubmissionsGallery = ({ submissions }: SubmissionsGalleryProps) => {
+export const SubmissionsGallery = ({ submissions, content }: SubmissionsGalleryProps) => {
   // Format date if available
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
@@ -31,15 +33,20 @@ export const SubmissionsGallery = ({ submissions }: SubmissionsGalleryProps) => 
         <SectionHeader
           size="lg"
           align="center"
-          title="Past Submissions"
-          subtitle="Our creative journey is just beginning"
+          title={content.title}
+          subtitle={content.emptyStateTitle}
         />
-        <Card className="max-w-md mx-auto mt-8 bg-[var(--color-background-tertiary)] border-purple-700/50">
-          <CardContent className="text-center py-12">
-            <Music className="w-12 h-12 mx-auto mb-4 text-purple-400" />
-            <p className="text-gray-300 text-lg">
-              Be the first to create an original song this month!
-            </p>
+        <Card className="max-w-md mx-auto mt-8 bg-[var(--color-background-tertiary)] border-[var(--color-accent-primary)]/50">
+          <CardContent>
+            <EmptyState
+              size="lg"
+              icon={<Music className="text-[var(--color-accent-primary)]" />}
+              description={
+                <Text size="lg" color="tertiary">
+                  {content.emptyStateMessage}
+                </Text>
+              }
+            />
           </CardContent>
         </Card>
       </div>
@@ -52,8 +59,8 @@ export const SubmissionsGallery = ({ submissions }: SubmissionsGalleryProps) => 
         <SectionHeader
           size="lg"
           align="center"
-          title="Past Original Songs"
-          subtitle="Discover the creativity of our songwriting community"
+          title={content.title}
+          subtitle={content.subtitle}
         />
 
         <AnimatedList variant="fadeInUp" staggerDelay={0.05} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
@@ -61,42 +68,42 @@ export const SubmissionsGallery = ({ submissions }: SubmissionsGalleryProps) => 
             <AnimatedListItem key={submission.roundId}>
               <Link href={`/round/${submission.slug}`}>
                 <Card
-                  className="h-full bg-gradient-to-br from-purple-900/20 to-pink-900/20 border-purple-700/50 hover:border-purple-500 transition-all duration-300 hover:scale-105"
+                  className="h-full bg-gradient-to-br from-[var(--color-accent-secondary)]/20 to-[var(--color-accent-primary)]/20 border-[var(--color-accent-primary)]/50 hover:border-[var(--color-accent-primary)] transition-all duration-300 hover:scale-105"
                 >
                   <CardContent className="flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
-                      <Badge className="bg-purple-600/50 text-purple-200 border-purple-500">
+                      <Badge className="bg-[var(--color-accent-primary)]/50 text-white border-[var(--color-accent-primary)]">
                         Round {submission.roundId}
                       </Badge>
                       {submission.startDate && (
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
+                        <Text size="xs" color="secondary" className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {formatDate(submission.startDate)}
-                        </span>
+                        </Text>
                       )}
                     </div>
 
                     <div className="flex-grow">
-                      <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                        <Music className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                        <span className="line-clamp-2">{submission.title}</span>
-                      </h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Music className="h-4 w-4 text-[var(--color-accent-primary)] flex-shrink-0" />
+                        <Heading size="sm" className="line-clamp-2">{submission.title}</Heading>
+                      </div>
 
                       {submission.artist && (
-                        <p className="text-gray-400 text-sm mb-3 flex items-center gap-1">
+                        <Text size="sm" color="secondary" className="mb-3 flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {submission.artist}
-                        </p>
+                        </Text>
                       )}
                     </div>
 
                     {submission.submissionCount !== undefined && (
-                      <div className="mt-auto pt-3 border-t border-purple-700/30">
+                      <div className="mt-auto pt-3 border-t border-[var(--color-accent-primary)]/30">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-400">
+                          <Text size="sm" color="secondary">
                             {submission.submissionCount} {submission.submissionCount === 1 ? 'submission' : 'submissions'}
-                          </span>
-                          <ExternalLink className="h-4 w-4 text-purple-400" />
+                          </Text>
+                          <ExternalLink className="h-4 w-4 text-[var(--color-accent-primary)]" />
                         </div>
                       </div>
                     )}
@@ -108,12 +115,11 @@ export const SubmissionsGallery = ({ submissions }: SubmissionsGalleryProps) => 
         </AnimatedList>
 
         <Animated variant="fadeInUp" className="text-center mt-12">
-          <Link
-            href="/rounds"
-            className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors font-medium"
-          >
-            View All Past Rounds
-            <ExternalLink className="h-4 w-4" />
+          <Link href="/rounds" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Text color="accent" weight="medium">
+              {content.viewAllLink}
+            </Text>
+            <ExternalLink className="h-4 w-4 text-[var(--color-accent-primary)]" />
           </Link>
         </Animated>
       </div>

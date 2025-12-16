@@ -11,6 +11,10 @@ import {
   EmailConfig,
   PageContent,
   FAQContent,
+  SEOMetadata,
+  HowItWorks,
+  RoundInfoLabels,
+  SubmissionsGallery,
   safeParseProjectConfig,
   getDefaultProjectConfig,
 } from "../schemas/projectConfig";
@@ -53,7 +57,10 @@ async function getProjectConfigById(projectId: string): Promise<ProjectConfig> {
   }
 
   // Parse and validate config
+  console.log('[ProjectConfig] Raw config from DB for project', projectId, ':', JSON.stringify(result[0].config, null, 2));
   const parsedConfig = safeParseProjectConfig(result[0].config);
+  console.log('[ProjectConfig] Parsed config:', JSON.stringify(parsedConfig, null, 2));
+  console.log('[ProjectConfig] requireSongOnSignup:', parsedConfig.businessRules.requireSongOnSignup);
 
   // Cache the result
   configCache.set(projectId, {
@@ -113,6 +120,14 @@ export async function getProjectBusinessRules(slug: ProjectSlug): Promise<Busine
 }
 
 /**
+ * Get terminology for a project
+ */
+export async function getProjectTerminology(slug: ProjectSlug) {
+  const config = await getProjectConfig(slug);
+  return config.terminology;
+}
+
+/**
  * Get automation configuration for a project
  */
 export async function getProjectAutomation(slug: ProjectSlug): Promise<Automation> {
@@ -156,6 +171,38 @@ export async function getPageContent<K extends keyof PageContent>(
 }
 
 /**
+ * Get SEO metadata for a project
+ */
+export async function getProjectSEOMetadata(slug: ProjectSlug): Promise<SEOMetadata> {
+  const config = await getProjectConfig(slug);
+  return config.seo;
+}
+
+/**
+ * Get How It Works content for a project landing page
+ */
+export async function getHowItWorksContent(slug: ProjectSlug): Promise<HowItWorks> {
+  const config = await getProjectConfig(slug);
+  return config.content.pages.home.howItWorks;
+}
+
+/**
+ * Get Round Info labels for a project
+ */
+export async function getRoundInfoLabels(slug: ProjectSlug): Promise<RoundInfoLabels> {
+  const config = await getProjectConfig(slug);
+  return config.content.pages.home.roundInfo;
+}
+
+/**
+ * Get Submissions Gallery content for a project
+ */
+export async function getSubmissionsGalleryContent(slug: ProjectSlug): Promise<SubmissionsGallery> {
+  const config = await getProjectConfig(slug);
+  return config.content.pages.home.submissionsGallery;
+}
+
+/**
  * Update project configuration (admin function)
  * Note: This doesn't validate permissions - that should be done at the route/action level
  */
@@ -179,6 +226,7 @@ export async function updateProjectConfig(
     features: { ...currentConfig.features, ...config.features },
     ui: { ...currentConfig.ui, ...config.ui },
     businessRules: { ...currentConfig.businessRules, ...config.businessRules },
+    terminology: { ...currentConfig.terminology, ...config.terminology },
     email: { ...currentConfig.email, ...config.email },
     content: {
       pages: { ...currentConfig.content.pages, ...config.content?.pages },

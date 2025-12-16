@@ -91,6 +91,44 @@ export const emailConfigSchema = z.object({
 }).default({});
 
 // ============================================================================
+// TERMINOLOGY & NAMING
+// ============================================================================
+
+/**
+ * Customizable terminology for rounds and phases per project
+ */
+export const terminologySchema = z.object({
+  // Round naming
+  roundPrefix: z.string().default("Round"), // e.g., "Round" for "Round 32" or "Month" for "January 2025"
+  useRoundNumber: z.boolean().default(true), // Whether to show round numbers
+  roundFormat: z.enum(["number", "month", "custom"]).default("number"), // How to display rounds
+
+  // Phase names
+  phases: z.object({
+    signups: z.string().default("Song Selection & Signups"),
+    voting: z.string().default("Voting Phase"),
+    covering: z.string().default("Covering Phase"),
+    celebration: z.string().default("Listening Party"),
+  }).default({}),
+
+  // Phase short names (for navigation breadcrumbs)
+  phaseShortNames: z.object({
+    signups: z.string().default("Sign Up"),
+    voting: z.string().default("Vote"),
+    covering: z.string().default("Cover"),
+    celebration: z.string().default("Listen"),
+  }).default({}),
+
+  // Phase descriptions
+  phaseDescriptions: z.object({
+    signups: z.string().default("Suggest a song and sign up to participate"),
+    voting: z.string().default("Vote on which song should be covered this round"),
+    covering: z.string().default("Record and submit your cover of the selected song"),
+    celebration: z.string().default("Join us for the listening party event!"),
+  }).default({}),
+}).default({});
+
+// ============================================================================
 // STATIC CONTENT
 // ============================================================================
 
@@ -105,16 +143,151 @@ export const projectMetadataSchema = z.object({
 }).default({});
 
 /**
+ * SEO and OpenGraph metadata per project
+ */
+export const seoMetadataSchema = z.object({
+  // Landing page metadata
+  landingPage: z.object({
+    title: z.string().default("Music Community Project"),
+    description: z.string().default("Join our creative music community"),
+    ogTitle: z.string().optional(), // Falls back to title if not specified
+    ogDescription: z.string().optional(), // Falls back to description if not specified
+  }).default({}),
+
+  // Submit page metadata
+  submitPage: z.object({
+    title: z.string().default("Submit Your Music"),
+    description: z.string().default("Share your musical creation with our community"),
+    ogTitle: z.string().optional(),
+    ogDescription: z.string().optional(),
+  }).default({}),
+
+  // Dashboard metadata
+  dashboardPage: z.object({
+    title: z.string().default("Dashboard"),
+    description: z.string().default("Your project dashboard"),
+  }).default({}),
+}).default({});
+
+/**
+ * How It Works section configuration
+ */
+export const howItWorksSchema = z.object({
+  sectionTitle: z.string().default("How It Works"),
+  sectionSubtitle: z.string().default("A simple process designed to spark your creativity"),
+
+  steps: z.object({
+    step1: z.object({
+      icon: z.enum(["music", "lightbulb", "calendar", "users", "mic", "award"]).default("music"),
+      title: z.string().default("Step 1"),
+      description: z.string().default("Get started with your creative journey"),
+    }).default({}),
+    step2: z.object({
+      icon: z.enum(["music", "lightbulb", "calendar", "users", "mic", "award"]).default("music"),
+      title: z.string().default("Step 2"),
+      description: z.string().default("Create your musical project"),
+    }).default({}),
+    step3: z.object({
+      icon: z.enum(["music", "lightbulb", "calendar", "users", "mic", "award"]).default("users"),
+      title: z.string().default("Step 3"),
+      description: z.string().default("Share and celebrate with the community"),
+    }).default({}),
+  }).default({}),
+
+  benefits: z.object({
+    benefitsTitle: z.string().default("Why Musicians Love Us"),
+    benefit1: z.object({
+      icon: z.enum(["award", "calendar", "users", "heart", "sparkles", "mic"]).default("award"),
+      title: z.string().default("Benefit 1"),
+      description: z.string().default("Experience the advantages of our community"),
+    }).default({}),
+    benefit2: z.object({
+      icon: z.enum(["award", "calendar", "users", "heart", "sparkles", "mic"]).default("calendar"),
+      title: z.string().default("Benefit 2"),
+      description: z.string().default("Structured approach to your creativity"),
+    }).default({}),
+    benefit3: z.object({
+      icon: z.enum(["award", "calendar", "users", "heart", "sparkles", "mic"]).default("users"),
+      title: z.string().default("Benefit 3"),
+      description: z.string().default("Connect with fellow musicians"),
+    }).default({}),
+  }).default({}),
+
+  testimonial: z.object({
+    quote: z.string().default("This community has transformed my musical journey!"),
+    author: z.string().default("Community Member"),
+  }).default({}),
+
+  ctaButton: z.string().default("Join Our Next Round"),
+  ctaLinks: z.object({
+    faq: z.string().default("FAQ"),
+    pastRounds: z.string().default("Past Rounds"),
+  }).default({}),
+}).default({});
+
+/**
+ * Round info card labels per phase
+ */
+export const roundInfoLabelsSchema = z.object({
+  signups: z.object({
+    badge: z.string().default("Signups Open"),
+    title: z.string().default("Current Round"),
+    subtitle: z.string().default("Join the community"),
+    closesPrefix: z.string().default("Signups close"),
+  }).default({}),
+  voting: z.object({
+    badge: z.string().default("Voting Open"),
+    title: z.string().default("Vote Now"),
+    subtitle: z.string().default("Help choose our song"),
+    closesPrefix: z.string().default("Voting closes"),
+  }).default({}),
+  covering: z.object({
+    badge: z.string().default("Creating Now"),
+    titleFallback: z.string().default("Create Your Music"), // Used if no song title
+    subtitle: z.string().default("Make it your own"),
+    closesPrefix: z.string().default("Submit by"),
+  }).default({}),
+  celebration: z.object({
+    badge: z.string().default("Celebrating"),
+    titleFallback: z.string().default("Music Complete"), // Used if no song title
+    subtitle: z.string().default("Listen and celebrate together"),
+    closesPrefix: z.string().default("Celebration ends"),
+  }).default({}),
+  loading: z.object({
+    badge: z.string().default("Loading..."),
+    title: z.string().default("Loading..."),
+    subtitle: z.string().default("Please wait"),
+  }).default({}),
+}).default({});
+
+/**
+ * Submissions gallery content
+ */
+export const submissionsGallerySchema = z.object({
+  title: z.string().default("Past Submissions"),
+  subtitle: z.string().default("Discover the creativity of our community"),
+  emptyStateTitle: z.string().default("Our creative journey is just beginning"),
+  emptyStateMessage: z.string().default("Be the first to create music this round!"),
+  viewAllLink: z.string().default("View All Past Rounds"),
+}).default({});
+
+/**
  * Page copy and descriptions per project
  */
 export const pageContentSchema = z.object({
   home: z.object({
     hero: z.object({
+      tagline: z.string().default("Monthly Songwriting Challenge"),
       title: z.string().default("Welcome to EPTSS"),
       subtitle: z.string().default("Create and share music together"),
-      cta: z.string().default("Get Started"),
+      description: z.string().default("Every month, write and record an original song. Share your creativity with a supportive community of songwriters and musicians."),
+      ctaPrimary: z.string().default("Get Started"),
+      ctaSecondary: z.string().default("Learn More"),
+      benefits: z.string().default("No experience required • All genres welcome • Free to join"),
     }).default({}),
-    description: z.string().default("Join our music community"),
+    howItWorks: howItWorksSchema,
+    roundInfo: roundInfoLabelsSchema,
+    submissionsGallery: submissionsGallerySchema,
   }).default({}),
 
   dashboard: z.object({
@@ -132,6 +305,13 @@ export const pageContentSchema = z.object({
     title: z.string().default("Submit Your Cover"),
     description: z.string().default("Share your musical creation"),
     instructions: z.string().default("Upload your track to SoundCloud and paste the link below"),
+    // Dynamic form content
+    formTitleWithSong: z.string().default("Submit your cover of {{songTitle}} by {{songArtist}}"), // Template with placeholders
+    formTitleNoSong: z.string().default("Submit your music"),
+    formDescriptionPrefix: z.string().default("Submit your cover by"),
+    submitButtonText: z.string().default("Submit Cover"),
+    successMessage: z.string().default("Your cover has been submitted successfully"),
+    submittingText: z.string().default("Submitting..."),
   }).default({}),
 }).default({});
 
@@ -170,6 +350,8 @@ export const projectConfigSchema = z.object({
   automation: automationSchema,
   email: emailConfigSchema,
   metadata: projectMetadataSchema,
+  seo: seoMetadataSchema,
+  terminology: terminologySchema,
   content: z.object({
     pages: pageContentSchema,
     faq: faqContentSchema,
@@ -187,8 +369,13 @@ export type BusinessRules = z.infer<typeof businessRulesSchema>;
 export type Automation = z.infer<typeof automationSchema>;
 export type EmailConfig = z.infer<typeof emailConfigSchema>;
 export type ProjectMetadata = z.infer<typeof projectMetadataSchema>;
+export type SEOMetadata = z.infer<typeof seoMetadataSchema>;
+export type Terminology = z.infer<typeof terminologySchema>;
 export type PageContent = z.infer<typeof pageContentSchema>;
 export type FAQContent = z.infer<typeof faqContentSchema>;
+export type HowItWorks = z.infer<typeof howItWorksSchema>;
+export type RoundInfoLabels = z.infer<typeof roundInfoLabelsSchema>;
+export type SubmissionsGallery = z.infer<typeof submissionsGallerySchema>;
 
 // ============================================================================
 // VALIDATION UTILITIES

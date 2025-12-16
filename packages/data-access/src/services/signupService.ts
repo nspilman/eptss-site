@@ -121,6 +121,16 @@ export const getUserSignupData = async (userId: string, roundId: number) => {
     return undefined;
   }
 
+  // If no song was required for signup, return without song details
+  if (existingSignup[0].songId === null) {
+    return {
+      songTitle: undefined,
+      artist: undefined,
+      youtubeLink: existingSignup[0].youtubeLink || undefined,
+      additionalComments: existingSignup[0].additionalComments || undefined,
+    };
+  }
+
   // Get the song details
   const songDetails = await db
     .select({
@@ -146,9 +156,11 @@ export const getUserSignupData = async (userId: string, roundId: number) => {
 
 
 // Import shared schemas
-import { signupSchema, nonLoggedInSchema } from "../schemas/signupSchemas";
+import { signupSchema, signupSchemaNoSong, nonLoggedInSchema } from "../schemas/signupSchemas";
 import { seededShuffle } from "../utils/seededShuffle";
 import { validateFormData } from "../utils/formDataHelpers";
+import { getProjectBusinessRules } from "@eptss/project-config";
+import { getProjectSlugFromId, type ProjectSlug } from "../utils/projectUtils";
 import { validateReferralCode } from "./referralService";
 
 // Alias for backward compatibility
@@ -426,36 +438,41 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
 
     const projectId = roundResult[0].projectId;
 
-    // Get the next song ID
-    const lastSongId = await db
-      .select({ id: songs.id })
-      .from(songs)
-      .orderBy(sql`id desc`)
-      .limit(1);
-    
-    const nextSongId = (lastSongId[0]?.id || 0) + 1;
+    // Only insert song if song data is provided
+    let songId: number | null = null;
 
-    // First insert or get the song
-    const songResult = await db
-      .insert(songs)
-      .values({
-        id: nextSongId,
-        title: signupData.songTitle,
-        artist: signupData.artist,
-      })
-      .onConflictDoNothing()
-      .returning();
-    
-    // Get the song ID (either from insert or existing)
-    const songId = songResult[0]?.id || 
-      (await db
+    if (signupData.songTitle && signupData.artist) {
+      // Get the next song ID
+      const lastSongId = await db
         .select({ id: songs.id })
         .from(songs)
-        .where(and(
-          eq(songs.title, signupData.songTitle),
-          eq(songs.artist, signupData.artist)
-        ))
-      )[0].id;
+        .orderBy(sql`id desc`)
+        .limit(1);
+
+      const nextSongId = (lastSongId[0]?.id || 0) + 1;
+
+      // First insert or get the song
+      const songResult = await db
+        .insert(songs)
+        .values({
+          id: nextSongId,
+          title: signupData.songTitle,
+          artist: signupData.artist,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      // Get the song ID (either from insert or existing)
+      songId = songResult[0]?.id ||
+        (await db
+          .select({ id: songs.id })
+          .from(songs)
+          .where(and(
+            eq(songs.title, signupData.songTitle),
+            eq(songs.artist, signupData.artist)
+          ))
+        )[0].id;
+    }
 
     // Get the next signup ID
     const lastSignupId = await db
@@ -664,27 +681,52 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
   }
   
   try {
-    // Validate form data with Zod
-    const validation = validateFormData(formData, signupSchema);
-    
-    if (!validation.success) {
-      return handleResponse(400, Navigation.Dashboard, validation.error);
+    // Get the round ID early to fetch project config
+    const roundId = Number(formData.get("roundId"));
+    console.log('[signup] Starting signup for roundId:', roundId, 'userId:', userId);
+
+    if (!roundId || isNaN(roundId)) {
+      console.error('[signup] Invalid round ID:', formData.get("roundId"));
+      return handleResponse(400, Navigation.Dashboard, "Invalid round ID");
     }
-    
-    const validData = validation.data;
 
     // Get the project ID from the round
     const roundResult = await db
       .select({ projectId: roundMetadata.projectId })
       .from(roundMetadata)
-      .where(eq(roundMetadata.id, validData.roundId))
+      .where(eq(roundMetadata.id, roundId))
       .limit(1);
 
     if (!roundResult.length) {
+      console.error('[signup] Round not found:', roundId);
       return handleResponse(404, Navigation.Dashboard, "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
+    console.log('[signup] Found projectId:', projectId);
+
+    // Get project slug and business rules to determine schema
+    const projectSlug = getProjectSlugFromId(projectId);
+    if (!projectSlug) {
+      console.error('[signup] Project slug not found for projectId:', projectId);
+      return handleResponse(404, Navigation.Dashboard, "Project not found");
+    }
+
+    const businessRules = await getProjectBusinessRules(projectSlug);
+    const schema = businessRules.requireSongOnSignup ? signupSchema : signupSchemaNoSong;
+
+    console.log('[signup] projectSlug:', projectSlug, 'requireSongOnSignup:', businessRules.requireSongOnSignup);
+
+    // Validate form data with the appropriate Zod schema
+    const validation = validateFormData(formData, schema);
+
+    if (!validation.success) {
+      console.error('[signup] Validation failed:', validation.error);
+      return handleResponse(400, Navigation.Dashboard, validation.error);
+    }
+
+    const validData = validation.data;
+    console.log('[signup] Validation succeeded, validData:', validData);
 
     // Check if user has already signed up for this round
     const existingSignup = await db
@@ -697,52 +739,59 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         )
       )
       .limit(1);
-    
-    // Get the next song ID
-    const lastSongId = await db
-      .select({ id: songs.id })
-      .from(songs)
-      .orderBy(sql`id desc`)
-      .limit(1);
-    
-    const nextSongId = (lastSongId[0]?.id || 0) + 1;
 
-    // First insert or get the song
-    const songResult = await db
-      .insert(songs)
-      .values({
-        id: nextSongId,
-        title: validData.songTitle,
-        artist: validData.artist,
-      })
-      .onConflictDoNothing()
-      .returning();
-    
-    // Get the song ID (either from insert or existing)
-    const songId = songResult[0]?.id || 
-      (await db
+    // Handle song data only if song is required on signup
+    let songId: number | null = null;
+    if (businessRules.requireSongOnSignup && validData.songTitle && validData.artist) {
+      // Get the next song ID
+      const lastSongId = await db
         .select({ id: songs.id })
         .from(songs)
-        .where(and(
-          eq(songs.title, validData.songTitle),
-          eq(songs.artist, validData.artist)
-        ))
-      )[0].id;
+        .orderBy(sql`id desc`)
+        .limit(1);
+
+      const nextSongId = (lastSongId[0]?.id || 0) + 1;
+
+      // First insert or get the song
+      const songResult = await db
+        .insert(songs)
+        .values({
+          id: nextSongId,
+          title: validData.songTitle,
+          artist: validData.artist,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      // Get the song ID (either from insert or existing)
+      songId = songResult[0]?.id ||
+        (await db
+          .select({ id: songs.id })
+          .from(songs)
+          .where(and(
+            eq(songs.title, validData.songTitle),
+            eq(songs.artist, validData.artist)
+          ))
+        )[0].id;
+    }
 
     // If user has already signed up, update their signup
     if (existingSignup.length > 0) {
       await db.update(signUps)
         .set({
-          youtubeLink: validData.youtubeLink,
-          additionalComments: validData.additionalComments,
+          youtubeLink: validData.youtubeLink || null,
+          additionalComments: validData.additionalComments || null,
           songId: songId,
         })
         .where(
           eq(signUps.id, existingSignup[0].id)
         );
-      
+
       // Redirect back to the dashboard with success message
-      return handleResponse(200, Navigation.Dashboard, "Your song has been updated successfully!");
+      const message = businessRules.requireSongOnSignup
+        ? "Your song has been updated successfully!"
+        : "Your signup has been updated successfully!";
+      return handleResponse(200, Navigation.Dashboard, message);
     } else {
       // Get the next signup ID for a new signup
       const lastSignupId = await db
@@ -750,15 +799,15 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         .from(signUps)
         .orderBy(sql`id desc`)
         .limit(1);
-      
+
       const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
 
       // Then insert the new signup
       await db.insert(signUps).values({
         id: nextSignupId,
         projectId: projectId,
-        youtubeLink: validData.youtubeLink,
-        additionalComments: validData.additionalComments,
+        youtubeLink: validData.youtubeLink || null,
+        additionalComments: validData.additionalComments || null,
         roundId: validData.roundId,
         songId: songId,
         userId: userId,
@@ -767,6 +816,9 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
     }
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    console.error('[signup] Unexpected error during signup:', error);
+    console.error('[signup] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+    return handleResponse(500, Navigation.Dashboard, `Signup failed: ${errorMessage}`);
   }
 }

@@ -9,7 +9,7 @@ import { FormBuilder, FieldConfig } from "@eptss/ui"
 import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/data-access/schemas/signupSchemas"
 import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { UserSignupData } from "@eptss/data-access/types/signup"
 import { useCaptcha } from "@eptss/captcha"
 
@@ -109,14 +109,18 @@ export function SignupForm({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const router = useRouter();
+  const params = useParams();
+  const projectSlug = params.projectSlug as string;
 
   // Get CAPTCHA hook (only used for non-logged-in users)
   const { executeRecaptcha, isReady: isCaptchaReady } = useCaptcha();
 
   // Determine which schema and fields to use based on login status and requireSongOnSignup
+  console.log('[SignupForm] requireSongOnSignup:', requireSongOnSignup, 'isLoggedIn:', isLoggedIn);
   const schema = requireSongOnSignup
     ? (isLoggedIn ? signupSchema : nonLoggedInSchema)
     : (isLoggedIn ? signupSchemaNoSong : nonLoggedInSchemaNoSong);
+  console.log('[SignupForm] Selected schema:', requireSongOnSignup ? 'WITH song' : 'WITHOUT song', isLoggedIn ? '(logged in)' : '(not logged in)');
 
   // Filter out song fields if not required
   const filteredBaseFields = requireSongOnSignup
@@ -191,16 +195,17 @@ export function SignupForm({
       if (!isLoggedIn) {
         setIsSubmitted(true);
       } else if (isUpdate) {
-        // For updates, redirect to the success page
-        router.push(`/sign-up?success=true`);
-      } else if (onSuccess) {
-        onSuccess();
+        // For updates, redirect to the project dashboard
+        router.push(`/projects/${projectSlug}/dashboard`);
+      } else {
+        // For new signups, redirect to the project dashboard
+        router.push(`/projects/${projectSlug}/dashboard`);
       }
     },
-    successMessage: isLoggedIn 
-      ? isUpdate 
-        ? "You've successfully updated your song for this round!" 
-        : "You've successfully signed up for Everyone Plays the Same Song!" 
+    successMessage: isLoggedIn
+      ? isUpdate
+        ? "You've successfully updated your song for this round!"
+        : "You've successfully signed up for Everyone Plays the Same Song!"
       : "Please check your email for a verification link to complete your signup.",
   })
 

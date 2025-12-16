@@ -1,6 +1,7 @@
 import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "../SubmitPage";
+import { getProjectConfig } from "@eptss/project-config";
 
 // Force dynamic rendering since this page requires user authentication
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,8 @@ export default async function SubmitForRound({ params }: Props) {
     roundId,
   });
 
+  const projectConfig = await getProjectConfig(projectSlug as ProjectSlug);
+
   return (
     <SubmitPage
       dateStrings={{ listeningPartyLabel, coverClosesLabel }}
@@ -34,6 +37,7 @@ export default async function SubmitForRound({ params }: Props) {
       hasSubmitted={roundDetails?.hasSubmitted || false}
       song={song}
       submitCover={submitCover}
+      submitContent={projectConfig.content.pages.submit}
     />
   );
 }
