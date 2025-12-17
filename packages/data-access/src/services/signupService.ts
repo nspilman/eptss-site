@@ -156,15 +156,13 @@ export const getUserSignupData = async (userId: string, roundId: number) => {
 
 
 // Import shared schemas
-import { signupSchema, signupSchemaNoSong, nonLoggedInSchema } from "../schemas/signupSchemas";
+import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong } from "../schemas/signupSchemas";
 import { seededShuffle } from "../utils/seededShuffle";
 import { validateFormData } from "../utils/formDataHelpers";
 import { getProjectBusinessRules } from "@eptss/project-config";
 import { getProjectSlugFromId, type ProjectSlug } from "../utils/projectUtils";
 import { validateReferralCode } from "./referralService";
-
-// Alias for backward compatibility
-const nonAuthSignupSchema = nonLoggedInSchema;
+import { getNextId } from "../utils/dbHelpers";
 
 export async function signupWithOTP(formData: FormData, captchaToken?: string): Promise<FormReturn> {
   "use server";
@@ -224,10 +222,49 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
       }
     }
 
-    // Validate form data with Zod
-    const validation = validateFormData(formData, nonAuthSignupSchema);
+    // Get roundId early to determine project and business rules
+    const roundId = Number(formData.get("roundId"));
+    console.log('[signupWithOTP] Starting validation. RoundId:', roundId);
+
+    if (!roundId || isNaN(roundId)) {
+      return handleResponse(400, Navigation.Dashboard, "Invalid round ID");
+    }
+
+    // Get the project ID from the round to check business rules
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId))
+      .limit(1);
+
+    console.log('[signupWithOTP] Round lookup result:', roundResult);
+
+    if (!roundResult.length) {
+      return handleResponse(404, Navigation.Dashboard, "Round not found");
+    }
+
+    const projectId = roundResult[0].projectId;
+    const projectSlug = getProjectSlugFromId(projectId);
+
+    console.log('[signupWithOTP] ProjectId:', projectId, 'ProjectSlug:', projectSlug);
+
+    if (!projectSlug) {
+      return handleResponse(404, Navigation.Dashboard, "Project not found");
+    }
+
+    // Get business rules to determine if song is required
+    const businessRules = await getProjectBusinessRules(projectSlug);
+    const schema = businessRules.requireSongOnSignup ? nonLoggedInSchema : nonLoggedInSchemaNoSong;
+
+    console.log('[signupWithOTP] Business rules:', businessRules);
+    console.log('[signupWithOTP] requireSongOnSignup:', businessRules.requireSongOnSignup);
+    console.log('[signupWithOTP] Using schema:', businessRules.requireSongOnSignup ? 'nonLoggedInSchema (WITH song)' : 'nonLoggedInSchemaNoSong (NO song)');
+
+    // Validate form data with the appropriate schema
+    const validation = validateFormData(formData, schema);
 
     if (!validation.success) {
+      console.warn('⚠️ [WARN] OTP signup validation failed', { error: validation.error });
       return handleResponse(400, Navigation.Dashboard, validation.error);
     }
 
@@ -255,13 +292,7 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     }
     
     // Get the next unverified signup ID
-    const lastUnverifiedSignupId = await db
-      .select({ id: unverifiedSignups.id })
-      .from(unverifiedSignups)
-      .orderBy(sql`id desc`)
-      .limit(1);
-    
-    const nextUnverifiedSignupId = (lastUnverifiedSignupId[0]?.id || 0) + 1;
+    const nextUnverifiedSignupId = await getNextId(unverifiedSignups, unverifiedSignups.id);
     
     // Check if there's already an unverified signup with this email
     await db.delete(unverifiedSignups)
@@ -272,9 +303,9 @@ export async function signupWithOTP(formData: FormData, captchaToken?: string): 
     await db.insert(unverifiedSignups).values({
       id: nextUnverifiedSignupId,
       email: validData.email.trim(),
-      songTitle: validData.songTitle,
-      artist: validData.artist,
-      youtubeLink: validData.youtubeLink,
+      songTitle: validData.songTitle || null,
+      artist: validData.artist || null,
+      youtubeLink: validData.youtubeLink || null,
       additionalComments: validData.additionalComments || "",
       roundId: validData.roundId,
       referralCode: referralCode
@@ -346,13 +377,7 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
       return handleResponse(200, Navigation.Dashboard, "You have successfully signed up for this round!");
     } else {
       // Get the next signup ID for a new signup
-      const lastSignupId = await db
-        .select({ id: signUps.id })
-        .from(signUps)
-        .orderBy(sql`id desc`)
-        .limit(1);
-      
-      const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+      const nextSignupId = await getNextId(signUps, signUps.id);
 
       // Insert new signup with songId -1
       await db.insert(signUps).values({
@@ -443,13 +468,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
 
     if (signupData.songTitle && signupData.artist) {
       // Get the next song ID
-      const lastSongId = await db
-        .select({ id: songs.id })
-        .from(songs)
-        .orderBy(sql`id desc`)
-        .limit(1);
-
-      const nextSongId = (lastSongId[0]?.id || 0) + 1;
+      const nextSongId = await getNextId(songs, songs.id);
 
       // First insert or get the song
       const songResult = await db
@@ -475,13 +494,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     }
 
     // Get the next signup ID
-    const lastSignupId = await db
-      .select({ id: signUps.id })
-      .from(signUps)
-      .orderBy(sql`id desc`)
-      .limit(1);
-    
-    const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+    const nextSignupId = await getNextId(signUps, signUps.id);
 
     // Insert the verified signup
     await db.insert(signUps).values({
@@ -586,15 +599,9 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
       if (!songTitle || !artist || !youtubeLink) {
         return { status: "Error", message: "Song title, artist, and YouTube link are required" };
       }
-      
+
       // Get the next song ID
-      const lastSongId = await db
-        .select({ id: songs.id })
-        .from(songs)
-        .orderBy(sql`id desc`)
-        .limit(1);
-      
-      const nextSongId = (lastSongId[0]?.id || 0) + 1;
+      const nextSongId = await getNextId(songs, songs.id);
 
       // First insert or get the song
       const songResult = await db
@@ -744,13 +751,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
     let songId: number | null = null;
     if (businessRules.requireSongOnSignup && validData.songTitle && validData.artist) {
       // Get the next song ID
-      const lastSongId = await db
-        .select({ id: songs.id })
-        .from(songs)
-        .orderBy(sql`id desc`)
-        .limit(1);
-
-      const nextSongId = (lastSongId[0]?.id || 0) + 1;
+      const nextSongId = await getNextId(songs, songs.id);
 
       // First insert or get the song
       const songResult = await db
@@ -794,13 +795,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       return handleResponse(200, Navigation.Dashboard, message);
     } else {
       // Get the next signup ID for a new signup
-      const lastSignupId = await db
-        .select({ id: signUps.id })
-        .from(signUps)
-        .orderBy(sql`id desc`)
-        .limit(1);
-
-      const nextSignupId = (lastSignupId[0]?.id || 0) + 1;
+      const nextSignupId = await getNextId(signUps, signUps.id);
 
       // Then insert the new signup
       await db.insert(signUps).values({

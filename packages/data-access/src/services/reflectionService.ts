@@ -6,6 +6,7 @@ import { eq, desc, and, inArray, sql } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createErrorResult, createEmptyResult } from '../types/asyncResult';
 import { createOrGetTag } from './tagService';
 import { getDisplayName } from "@eptss/shared";
+import { getProjectSlugFromId } from "../utils/projectUtils";
 
 export interface Reflection extends Omit<UserContent, 'createdAt' | 'updatedAt' | 'publishedAt'> {
   createdAt: string;
@@ -15,6 +16,7 @@ export interface Reflection extends Omit<UserContent, 'createdAt' | 'updatedAt' 
   authorName?: string; // Full name or username as fallback
   authorUsername?: string; // Username for profile linking
   roundSlug?: string; // Round slug for linking
+  projectSlug?: string; // Project slug for project-scoped routing
 }
 
 export type ReflectionType = 'initial' | 'checkin';
@@ -164,7 +166,7 @@ const autoTagReflection = async (
 /**
  * Map database result to Reflection interface
  */
-const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: string, roundSlug?: string, authorUsername?: string): Reflection => {
+const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: string, roundSlug?: string, authorUsername?: string, projectSlug?: string): Reflection => {
   return {
     ...dbContent,
     createdAt: dbContent.createdAt instanceof Date ?
@@ -181,6 +183,7 @@ const mapToReflection = (dbContent: any, tagSlugs?: string[], authorName?: strin
     authorName,
     authorUsername,
     roundSlug,
+    projectSlug,
   };
 };
 
@@ -230,9 +233,12 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
         content: userContent,
         publicDisplayName: users.publicDisplayName,
         username: users.username,
+        roundSlug: roundMetadata.slug,
+        projectId: roundMetadata.projectId,
       })
       .from(userContent)
       .innerJoin(users, eq(userContent.userId, users.userid))
+      .innerJoin(roundMetadata, eq(userContent.roundId, roundMetadata.id))
       .where(eq(userContent.slug, slug))
       .limit(1);
 
@@ -240,7 +246,7 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
       return createSuccessResult(null);
     }
 
-    const { content, publicDisplayName, username } = result[0];
+    const { content, publicDisplayName, username, roundSlug, projectId } = result[0];
 
     // Get associated tags
     const tagResults = await db
@@ -254,7 +260,10 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
     // Use publicDisplayName if available, otherwise fallback to username
     const authorName = getDisplayName({ publicDisplayName, username });
 
-    return createSuccessResult(mapToReflection(content, tagSlugs, authorName, undefined, username || undefined));
+    // Get projectSlug from projectId
+    const projectSlug = getProjectSlugFromId(projectId) || undefined;
+
+    return createSuccessResult(mapToReflection(content, tagSlugs, authorName, roundSlug || undefined, username || undefined, projectSlug));
   } catch (error) {
     console.error("Error in getReflectionBySlug:", error);
     return createErrorResult(new Error(`Failed to get reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
@@ -513,6 +522,7 @@ export const getPublicReflectionsByUsername = async (
       .select({
         content: userContent,
         roundSlug: roundMetadata.slug,
+        projectId: roundMetadata.projectId,
       })
       .from(userContent)
       .innerJoin(roundMetadata, eq(userContent.roundId, roundMetadata.id))
@@ -522,9 +532,10 @@ export const getPublicReflectionsByUsername = async (
       ))
       .orderBy(desc(userContent.publishedAt));
 
-    const reflections = results.map(({ content, roundSlug }) =>
-      mapToReflection(content, undefined, undefined, roundSlug || undefined, username)
-    );
+    const reflections = results.map(({ content, roundSlug, projectId }) => {
+      const projectSlug = getProjectSlugFromId(projectId) || undefined;
+      return mapToReflection(content, undefined, undefined, roundSlug || undefined, username, projectSlug);
+    });
 
     return createSuccessResult(reflections);
   } catch (error) {

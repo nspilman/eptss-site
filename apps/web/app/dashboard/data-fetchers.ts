@@ -228,6 +228,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           showInviteLink: true, // Flag to trigger invite link generation in the UI
           reflections,
           roundSlug: slug,
+          projectSlug,
           phase: phase as Phase,
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
@@ -250,6 +251,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           isLateSignup: true,
           reflections,
           roundSlug: slug,
+          projectSlug,
           phase: phase as Phase,
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
@@ -293,6 +295,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           isLateSignup: true,
           reflections,
           roundSlug: slug,
+          projectSlug,
           phase: phase as Phase,
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],

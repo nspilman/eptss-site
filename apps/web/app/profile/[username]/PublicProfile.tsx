@@ -204,7 +204,7 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {reflections.map((reflection) => (
               <Link
-                href={`/reflections/${reflection.slug}`}
+                href={`/projects/${reflection.projectSlug || 'cover'}/reflections/${reflection.slug}`}
                 className="group h-full"
                 key={reflection.slug}
               >

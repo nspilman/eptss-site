@@ -88,6 +88,7 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
         participants: participantsData,
         reflections: heroData ? {
           roundId: heroData.roundId,
+          projectSlug: slug,
         } : null,
         inviteFriends: {
           userId: userId,

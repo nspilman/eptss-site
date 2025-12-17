@@ -13,7 +13,7 @@ import type { FormReturn } from "@eptss/data-access/types/index";
 import { revalidatePath } from "next/cache";
 import { signupSchema } from "@eptss/data-access/schemas/signupSchemas";
 import { validateFormData } from "@eptss/data-access/utils/formDataHelpers";
-import { submitVotesSchema, submitCoverSchema, signupWithOTPSchema } from "@eptss/data-access/schemas/actionSchemas";
+import { submitVotesSchema, submitCoverSchema } from "@eptss/data-access/schemas/actionSchemas";
 import { logger } from "@eptss/logger/server";
 import {
   votingRateLimit,
@@ -186,28 +186,25 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
 
 /**
  * Server Action: Sign up with OTP (for unverified users)
+ *
+ * NOTE: Validation is handled in the service layer based on project business rules.
+ * Different projects may have different requirements (e.g., song required or not).
  */
 export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
   try {
-    // 1. Validate input
-    const validation = signupWithOTPSchema.safeParse({
-      roundId: formData.get("roundId"),
-      email: formData.get("email"),
-      songTitle: formData.get("songTitle"),
-      artist: formData.get("artist"),
-      youtubeLink: formData.get("youtubeLink"),
-    });
+    // 1. Basic validation - just check required fields exist
+    const email = formData.get("email")?.toString();
+    const roundId = formData.get("roundId");
 
-    if (!validation.success) {
-      logger.warn('OTP signup validation failed', { errors: validation.error.errors });
+    if (!email || !roundId) {
+      logger.warn('OTP signup missing required fields', { hasEmail: !!email, hasRoundId: !!roundId });
       return {
         status: "Error",
-        message: validation.error.errors[0].message
+        message: "Email and round ID are required"
       };
     }
 
     // 2. Rate limit by email
-    const email = formData.get("email")?.toString() || "";
     const { success } = await emailRateLimit.limit(`otp-signup:${email}`);
     if (!success) {
       logger.warn('OTP signup rate limit exceeded', { email });
@@ -217,7 +214,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
       };
     }
 
-    // 3. Process signup
+    // 3. Process signup (service validates based on project business rules)
     const result = await signupWithOTPService(formData);
 
     if (result.status !== 'Success') {

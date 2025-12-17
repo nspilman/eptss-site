@@ -4,12 +4,13 @@ import { Card, CardHeader, CardContent } from '@eptss/ui';
 
 interface RoundReflectionsProps {
   roundId: number;
+  projectSlug: string;
 }
 
 /**
  * Display all public reflections for a round
  */
-export async function RoundReflections({ roundId }: RoundReflectionsProps) {
+export async function RoundReflections({ roundId, projectSlug }: RoundReflectionsProps) {
   const result = await getReflectionsByRound(roundId, true); // publicOnly = true
 
   if (result.status !== 'success' || !result.data || result.data.length === 0) {
@@ -29,7 +30,7 @@ export async function RoundReflections({ roundId }: RoundReflectionsProps) {
         {reflections.map((reflection) => (
           <Link
             key={reflection.id}
-            href={`/reflections/${reflection.slug}`}
+            href={`/projects/${projectSlug}/reflections/${reflection.slug}`}
             className="block hover:opacity-80 transition-opacity"
           >
             <Card className="h-full">

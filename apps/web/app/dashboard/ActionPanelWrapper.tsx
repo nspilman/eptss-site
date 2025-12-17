@@ -11,6 +11,7 @@ import { Button, AlertBox, GradientDivider, Badge } from '@eptss/ui';
 export interface ActionPanelWrapperData extends ActionPanelData {
   reflections?: Reflection[];
   roundSlug?: string;
+  projectSlug?: string;
   // Phase status data
   phase?: 'signups' | 'covering' | 'voting' | 'celebration';
   phaseName?: string;
@@ -37,7 +38,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
     return null;
   }
 
-  const { reflections = [], roundSlug = '' } = data;
+  const { reflections = [], roundSlug = '', projectSlug = 'cover' } = data;
 
   console.log('[ActionPanelWrapper] phaseName:', data.phaseName, 'phaseMessage:', data.phaseMessage);
 
@@ -175,7 +176,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
                   {reflections.slice(0, 2).map((reflection) => (
                     <Link
                       key={reflection.id}
-                      href={`/reflections/${reflection.slug}`}
+                      href={`/projects/${projectSlug}/reflections/${reflection.slug}`}
                       className="block p-2.5 rounded-lg bg-gray-800/40 hover:bg-gray-800/60 border border-gray-700/50 hover:border-[var(--color-accent-secondary)]/50 transition-all"
                     >
                       <div className="flex items-center justify-between gap-2">
@@ -203,7 +204,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
               )}
 
               <Link
-                href={`/round/${roundSlug}/create-reflection`}
+                href={`/projects/${projectSlug}/round/${roundSlug}/create-reflection`}
                 className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-accent-secondary)] hover:text-[var(--color-accent-primary)] transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

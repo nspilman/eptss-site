@@ -10,10 +10,12 @@ import { Button } from '@eptss/ui';
 
 interface ReflectionEditFormProps {
   reflection: Reflection;
+  projectSlug?: string;
 }
 
 export const ReflectionEditForm: React.FC<ReflectionEditFormProps> = ({
   reflection,
+  projectSlug = 'cover',
 }) => {
   const router = useRouter();
   const [title, setTitle] = useState(reflection.title);
@@ -48,7 +50,7 @@ export const ReflectionEditForm: React.FC<ReflectionEditFormProps> = ({
 
       if (result.status === 'success') {
         // Redirect back to the reflection page
-        router.push(`/reflections/${reflection.slug}`);
+        router.push(`/projects/${projectSlug}/reflections/${reflection.slug}`);
       } else if (result.status === 'error') {
         setError(result.error.message || 'Failed to update reflection');
       } else {
@@ -67,7 +69,7 @@ export const ReflectionEditForm: React.FC<ReflectionEditFormProps> = ({
 
     if (result.status === 'success') {
       // Redirect to dashboard after successful deletion
-      router.push('/dashboard');
+      router.push(`/projects/${projectSlug}/dashboard`);
     } else {
       setError('Failed to delete reflection');
       setDeleteModalOpen(false);

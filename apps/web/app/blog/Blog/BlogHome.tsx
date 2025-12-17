@@ -71,7 +71,7 @@ export const BlogHome = ({ posts, reflections }: { posts: BlogPost[]; reflection
                     )}
                     {/* Title with accent underline on hover */}
                     <Link
-                      href={`/reflections/${reflection.slug}`}
+                      href={`/projects/${reflection.projectSlug || 'cover'}/reflections/${reflection.slug}`}
                       className="text-[var(--color-primary)] text-xl font-black font-fraunces mb-2 relative transition-colors duration-300 hover:text-[var(--color-accent-primary)] mt-2 block"
                     >
                       {reflection.title}
@@ -103,7 +103,7 @@ export const BlogHome = ({ posts, reflections }: { posts: BlogPost[]; reflection
                     </div>
                     {/* Read more CTA */}
                     <Link
-                      href={`/reflections/${reflection.slug}`}
+                      href={`/projects/${reflection.projectSlug || 'cover'}/reflections/${reflection.slug}`}
                       className="mt-auto flex items-center gap-1 text-[var(--color-accent-primary)] text-sm font-semibold tracking-tight hover:gap-2 transition-all duration-300"
                     >
                       <span className="underline underline-offset-2 decoration-[var(--color-accent-primary)] decoration-1 hover:decoration-2">Read more</span>

@@ -12,11 +12,12 @@ import { DeleteConfirmationModal } from '../DeleteConfirmationModal';
 
 interface ReflectionDisplayProps {
   roundSlug: string;
+  projectSlug: string;
   round: Round;
   reflections: Reflection[];
 }
 
-export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionDisplayProps) {
+export function ReflectionDisplay({ roundSlug, projectSlug, round, reflections }: ReflectionDisplayProps) {
   const router = useRouter();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [reflectionToDelete, setReflectionToDelete] = useState<Reflection | null>(null);
@@ -127,7 +128,7 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
                   </p>
                   <div className="flex items-center gap-4">
                     <Link
-                      href={`/reflections/${reflection.slug}`}
+                      href={`/projects/${projectSlug}/reflections/${reflection.slug}`}
                       className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-accent-primary)] hover:text-[var(--color-accent-secondary)] transition-colors"
                     >
                       View reflection
@@ -136,7 +137,7 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
                       </svg>
                     </Link>
                     <Link
-                      href={`/reflections/${reflection.slug}/edit`}
+                      href={`/projects/${projectSlug}/reflections/${reflection.slug}/edit`}
                       className="inline-flex items-center gap-2 text-sm font-medium text-[var(--color-gray-400)] hover:text-[var(--color-primary)] transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +171,7 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
                 </div>
 
                 <Button asChild variant="secondary" size="lg">
-                  <Link href={`/round/${roundSlug}/create-reflection`}>
+                  <Link href={`/projects/${projectSlug}/round/${roundSlug}/create-reflection`}>
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
@@ -196,7 +197,7 @@ export function ReflectionDisplay({ roundSlug, round, reflections }: ReflectionD
 
             {canCreateReflection ? (
               <Button asChild variant="secondary" size="lg">
-                <Link href={`/round/${roundSlug}/create-reflection`}>
+                <Link href={`/projects/${projectSlug}/round/${roundSlug}/create-reflection`}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>

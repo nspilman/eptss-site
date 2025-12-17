@@ -3,6 +3,7 @@ import { RoundReflections } from '@eptss/user-content';
 
 interface RoundReflectionsData {
   roundId: number;
+  projectSlug: string;
 }
 
 /**
@@ -11,11 +12,11 @@ interface RoundReflectionsData {
  * Only displays if user is in current round
  */
 export function RoundReflectionsPanel({ data }: PanelProps<RoundReflectionsData>) {
-  if (!data?.roundId) {
+  if (!data?.roundId || !data?.projectSlug) {
     return null;
   }
 
-  return <RoundReflections roundId={data.roundId} />;
+  return <RoundReflections roundId={data.roundId} projectSlug={data.projectSlug} />;
 }
 
 export function RoundReflectionsSkeleton() {

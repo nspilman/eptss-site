@@ -54,6 +54,7 @@ export default async function Round({ params }: Props) {
           <PageTitle title={`Round ${roundData.roundId} Overview`} />
           <RoundSummary
             projectId={projectId}
+            projectSlug={projectSlug}
             roundId={roundData.roundId}
             roundData={roundData}
             voteResults={voteResults}
@@ -73,6 +74,7 @@ export default async function Round({ params }: Props) {
         <PageTitle title={`Round ${roundData.roundId} Overview`} />
         <RoundSummary
           projectId={projectId}
+          projectSlug={projectSlug}
           roundId={roundData.roundId}
           roundData={roundData}
           hasVoted={hasVoted}

@@ -1,13 +1,18 @@
-import { getUserReflectionsForRound, roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { getUserReflectionsForRound, roundProvider, COVER_PROJECT_ID, getProjectSlugFromId } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { ReflectionDisplay } from "./ReflectionDisplay";
 
-export async function ReflectionCard() {
+interface ReflectionCardProps {
+  projectId?: string;
+  projectSlug?: string;
+}
+
+export async function ReflectionCard({ projectId = COVER_PROJECT_ID, projectSlug }: ReflectionCardProps = {}) {
   const [
     currentRound,
     { userId }
   ] = await Promise.all([
-    roundProvider({ projectId: COVER_PROJECT_ID }),
+    roundProvider({ projectId }),
     getAuthUser()
   ]);
 
@@ -15,6 +20,9 @@ export async function ReflectionCard() {
   if (!currentRound || !currentRound.roundId) {
     return null;
   }
+
+  // Determine projectSlug if not provided
+  const resolvedProjectSlug: string = projectSlug || getProjectSlugFromId(projectId) || 'cover';
 
   // Get all user reflections for this round
   const reflectionsResult = await getUserReflectionsForRound(userId, currentRound.roundId);
@@ -34,6 +42,7 @@ export async function ReflectionCard() {
   return (
     <ReflectionDisplay
       roundSlug={currentRound.slug}
+      projectSlug={resolvedProjectSlug}
       round={serializedRound}
       reflections={reflections}
     />
