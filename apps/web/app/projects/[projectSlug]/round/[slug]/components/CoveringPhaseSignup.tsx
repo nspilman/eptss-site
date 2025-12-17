@@ -8,14 +8,15 @@ import { createClient } from "@eptss/data-access/utils/supabase/client";
 import { FormReturn } from "@/types";
 import { Navigation } from "@eptss/shared";
 import { useToast } from "@eptss/ui";
+import { useRouteParams } from '../../../ProjectContext';
 
 interface CoveringPhaseSignupProps {
-  projectId: string;
   roundId: number;
   isSignedUp?: boolean;
 }
 
-export const CoveringPhaseSignup = ({ projectId, roundId, isSignedUp = false }: CoveringPhaseSignupProps) => {
+export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPhaseSignupProps) => {
+  const { projectId } = useRouteParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();

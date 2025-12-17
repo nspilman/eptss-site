@@ -65,7 +65,7 @@ export default async function DiscussionsPage({ params }: Props) {
   }
 
   // Check if user is a participant
-  const { roundDetails } = await userParticipationProvider();
+  const { roundDetails } = await userParticipationProvider({ projectId });
   const isParticipant = roundDetails?.hasSignedUp || false;
 
   if (!isParticipant) {

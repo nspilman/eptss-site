@@ -2,6 +2,7 @@ import { ActionPanel, ActionPanelData } from '@eptss/dashboard/panels';
 import { PanelProps } from '@eptss/dashboard';
 import { LateSignupButton } from './LateSignupButton';
 import { InviteScrollButton } from './InviteScrollButton';
+import { ReflectionsSection } from './ReflectionsSection';
 import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
 import { roundProvider, COVER_PROJECT_ID } from '@eptss/data-access';
 import Link from 'next/link';
@@ -11,7 +12,7 @@ import { Button, AlertBox, GradientDivider, Badge } from '@eptss/ui';
 export interface ActionPanelWrapperData extends ActionPanelData {
   reflections?: Reflection[];
   roundSlug?: string;
-  projectSlug?: string;
+  // Note: projectSlug removed - will be obtained from useRouteParams() in client components
   // Phase status data
   phase?: 'signups' | 'covering' | 'voting' | 'celebration';
   phaseName?: string;
@@ -38,7 +39,7 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
     return null;
   }
 
-  const { reflections = [], roundSlug = '', projectSlug = 'cover' } = data;
+  const { reflections = [], roundSlug = '' } = data;
 
   console.log('[ActionPanelWrapper] phaseName:', data.phaseName, 'phaseMessage:', data.phaseMessage);
 
@@ -155,64 +156,8 @@ export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPane
             {/* Divider */}
             <GradientDivider />
 
-            {/* Reflections Section */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <svg className="w-4 h-4 text-[var(--color-accent-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                <h3 className="text-base font-semibold text-[var(--color-primary)]">
-                  Reflections
-                </h3>
-                {reflections.length > 0 && (
-                  <Badge variant="count">
-                    {reflections.length}
-                  </Badge>
-                )}
-              </div>
-
-              {reflections.length > 0 ? (
-                <div className="space-y-2 mb-3">
-                  {reflections.slice(0, 2).map((reflection) => (
-                    <Link
-                      key={reflection.id}
-                      href={`/projects/${projectSlug}/reflections/${reflection.slug}`}
-                      className="block p-2.5 rounded-lg bg-gray-800/40 hover:bg-gray-800/60 border border-gray-700/50 hover:border-[var(--color-accent-secondary)]/50 transition-all"
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm text-[var(--color-primary)] font-medium truncate">
-                          {reflection.title}
-                        </span>
-                        <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </Link>
-                  ))}
-                  {reflections.length > 2 && (
-                    <p className="text-xs text-gray-500 text-center pt-0.5">
-                      +{reflections.length - 2} more
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <div className="p-3 rounded-lg bg-gray-800/20 border border-gray-700/50 mb-3">
-                  <p className="text-xs text-gray-400 text-center">
-                    No reflections yet. Create your first one!
-                  </p>
-                </div>
-              )}
-
-              <Link
-                href={`/projects/${projectSlug}/round/${roundSlug}/create-reflection`}
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-accent-secondary)] hover:text-[var(--color-accent-primary)] transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Create New Reflection
-              </Link>
-            </div>
+            {/* Reflections Section - Client component that uses useRouteParams() */}
+            <ReflectionsSection reflections={reflections} roundSlug={roundSlug} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
 import VotingPageWrapper from "../VotingPageWrapper";
+import { RoundParamsProvider } from '../../ProjectContext';
 
 interface Props {
   params: Promise<{ projectSlug: string; slug: string }>;
@@ -12,5 +13,10 @@ export default async function VotingForRound({ params, searchParams }: Props) {
   const projectId = getProjectIdFromSlug(projectSlug as ProjectSlug);
 
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  return <VotingPageWrapper projectId={projectId} slug={slug} searchParams={resolvedSearchParams} />;
+
+  return (
+    <RoundParamsProvider roundSlug={slug}>
+      <VotingPageWrapper projectId={projectId} slug={slug} searchParams={resolvedSearchParams} />
+    </RoundParamsProvider>
+  );
 }

@@ -1,7 +1,8 @@
 import { CommentSection } from "@eptss/comments";
 import type { PanelProps } from "@eptss/dashboard";
 import { MessageSquare } from "lucide-react";
-import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { roundProvider } from "@eptss/data-access";
+import { DiscussionPanelClient } from "./DiscussionPanelClient";
 
 interface DiscussionPanelData {
   roundSlug: string;
@@ -10,6 +11,7 @@ interface DiscussionPanelData {
 
 /**
  * Wrapper to adapt CommentSection for dashboard display
+ * Now delegates to client component to access projectId from context
  *
  * Content-only - PanelCard + DashboardLayout handle sizing/styling
  */
@@ -33,19 +35,11 @@ export async function DiscussionPanelWrapper({ data, user }: PanelProps<Discussi
     );
   }
 
-  // Fetch round to get roundId from slug
-  const round = await roundProvider({ slug: data.roundSlug, projectId: COVER_PROJECT_ID });
-  if (!round) {
-    return null;
-  }
-
-  // CommentSection renders content only - no wrapper needed
+  // Delegate to client component which will use useRouteParams() to get projectId
   return (
-    <CommentSection
-      roundId={round.roundId}
-      currentUserId={user.id}
-      sortOrder="asc"
-      showHeader={false}
+    <DiscussionPanelClient
+      roundSlug={data.roundSlug}
+      userId={user.id}
     />
   );
 }

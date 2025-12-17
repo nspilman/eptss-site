@@ -62,8 +62,7 @@ const convertVoteBreakdownToBarchartFormat = (
 };
 
 interface Props {
-  projectId: string;
-  projectSlug: string;
+  projectSlug: string;  // Still needed for RoundReflections (server component in package)
   roundId: number;
   roundData: RoundInfo;
   voteResults?: VoteResults[];
@@ -99,7 +98,7 @@ const signupsHeaders = [
 
 
 // --- Main Component ---
-export const RoundSummary = async ({ projectId, projectSlug, roundId, roundData, voteResults = [], outstandingVoters = [], voteBreakdown = [], allRounds = [], hasVoted = false }: Props) => {
+export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResults = [], outstandingVoters = [], voteBreakdown = [], allRounds = [], hasVoted = false }: Props) => {
   try {
     const { phase, song, playlistUrl, submissions, signups, dateLabels } = roundData;
     
@@ -175,7 +174,7 @@ export const RoundSummary = async ({ projectId, projectSlug, roundId, roundData,
           </>
         )}
         {phase === "covering" && (
-          <CoveringPhaseSignup projectId={projectId} roundId={roundId} isSignedUp={isUserSignedUp} />
+          <CoveringPhaseSignup roundId={roundId} isSignedUp={isUserSignedUp} />
         )}
         {phase === "celebration" && (
           <CelebrationTables roundSummaryHeaders={roundSummaryHeaders} roundSummary={roundSummary} submissionsDisplayHeaders={submissionsDisplayHeaders} submissions={submissions} />

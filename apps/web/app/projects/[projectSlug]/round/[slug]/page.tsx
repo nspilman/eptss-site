@@ -4,6 +4,7 @@ import { roundProvider, votesProvider, roundsProvider, userParticipationProvider
 import { getCurrentPhase } from "@eptss/data-access/services/dateService";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
+import { RoundParamsProvider } from '../../ProjectContext';
 
 interface Props {
   params: Promise<{ projectSlug: string; slug: string }>;
@@ -50,10 +51,9 @@ export default async function Round({ params }: Props) {
       const { allRoundSlugs, roundContent } = await roundsProvider({ excludeCurrentRound: false, projectId });
 
       return (
-        <>
+        <RoundParamsProvider roundSlug={slug}>
           <PageTitle title={`Round ${roundData.roundId} Overview`} />
           <RoundSummary
-            projectId={projectId}
             projectSlug={projectSlug}
             roundId={roundData.roundId}
             roundData={roundData}
@@ -64,22 +64,21 @@ export default async function Round({ params }: Props) {
             allRounds={roundContent}
             hasVoted={hasVoted}
           />
-        </>
+        </RoundParamsProvider>
       );
     }
 
     // For signup phase, we only need the basic round data
     return (
-      <>
+      <RoundParamsProvider roundSlug={slug}>
         <PageTitle title={`Round ${roundData.roundId} Overview`} />
         <RoundSummary
-          projectId={projectId}
           projectSlug={projectSlug}
           roundId={roundData.roundId}
           roundData={roundData}
           hasVoted={hasVoted}
         />
-      </>
+      </RoundParamsProvider>
     );
   } catch (error) {
     console.error("Error in round page:", error);
