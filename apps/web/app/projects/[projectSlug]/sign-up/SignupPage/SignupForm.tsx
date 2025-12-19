@@ -11,7 +11,6 @@ import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter, useParams } from "next/navigation"
 import { UserSignupData } from "@eptss/data-access/types/signup"
-import { useCaptcha } from "@eptss/captcha"
 
 
 interface SignupFormProps {
@@ -23,7 +22,7 @@ interface SignupFormProps {
   existingSignup?: UserSignupData;
   referralCode?: string;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
-  signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
+  signupWithOTP: (formData: FormData) => Promise<FormReturn>;
   requireSongOnSignup?: boolean;
 }
 
@@ -112,9 +111,6 @@ export function SignupForm({
   const params = useParams();
   const projectSlug = params.projectSlug as string;
 
-  // Get CAPTCHA hook (only used for non-logged-in users)
-  const { executeRecaptcha, isReady: isCaptchaReady } = useCaptcha();
-
   // Determine which schema and fields to use based on login status and requireSongOnSignup
   console.log('[SignupForm] requireSongOnSignup:', requireSongOnSignup, 'isLoggedIn:', isLoggedIn);
   const schema = requireSongOnSignup
@@ -155,36 +151,13 @@ export function SignupForm({
     if (isLoggedIn) {
       return await signup(formData);
     } else {
-      // Execute CAPTCHA for non-logged-in users
-      let captchaToken: string | null = null;
-
-      try {
-        captchaToken = await executeRecaptcha('signup');
-
-        if (!captchaToken) {
-          return {
-            status: "Error",
-            message: "Security verification failed. Please refresh the page and try again.",
-            variant: "destructive",
-          };
-        }
-      } catch (error) {
-        console.error('[SignupForm] CAPTCHA execution error:', error);
-        return {
-          status: "Error",
-          message: "Security verification error. Please try again.",
-          variant: "destructive",
-        };
-      }
-
       // Save the email for the confirmation screen
       const email = formData.get("email") as string;
       if (email) {
         setSubmittedEmail(email);
       }
 
-      // captchaToken is guaranteed to be a string here due to the check above
-      return await signupWithOTP(formData, captchaToken as string);
+      return await signupWithOTP(formData);
     }
   }
 

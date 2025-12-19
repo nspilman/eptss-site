@@ -8,8 +8,6 @@ import { handleResponse } from "../utils";
 import { getAuthUser } from "../utils/supabase/server";
 import { createClient } from "../utils/supabase/server";
 import { eq, sql, and, ne } from "drizzle-orm";
-import { verifyCaptcha, logBotAttempt, getClientInfo } from "@eptss/captcha/server";
-import { headers } from "next/headers";
 
 /**
  * Get the most recent signup data for a user
@@ -164,64 +162,10 @@ import { getProjectSlugFromId, type ProjectSlug } from "../utils/projectUtils";
 import { validateReferralCode } from "./referralService";
 import { getNextId } from "../utils/dbHelpers";
 
-export async function signupWithOTP(formData: FormData, captchaToken?: string): Promise<FormReturn> {
+export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
   "use server";
 
   try {
-    // Get client info for logging
-    const headersList = await headers();
-    const clientInfo = getClientInfo(headersList);
-
-    // Verify CAPTCHA token for non-logged-in users
-    if (captchaToken) {
-      const captchaResult = await verifyCaptcha(captchaToken, 'signup', {
-        scoreThreshold: 0.5,
-        skipInDevelopment: process.env.NODE_ENV === 'development',
-      });
-
-      if (!captchaResult.success) {
-        // Log the failed bot attempt
-        await logBotAttempt({
-          ...clientInfo,
-          captchaScore: captchaResult.score,
-          attemptType: 'signup',
-          metadata: {
-            error: captchaResult.error,
-            email: formData.get('email'),
-          },
-        });
-
-        return handleResponse(
-          400,
-          Navigation.Dashboard,
-          "We detected unusual activity. Please try again or contact support if this persists."
-        );
-      }
-
-      console.log(`[Signup] CAPTCHA verified successfully. Score: ${captchaResult.score}`);
-    } else {
-      // No CAPTCHA token provided - log as suspicious
-      console.warn('[Signup] No CAPTCHA token provided for non-authenticated signup');
-
-      // In production, we might want to require CAPTCHA
-      if (process.env.NODE_ENV === 'production') {
-        await logBotAttempt({
-          ...clientInfo,
-          attemptType: 'signup',
-          metadata: {
-            error: 'No CAPTCHA token provided',
-            email: formData.get('email'),
-          },
-        });
-
-        return handleResponse(
-          400,
-          Navigation.Dashboard,
-          "Security verification required. Please refresh the page and try again."
-        );
-      }
-    }
-
     // Get roundId early to determine project and business rules
     const roundId = Number(formData.get("roundId"));
     console.log('[signupWithOTP] Starting validation. RoundId:', roundId);

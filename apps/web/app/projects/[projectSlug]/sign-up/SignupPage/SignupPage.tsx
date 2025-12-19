@@ -6,7 +6,6 @@ import { SignupForm } from "./SignupForm";
 import { useSearchParams } from "next/navigation";
 import { UserSignupData } from "@eptss/data-access/types/signup";
 import { FormReturn } from "@/types";
-import { CaptchaProvider } from "@eptss/captcha";
 
 interface Props {
   hasSignedUp: boolean;
@@ -17,7 +16,7 @@ interface Props {
   isLoggedIn?: boolean;
   userSignup?: UserSignupData;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
-  signupWithOTP: (formData: FormData, captchaToken?: string) => Promise<FormReturn>;
+  signupWithOTP: (formData: FormData) => Promise<FormReturn>;
   requireSongOnSignup?: boolean;
 }
 
@@ -70,19 +69,17 @@ export function SignupPage({
           action="signups"
         />
       ) : (
-        <CaptchaProvider>
-          <SignupForm
-            roundId={roundId}
-            signupsCloseDateLabel={signupsCloseDateLabel}
-            isLoggedIn={isLoggedIn}
-            isUpdate={hasSignedUp && isUpdate}
-            existingSignup={userSignup}
-            referralCode={referralCode}
-            signup={signup}
-            signupWithOTP={signupWithOTP}
-            requireSongOnSignup={requireSongOnSignup}
-          />
-        </CaptchaProvider>
+        <SignupForm
+          roundId={roundId}
+          signupsCloseDateLabel={signupsCloseDateLabel}
+          isLoggedIn={isLoggedIn}
+          isUpdate={hasSignedUp && isUpdate}
+          existingSignup={userSignup}
+          referralCode={referralCode}
+          signup={signup}
+          signupWithOTP={signupWithOTP}
+          requireSongOnSignup={requireSongOnSignup}
+        />
       )}
     </>
   );
