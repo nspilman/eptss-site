@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import { TOAST_REDIRECT_KEY } from "@eptss/shared";
 import { createClient } from "@eptss/data-access/utils/supabase/server";
 import { ensureUserExists } from "@eptss/auth/server";
+import { verifySignupByEmail } from "@eptss/data-access";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -31,6 +32,16 @@ export async function GET(request: NextRequest) {
           // Referral validation failed - redirect with error message
           targetUrl.searchParams.set(TOAST_REDIRECT_KEY, ensureUserResult.error || 'Account creation failed');
           return NextResponse.redirect(targetUrl.toString());
+        }
+
+        // Complete the signup by moving from unverifiedSignups to signUps table
+        const verifyResult = await verifySignupByEmail();
+
+        if (verifyResult.status !== 'Success') {
+          console.error('Failed to verify signup:', verifyResult.message);
+          // Don't fail the auth flow, but log the error
+          // The user can still access the dashboard and we'll show the error message
+          targetUrl.searchParams.set(TOAST_REDIRECT_KEY, verifyResult.message || 'Signup verification failed');
         }
 
         // Add a parameter to indicate successful authentication
