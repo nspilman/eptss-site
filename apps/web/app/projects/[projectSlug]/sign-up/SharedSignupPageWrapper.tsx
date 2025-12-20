@@ -1,6 +1,6 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { roundProvider, userParticipationProvider, type ProjectSlug } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, type ProjectSlug, getProjectBySlug } from "@eptss/data-access";
 import { SignupPage } from "./SignupPage/SignupPage";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { UserSignupData } from "@eptss/data-access/types/signup";
@@ -22,6 +22,15 @@ export const SharedSignupPageWrapper = async ({
   // Check if user is logged in
   const { userId } = await getAuthUser();
   const isLoggedIn = !!userId;
+
+  // Fetch project info
+  const project = await getProjectBySlug(projectSlug);
+  const projectName = project?.name || "EPTSS";
+  console.log('[SharedSignupPageWrapper] ===== PROJECT INFO =====');
+  console.log('[SharedSignupPageWrapper] projectSlug:', projectSlug);
+  console.log('[SharedSignupPageWrapper] project:', project);
+  console.log('[SharedSignupPageWrapper] projectName:', projectName);
+  console.log('[SharedSignupPageWrapper] ========================');
 
   // Fetch project business rules
   const businessRules = await getProjectBusinessRules(projectSlug as ProjectSlug);
@@ -67,6 +76,7 @@ export const SharedSignupPageWrapper = async ({
       hasSignedUp={roundDetails?.hasSignedUp || false}
       slug={slug || currentSlug}
       projectSlug={projectSlug}
+      projectName={projectName}
       isLoggedIn={isLoggedIn}
       userSignup={userSignup}
       signup={signup}

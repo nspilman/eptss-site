@@ -13,6 +13,7 @@ interface Props {
   signupsCloseDateLabel: string;
   slug: string;
   projectSlug: string;
+  projectName: string;
   isLoggedIn?: boolean;
   userSignup?: UserSignupData;
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
@@ -26,6 +27,7 @@ export function SignupPage({
   signupsCloseDateLabel,
   slug,
   projectSlug,
+  projectName,
   isLoggedIn = false,
   userSignup,
   signup,
@@ -37,20 +39,38 @@ export function SignupPage({
   const isUpdate = searchParams?.get("update") === "true";
   const showSuccess = searchParams?.get("success") === "true";
   const referralCode = searchParams?.get("ref") || undefined;
-  
-  const title = isUpdate 
-    ? `Update Your Song for Round ${roundId}` 
-    : `Sign Up for Everyone Plays the Same Song round ${roundId}`;
+
+  // Create signup title based on project
+  const getSignupTitle = () => {
+    console.log('[SignupPage] ===== TITLE GENERATION =====');
+    console.log('[SignupPage] projectSlug:', projectSlug);
+    console.log('[SignupPage] projectName:', projectName);
+    console.log('[SignupPage] roundId:', roundId);
+
+    if (projectSlug === 'monthly-original') {
+      console.log('[SignupPage] Returning Monthly Originals title');
+      return 'Sign up for the Monthly Originals project';
+    }
+    console.log('[SignupPage] Returning generic title:', `Sign Up for ${projectName}`);
+    return `Sign Up for ${projectName}`;
+  };
+
+  const title = isUpdate
+    ? `Update Your Song for ${slug}`
+    : getSignupTitle();
+
+  console.log('[SignupPage] Final title:', title);
+  console.log('[SignupPage] ============================');
 
   const signupSuccessText = {
-    header: `Thank you for signing up for round ${roundId} of Everyone Plays the Same Song!`,
+    header: `Thank you for signing up for ${slug} of ${projectName}!`,
     body: `You will get a welcome email with all the information and dates you will need.`,
     thankyou: `Thanks for participating`,
   };
 
   const signupSuccessImage = {
     src: roundId === 21 ? "/welcome-to-round-21.jpg" : "/welcomeimage.png",
-    alt: "Welcome to Everyone Plays the Same Song!",
+    alt: `Welcome to ${projectName}!`,
     blurSrc:
       roundId === 21
         ? "welcome-to-round-21-blur.jpg"
@@ -72,6 +92,7 @@ export function SignupPage({
         <SignupForm
           roundId={roundId}
           signupsCloseDateLabel={signupsCloseDateLabel}
+          title={title}
           isLoggedIn={isLoggedIn}
           isUpdate={hasSignedUp && isUpdate}
           existingSignup={userSignup}

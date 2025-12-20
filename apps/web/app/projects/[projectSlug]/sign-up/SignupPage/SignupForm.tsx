@@ -16,6 +16,7 @@ import { UserSignupData } from "@eptss/data-access/types/signup"
 interface SignupFormProps {
   roundId: number;
   signupsCloseDateLabel: string;
+  title: string;
   onSuccess?: () => void;
   isLoggedIn?: boolean;
   isUpdate?: boolean;
@@ -95,6 +96,7 @@ const getNonLoggedInFields = (referralCode?: string): FieldConfig[] => [
 export function SignupForm({
   roundId,
   signupsCloseDateLabel,
+  title,
   onSuccess,
   isLoggedIn = false,
   isUpdate = false,
@@ -188,10 +190,8 @@ export function SignupForm({
   }
   
   return (
-    <FormWrapper 
-      title={isUpdate 
-        ? `Update Your Song for Round ${roundId}` 
-        : `Sign Up for Everyone Plays the Same Song round ${roundId}`}
+    <FormWrapper
+      title={title}
       description={`Signups close ${signupsCloseDateLabel}${!isLoggedIn ? ' - Please provide your email to sign up' : ''}`}
       onSubmit={handleSubmit}
     >
