@@ -19,6 +19,7 @@ interface FormTextareaFieldProps {
   placeholder?: string;
   description?: string;
   className?: string;
+  rows?: number;
 }
 
 export function FormTextareaField({
@@ -29,6 +30,7 @@ export function FormTextareaField({
   placeholder,
   description,
   className,
+  rows = 3,
 }: FormTextareaFieldProps) {
   return (
     <FormField
@@ -42,6 +44,7 @@ export function FormTextareaField({
               {...field}
               disabled={disabled}
               placeholder={placeholder}
+              rows={rows}
             />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}

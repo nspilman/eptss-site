@@ -8,7 +8,7 @@ const sectionHeaderVariants = cva(
     variants: {
       variant: {
         default: "",
-        "accent-border": "border-l-4 pl-4",
+        "accent-border": "border-l-2 pl-4",
       },
       size: {
         sm: "",
@@ -29,13 +29,13 @@ const sectionHeaderVariants = cva(
 )
 
 const titleVariants = cva(
-  "font-fraunces font-bold text-primary tracking-tight",
+  "font-fraunces text-primary tracking-tight",
   {
     variants: {
       size: {
-        sm: "text-xl",
-        md: "text-2xl md:text-3xl",
-        lg: "text-3xl md:text-4xl",
+        sm: "text-lg font-semibold",
+        md: "text-2xl md:text-3xl font-bold",
+        lg: "text-3xl md:text-4xl font-bold",
       },
     },
     defaultVariants: {

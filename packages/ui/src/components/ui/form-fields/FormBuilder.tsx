@@ -23,6 +23,7 @@ type InputFieldConfig = BaseFieldProps & {
 
 type TextareaFieldConfig = BaseFieldProps & {
   type: "textarea";
+  rows?: number;
 }
 
 type RadioGroupFieldConfig = BaseFieldProps & {
@@ -64,7 +65,7 @@ export function FormBuilder({ fields, control, disabled }: FormBuilderProps) {
               />
             );
           case "textarea":
-            return <FormTextareaField key={field.name} {...commonProps} />;
+            return <FormTextareaField key={field.name} {...commonProps} rows={field.rows} />;
           case "radio":
             return (
               <FormRadioGroupField

@@ -9,12 +9,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'shadow-sm hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.4)]',
-        destructive: 'shadow-sm hover:shadow-[0_0_20px_3px_rgba(239,68,68,0.5)]',
-        outline: 'border bg-transparent shadow-sm hover:shadow-[0_0_15px_2px_rgba(226,226,64,0.3)]',
-        secondary: 'shadow-sm hover:shadow-[0_0_20px_4px_rgba(226,226,64,0.6)]',
-        ghost: 'hover:shadow-[0_0_10px_1px_rgba(255,255,255,0.1)]',
-        link: 'underline-offset-4',
+        default: 'bg-[var(--color-white)] text-[var(--color-background-primary)] shadow-sm hover:shadow-[0_0_20px_2px_rgba(255,255,255,0.4)]',
+        destructive: 'bg-[var(--color-destructive)] text-white shadow-sm hover:shadow-[0_0_20px_3px_rgba(239,68,68,0.5)]',
+        outline: 'border border-[var(--color-gray-700)] bg-transparent text-[var(--color-primary)] shadow-sm hover:shadow-[0_0_15px_2px_rgba(226,226,64,0.3)]',
+        secondary: 'bg-[var(--color-accent-primary)] text-[var(--color-background-primary)] shadow-sm hover:shadow-[0_0_20px_4px_rgba(226,226,64,0.6)]',
+        ghost: 'text-[var(--color-primary)] hover:shadow-[0_0_10px_1px_rgba(255,255,255,0.1)]',
+        link: 'text-[var(--color-primary)] underline-offset-4',
         action: 'font-roboto text-xs text-[var(--color-gray-400)] transition-colors duration-200 hover:text-[var(--color-accent-primary)]',
         danger: 'font-roboto text-xs text-[var(--color-gray-400)] transition-colors duration-200 hover:text-red-500',
         gradient: 'shadow-sm hover:opacity-90 transition-opacity duration-200',
@@ -36,36 +36,13 @@ const buttonVariants = cva(
   }
 )
 
-// Define variant styles that use CSS variables
-// Note: action and danger variants use Tailwind classes for color to support hover states
+// Define variant styles that only handle non-color properties
+// Colors are now handled via Tailwind classes to allow className overrides
 const variantStyles: Record<string, React.CSSProperties> = {
-  default: {
-    backgroundColor: 'var(--color-white)',
-    color: 'var(--color-background-primary)',
-  },
-  destructive: {
-    backgroundColor: 'var(--color-destructive)',
-    color: 'white',
-  },
-  outline: {
-    borderColor: 'var(--color-gray-700)',
-    color: 'var(--color-primary)',
-  },
-  secondary: {
-    backgroundColor: 'var(--color-accent-primary)',
-    color: 'var(--color-background-primary)',
-  },
-  ghost: {
-    color: 'var(--color-primary)',
-  },
-  link: {
-    color: 'var(--color-primary)',
-  },
   gradient: {
     background: 'linear-gradient(to right, var(--color-accent-secondary), var(--color-accent-primary))',
-    color: 'white',
   },
-  // action and danger don't use inline styles to allow Tailwind hover classes to work
+  // All other variants use Tailwind classes for styling
 }
 
 export interface ButtonProps

@@ -49,13 +49,6 @@ const baseFormFields: FieldConfig[] = [
     inputType: "url",
     description: "Link to the song on YouTube",
   },
-  {
-    type: "textarea",
-    name: "additionalComments",
-    label: "Additional Comments",
-    placeholder: "Any additional comments about your submission",
-    description: "Optional: Add any notes about your submission",
-  },
 ];
 
 // Additional fields for non-logged in users
@@ -63,7 +56,7 @@ const getNonLoggedInFields = (referralCode?: string): FieldConfig[] => [
   {
     type: "input",
     name: "email",
-    label: "Email",
+    label: "Email *",
     placeholder: "Enter your email address",
     inputType: "email",
     description: "We'll send you a verification link",
@@ -71,24 +64,24 @@ const getNonLoggedInFields = (referralCode?: string): FieldConfig[] => [
   {
     type: "input",
     name: "name",
-    label: "Name",
+    label: "Name *",
     placeholder: "Enter your name",
   },
   {
     type: "input",
     name: "location",
-    label: "Location",
-    placeholder: "Enter your location (optional)",
+    label: "Location (optional)",
+    placeholder: "Enter your location",
     description: "City, State, Country",
   },
   {
     type: "input",
     name: "referralCode",
-    label: "Referral Code",
+    label: "Referral Code *",
     placeholder: "Enter your referral code",
     description: referralCode
       ? "Referral code detected from link"
-      : "A referral code is required. Ask an existing member for an invite link.",
+      : "Required - Ask an existing member for an invite link",
     disabled: !!referralCode,
   },
 ];
@@ -137,7 +130,6 @@ export function SignupForm({
       songTitle: existingSignup?.songTitle || "",
       artist: existingSignup?.artist || "",
       youtubeLink: existingSignup?.youtubeLink || "",
-      additionalComments: existingSignup?.additionalComments || "",
       email: "",
       name: "",
       location: "",
@@ -200,7 +192,7 @@ export function SignupForm({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-10"
+          className="space-y-4"
         >
           <input type="hidden" name="roundId" value={roundId} />
           
@@ -209,11 +201,11 @@ export function SignupForm({
               <SectionHeader
                 variant="accent-border"
                 borderColor="primary"
+                size="sm"
                 title="Your Information"
-                subtitle="We'll send you a verification link to complete your signup"
                 className="mb-6"
               />
-              <div className="space-y-5">
+              <div>
                 <FormBuilder
                   fields={getNonLoggedInFields(referralCode)}
                   control={form.control}
@@ -228,11 +220,11 @@ export function SignupForm({
               <SectionHeader
                 variant="accent-border"
                 borderColor="secondary"
+                size="sm"
                 title="Round Signup"
-                subtitle="Enter the song you'd like to cover for this round"
                 className="mb-6"
               />
-              <div className="space-y-5">
+              <div>
                 <FormBuilder
                   fields={baseFormFields.filter(field => ['songTitle', 'artist', 'youtubeLink'].includes(field.name))}
                   control={form.control}
@@ -241,24 +233,13 @@ export function SignupForm({
               </div>
             </div>
           )}
-
-          {filteredBaseFields.some(field => field.name === 'additionalComments') && (
-            <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm">
-              <div className="space-y-5">
-                <FormBuilder
-                  fields={baseFormFields.filter(field => field.name === 'additionalComments')}
-                  control={form.control}
-                  disabled={isLoading}
-                />
-              </div>
-            </div>
-          )}
           
-          <Button 
-            type="submit" 
-            disabled={isLoading} 
+          <Button
+            type="submit"
+            disabled={isLoading}
+            variant="gradient"
             size="full"
-            className="mt-4 py-3 text-lg font-medium shadow-md transition-all hover:shadow-lg focus:ring-2 focus:ring-accent-primary"
+            className="py-3 text-lg font-semibold text-black"
           >
             {isLoading ? (isUpdate ? "Updating..." : "Signing up...") : (isUpdate ? "Update Song" : "Sign Up")}
           </Button>
