@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@eptss/ui";
+import { Button, Card, CardContent, Heading, Text, AlertBox } from "@eptss/ui";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 
 interface EmailConfirmationScreenProps {
@@ -18,68 +17,82 @@ export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScr
       transition={{ duration: 0.5 }}
       className="mx-auto max-w-3xl"
     >
-      <div className="rounded-xl bg-background-tertiary p-8 shadow-lg backdrop-blur-sm">
-        <div className="flex flex-col items-center text-center">
-          <div className="mb-6 h-24 w-24 overflow-hidden rounded-full bg-background-secondary">
-            <Image
-              src="/images/email-sent.svg"
-              alt="Email sent"
-              width={96}
-              height={96}
-              className="object-cover"
-            />
-          </div>
-          
-          <h2 className="mb-4 font-fraunces text-3xl font-bold text-primary">
-            Check Your Email
-          </h2>
-          
-          <div className="mb-6 max-w-lg">
-            <p className="mb-4 text-accent-primary">
-              We&apos;ve sent a verification link to <span className="font-semibold">{email}</span>
-            </p>
-            <p className="text-accent-primary opacity-90">
-              Please click the link in the email to complete your signup for Round {roundId} of Everyone Plays the Same Song.
-            </p>
-          </div>
-          
-          <div className="mt-2 rounded-lg bg-background-secondary p-6">
-            <h3 className="mb-2 font-medium text-primary">What happens next?</h3>
-            <ol className="ml-5 list-decimal text-left text-accent-primary opacity-90">
-              <li className="mb-2">Check your inbox for the verification email</li>
-              <li className="mb-2">Click the link in the email to verify your signup</li>
-              <li>You&apos;ll be redirected to your dashboard where you can see your signup status</li>
-            </ol>
-          </div>
-          
-          <div className="mt-8 flex flex-wrap gap-4">
+      <Card className="text-center">
+        <CardContent className="pt-8 pb-8 space-y-8">
+          {/* Header Callout */}
+          <AlertBox
+            variant="warning"
+            icon={false}
+            className="border-4 border-accent-secondary bg-accent-secondary/20"
+          >
+            <div className="text-center w-full">
+              <div className="flex justify-center mb-3">
+                <span className="text-5xl">⚠️</span>
+              </div>
+              <Heading size="lg" className="text-accent-secondary mb-2">
+                One More Step!
+              </Heading>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <Text size="lg" className="font-semibold">
+                  We sent a verification link to:
+                </Text>
+                <div className="inline-block bg-accent-primary text-background-primary px-6 py-3 rounded-lg text-xl font-bold">
+                  {email}
+                </div>
+              </div>
+            </div>
+          </AlertBox>
+
+          {/* CTA Alert Box */}
+          <AlertBox
+            variant="info"
+            icon={false}
+            className="border-2 border-blue-500/30"
+          >
+            <div className="space-y-4 w-full">
+              <div className="flex justify-center">
+                <span className="text-4xl">📧</span>
+              </div>
+              <Heading size="lg" className="text-primary text-center">
+                Click the link in your email to complete signup
+              </Heading>
+              <ol className="ml-6 list-decimal text-left space-y-2">
+                <Text size="base" as="li" className="font-semibold">
+                  Check your inbox (and spam folder)
+                </Text>
+                <Text size="base" as="li" className="font-semibold">
+                  Click the verification link in the email
+                </Text>
+                <Text size="base" as="li" className="font-semibold">
+                  You&apos;ll be redirected to your dashboard
+                </Text>
+              </ol>
+            </div>
+          </AlertBox>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-4">
             <Link href="/" className="min-w-[150px]">
-              <Button
-                variant="secondary"
-                className="w-full"
-              >
+              <Button variant="secondary" className="w-full">
                 Return Home
               </Button>
             </Link>
-            
             <a href={`mailto:${email}`} className="min-w-[150px]">
-              <Button
-                variant="default"
-                className="w-full"
-              >
+              <Button variant="default" className="w-full">
                 Open Email App
               </Button>
             </a>
           </div>
-          
-          <p className="mt-6 text-sm text-accent-primary opacity-70">
+
+          {/* Help Text */}
+          <Text size="sm" className="opacity-70">
             Didn&apos;t receive the email? Check your spam folder or{" "}
-            <Link href="/sign-up" className="text-accent-primary underline hover:text-accent-secondary">
+            <Link href="/sign-up" className="underline hover:text-accent-secondary">
               try signing up again
             </Link>
-          </p>
-        </div>
-      </div>
+          </Text>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }
