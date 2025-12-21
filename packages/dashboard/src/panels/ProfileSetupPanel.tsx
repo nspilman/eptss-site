@@ -32,7 +32,7 @@ export function ProfileSetupPanel({ data }: PanelProps<ProfileSetupData>) {
     <ProfileSetupCard
       userId={userId}
       username={username}
-      initialDisplayName={null} // Always start with empty field to encourage customization
+      initialDisplayName={publicDisplayName ?? username}
       initialProfilePictureUrl={profilePictureUrl}
       variant="compact"
       onSuccess={() => {
