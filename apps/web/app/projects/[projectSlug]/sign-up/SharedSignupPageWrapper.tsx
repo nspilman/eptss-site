@@ -6,7 +6,7 @@ import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { UserSignupData } from "@eptss/data-access/types/signup";
 import { getNextRoundByVotingDate, getUserSignupData } from "@eptss/data-access";
 import { signup, signupWithOTP } from "@/actions/userParticipationActions";
-import { getProjectBusinessRules } from "@eptss/project-config";
+import { getProjectBusinessRules, getPageContent } from "@eptss/project-config";
 
 interface SharedSignupPageWrapperProps {
   projectId: string;
@@ -36,6 +36,9 @@ export const SharedSignupPageWrapper = async ({
   const businessRules = await getProjectBusinessRules(projectSlug as ProjectSlug);
   console.log('[SharedSignupPageWrapper] Project:', projectSlug, 'Business Rules:', JSON.stringify(businessRules, null, 2));
   console.log('[SharedSignupPageWrapper] requireSongOnSignup:', businessRules.requireSongOnSignup);
+
+  // Fetch signup page content
+  const signupPageContent = await getPageContent(projectSlug as ProjectSlug, 'signup');
 
   // If slug is provided, use it directly, otherwise get current round info
   const { roundId, dateLabels, hasRoundStarted, slug: currentSlug } = await roundProvider({ slug, projectId });
@@ -82,6 +85,7 @@ export const SharedSignupPageWrapper = async ({
       signup={signup}
       signupWithOTP={signupWithOTP}
       requireSongOnSignup={businessRules.requireSongOnSignup}
+      loggedInWelcomeText={signupPageContent.loggedInWelcomeText}
     />
   );
 };

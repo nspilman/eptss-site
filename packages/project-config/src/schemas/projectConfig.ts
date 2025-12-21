@@ -313,6 +313,10 @@ export const pageContentSchema = z.object({
     successMessage: z.string().default("Your cover has been submitted successfully"),
     submittingText: z.string().default("Submitting..."),
   }).default({}),
+
+  signup: z.object({
+    loggedInWelcomeText: z.string().default("You're all set! Just pick a song below to sign up for this round."),
+  }).default({}),
 }).default({});
 
 /**

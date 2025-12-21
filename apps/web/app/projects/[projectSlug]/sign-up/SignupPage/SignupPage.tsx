@@ -19,6 +19,7 @@ interface Props {
   signup: (formData: FormData, providedUserId?: string) => Promise<FormReturn>;
   signupWithOTP: (formData: FormData) => Promise<FormReturn>;
   requireSongOnSignup?: boolean;
+  loggedInWelcomeText: string;
 }
 
 export function SignupPage({
@@ -33,6 +34,7 @@ export function SignupPage({
   signup,
   signupWithOTP,
   requireSongOnSignup = true,
+  loggedInWelcomeText,
 }: Props) {
   // Check URL parameters
   const searchParams = useSearchParams();
@@ -100,6 +102,7 @@ export function SignupPage({
           signup={signup}
           signupWithOTP={signupWithOTP}
           requireSongOnSignup={requireSongOnSignup}
+          loggedInWelcomeText={loggedInWelcomeText}
         />
       )}
     </>
