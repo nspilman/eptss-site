@@ -399,7 +399,17 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
 
       userName = username;
     } else {
-      userName = existingUser[0].username;
+      // User already exists - optionally backfill publicDisplayName from metadata
+      const currentUser = existingUser[0];
+      userName = currentUser.username;
+
+      if (!currentUser.publicDisplayName && publicDisplayName) {
+        console.log('[verifySignupByEmail] Backfilling publicDisplayName from Supabase metadata for user:', userId);
+        await db
+          .update(users)
+          .set({ publicDisplayName })
+          .where(eq(users.userid, userId));
+      }
     }
     
     const signupData = unverifiedSignup[0];
