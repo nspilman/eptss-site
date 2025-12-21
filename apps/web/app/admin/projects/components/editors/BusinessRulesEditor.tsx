@@ -184,6 +184,20 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
           <label className="flex items-center gap-2 cursor-pointer flex-1">
             <input
               type="checkbox"
+              checked={rules.requirePrompt}
+              onChange={(e) => onChange({ ...rules, requirePrompt: e.target.checked })}
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <span className="text-sm font-medium">Require Prompt</span>
+          </label>
+          <Tooltip content={<div className="max-w-xs">When enabled, rounds must have a prompt/theme (e.g. for original songs projects). When disabled, rounds do not require a prompt (e.g. for cover projects where the song itself is the focus).</div>} side="right">
+            <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
+          </Tooltip>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="flex items-center gap-2 cursor-pointer flex-1">
+            <input
+              type="checkbox"
               checked={rules.allowLateSubmissions}
               onChange={(e) => onChange({ ...rules, allowLateSubmissions: e.target.checked })}
               className="w-4 h-4 rounded border-border text-primary focus:ring-primary"

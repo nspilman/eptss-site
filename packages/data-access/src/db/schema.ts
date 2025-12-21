@@ -38,6 +38,18 @@ export const roundMetadata = pgTable("round_metadata", {
   projectSlugIdx: uniqueIndex("idx_round_metadata_project_slug").on(table.projectId, table.slug),
 }));
 
+// Round Prompts Table
+export const roundPrompts = pgTable("round_prompts", {
+  id: bigint("id", { mode: "number" }).primaryKey(),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
+  promptText: text("prompt_text").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type RoundPrompt = typeof roundPrompts.$inferSelect;
+export type NewRoundPrompt = typeof roundPrompts.$inferInsert;
+
 // Sign-ups Table
 export const signUps = pgTable("sign_ups", {
   id: bigint("id", { mode: "number" }).primaryKey(),

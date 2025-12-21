@@ -43,6 +43,7 @@ export const businessRulesSchema = z.object({
   maxVotesPerUser: z.number().int().positive().default(3),
   requireEmailVerification: z.boolean().default(true),
   requireSongOnSignup: z.boolean().default(true),
+  requirePrompt: z.boolean().default(false), // Whether rounds require a prompt/theme (true for original songs, false for covers)
   minVotingDurationDays: z.number().int().positive().default(3),
   maxVotingDurationDays: z.number().int().positive().default(14),
   defaultRoundDurationWeeks: z.number().int().positive().default(4),

@@ -1,4 +1,5 @@
 import { PanelProps } from '../types';
+import { Card, CardContent, Label, Text, AlertBox } from '@eptss/ui';
 
 interface HeroData {
   roundId: number;
@@ -17,6 +18,9 @@ interface HeroData {
       celebration: string;
     };
   };
+  requirePrompt?: boolean;
+  promptText?: string | null;
+  projectName?: string;
 }
 
 /**
@@ -49,7 +53,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
     return null;
   }
 
-  const { roundId, roundSlug, songTitle, songArtist, currentPhase, terminology } = data;
+  const { roundId, roundSlug, songTitle, songArtist, currentPhase, terminology, requirePrompt, promptText, projectName } = data;
 
   console.log('[HeroPanel] Extracted terminology:', JSON.stringify(terminology, null, 2));
   console.log('[HeroPanel] Current phase:', currentPhase);
@@ -99,17 +103,54 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
   const roundTitle = formatRoundTitle();
   const status = formatStatus();
 
-  // Only show separator if roundTitle is not empty
-  const separator = roundTitle ? ': ' : '';
+  // Build the full title with project name
+  let fullTitle = '';
+  if (projectName) {
+    fullTitle = `${projectName} - `;
+  }
+  if (roundTitle) {
+    fullTitle += `${roundTitle}: `;
+  }
+  fullTitle += status;
 
-  console.log('[HeroPanel] Final render:', roundTitle, separator, status);
+  console.log('[HeroPanel] Final render:', fullTitle);
 
   return (
-    <h1 className="text-4xl font-bold">
-      <span className="bg-clip-text text-transparent bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
-        {roundTitle}{separator}{status}
-      </span>
-    </h1>
+    <div className="space-y-4">
+      <h1 className="text-4xl font-bold">
+        <span className="bg-clip-text text-transparent bg-linear-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
+          {fullTitle}
+        </span>
+      </h1>
+
+      {/* Display prompt if this project requires prompts */}
+      {requirePrompt && (
+        <Card variant="glass">
+          <CardContent>
+            {promptText ? (
+              <div className="space-y-2">
+                <Label size="sm" color="secondary" className="uppercase tracking-wide">
+                  This Month's Prompt
+                </Label>
+                <Text size="lg" color="primary">
+                  {promptText}
+                </Text>
+              </div>
+            ) : (
+              <AlertBox
+                variant="warning"
+                title="Round Prompt Locked"
+                className="mt-2"
+              >
+                <Text size="sm" color="secondary">
+                  Prompt will be revealed when the round begins. Keep an eye on this space when the round starts.
+                </Text>
+              </AlertBox>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
 

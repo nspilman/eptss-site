@@ -10,13 +10,15 @@ import {
   getNextRoundByVotingDate,
   getUserSignupData,
   getUserReflectionsForRound,
+  getRoundPrompt,
+  getProjectBySlug,
   type Reflection,
   type ProjectSlug,
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { Navigation } from "@eptss/shared";
 import { getProjectRoute } from "@/lib/projects";
-import { getProjectFeatures, getProjectTerminology } from "@eptss/project-config";
+import { getProjectFeatures, getProjectTerminology, getProjectBusinessRules } from "@eptss/project-config";
 import type {
   Phase
 } from "@eptss/dashboard/panels";
@@ -29,9 +31,11 @@ import type {
 export async function fetchHeroData(projectId: string, projectSlug: string) {
   console.log('[fetchHeroData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
 
-  const [currentRound, terminology] = await Promise.all([
+  const [currentRound, terminology, businessRules, project] = await Promise.all([
     roundProvider({ projectId }),
     getProjectTerminology(projectSlug as ProjectSlug),
+    getProjectBusinessRules(projectSlug as ProjectSlug),
+    getProjectBySlug(projectSlug),
   ]);
 
   console.log('[fetchHeroData] Fetched terminology:', JSON.stringify(terminology, null, 2));
@@ -41,6 +45,15 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     return null;
   }
 
+  // Fetch the round prompt if this project requires prompts
+  let promptText: string | null = null;
+  if (businessRules.requirePrompt) {
+    const promptResult = await getRoundPrompt(currentRound.roundId);
+    if (promptResult.status === 'success') {
+      promptText = promptResult.data;
+    }
+  }
+
   const heroData = {
     roundId: currentRound.roundId,
     roundSlug: currentRound.slug,
@@ -48,6 +61,9 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     songArtist: currentRound.song?.artist,
     currentPhase: currentRound.phase,
     terminology,
+    requirePrompt: businessRules.requirePrompt,
+    promptText,
+    projectName: project?.name,
   };
 
   console.log('[fetchHeroData] Returning heroData:', JSON.stringify(heroData, null, 2));
@@ -105,11 +121,12 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
   // Get auth user first to fetch reflections
   const { userId } = await getAuthUser();
 
-  const [currentRound, { roundDetails }, features, terminology] = await Promise.all([
+  const [currentRound, { roundDetails }, features, terminology, businessRules] = await Promise.all([
     roundProvider({ projectId }),
     userParticipationProvider({ projectId }),
     getProjectFeatures(projectSlug as ProjectSlug),
     getProjectTerminology(projectSlug as ProjectSlug),
+    getProjectBusinessRules(projectSlug as ProjectSlug),
   ]);
 
   console.log('[fetchActionData] Fetched terminology:', JSON.stringify(terminology, null, 2));
@@ -172,14 +189,46 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
   // Determine action based on phase and user status
   switch (phase) {
     case 'signups':
+      // If user has signed up and there's no song to update, they're done
+      if (roundDetails?.hasSignedUp && !businessRules.requireSongOnSignup) {
+        return {
+          actionText: 'Invite Friends to Join',
+          actionHref: '#invite-friends',
+          contextMessage: "You're all set! The round will start soon. Invite your friends to participate!",
+          isHighPriority: false,
+          showInviteLink: true,
+          reflections,
+          roundSlug: slug,
+          projectSlug,
+          phase: phase as Phase,
+          phaseName: phaseNames[phase as Phase],
+          phaseMessage: phaseMessages[phase as Phase],
+          timeRemaining,
+          dueDate,
+          urgencyLevel,
+          hasSignedUp: roundDetails?.hasSignedUp || false,
+          hasSubmitted: roundDetails?.hasSubmitted || false,
+          hasVoted: roundDetails?.hasVoted || false,
+        };
+      }
+
+      // Determine action text and context message based on whether song selection is required
+      const actionText = roundDetails?.hasSignedUp
+        ? 'Update Song Suggestion'
+        : 'Sign Up for Round';
+
+      const contextMessage = roundDetails?.hasSignedUp
+        ? 'Change your song suggestion before signups close.'
+        : (businessRules.requireSongOnSignup
+            ? 'Join the current round and suggest a song for everyone to cover!'
+            : 'Join the current round and participate!');
+
       return {
-        actionText: roundDetails?.hasSignedUp ? 'Update Song Suggestion' : 'Sign Up for Round',
+        actionText,
         actionHref: roundDetails?.hasSignedUp
           ? `${signupUrl}?update=true`
           : signupUrl,
-        contextMessage: roundDetails?.hasSignedUp
-          ? 'Change your song suggestion before signups close.'
-          : 'Join the current round and suggest a song for everyone to cover!',
+        contextMessage,
         isHighPriority: true,
         reflections,
         roundSlug: slug,

@@ -253,6 +253,13 @@
       "when": 1765730900000,
       "tag": "0049_abstract_landing_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1766339167372,
+      "tag": "0050_lovely_excalibur",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 import { defaultDateString } from "@eptss/shared";
 import { db } from "../db";
-import { roundMetadata, songs, songSelectionVotes, signUps, submissions, COVER_PROJECT_ID } from "../db/schema";
+import { roundMetadata, songs, songSelectionVotes, signUps, submissions, roundPrompts, COVER_PROJECT_ID } from "../db/schema";
 import { eq, gte, asc, desc, and, or, sql, avg } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '../types/asyncResult';
 
@@ -720,7 +720,38 @@ export const getRoundInfo = async (roundId: number) => {
     .from(roundMetadata)
     .where(eq(roundMetadata.id, roundId))
     .limit(1);
-  
+
   return result[0] || null;
+};
+
+/**
+ * Get the prompt for a specific round
+ * Returns the prompt text if it exists, or null if no prompt is set
+ */
+export const getRoundPrompt = async (roundId: number): Promise<AsyncResult<string | null>> => {
+  try {
+    // Validate roundId is a valid number
+    if (isNaN(roundId) || !Number.isFinite(roundId)) {
+      return createErrorResult(new Error(`Invalid round ID: ${roundId}`));
+    }
+
+    const result = await db
+      .select({
+        promptText: roundPrompts.promptText,
+      })
+      .from(roundPrompts)
+      .where(eq(roundPrompts.roundId, roundId))
+      .limit(1);
+
+    if (result.length === 0) {
+      // No prompt exists yet - this is not an error, just return null
+      return createSuccessResult(null);
+    }
+
+    return createSuccessResult(result[0].promptText);
+  } catch (error) {
+    console.error('Error getting round prompt:', error);
+    return createErrorResult(error instanceof Error ? error : new Error(`Failed to get prompt for round ${roundId}`));
+  }
 };
 
