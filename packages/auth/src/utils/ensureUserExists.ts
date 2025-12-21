@@ -89,6 +89,9 @@ export async function ensureUserExists(user: User) {
       // Extract username from email (before the @)
       const username = user.email.split('@')[0];
 
+      // Extract display name from user metadata (set during signup)
+      const publicDisplayName = user.user_metadata?.name || undefined;
+
       // Add a retry mechanism for creating the user
       let retryCount = 0;
       const maxRetries = 3;
@@ -102,6 +105,7 @@ export async function ensureUserExists(user: User) {
             userid: user.id,
             email: user.email,
             username: username,
+            public_display_name: publicDisplayName,
           });
 
         if (insertError) {

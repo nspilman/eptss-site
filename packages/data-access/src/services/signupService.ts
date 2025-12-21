@@ -345,16 +345,23 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
 
 export async function verifySignupByEmail(): Promise<FormReturn> {
   "use server";
-  
+
   const { userId, email } = await getAuthUser();
-  
+
   if (!userId || !email) {
     return handleResponse(401, Navigation.Dashboard, "You must be authenticated to complete signup");
   }
-  
+
   try {
     // Import referral service for recording referrals
     const { recordReferral } = await import("./referralService");
+
+    // Get the full user object from Supabase to access metadata
+    const supabase = await createClient();
+    const { data: { user: supabaseUser } } = await supabase.auth.getUser();
+
+    // Extract display name from user metadata (set during signup)
+    const publicDisplayName = supabaseUser?.user_metadata?.name || undefined;
 
     // Find the unverified signup record by email
     const unverifiedSignup = await db
@@ -373,22 +380,23 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       .from(users)
       .where(eq(users.userid, userId))
       .limit(1);
-    
+
     let userName: string | undefined;
-    
+
     // If user doesn't exist, create them
     if (existingUser.length === 0) {
       console.log("Creating new user in database:", { userId, email });
       // Generate a username based on email
       const username = email.split('@')[0] + Math.floor(Math.random() * 1000);
-      
-      // Insert the user
+
+      // Insert the user with display name from metadata
       await db.insert(users).values({
         userid: userId,
         email: email,
         username: username,
+        publicDisplayName: publicDisplayName,
       });
-      
+
       userName = username;
     } else {
       userName = existingUser[0].username;
