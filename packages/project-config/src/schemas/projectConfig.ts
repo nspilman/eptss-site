@@ -78,6 +78,9 @@ export const emailConfigSchema = z.object({
     signupConfirmation: z.object({
       subject: z.string().default("You're signed up!"),
       greeting: z.string().default("Thanks for signing up"),
+      instructions: z.string().optional(), // Custom body text/instructions for the round
+      ctaButtonText: z.string().default("View Round Details"), // Custom CTA button text
+      ctaButtonUrl: z.string().url().optional(), // Optional custom CTA link (falls back to round URL)
     }).default({}),
     votingOpened: z.object({
       subject: z.string().default("Voting is now open"),

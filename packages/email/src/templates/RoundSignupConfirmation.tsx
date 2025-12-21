@@ -27,6 +27,10 @@ interface RoundSignupConfirmationProps {
     coversDue: string;
     listeningParty: string;
   };
+  customGreeting?: string;
+  customInstructions?: string;
+  customCtaText?: string;
+  customCtaUrl?: string;
 }
 
 export const RoundSignupConfirmation = ({
@@ -38,8 +42,14 @@ export const RoundSignupConfirmation = ({
   roundUrl,
   baseUrl,
   phaseDates,
+  customGreeting,
+  customInstructions,
+  customCtaText,
+  customCtaUrl,
 }: RoundSignupConfirmationProps) => {
-  const greeting = userName ? `Hi ${userName}` : 'Hi';
+  const greeting = customGreeting || (userName ? `Hi ${userName}` : 'Hi');
+  const ctaButtonText = customCtaText || 'View Round Details';
+  const ctaButtonUrl = customCtaUrl || roundUrl;
 
   return (
     <Html>
@@ -125,13 +135,22 @@ export const RoundSignupConfirmation = ({
                 </Text>
               </Section>
 
+              {/* Custom Instructions */}
+              {customInstructions && (
+                <Section className="mb-6 mt-6 rounded-lg bg-[#1f2937] border border-gray-700 p-5">
+                  <Text className="m-0 text-base text-[#f8f9fa] whitespace-pre-line">
+                    {customInstructions}
+                  </Text>
+                </Section>
+              )}
+
               {/* CTA Button */}
               <Section className="mt-8 text-center">
                 <Button
-                  href={roundUrl}
+                  href={ctaButtonUrl}
                   className="rounded-md bg-gradient-to-r from-[#40e2e2] to-[#e2e240] px-8 py-3 text-base font-semibold text-[#0a0a14] no-underline"
                 >
-                  View Round Details
+                  {ctaButtonText}
                 </Button>
               </Section>
 

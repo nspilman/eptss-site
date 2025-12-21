@@ -93,6 +93,13 @@ export interface RoundSignupConfirmationParams {
     coversDue: string;
     listeningParty: string;
   };
+  emailConfig?: {
+    subject?: string;
+    greeting?: string;
+    instructions?: string;
+    ctaButtonText?: string;
+    ctaButtonUrl?: string;
+  };
 }
 
 export async function sendRoundSignupConfirmation(
@@ -107,10 +114,18 @@ export async function sendRoundSignupConfirmation(
     youtubeLink,
     roundSlug,
     phaseDates,
+    emailConfig,
   } = params;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://everyoneplaysthesamesong.com';
   const roundUrl = `${baseUrl}/round/${roundSlug}`;
+
+  // Extract email config with defaults
+  const customSubject = emailConfig?.subject;
+  const customGreeting = emailConfig?.greeting;
+  const customInstructions = emailConfig?.instructions;
+  const customCtaText = emailConfig?.ctaButtonText;
+  const customCtaUrl = emailConfig?.ctaButtonUrl;
 
   // Render React Email template to HTML
   const html = await render(
@@ -123,13 +138,20 @@ export async function sendRoundSignupConfirmation(
       roundUrl,
       baseUrl,
       phaseDates,
+      customGreeting,
+      customInstructions,
+      customCtaText,
+      customCtaUrl,
     })
   );
+
+  // Use custom subject or default
+  const subject = customSubject || `🎵 You're signed up for ${roundName}!`;
 
   // Send user confirmation email
   const userEmailResult = await sendEmail({
     to,
-    subject: `🎵 You're signed up for ${roundName}!`,
+    subject,
     html,
   });
 

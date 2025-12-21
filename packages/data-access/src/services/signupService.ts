@@ -157,10 +157,12 @@ export const getUserSignupData = async (userId: string, roundId: number) => {
 import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong } from "../schemas/signupSchemas";
 import { seededShuffle } from "../utils/seededShuffle";
 import { validateFormData } from "../utils/formDataHelpers";
-import { getProjectBusinessRules } from "@eptss/project-config";
+import { getProjectBusinessRules, getProjectEmailConfig } from "@eptss/project-config";
 import { getProjectSlugFromId, type ProjectSlug } from "../utils/projectUtils";
 import { validateReferralCode } from "./referralService";
 import { getNextId } from "../utils/dbHelpers";
+import { getRoundById } from "./roundService";
+import { sendRoundSignupConfirmation } from "@eptss/email/services/emailService";
 
 export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
   "use server";
@@ -450,6 +452,47 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       songId: songId,
       userId: userId,
     });
+
+    // Send signup confirmation email (don't fail signup if email fails)
+    try {
+      if (signupData.songTitle && signupData.artist && signupData.youtubeLink) {
+        // Get project slug
+        const projectSlug = getProjectSlugFromId(projectId);
+
+        if (projectSlug) {
+          // Get round details with phase dates
+          const roundResult = await getRoundById(signupData.roundId);
+
+          if (roundResult.status === 'success') {
+            const round = roundResult.data;
+
+            // Get project email config
+            const emailConfig = await getProjectEmailConfig(projectSlug);
+
+            // Send confirmation email
+            await sendRoundSignupConfirmation({
+              to: email,
+              userName: userName || undefined,
+              roundName: round.slug || `Round ${signupData.roundId}`,
+              songTitle: signupData.songTitle,
+              artist: signupData.artist,
+              youtubeLink: signupData.youtubeLink,
+              roundSlug: round.slug,
+              phaseDates: {
+                votingOpens: round.votingOpens.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                coveringBegins: round.coveringBegins.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                coversDue: round.coversDue.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                listeningParty: round.listeningParty.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+              },
+              emailConfig: emailConfig.templates.signupConfirmation,
+            });
+          }
+        }
+      }
+    } catch (emailError) {
+      console.error('[verifySignupByEmail] Failed to send confirmation email:', emailError);
+      // Don't fail the signup if email fails
+    }
 
     // Record the referral if a referral code was provided
     if (signupData.referralCode) {
@@ -751,6 +794,52 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         songId: songId,
         userId: userId,
       });
+
+      // Send signup confirmation email (don't fail signup if email fails)
+      try {
+        // Get user details
+        const userResult = await db
+          .select({ email: users.email, username: users.username })
+          .from(users)
+          .where(eq(users.userid, userId))
+          .limit(1);
+
+        if (userResult.length && validData.songTitle && validData.artist && validData.youtubeLink) {
+          const userEmail = userResult[0].email;
+          const userName = userResult[0].username;
+
+          // Get round details with phase dates
+          const roundResult = await getRoundById(validData.roundId);
+
+          if (roundResult.status === 'success') {
+            const round = roundResult.data;
+
+            // Get project email config
+            const emailConfig = await getProjectEmailConfig(projectSlug);
+
+            // Send confirmation email
+            await sendRoundSignupConfirmation({
+              to: userEmail,
+              userName: userName || undefined,
+              roundName: round.slug || `Round ${validData.roundId}`,
+              songTitle: validData.songTitle,
+              artist: validData.artist,
+              youtubeLink: validData.youtubeLink,
+              roundSlug: round.slug,
+              phaseDates: {
+                votingOpens: round.votingOpens.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                coveringBegins: round.coveringBegins.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                coversDue: round.coversDue.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                listeningParty: round.listeningParty.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+              },
+              emailConfig: emailConfig.templates.signupConfirmation,
+            });
+          }
+        }
+      } catch (emailError) {
+        console.error('[signup] Failed to send confirmation email:', emailError);
+        // Don't fail the signup if email fails
+      }
 
       return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
     }
