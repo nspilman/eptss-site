@@ -99,7 +99,7 @@ const Homepage = async () => {
           {projectsWithRounds.map((project) => (
             <Link
               key={project.id}
-              href={`/projects/${project.slug}/dashboard`}
+              href={`/projects/${project.slug}`}
               className="block"
             >
               <div className="bg-background-secondary border-2 border-border rounded-xl p-6 hover:border-accent-primary transition-all duration-300 hover:shadow-lg hover:shadow-accent-primary/20">
