@@ -3,7 +3,7 @@
 import { Button } from "@eptss/ui";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 
 export const StaticHero = () => {
   return (
@@ -34,7 +34,7 @@ export const StaticHero = () => {
         transition={{ duration: 0.5, delay: 0.03 }}
         className="flex flex-col items-center md:items-start"
       >
-        <Link href={Navigation.HowItWorks}>
+        <Link href={routes.home({ hash: 'how-it-works' })}>
           <Button variant="default" size="lg">
             Learn How It Works
           </Button>

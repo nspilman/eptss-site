@@ -22,6 +22,7 @@
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
+    "@eptss/routing": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/logger": "workspace:*",
     "@libsql/client": "^0.14.0",

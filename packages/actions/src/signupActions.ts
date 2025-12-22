@@ -3,7 +3,7 @@
 import { signupUserWithoutSong } from "@eptss/data-access/services/signupService";
 import { FormReturn } from "@eptss/data-access/types/index";
 import { revalidatePath } from "next/cache";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { signupForRoundSchema } from "@eptss/data-access/schemas/actionSchemas";
 import { signupRateLimit } from "@eptss/data-access/utils/ratelimit";
 import { logger } from "@eptss/logger/server";
@@ -65,7 +65,7 @@ export async function signupForRound(formData: FormData): Promise<FormReturn> {
     }
 
     // 4. Revalidate cache
-    revalidatePath(Navigation.Dashboard);
+    revalidatePath(routes.dashboard.root());
 
     // 5. Log success
     logger.info('User signed up for round', { userId, roundId });

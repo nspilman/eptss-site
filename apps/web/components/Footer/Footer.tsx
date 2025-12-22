@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { MusicIcon, Github, Heart } from "lucide-react";
 
 export const Footer = () => {
@@ -42,17 +42,17 @@ export const Footer = () => {
             <h3 className="text-[var(--color-white)] font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href={Navigation.HowItWorks} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
+                <Link href={routes.home({ hash: 'how-it-works' })} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
                   How It Works
                 </Link>
               </li>
               <li>
-                <Link href={Navigation.FAQ} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
+                <Link href={routes.faq()} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href={Navigation.Dashboard} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
+                <Link href={routes.dashboard.root()} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
                   Dashboard
                 </Link>
               </li>
@@ -64,7 +64,7 @@ export const Footer = () => {
             <h3 className="text-[var(--color-white)] font-bold mb-4">Community</h3>
             <ul className="space-y-2">
               <li>
-                <Link href={Navigation.Login} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
+                <Link href={routes.auth.login()} className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors">
                   Join Us
                 </Link>
               </li>

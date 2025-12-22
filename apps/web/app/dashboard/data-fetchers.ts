@@ -16,8 +16,7 @@ import {
   type ProjectSlug,
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { Navigation } from "@eptss/shared";
-import { getProjectRoute } from "@/lib/projects";
+import { routes } from "@eptss/routing";
 import { getProjectFeatures, getProjectTerminology, getProjectBusinessRules } from "@eptss/project-config";
 import type {
   Phase
@@ -181,10 +180,10 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
   console.log('[fetchActionData] Phase messages:', JSON.stringify(phaseMessages, null, 2));
 
   // Generate project-scoped URLs
-  const signupUrl = getProjectRoute(projectSlug, 'sign-up');
-  const votingUrl = getProjectRoute(projectSlug, 'voting');
-  const submitUrl = getProjectRoute(projectSlug, 'submit');
-  const roundUrl = getProjectRoute(projectSlug, `round/${slug}`);
+  const signupUrl = routes.projects.signUp.root(projectSlug);
+  const votingUrl = routes.projects.voting.root(projectSlug);
+  const submitUrl = routes.projects.submit.root(projectSlug);
+  const roundUrl = routes.projects.rounds.detail(projectSlug, slug);
 
   // Determine action based on phase and user status
   switch (phase) {

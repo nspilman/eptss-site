@@ -1,5 +1,5 @@
 import { AUTH_HEADER_KEYS } from '@eptss/shared'
-import { Navigation, protectedRoutes } from '@eptss/shared'
+import { routes, PROTECTED_ROUTES } from '@eptss/routing'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { ensureUserExists } from './userManagement'
@@ -83,11 +83,11 @@ export async function updateSession(request: NextRequest) {
     // Add any other user data you need
   }
   else{
-    for (let index = 0; index < protectedRoutes.length; index++) {
-      const route = protectedRoutes[index];
+    for (let index = 0; index < PROTECTED_ROUTES.length; index++) {
+      const route = PROTECTED_ROUTES[index];
       if(request.nextUrl.pathname.startsWith(route)){
         const url = request.nextUrl.clone()
-        url.pathname = Navigation.Login;
+        url.pathname = routes.auth.login();
         url.searchParams.append("redirectUrl",route)
         return {response: NextResponse.redirect(url)}
       }

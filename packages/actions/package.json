@@ -15,6 +15,7 @@
     "@eptss/data-access": "workspace:*",
     "@eptss/email": "workspace:*",
     "@eptss/logger": "workspace:*",
+    "@eptss/routing": "workspace:*",
     "@eptss/shared": "workspace:*",
     "next": "15.0.3"
   },

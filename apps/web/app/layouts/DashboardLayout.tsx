@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Footer } from "@/components/Footer/Footer";
 import { NotificationBell } from "@/components/notifications";
@@ -127,8 +127,8 @@ export default function DashboardLayout({
                 isAdmin={isAdmin}
               />
             </div>
-            {/* Collapse/Expand Button - Outside scrollable container */}
-            <div className="md:fixed md:top-40 md:z-50 group/button" style={{ left: isCollapsed ? 'calc(5rem - 0.75rem)' : 'calc(16rem - 0.75rem)' }}>
+            {/* Collapse/Expand Button with glow effect - On the right divider, Desktop only */}
+            <div className="hidden md:block absolute -right-3 top-24 z-50 group/button">
               <Button
                 variant="ghost"
                 size="icon"
@@ -137,17 +137,13 @@ export default function DashboardLayout({
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {isCollapsed ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-black stroke-[3]">
-                    <path d="m9 18 6-6-6-6"></path>
-                  </svg>
+                  <ChevronRight className="w-4 h-4 stroke-[3]" />
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 stroke-black stroke-[3]">
-                    <path d="m15 18-6-6 6-6"></path>
-                  </svg>
+                  <ChevronLeft className="w-4 h-4 stroke-[3]" />
                 )}
               </Button>
               {/* Glowing divider line on button hover */}
-              <div className="absolute left-3 top-0 bottom-0 w-[1px] bg-accent-secondary/20 transition-all duration-300 group-hover/button:shadow-[0_0_15px_4px_rgba(var(--color-accent-primary-rgb),0.7)] group-hover/button:bg-accent-primary pointer-events-none" style={{height: '100vh', top: '-10rem'}}></div>
+              <div className="absolute left-3 top-0 bottom-0 w-[1px] bg-accent-secondary/20 transition-all duration-300 group-hover/button:shadow-[0_0_15px_4px_rgba(var(--color-accent-primary-rgb),0.7)] group-hover/button:bg-accent-primary pointer-events-none" style={{height: '100vh', top: '-6rem'}}></div>
             </div>
           </div>
 

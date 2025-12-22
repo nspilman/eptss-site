@@ -10,7 +10,7 @@ import { getUserInfo } from "@eptss/data-access";
 import { getRoundById } from "@eptss/data-access/services/roundService";
 import { formatDate } from "@eptss/data-access";
 import { revalidatePath } from "next/cache";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import {
   sendRoundSignupConfirmation,
   sendSubmissionConfirmation
@@ -34,7 +34,7 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
     const result = await adminSignupUserService(formData);
 
     if (result.status === 'Success') {
-      revalidatePath(Navigation.Admin);
+      revalidatePath(routes.admin.root());
       logger.info('Admin signup successful', { userId, roundId });
 
       // Send confirmation emails (don't fail if emails fail)
@@ -112,7 +112,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
     const result = await adminSubmitCoverService(formData);
 
     if (result.status === 'Success') {
-      revalidatePath(Navigation.Admin);
+      revalidatePath(routes.admin.root());
       logger.info('Admin cover submission successful', { userId, roundId });
 
       // Send confirmation emails (don't fail if emails fail)
@@ -204,7 +204,7 @@ export async function createRoundAction(formData: FormData): Promise<FormReturn>
     });
 
     if (result.status === 'success') {
-      revalidatePath(Navigation.Admin);
+      revalidatePath(routes.admin.root());
       logger.info('Admin round creation successful', { slug });
       return {
         status: "Success",
@@ -241,7 +241,7 @@ export async function updateFeedbackPublicStatus(
 ): Promise<FormReturn> {
   try {
     const result = await updateFeedbackPublicStatusService(feedbackId, isPublic);
-    revalidatePath(Navigation.Admin);
+    revalidatePath(routes.admin.root());
 
     if (result.status === 'success') {
       return {
@@ -271,7 +271,7 @@ export async function updateFeedbackPublicStatus(
 export async function deleteFeedback(feedbackId: string): Promise<FormReturn> {
   try {
     const result = await deleteFeedbackService(feedbackId);
-    revalidatePath(Navigation.Admin);
+    revalidatePath(routes.admin.root());
 
     if (result.status === 'success') {
       return {

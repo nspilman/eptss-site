@@ -1,10 +1,11 @@
 "use client";
 
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
+import { useRoute } from "@eptss/routing/client";
 import Link from "next/link";
 import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
 import { Shield, FileText } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { extractParams } from "@eptss/routing";
 
 interface SidebarItemProps {
   href: string;
@@ -41,11 +42,11 @@ interface DashboardSidebarProps {
 }
 
 export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, onNavigate, isAdmin = false }: DashboardSidebarProps) {
-  const pathname = usePathname();
+  const route = useRoute();
 
-  // Extract project slug from pathname (e.g., /projects/cover/dashboard -> cover)
-  const projectSlugMatch = pathname.match(/\/projects\/([^\/]+)/);
-  const projectSlug = projectSlugMatch ? projectSlugMatch[1] : 'cover'; // Default to 'cover' if not found
+  // Extract project slug from pathname using routing utilities
+  const params = extractParams(route.pathname, '/projects/[slug]');
+  const projectSlug = params?.slug || 'cover'; // Default to 'cover' if not found
 
   return (
     <aside
@@ -53,59 +54,59 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
     >
       <nav className="space-y-2 md:sticky md:top-24">
         <SidebarItem
-          href={Navigation.Dashboard}
+          href={routes.dashboard.root()}
           icon={<HomeIcon className="w-5 h-5" />}
           label="Dashboard"
-          isActive={pathname === Navigation.Dashboard}
+          isActive={route.isTree('/dashboard')}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
         <SidebarItem
-          href={`/projects/${projectSlug}/reflections`}
+          href={routes.projects.reflections.list(projectSlug)}
           icon={<FileText className="w-5 h-5" />}
           label="Reflections"
-          isActive={pathname.includes("/reflections")}
+          isActive={route.isTree('/reflections') || route.matches('/projects/[slug]/reflections')}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
         <SidebarItem
-          href="/rounds"
+          href={routes.legacy.rounds()}
           icon={<HistoryIcon className="w-5 h-5" />}
           label="Past Rounds"
-          isActive={pathname === "/rounds"}
+          isActive={route.is('/rounds')}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
         <SidebarItem
-          href={Navigation.Profile}
+          href={routes.dashboard.profile()}
           icon={<UserIcon className="w-5 h-5" />}
           label="Profile"
-          isActive={pathname === Navigation.Profile}
-          onClick={onNavigate}
-          isCollapsed={isCollapsed}
-        />
-        <SidebarItem 
-          href="/reporting"
-          icon={<MusicNoteIcon className="w-5 h-5" />}
-          label="Past Submitted Songs"
-          isActive={pathname === "/reporting"}
+          isActive={route.is('/dashboard/profile')}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
         <SidebarItem
-          href="/feedback"
+          href={routes.legacy.reporting()}
+          icon={<MusicNoteIcon className="w-5 h-5" />}
+          label="Past Submitted Songs"
+          isActive={route.is('/reporting')}
+          onClick={onNavigate}
+          isCollapsed={isCollapsed}
+        />
+        <SidebarItem
+          href={routes.feedback()}
           icon={<ChatBubbleLeftEllipsisIcon className="w-5 h-5" />}
           label="Feedback"
-          isActive={pathname === "/feedback"}
+          isActive={route.is('/feedback')}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
         {isAdmin && (
           <SidebarItem
-            href={Navigation.Admin}
+            href={routes.admin.root()}
             icon={<Shield className="w-5 h-5" />}
             label="Admin"
-            isActive={pathname.startsWith(Navigation.Admin)}
+            isActive={route.isTree('/admin')}
             onClick={onNavigate}
             isCollapsed={isCollapsed}
           />

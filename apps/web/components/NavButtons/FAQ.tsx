@@ -1,8 +1,8 @@
-import { Navigation } from '@eptss/shared'
+import { routes } from '@eptss/routing'
 import { NavigationButton } from '@eptss/ui'
 
 export const FAQButton = () => (
-  <NavigationButton href={Navigation.FAQ} intent="main">
+  <NavigationButton href={routes.faq()} intent="main">
     FAQ
   </NavigationButton>
 )

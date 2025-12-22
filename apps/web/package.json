@@ -38,6 +38,7 @@
     "@eptss/profile": "workspace:*",
     "@eptss/project-config": "workspace:*",
     "@eptss/rich-text-editor": "workspace:*",
+    "@eptss/routing": "workspace:*",
     "@eptss/rounds": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/ui": "workspace:*",

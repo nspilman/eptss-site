@@ -1,4 +1,3 @@
-import { Navigation } from "@eptss/shared";
 import { revalidateTag } from "next/cache";
 import type { FormReturn } from "../types";
 
@@ -6,7 +5,7 @@ export const getIsSuccess = (responseCode: number) => {
   return [200, 201, 204].includes(responseCode);
 };
 
-export const handleResponse = (status: number, tagToRevalidate: Navigation, errorMessage: string): FormReturn => {
+export const handleResponse = (status: number, tagToRevalidate: string, errorMessage: string): FormReturn => {
   const isSuccess = getIsSuccess(status);
   if(isSuccess){
     revalidateTag(tagToRevalidate)

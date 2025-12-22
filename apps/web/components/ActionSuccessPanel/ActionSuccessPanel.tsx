@@ -1,4 +1,4 @@
-import { getProjectRoute } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent, Button } from "@eptss/ui";
@@ -49,7 +49,7 @@ export const ActionSuccessPanel = ({
           {thankyou}
         </p>
         <div className="flex justify-center">
-          <Link href={action === "signups" ? getProjectRoute.voting(projectSlug) : "/"}>
+          <Link href={action === "signups" ? routes.projects.voting.root(projectSlug) : routes.home()}>
             <Button>
               {action === "signups" ? "Go to Voting" : "Home"}
             </Button>

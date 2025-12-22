@@ -7,6 +7,7 @@
  */
 
 import type { Notification } from "@eptss/data-access/db/schema";
+import { routes, api } from "@eptss/routing";
 
 /**
  * Navigation result from a notification handler
@@ -100,7 +101,7 @@ async function handleCommentNavigation(
   // Fallback: if userContentId/roundId are missing (older notifications), fetch from the comment
   if (!userContentId && !roundId && !contentId) {
     try {
-      const commentResponse = await fetch(`/api/comments/${commentId}`);
+      const commentResponse = await fetch(api.comments.byId(commentId));
       if (commentResponse.ok) {
         const commentData = await commentResponse.json();
         userContentId = commentData.userContentId;
@@ -121,7 +122,7 @@ async function handleCommentNavigation(
   // Handle round discussion comments
   if (roundId) {
     return {
-      url: `/discussions#comment-${commentId}`,
+      url: routes.projects.discussions('cover', { hash: `comment-${commentId}` }),
       markAsRead: true,
     };
   }
@@ -130,7 +131,7 @@ async function handleCommentNavigation(
   if (userContentId) {
     try {
       // Fetch the content slug
-      const response = await fetch(`/api/notifications/content-slug?contentId=${userContentId}`);
+      const response = await fetch(api.notifications.contentSlug(userContentId));
       if (!response.ok) {
         return { error: "Failed to fetch content" };
       }
@@ -141,7 +142,7 @@ async function handleCommentNavigation(
       }
 
       return {
-        url: `/reflections/${slug}#comment-${commentId}`,
+        url: routes.legacy.reflection(slug, { hash: `comment-${commentId}` }),
         markAsRead: true,
       };
     } catch (error) {
@@ -161,11 +162,11 @@ function handleRoundOpenedNavigation(
   const { roundId } = metadata;
 
   if (!roundId) {
-    return { url: "/dashboard", markAsRead: true };
+    return { url: routes.dashboard.root(), markAsRead: true };
   }
 
   // Could navigate to specific round page if we have one
-  return { url: "/dashboard", markAsRead: true };
+  return { url: routes.dashboard.root(), markAsRead: true };
 }
 
 /**
@@ -176,12 +177,13 @@ function handleSubmissionNavigation(
 ): NavigationResult {
   const { roundId, submissionId } = metadata;
 
-  // Navigate to the submissions page or specific submission
+  // Navigate to the dashboard (no specific submissions page exists)
+  // TODO: Update when submissions page is created
   if (roundId) {
-    return { url: `/rounds/${roundId}/submissions`, markAsRead: true };
+    return { url: routes.dashboard.root(), markAsRead: true };
   }
 
-  return { url: "/dashboard", markAsRead: true };
+  return { url: routes.dashboard.root(), markAsRead: true };
 }
 
 /**
@@ -192,11 +194,13 @@ function handleVoteNavigation(
 ): NavigationResult {
   const { roundId } = metadata;
 
+  // Navigate to dashboard (voting page is project-scoped and needs slug)
+  // TODO: Update when we have roundId -> slug mapping
   if (roundId) {
-    return { url: `/rounds/${roundId}`, markAsRead: true };
+    return { url: routes.dashboard.root(), markAsRead: true };
   }
 
-  return { url: "/dashboard", markAsRead: true };
+  return { url: routes.dashboard.root(), markAsRead: true };
 }
 
 /**
@@ -210,7 +214,7 @@ async function handleReflectionNavigation(
   // If we already have the slug in metadata, use it
   if (slug) {
     return {
-      url: `/reflections/${slug}`,
+      url: routes.legacy.reflection(slug),
       markAsRead: true,
     };
   }
@@ -218,12 +222,12 @@ async function handleReflectionNavigation(
   // Otherwise fetch it
   if (contentId) {
     try {
-      const response = await fetch(`/api/notifications/content-slug?contentId=${contentId}`);
+      const response = await fetch(api.notifications.contentSlug(contentId));
       if (response.ok) {
         const { slug } = await response.json();
         if (slug) {
           return {
-            url: `/reflections/${slug}`,
+            url: routes.legacy.reflection(slug),
             markAsRead: true,
           };
         }
@@ -257,6 +261,6 @@ registerNavigationHandler("vote_confirmation", handleVoteNavigation);
 
 // Admin announcements - go to dashboard
 registerNavigationHandler("admin_announcement", () => ({
-  url: "/dashboard",
+  url: routes.dashboard.root(),
   markAsRead: true
 }));

@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { signUps, songs, users, unverifiedSignups, roundMetadata } from "../db/schema";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
 import { getAuthUser } from "../utils/supabase/server";
@@ -173,7 +173,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     console.log('[signupWithOTP] Starting validation. RoundId:', roundId);
 
     if (!roundId || isNaN(roundId)) {
-      return handleResponse(400, Navigation.Dashboard, "Invalid round ID");
+      return handleResponse(400, routes.dashboard.root(), "Invalid round ID");
     }
 
     // Get the project ID from the round to check business rules
@@ -186,7 +186,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     console.log('[signupWithOTP] Round lookup result:', roundResult);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.Dashboard, "Round not found");
+      return handleResponse(404, routes.dashboard.root(), "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -195,7 +195,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     console.log('[signupWithOTP] ProjectId:', projectId, 'ProjectSlug:', projectSlug);
 
     if (!projectSlug) {
-      return handleResponse(404, Navigation.Dashboard, "Project not found");
+      return handleResponse(404, routes.dashboard.root(), "Project not found");
     }
 
     // Get business rules to determine if song is required
@@ -211,7 +211,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
 
     if (!validation.success) {
       console.warn('⚠️ [WARN] OTP signup validation failed', { error: validation.error });
-      return handleResponse(400, Navigation.Dashboard, validation.error);
+      return handleResponse(400, routes.dashboard.root(), validation.error);
     }
 
     const validData = validation.data;
@@ -222,7 +222,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     if (!referralCode) {
       return handleResponse(
         400,
-        Navigation.Dashboard,
+        routes.dashboard.root(),
         "A referral code is required to create an account. Please ask an existing member for a referral link."
       );
     }
@@ -232,7 +232,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     if (!referralValidation.valid) {
       return handleResponse(
         400,
-        Navigation.Dashboard,
+        routes.dashboard.root(),
         referralValidation.message
       );
     }
@@ -276,12 +276,12 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     if (error) {
       // Clean up the unverified signup if OTP fails
       await db.delete(unverifiedSignups).where(eq(unverifiedSignups.email, validData.email.trim()));
-      return handleResponse(400, Navigation.Dashboard, error.message);
+      return handleResponse(400, routes.dashboard.root(), error.message);
     }
     
-    return handleResponse(200, Navigation.Dashboard, "Please check your email for a verification link to complete your signup.");
+    return handleResponse(200, routes.dashboard.root(), "Please check your email for a verification link to complete your signup.");
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    return handleResponse(500, routes.dashboard.root(), (error as Error).message);
   }
 }
 
@@ -292,7 +292,7 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
   const { projectId, roundId, userId, additionalComments = "" } = props;
   
   if (!userId) {
-    return handleResponse(401, Navigation.Dashboard, "User ID is required for signup");
+    return handleResponse(401, routes.dashboard.root(), "User ID is required for signup");
   }
   
   try {
@@ -320,7 +320,7 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
           eq(signUps.id, existingSignup[0].id)
         );
       
-      return handleResponse(200, Navigation.Dashboard, "You have successfully signed up for this round!");
+      return handleResponse(200, routes.dashboard.root(), "You have successfully signed up for this round!");
     } else {
       // Get the next signup ID for a new signup
       const nextSignupId = await getNextId(signUps, signUps.id);
@@ -336,10 +336,10 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
         userId: userId,
       });
 
-      return handleResponse(200, Navigation.Dashboard, "You have successfully signed up for this round!");
+      return handleResponse(200, routes.dashboard.root(), "You have successfully signed up for this round!");
     }
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    return handleResponse(500, routes.dashboard.root(), (error as Error).message);
   }
 }
 
@@ -349,7 +349,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
   const { userId, email } = await getAuthUser();
 
   if (!userId || !email) {
-    return handleResponse(401, Navigation.Dashboard, "You must be authenticated to complete signup");
+    return handleResponse(401, routes.dashboard.root(), "You must be authenticated to complete signup");
   }
 
   try {
@@ -371,7 +371,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       .limit(1);
 
     if (!unverifiedSignup.length) {
-      return handleResponse(404, Navigation.Dashboard, "No pending signup found for your email");
+      return handleResponse(404, routes.dashboard.root(), "No pending signup found for your email");
     }
 
     // Check if user exists in our database
@@ -422,7 +422,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.Dashboard, "Round not found");
+      return handleResponse(404, routes.dashboard.root(), "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -525,9 +525,9 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     await db.delete(unverifiedSignups)
       .where(eq(unverifiedSignups.email, email));
 
-    return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
+    return handleResponse(200, routes.dashboard.root(), "Your signup has been verified successfully!");
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    return handleResponse(500, routes.dashboard.root(), (error as Error).message);
   }
 }
 
@@ -544,7 +544,7 @@ export async function completeSignupAfterVerification(params: {
   const { userId } = await getAuthUser();
   
   if (!userId) {
-    return handleResponse(401, Navigation.Dashboard, "You must be authenticated to complete signup");
+    return handleResponse(401, routes.dashboard.root(), "You must be authenticated to complete signup");
   }
   
   try {
@@ -562,7 +562,7 @@ export async function completeSignupAfterVerification(params: {
     // This will mark the signup as verified since we're providing a userId
     return await signup(formData, userId);
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    return handleResponse(500, routes.dashboard.root(), (error as Error).message);
   }
 }
 
@@ -689,7 +689,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
   const userId = providedUserId || authUserId;
   
   if (!userId) {
-    return handleResponse(401, Navigation.Dashboard, "User ID is required for signup");
+    return handleResponse(401, routes.dashboard.root(), "User ID is required for signup");
   }
   
   try {
@@ -699,7 +699,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
 
     if (!roundId || isNaN(roundId)) {
       console.error('[signup] Invalid round ID:', formData.get("roundId"));
-      return handleResponse(400, Navigation.Dashboard, "Invalid round ID");
+      return handleResponse(400, routes.dashboard.root(), "Invalid round ID");
     }
 
     // Get the project ID from the round
@@ -711,7 +711,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
 
     if (!roundResult.length) {
       console.error('[signup] Round not found:', roundId);
-      return handleResponse(404, Navigation.Dashboard, "Round not found");
+      return handleResponse(404, routes.dashboard.root(), "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -721,7 +721,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
     const projectSlug = getProjectSlugFromId(projectId);
     if (!projectSlug) {
       console.error('[signup] Project slug not found for projectId:', projectId);
-      return handleResponse(404, Navigation.Dashboard, "Project not found");
+      return handleResponse(404, routes.dashboard.root(), "Project not found");
     }
 
     const businessRules = await getProjectBusinessRules(projectSlug);
@@ -734,7 +734,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
 
     if (!validation.success) {
       console.error('[signup] Validation failed:', validation.error);
-      return handleResponse(400, Navigation.Dashboard, validation.error);
+      return handleResponse(400, routes.dashboard.root(), validation.error);
     }
 
     const validData = validation.data;
@@ -797,7 +797,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       const message = businessRules.requireSongOnSignup
         ? "Your song has been updated successfully!"
         : "Your signup has been updated successfully!";
-      return handleResponse(200, Navigation.Dashboard, message);
+      return handleResponse(200, routes.dashboard.root(), message);
     } else {
       // Get the next signup ID for a new signup
       const nextSignupId = await getNextId(signUps, signUps.id);
@@ -859,12 +859,12 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         // Don't fail the signup if email fails
       }
 
-      return handleResponse(200, Navigation.Dashboard, "Your signup has been verified successfully!");
+      return handleResponse(200, routes.dashboard.root(), "Your signup has been verified successfully!");
     }
   } catch (error) {
     console.error('[signup] Unexpected error during signup:', error);
     console.error('[signup] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-    return handleResponse(500, Navigation.Dashboard, `Signup failed: ${errorMessage}`);
+    return handleResponse(500, routes.dashboard.root(), `Signup failed: ${errorMessage}`);
   }
 }

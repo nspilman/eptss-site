@@ -20,6 +20,7 @@
     "@eptss/email": "workspace:*",
     "@eptss/forms": "workspace:*",
     "@eptss/logger": "workspace:*",
+    "@eptss/routing": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@radix-ui/react-tabs": "^1.1.13",

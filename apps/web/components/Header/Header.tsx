@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { MusicIcon, Menu, X, Info, Music, Users } from "lucide-react"
 import Link from "next/link";
 import { SignupButton } from "@/components/NavButtons";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { useState, useEffect } from "react";
 import { NavLink, Button } from "@eptss/ui";
 
@@ -57,13 +57,13 @@ export const Header = ({userId}: Props) => {
           <div className="hidden md:flex items-center gap-6">
             <nav className="flex items-center gap-1">
               <NavLink
-                href={Navigation.HowItWorks}
+                href={routes.home({ hash: 'how-it-works' })}
                 label="How It Works"
                 icon={<Info className="h-4 w-4" />}
                 variant="glowing"
               />
               <NavLink
-                href={Navigation.FAQ}
+                href={routes.faq()}
                 label="FAQ"
                 icon={<Info className="h-4 w-4" />}
               />
@@ -101,14 +101,14 @@ export const Header = ({userId}: Props) => {
           >
             <nav className="flex flex-col gap-2">
               <NavLink
-                href={Navigation.HowItWorks}
+                href={routes.home({ hash: 'how-it-works' })}
                 label="How It Works"
                 icon={<Info className="h-4 w-4" />}
                 variant="glowing"
                 onClick={() => setMobileMenuOpen(false)}
               />
               <NavLink
-                href={Navigation.FAQ}
+                href={routes.faq()}
                 label="FAQ"
                 icon={<Info className="h-4 w-4" />}
                 onClick={() => setMobileMenuOpen(false)}

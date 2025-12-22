@@ -13,7 +13,7 @@ import {
 } from "@eptss/data-access";
 import { uploadFile, deleteFile, generateProfilePicturePath, BUCKETS } from "@eptss/bucket-storage";
 import { revalidatePath } from "next/cache";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { logger } from "@eptss/logger/server";
 
 // ============================================
@@ -68,7 +68,7 @@ export async function createSocialLinkAction(data: {
       displayOrder: data.displayOrder ?? 0,
     });
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Social link created", { userId: data.userId, linkId: newLink.id });
@@ -147,7 +147,7 @@ export async function updateSocialLinkAction(data: {
 
     const updatedLink = await updateUserSocialLink(data.linkId, updateData);
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Social link updated", { userId: data.userId, linkId: data.linkId });
@@ -185,7 +185,7 @@ export async function deleteSocialLinkAction(data: {
 
     await deleteUserSocialLink(data.linkId);
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Social link deleted", { userId: data.userId, linkId: data.linkId });
@@ -258,7 +258,7 @@ export async function createEmbeddedMediaAction(data: {
       displayOrder: data.displayOrder ?? 0,
     });
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Embedded media created", { userId: data.userId, mediaId: newMedia.id });
@@ -335,7 +335,7 @@ export async function updateEmbeddedMediaAction(data: {
 
     const updatedMedia = await updateUserEmbeddedMedia(data.mediaId, updateData);
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Embedded media updated", { userId: data.userId, mediaId: data.mediaId });
@@ -373,7 +373,7 @@ export async function deleteEmbeddedMediaAction(data: {
 
     await deleteUserEmbeddedMedia(data.mediaId);
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Embedded media deleted", { userId: data.userId, mediaId: data.mediaId });
@@ -479,7 +479,7 @@ export async function uploadProfilePictureAction(data: {
       }
     }
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Profile picture uploaded", { userId: data.userId, url });
@@ -544,7 +544,7 @@ export async function deleteProfilePictureAction(data: {
     // Update user record to remove profile picture URL
     await updateUserProfilePicture(data.userId, null);
 
-    revalidatePath(Navigation.Profile);
+    revalidatePath(routes.dashboard.profile());
     revalidatePath(`/profile/${data.userId}`);
 
     logger.info("Profile picture deleted", { userId: data.userId });

@@ -4,7 +4,7 @@ import { db } from "../db";
 import { votingCandidateOverrides, songs, songSelectionVotes, users, roundMetadata } from "../db/schema";
 import { eq, avg, count, sql, desc, and } from "drizzle-orm";
 import { handleResponse } from "../utils";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
 import { getAuthUser } from "../utils/supabase/server";
 
@@ -195,7 +195,7 @@ export const submitVotes = async (
 ): Promise<FormReturn> => {
   const { userId } = await getAuthUser();
   if (!userId) {
-    return handleResponse(401, Navigation.Login, "User not found");
+    return handleResponse(401, routes.auth.login(), "User not found");
   }
 
   try {
@@ -207,7 +207,7 @@ export const submitVotes = async (
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.Dashboard, "Round not found");
+      return handleResponse(404, routes.dashboard.root(), "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -246,14 +246,14 @@ export const submitVotes = async (
         }));
 
       if (votes.length === 0) {
-        return handleResponse(400, Navigation.Dashboard, "No votes submitted");
+        return handleResponse(400, routes.dashboard.root(), "No votes submitted");
       }
 
       await trx.insert(songSelectionVotes).values(votes);
     });
 
-    return handleResponse(201, Navigation.Dashboard, "");
+    return handleResponse(201, routes.dashboard.root(), "");
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    return handleResponse(500, routes.dashboard.root(), (error as Error).message);
   }
 };

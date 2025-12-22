@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { submissions, users, roundMetadata } from "../db/schema";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
 import { getAuthUser } from "../utils/supabase/server";
@@ -111,7 +111,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
     const validation = validateFormData(formData, submissionFormSchema);
     
     if (!validation.success) {
-      return handleResponse(400, Navigation.Dashboard, validation.error);
+      return handleResponse(400, routes.dashboard.root(), validation.error);
     }
     
     const validData = validation.data;
@@ -124,7 +124,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       .limit(1);
 
     if (!roundResult.length) {
-      return handleResponse(404, Navigation.Dashboard, "Round not found");
+      return handleResponse(404, routes.dashboard.root(), "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
@@ -152,8 +152,8 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       }),
     });
     
-    return handleResponse(201, Navigation.Dashboard, "");
+    return handleResponse(201, routes.dashboard.root(), "");
   } catch (error) {
-    return handleResponse(500, Navigation.Dashboard, (error as Error).message);
+    return handleResponse(500, routes.dashboard.root(), (error as Error).message);
   }
 }

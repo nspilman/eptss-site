@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { signupUserWithoutSong } from "@eptss/data-access";
 import { createClient } from "@eptss/data-access/utils/supabase/client";
 import { FormReturn } from "@/types";
-import { Navigation } from "@eptss/shared";
+import { routes } from "@eptss/routing";
 import { useToast } from "@eptss/ui";
 import { useRouteParams } from '../../../ProjectContext';
 
@@ -53,9 +53,9 @@ export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPha
           description: "You have successfully signed up for this round.",
           variant: "default",
         });
-        
+
         // Redirect to dashboard
-        router.push(Navigation.Dashboard);
+        router.push(routes.dashboard.root());
       } else {
         setError(result.message);
       }
