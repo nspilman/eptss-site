@@ -167,6 +167,14 @@ export const seoMetadataSchema = z.object({
     ogDescription: z.string().optional(),
   }).default({}),
 
+  // Signup page metadata
+  signupPage: z.object({
+    title: z.string().default("Sign Up"),
+    description: z.string().default("Sign up for this round"),
+    ogTitle: z.string().optional(),
+    ogDescription: z.string().optional(),
+  }).default({}),
+
   // Dashboard metadata
   dashboardPage: z.object({
     title: z.string().default("Dashboard"),
