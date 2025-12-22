@@ -151,6 +151,91 @@ export const getUserSignupData = async (userId: string, roundId: number) => {
   };
 };
 
+/**
+ * Check if signup cap has been reached for a round
+ * Returns { canSignup: boolean, currentCount: number, maxSignups: number | null, message?: string }
+ */
+export async function checkSignupCap(roundId: number): Promise<{
+  canSignup: boolean;
+  currentCount: number;
+  maxSignups: number | null;
+  message?: string;
+}> {
+  try {
+    // Get the project ID from the round
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return {
+        canSignup: false,
+        currentCount: 0,
+        maxSignups: null,
+        message: "Round not found",
+      };
+    }
+
+    const projectId = roundResult[0].projectId;
+    const projectSlug = getProjectSlugFromId(projectId);
+
+    if (!projectSlug) {
+      return {
+        canSignup: false,
+        currentCount: 0,
+        maxSignups: null,
+        message: "Project not found",
+      };
+    }
+
+    // Get business rules to check if there's a signup cap
+    const businessRules = await getProjectBusinessRules(projectSlug);
+    const maxSignups = businessRules.maxSignupsPerRound;
+
+    // If no cap is set, signups are unlimited
+    if (!maxSignups) {
+      return {
+        canSignup: true,
+        currentCount: 0,
+        maxSignups: null,
+      };
+    }
+
+    // Count current signups for this round
+    const [countResult] = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(signUps)
+      .where(eq(signUps.roundId, roundId));
+
+    const currentCount = Number(countResult?.count || 0);
+
+    if (currentCount >= maxSignups) {
+      return {
+        canSignup: false,
+        currentCount,
+        maxSignups,
+        message: `This round has reached its maximum capacity of ${maxSignups} signups`,
+      };
+    }
+
+    return {
+      canSignup: true,
+      currentCount,
+      maxSignups,
+    };
+  } catch (error) {
+    console.error("[checkSignupCap] Error checking signup cap:", error);
+    return {
+      canSignup: false,
+      currentCount: 0,
+      maxSignups: null,
+      message: "Failed to check signup capacity",
+    };
+  }
+}
+
 
 
 // Import shared schemas
@@ -290,11 +375,11 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
   "use server";
 
   const { projectId, roundId, userId, additionalComments = "" } = props;
-  
+
   if (!userId) {
     return handleResponse(401, routes.dashboard.root(), "User ID is required for signup");
   }
-  
+
   try {
     // Check if user has already signed up for this round
     const existingSignup = await db
@@ -307,7 +392,7 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
         )
       )
       .limit(1);
-    
+
     if (existingSignup.length > 0) {
       // User already signed up, update to songId -1
       await db.update(signUps)
@@ -319,9 +404,15 @@ export async function signupUserWithoutSong(props: { projectId: string, roundId:
         .where(
           eq(signUps.id, existingSignup[0].id)
         );
-      
+
       return handleResponse(200, routes.dashboard.root(), "You have successfully signed up for this round!");
     } else {
+      // Check signup cap before allowing new signup
+      const capCheck = await checkSignupCap(roundId);
+      if (!capCheck.canSignup) {
+        return handleResponse(400, routes.dashboard.root(), capCheck.message || "Cannot signup for this round");
+      }
+
       // Get the next signup ID for a new signup
       const nextSignupId = await getNextId(signUps, signUps.id);
 
@@ -413,6 +504,13 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     }
     
     const signupData = unverifiedSignup[0];
+
+    // Check signup cap before allowing new signup
+    const capCheck = await checkSignupCap(signupData.roundId);
+    if (!capCheck.canSignup) {
+      console.log('[verifySignupByEmail] Signup cap reached:', capCheck);
+      return handleResponse(400, routes.dashboard.root(), capCheck.message || "Cannot signup for this round");
+    }
 
     // Get the project ID from the round
     const roundResult = await db
@@ -751,6 +849,15 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
         )
       )
       .limit(1);
+
+    // If this is a new signup (not an update), check signup cap
+    if (existingSignup.length === 0) {
+      const capCheck = await checkSignupCap(validData.roundId);
+      if (!capCheck.canSignup) {
+        console.log('[signup] Signup cap reached:', capCheck);
+        return handleResponse(400, routes.dashboard.root(), capCheck.message || "Cannot signup for this round");
+      }
+    }
 
     // Handle song data only if song is required on signup
     let songId: number | null = null;

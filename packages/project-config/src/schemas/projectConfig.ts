@@ -41,6 +41,7 @@ export const uiConfigSchema = z.object({
 export const businessRulesSchema = z.object({
   maxSubmissionsPerRound: z.number().int().positive().default(1),
   maxVotesPerUser: z.number().int().positive().default(3),
+  maxSignupsPerRound: z.number().int().positive().optional(), // Maximum number of users that can sign up per round (null/undefined = unlimited)
   requireEmailVerification: z.boolean().default(true),
   requireSongOnSignup: z.boolean().default(true),
   requirePrompt: z.boolean().default(false), // Whether rounds require a prompt/theme (true for original songs, false for covers)

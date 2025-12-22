@@ -19,7 +19,7 @@ export * from './services/projectService';
 export * from './utils/projectUtils';
 export { formatDate } from './services/dateService';
 export { getVotesByUserForRoundWithDetails, getDetailedVoteResults } from './services/votesService';
-export { getUserSignupData } from './services/signupService';
+export { getUserSignupData, checkSignupCap } from './services/signupService';
 export { getUnverifiedSignupByEmail } from './services/verificationService';
 export { getAllFeedback, updateFeedbackPublicStatus, deleteFeedback } from './services/feedbackService';
 export { getSignupSongsForRound, setRoundSong } from './services/roundService';
