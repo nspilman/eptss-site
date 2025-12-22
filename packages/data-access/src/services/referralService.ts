@@ -3,8 +3,21 @@ import { referralCodes, userReferrals, users } from '../db/schema';
 import { eq, and, or, sql, gt } from 'drizzle-orm';
 import { customAlphabet } from 'nanoid';
 
-// Generate readable referral codes (e.g., "MUSIC-2024-ABC123")
-const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 8);
+// Generate readable referral codes
+const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 4);
+
+/**
+ * Helper to sanitize and format a name for use in referral codes
+ * Removes non-alphanumeric characters, converts to lowercase
+ */
+function sanitizeNameForCode(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)[0] // Take first word only
+    .replace(/[^a-zA-Z0-9]/g, '') // Remove special characters
+    .toLowerCase()
+    .slice(0, 15); // Max 15 characters
+}
 
 /**
  * Generate a unique referral code for a user
@@ -17,18 +30,22 @@ export async function createReferralCode(
   } = {}
 ): Promise<{ success: boolean; code?: string; message: string }> {
   try {
-    // Check if user exists
+    // Check if user exists and get their display name
     const [user] = await db.select().from(users).where(eq(users.userid, userId)).limit(1);
     if (!user) {
       return { success: false, message: 'User not found' };
     }
 
-    // Generate a unique code
-    let code = `EPTSS-${nanoid()}`;
-    let attempts = 0;
-    const maxAttempts = 5;
+    // Get user's first name from publicDisplayName or username
+    const displayName = user.publicDisplayName || user.username || 'friend';
+    const firstName = sanitizeNameForCode(displayName);
 
-    // Ensure code is unique
+    // Generate a unique code with format: happy-2026-from-firstname
+    let code = `happy-2026-from-${firstName}`;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    // Ensure code is unique by adding a random suffix if needed
     while (attempts < maxAttempts) {
       const existing = await db
         .select()
@@ -37,7 +54,9 @@ export async function createReferralCode(
         .limit(1);
 
       if (existing.length === 0) break;
-      code = `EPTSS-${nanoid()}`;
+
+      // Add random suffix if code already exists
+      code = `happy-2026-from-${firstName}-${nanoid()}`;
       attempts++;
     }
 

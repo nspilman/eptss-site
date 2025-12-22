@@ -90,9 +90,11 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
           roundId: heroData.roundId,
           projectSlug: slug, // Keep for server component in package
         } : null,
-        inviteFriends: {
+        inviteFriends: heroData ? {
           userId: userId,
-        },
+          projectSlug: slug,
+          roundSlug: heroData.roundSlug,
+        } : null,
       }}
     />
   );

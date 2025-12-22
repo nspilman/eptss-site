@@ -5,6 +5,8 @@ import { InviteFriendsCard } from '@eptss/referrals';
 
 interface InviteFriendsData {
   userId: string;
+  projectSlug?: string;
+  roundSlug?: string;
 }
 
 /**
@@ -16,7 +18,7 @@ export function InviteFriendsPanel({ data }: PanelProps<InviteFriendsData>) {
     return null;
   }
 
-  return <InviteFriendsCard userId={data.userId} />;
+  return <InviteFriendsCard userId={data.userId} projectSlug={data.projectSlug} roundSlug={data.roundSlug} />;
 }
 
 export function InviteFriendsSkeleton() {

@@ -4,16 +4,19 @@ import { useState } from 'react';
 import { Button, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@eptss/ui';
 import { Copy, Check, Users, Sparkles } from 'lucide-react';
 import { createUserReferralCode } from '../actions';
+import { routes } from '@eptss/routing';
 
 interface InviteFriendsCardProps {
   userId: string;
+  projectSlug?: string;
+  roundSlug?: string;
 }
 
 /**
  * Invite Friends Card - Friendly component to create and share referral links
  * Uses the UI library components for consistency
  */
-export function InviteFriendsCard({ userId }: InviteFriendsCardProps) {
+export function InviteFriendsCard({ userId, projectSlug, roundSlug }: InviteFriendsCardProps) {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -35,7 +38,15 @@ export function InviteFriendsCard({ userId }: InviteFriendsCardProps) {
   const handleCopyLink = async () => {
     if (!referralCode) return;
 
-    const referralUrl = `${window.location.origin}/login?ref=${referralCode}`;
+    // Generate round-specific signup URL if projectSlug and roundSlug are available
+    // Otherwise fall back to generic login URL
+    let referralUrl: string;
+    if (projectSlug && roundSlug) {
+      referralUrl = `${window.location.origin}${routes.projects.signUp.round(projectSlug as any, roundSlug, { query: { ref: referralCode } })}`;
+    } else {
+      referralUrl = `${window.location.origin}${routes.auth.login(undefined, { query: { ref: referralCode } })}`;
+    }
+
     await navigator.clipboard.writeText(referralUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -99,7 +110,10 @@ export function InviteFriendsCard({ userId }: InviteFriendsCardProps) {
                 </label>
                 <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors">
                   <code className="text-sm text-[var(--color-accent-primary)] font-mono break-all block leading-relaxed">
-                    {window.location.origin}/login?ref={referralCode}
+                    {projectSlug && roundSlug
+                      ? `${window.location.origin}${routes.projects.signUp.round(projectSlug as any, roundSlug, { query: { ref: referralCode } })}`
+                      : `${window.location.origin}${routes.auth.login(undefined, { query: { ref: referralCode } })}`
+                    }
                   </code>
                 </div>
               </div>
