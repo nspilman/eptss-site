@@ -171,6 +171,14 @@ export async function getPageContent<K extends keyof PageContent>(
 }
 
 /**
+ * Get project metadata
+ */
+export async function getProjectMetadata(slug: ProjectSlug) {
+  const config = await getProjectConfig(slug);
+  return config.metadata;
+}
+
+/**
  * Get SEO metadata for a project
  */
 export async function getProjectSEOMetadata(slug: ProjectSlug): Promise<SEOMetadata> {

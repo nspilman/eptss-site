@@ -27,6 +27,7 @@ interface SignupFormProps {
   signupWithOTP: (formData: FormData) => Promise<FormReturn>;
   requireSongOnSignup?: boolean;
   loggedInWelcomeText: string;
+  projectDescription: string;
 }
 
 // Base fields for all users
@@ -101,6 +102,7 @@ export function SignupForm({
   signupWithOTP,
   requireSongOnSignup = true,
   loggedInWelcomeText,
+  projectDescription,
 }: SignupFormProps) {
   // State to track if the form has been submitted (for non-logged in users)
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -198,6 +200,13 @@ export function SignupForm({
           className="space-y-4"
         >
           <input type="hidden" name="roundId" value={roundId} />
+
+          {/* Project description blurb */}
+          <div className="rounded-lg bg-gradient-to-br from-accent-primary/10 to-accent-secondary/10 p-6 backdrop-blur-sm border border-accent-primary/20">
+            <p className="text-sm text-gray-200 leading-relaxed">
+              {projectDescription}
+            </p>
+          </div>
 
           {isLoggedIn && (
             <div className="rounded-lg bg-background-tertiary p-6 backdrop-blur-sm border border-accent-primary/30">

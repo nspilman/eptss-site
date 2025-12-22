@@ -20,6 +20,7 @@ interface Props {
   signupWithOTP: (formData: FormData) => Promise<FormReturn>;
   requireSongOnSignup?: boolean;
   loggedInWelcomeText: string;
+  projectDescription: string;
 }
 
 export function SignupPage({
@@ -35,6 +36,7 @@ export function SignupPage({
   signupWithOTP,
   requireSongOnSignup = true,
   loggedInWelcomeText,
+  projectDescription,
 }: Props) {
   // Check URL parameters
   const searchParams = useSearchParams();
@@ -103,6 +105,7 @@ export function SignupPage({
           signupWithOTP={signupWithOTP}
           requireSongOnSignup={requireSongOnSignup}
           loggedInWelcomeText={loggedInWelcomeText}
+          projectDescription={projectDescription}
         />
       )}
     </>
