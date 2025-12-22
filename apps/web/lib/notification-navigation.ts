@@ -8,6 +8,7 @@
 
 import type { Notification } from "@eptss/data-access/db/schema";
 import { routes, api } from "@eptss/routing";
+import { getRoundById, getProjectSlugFromId } from "@eptss/data-access";
 
 /**
  * Navigation result from a notification handler
@@ -121,28 +122,45 @@ async function handleCommentNavigation(
 
   // Handle round discussion comments
   if (roundId) {
-    return {
-      url: routes.projects.discussions('cover', { hash: `comment-${commentId}` }),
-      markAsRead: true,
-    };
+    try {
+      // Fetch the round to get the projectId
+      const roundResult = await getRoundById(roundId);
+      if (roundResult.status === 'success' && roundResult.data) {
+        const projectSlug = getProjectSlugFromId(roundResult.data.projectId);
+        if (!projectSlug) {
+          return { error: "Invalid project ID" };
+        }
+        return {
+          url: routes.projects.discussions(projectSlug, { hash: `comment-${commentId}` }),
+          markAsRead: true,
+        };
+      }
+      return { error: "Round not found" };
+    } catch (error) {
+      return { error: "Failed to fetch round" };
+    }
   }
 
   // Handle reflection comments
   if (userContentId) {
     try {
-      // Fetch the content slug
+      // Fetch the content slug and projectId
       const response = await fetch(api.notifications.contentSlug(userContentId));
       if (!response.ok) {
         return { error: "Failed to fetch content" };
       }
 
-      const { slug } = await response.json();
-      if (!slug) {
+      const { slug, projectId } = await response.json();
+      if (!slug || !projectId) {
         return { error: "Content not found" };
       }
 
+      const projectSlug = getProjectSlugFromId(projectId);
+      if (!projectSlug) {
+        return { error: "Invalid project ID" };
+      }
       return {
-        url: routes.legacy.reflection(slug, { hash: `comment-${commentId}` }),
+        url: routes.projects.reflections.detail(projectSlug, slug, { hash: `comment-${commentId}` }),
         markAsRead: true,
       };
     } catch (error) {

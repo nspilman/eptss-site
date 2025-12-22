@@ -30,6 +30,7 @@ import {
   isProtectedRoute,
   isAdminRoute,
   isPublicRoute,
+  matchesAnyPath,
 } from './constants/protected';
 
 import { getSection, SECTION_PREFIXES } from './constants/sections';
@@ -50,6 +51,7 @@ export {
   isProtectedRoute,
   isAdminRoute,
   isPublicRoute,
+  matchesAnyPath,
   getSection,
   SECTION_PREFIXES,
 };
@@ -69,5 +71,6 @@ export const routing = {
   isProtectedRoute,
   isAdminRoute,
   isPublicRoute,
+  matchesAnyPath,
   getSection,
 } as const;

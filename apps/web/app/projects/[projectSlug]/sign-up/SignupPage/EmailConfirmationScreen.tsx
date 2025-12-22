@@ -3,13 +3,15 @@
 import { Button, Card, CardContent, Heading, Text, AlertBox } from "@eptss/ui";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { routes } from "@eptss/routing";
 
 interface EmailConfirmationScreenProps {
   email: string;
   roundId: number;
+  projectSlug: string;
 }
 
-export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScreenProps) {
+export function EmailConfirmationScreen({ email, roundId, projectSlug }: EmailConfirmationScreenProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -72,7 +74,7 @@ export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScr
 
           {/* Action Buttons */}
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/" className="min-w-[150px]">
+            <Link href={routes.home()} className="min-w-[150px]">
               <Button variant="secondary" className="w-full">
                 Return Home
               </Button>
@@ -87,7 +89,7 @@ export function EmailConfirmationScreen({ email, roundId }: EmailConfirmationScr
           {/* Help Text */}
           <Text size="sm" className="opacity-70">
             Didn&apos;t receive the email? Check your spam folder or{" "}
-            <Link href="/sign-up" className="underline hover:text-accent-secondary">
+            <Link href={routes.projects.signUp.root(projectSlug)} className="underline hover:text-accent-secondary">
               try signing up again
             </Link>
           </Text>

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { matchesAnyPath } from '@eptss/routing'
 
 interface AuthMiddlewareConfig {
   protectedPaths?: string[];
@@ -87,10 +88,10 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig = {}) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Skip auth logic for public paths when not authenticated
-    const isPublic = publicPaths.some(path => pathname.startsWith(path));
-    const isProtected = protectedPaths.some(path => pathname.startsWith(path));
-    const isAdminPath = adminPaths.some(path => pathname.startsWith(path));
+    // Use routing package's path matching logic
+    const isPublic = matchesAnyPath(pathname, publicPaths);
+    const isProtected = matchesAnyPath(pathname, protectedPaths);
+    const isAdminPath = matchesAnyPath(pathname, adminPaths);
 
     if (isPublic && !user) {
       return response;

@@ -5,6 +5,8 @@ import { Music, Calendar, User, ExternalLink } from "lucide-react";
 import { SubmissionsGallery as SubmissionsGalleryConfig } from "@eptss/project-config";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { routes } from "@eptss/routing";
+import { useRouteParams } from "../ProjectContext";
 
 interface Submission {
   title: string;
@@ -21,6 +23,8 @@ interface SubmissionsGalleryProps {
 }
 
 export const SubmissionsGallery = ({ submissions, content }: SubmissionsGalleryProps) => {
+  const { projectSlug } = useRouteParams();
+
   // Format date if available
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
@@ -66,7 +70,7 @@ export const SubmissionsGallery = ({ submissions, content }: SubmissionsGalleryP
         <AnimatedList variant="fadeInUp" staggerDelay={0.05} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
           {submissions.map((submission, index) => (
             <AnimatedListItem key={submission.roundId}>
-              <Link href={`/round/${submission.slug}`}>
+              <Link href={routes.projects.rounds.detail(projectSlug, submission.slug)}>
                 <Card
                   className="h-full bg-gradient-to-br from-[var(--color-accent-secondary)]/20 to-[var(--color-accent-primary)]/20 border-[var(--color-accent-primary)]/50 hover:border-[var(--color-accent-primary)] transition-all duration-300 hover:scale-105"
                 >
@@ -115,7 +119,7 @@ export const SubmissionsGallery = ({ submissions, content }: SubmissionsGalleryP
         </AnimatedList>
 
         <Animated variant="fadeInUp" className="text-center mt-12">
-          <Link href="/rounds" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href={routes.projects.rounds.list(projectSlug)} className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Text color="accent" weight="medium">
               {content.viewAllLink}
             </Text>

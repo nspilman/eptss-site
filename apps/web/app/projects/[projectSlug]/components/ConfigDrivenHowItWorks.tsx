@@ -5,6 +5,7 @@ import { Button, Card, CardContent, SectionHeader, Animated, AnimatedList, Anima
 import { ChevronRight, Lightbulb, Music, Calendar, Users, Award, Mic, Heart, Sparkles } from "lucide-react";
 import Link from 'next/link';
 import { HowItWorks } from '@eptss/project-config';
+import { routes } from "@eptss/routing";
 
 interface ConfigDrivenHowItWorksProps {
   content: HowItWorks;
@@ -132,19 +133,19 @@ export const ConfigDrivenHowItWorks = ({ content, projectSlug }: ConfigDrivenHow
 
           {/* CTA */}
           <div className="text-center pt-4">
-            <Link href={`/projects/${projectSlug}/sign-up`} passHref>
+            <Link href={routes.projects.signUp.root(projectSlug)} passHref>
               <Button variant="secondary" size="lg" className="bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] hover:opacity-90">
                 {content.ctaButton}
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <div className="flex justify-center gap-6 mt-6">
-              <Link href="/faq">
+              <Link href={routes.faq()}>
                 <Text color="tertiary" className="hover:text-[var(--color-accent-primary)] transition-colors">
                   {content.ctaLinks.faq}
                 </Text>
               </Link>
-              <Link href="/rounds">
+              <Link href={routes.projects.rounds.list(projectSlug)}>
                 <Text color="tertiary" className="hover:text-[var(--color-accent-primary)] transition-colors">
                   {content.ctaLinks.pastRounds}
                 </Text>

@@ -22,7 +22,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ slug: result.data });
+    return NextResponse.json({
+      slug: result.data.slug,
+      projectId: result.data.projectId
+    });
   } catch (error) {
     console.error("Error fetching content slug:", error);
     return NextResponse.json(

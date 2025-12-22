@@ -5,6 +5,7 @@ import { Card } from "@eptss/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@eptss/data-access/utils/supabase/client";
+import { routes } from "@eptss/routing";
 
 export default function PasswordAuthPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function PasswordAuthPage() {
       try {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          router.push("/dashboard");
+          router.push(routes.dashboard.root());
         }
       } catch (error) {
         console.error("Error checking session:", error);
@@ -32,7 +33,7 @@ export default function PasswordAuthPage() {
   // Handle form success - redirect to dashboard
   const handleSuccess = () => {
     router.refresh(); // Refresh the page to update auth state
-    router.push("/dashboard"); // Redirect to dashboard
+    router.push(routes.dashboard.root()); // Redirect to dashboard
   };
 
   return (
@@ -43,9 +44,9 @@ export default function PasswordAuthPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <PasswordAuthForm 
-            titleOverride="Test Authentication" 
-            redirectUrl="/dashboard"
+          <PasswordAuthForm
+            titleOverride="Test Authentication"
+            redirectUrl={routes.dashboard.root()}
             onSuccess={handleSuccess}
           />
         )}

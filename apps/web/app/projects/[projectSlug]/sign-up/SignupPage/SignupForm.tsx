@@ -11,6 +11,7 @@ import { useState } from "react"
 import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter, useParams } from "next/navigation"
 import { UserSignupData } from "@eptss/data-access/types/signup"
+import { routes } from "@eptss/routing"
 
 
 interface SignupFormProps {
@@ -165,10 +166,10 @@ export function SignupForm({
         setIsSubmitted(true);
       } else if (isUpdate) {
         // For updates, redirect to the project dashboard
-        router.push(`/projects/${projectSlug}/dashboard`);
+        router.push(routes.projects.dashboard(projectSlug));
       } else {
         // For new signups, redirect to the project dashboard
-        router.push(`/projects/${projectSlug}/dashboard`);
+        router.push(routes.projects.dashboard(projectSlug));
       }
     },
     successMessage: isLoggedIn
@@ -180,7 +181,7 @@ export function SignupForm({
 
   // If the form has been submitted and the user is not logged in, show the confirmation screen
   if (isSubmitted && !isLoggedIn) {
-    return <EmailConfirmationScreen email={submittedEmail} roundId={roundId} />;
+    return <EmailConfirmationScreen email={submittedEmail} roundId={roundId} projectSlug={projectSlug} />;
   }
   
   return (

@@ -16,7 +16,7 @@ interface CoveringPhaseSignupProps {
 }
 
 export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPhaseSignupProps) => {
-  const { projectId } = useRouteParams();
+  const { projectId, projectSlug } = useRouteParams();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -33,7 +33,8 @@ export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPha
       
       if (!session) {
         // User is not logged in, redirect to login page with return URL
-        router.push(`/login?redirectTo=/round/${roundId}`);
+        const currentPath = window.location.pathname;
+        router.push(routes.auth.login(currentPath));
         return;
       }
       
@@ -54,8 +55,8 @@ export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPha
           variant: "default",
         });
 
-        // Redirect to dashboard
-        router.push(routes.dashboard.root());
+        // Redirect to project dashboard
+        router.push(routes.projects.dashboard(projectSlug));
       } else {
         setError(result.message);
       }

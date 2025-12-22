@@ -545,18 +545,31 @@ export const getPublicReflectionsByUsername = async (
 };
 
 /**
- * Get content slug by content ID
+ * Get content slug and projectId by content ID
  * Used for notification navigation to link to specific content
  */
-export const getContentSlugById = async (contentId: string): Promise<AsyncResult<string | null>> => {
+export const getContentSlugById = async (contentId: string): Promise<AsyncResult<{ slug: string; projectId: string } | null>> => {
   try {
     const [content] = await db
-      .select({ slug: userContent.slug })
+      .select({
+        slug: userContent.slug,
+        projectId: roundMetadata.projectId
+      })
       .from(userContent)
+      .leftJoin(roundMetadata, eq(userContent.roundId, roundMetadata.id))
       .where(eq(userContent.id, contentId))
       .limit(1);
 
-    return createSuccessResult(content?.slug || null);
+    if (!content) {
+      return createSuccessResult(null);
+    }
+
+    // Validate that projectId exists (shouldn't be null if content exists)
+    if (!content.projectId) {
+      return createErrorResult(new Error('Content has no associated project'));
+    }
+
+    return createSuccessResult({ slug: content.slug, projectId: content.projectId });
   } catch (error) {
     console.error("Error in getContentSlugById:", error);
     return createErrorResult(new Error(`Failed to get content slug: ${error instanceof Error ? error.message : 'Unknown error'}`));

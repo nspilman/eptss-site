@@ -18,6 +18,7 @@ const createBaseRoundQuery = () => {
     .select({
       id: roundMetadata.id,
       slug: roundMetadata.slug,
+      projectId: roundMetadata.projectId,
       signupOpens: roundMetadata.signupOpens,
       votingOpens: roundMetadata.votingOpens,
       coveringBegins: roundMetadata.coveringBegins,
@@ -69,6 +70,7 @@ const mapToRound = (dbRound: any): Round => {
   return {
     roundId: dbRound.id,
     slug: dbRound.slug ?? "",
+    projectId: dbRound.projectId,
     signupOpens: toDate(dbRound.signupOpens),
     votingOpens: toDate(dbRound.votingOpens),
     coveringBegins: toDate(dbRound.coveringBegins),
@@ -87,6 +89,7 @@ const mapToRound = (dbRound: any): Round => {
 export interface Round {
   roundId: number;
   slug: string;
+  projectId: string;
   signupOpens: Date;
   votingOpens: Date;
   coveringBegins: Date;
