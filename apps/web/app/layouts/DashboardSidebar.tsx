@@ -3,7 +3,7 @@
 import { Navigation } from "@eptss/shared";
 import Link from "next/link";
 import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
-import { Shield, MessageSquare } from "lucide-react";
+import { Shield, FileText } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface SidebarItemProps {
@@ -43,6 +43,10 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, onNavigate, isAdmin = false }: DashboardSidebarProps) {
   const pathname = usePathname();
 
+  // Extract project slug from pathname (e.g., /projects/cover/dashboard -> cover)
+  const projectSlugMatch = pathname.match(/\/projects\/([^\/]+)/);
+  const projectSlug = projectSlugMatch ? projectSlugMatch[1] : 'cover'; // Default to 'cover' if not found
+
   return (
     <aside
       className={`bg-background-primary/50 backdrop-blur-xs h-full px-3 py-4 transition-all duration-500 ease-in-out md:border-r md:border-accent-secondary/20 md:z-40 md:pt-20 ${isCollapsed ? 'md:w-20' : 'md:w-64'}`}
@@ -57,10 +61,10 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           isCollapsed={isCollapsed}
         />
         <SidebarItem
-          href="/discussions"
-          icon={<MessageSquare className="w-5 h-5" />}
-          label="Discussions"
-          isActive={pathname === "/discussions"}
+          href={`/projects/${projectSlug}/reflections`}
+          icon={<FileText className="w-5 h-5" />}
+          label="Reflections"
+          isActive={pathname.includes("/reflections")}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />

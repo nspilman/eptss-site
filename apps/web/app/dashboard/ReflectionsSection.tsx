@@ -58,22 +58,12 @@ export function ReflectionsSection({ reflections, roundSlug }: ReflectionsSectio
           )}
         </div>
       ) : (
-        <div className="p-3 rounded-lg bg-gray-800/20 border border-gray-700/50 mb-3">
+        <div className="p-3 rounded-lg bg-gray-800/20 border border-gray-700/50">
           <p className="text-xs text-gray-400 text-center">
-            No reflections yet. Create your first one!
+            No reflections yet.
           </p>
         </div>
       )}
-
-      <Link
-        href={`/projects/${projectSlug}/round/${roundSlug}/create-reflection`}
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-accent-secondary)] hover:text-[var(--color-accent-primary)] transition-colors"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-        Create New Reflection
-      </Link>
     </div>
   );
 }

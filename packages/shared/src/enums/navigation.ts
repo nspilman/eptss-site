@@ -33,7 +33,7 @@ export const getProjectRoute = {
 
   round: (projectSlug: string, roundSlug: string) => `/projects/${projectSlug}/round/${roundSlug}`,
 
-  discussions: (projectSlug: string) => `/projects/${projectSlug}/discussions`,
+  reflections: (projectSlug: string) => `/projects/${projectSlug}/reflections`,
 
   dashboard: (projectSlug: string) => `/projects/${projectSlug}/dashboard`,
 
