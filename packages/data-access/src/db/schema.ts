@@ -345,7 +345,11 @@ export const comments = pgTable("comments", {
   isDeleted: boolean("is_deleted").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  parentCommentIdIdx: index("comments_parent_comment_id_idx").on(table.parentCommentId),
+  userIdIdx: index("comments_user_id_idx").on(table.userId),
+  createdAtIdx: index("comments_created_at_idx").on(table.createdAt),
+}));
 
 export type Comment = typeof comments.$inferSelect;
 export type NewComment = typeof comments.$inferInsert;
@@ -358,7 +362,11 @@ export const commentAssociations = pgTable("comment_associations", {
   userContentId: uuid("user_content_id").references(() => userContent.id, { onDelete: "cascade" }),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  commentIdIdx: index("comment_associations_comment_id_idx").on(table.commentId),
+  userContentIdIdx: index("comment_associations_user_content_id_idx").on(table.userContentId),
+  roundIdIdx: index("comment_associations_round_id_idx").on(table.roundId),
+}));
 
 export type CommentAssociation = typeof commentAssociations.$inferSelect;
 export type NewCommentAssociation = typeof commentAssociations.$inferInsert;
@@ -369,7 +377,12 @@ export const commentUpvotes = pgTable("comment_upvotes", {
   commentId: uuid("comment_id").references(() => comments.id, { onDelete: "cascade" }).notNull(),
   userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  commentIdIdx: index("comment_upvotes_comment_id_idx").on(table.commentId),
+  userIdIdx: index("comment_upvotes_user_id_idx").on(table.userId),
+  // Composite index for checking if user upvoted a comment
+  commentUserIdx: index("comment_upvotes_comment_user_idx").on(table.commentId, table.userId),
+}));
 
 export type CommentUpvote = typeof commentUpvotes.$inferSelect;
 export type NewCommentUpvote = typeof commentUpvotes.$inferInsert;
