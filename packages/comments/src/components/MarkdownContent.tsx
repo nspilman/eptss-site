@@ -3,12 +3,28 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import Link from "next/link";
+import { Badge } from "@eptss/ui";
 
 interface MarkdownContentProps {
   content: string;
 }
 
+/**
+ * Process mentions in content and convert them to markdown links
+ * Format: @[Display Name](username) -> [@Display Name](/profile/username)
+ */
+function processMentions(content: string): string {
+  // Match the mention format: @[Display Name](username)
+  const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
+  return content.replace(mentionRegex, (match, displayName, username) => {
+    return `[@${displayName}](/profile/${username})`;
+  });
+}
+
 export function MarkdownContent({ content }: MarkdownContentProps) {
+  const processedContent = processMentions(content);
+
   return (
     <div className="markdown-content font-roboto text-[var(--color-primary)] text-base leading-relaxed">
       <ReactMarkdown
@@ -36,16 +52,40 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
             </h3>
           ),
           // Links
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[var(--color-accent-primary)] hover:text-[var(--color-accent-secondary)] underline transition-colors"
-            >
-              {children}
-            </a>
-          ),
+          a: ({ href, children }) => {
+            // Handle undefined href
+            if (!href) {
+              return <span>{children}</span>;
+            }
+
+            // Check if this is a profile mention link
+            const isMention = href.startsWith("/profile/");
+
+            if (isMention) {
+              return (
+                <Link
+                  href={href}
+                  aria-label={`View profile of ${children}`}
+                  className="no-underline"
+                >
+                  <Badge variant="mention" asChild>
+                    <span>{children}</span>
+                  </Badge>
+                </Link>
+              );
+            }
+
+            return (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--color-accent-primary)] hover:text-[var(--color-accent-secondary)] underline transition-colors"
+              >
+                {children}
+              </a>
+            );
+          },
           // Lists
           ul: ({ children }) => (
             <ul className="list-disc list-inside mb-3 space-y-1 ml-4">{children}</ul>
@@ -117,7 +157,7 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
           ),
         }}
       >
-        {content}
+        {processedContent}
       </ReactMarkdown>
     </div>
   );

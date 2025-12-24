@@ -18,6 +18,8 @@ const badgeVariants = cva(
         outline: 'text-[var(--color-foreground)]',
         count:
           'border-transparent bg-[var(--color-accent-secondary)]/20 text-[var(--color-accent-secondary)] font-medium px-1.5',
+        mention:
+          'border-transparent bg-[var(--color-accent-primary)] text-black font-medium px-1.5 py-0.5 rounded hover:bg-[var(--color-accent-secondary)]',
       },
     },
     defaultVariants: {

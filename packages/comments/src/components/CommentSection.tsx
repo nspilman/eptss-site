@@ -2,11 +2,18 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle } from "lucide-react";
+import {
+  Skeleton,
+  AlertBox,
+  Heading,
+  GradientDivider,
+} from "@eptss/ui";
 import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
 import { getCommentsAction } from "../actions";
 import { CommentProvider } from "../context/CommentContext";
 import type { CommentSectionProps, CommentWithAuthor } from "../types";
+import { getSignupsByRound } from "@eptss/data-access/services/signupService";
 
 export function CommentSection({
   userContentId,
@@ -21,16 +28,35 @@ export function CommentSection({
   const [isLoading, setIsLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const hasInitiallyScrolled = useRef(false);
+  const [roundParticipants, setRoundParticipants] = useState<Array<{
+    userId: string;
+    username?: string;
+    publicDisplayName?: string;
+    profilePictureUrl?: string;
+  }>>([]);
 
   useEffect(() => {
-    const fetchComments = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const result = await getCommentsAction({ userContentId, roundId }, sortOrder);
-        if (result.success) {
-          setComments(result.comments);
+
+        // Fetch comments
+        const commentsResult = await getCommentsAction({ userContentId, roundId }, sortOrder);
+        if (commentsResult.success) {
+          setComments(commentsResult.comments);
         } else {
-          setError(result.error || "Failed to load comments");
+          setError(commentsResult.error || "Failed to load comments");
+        }
+
+        // Fetch round participants if roundId is provided
+        if (roundId) {
+          const signups = await getSignupsByRound(roundId);
+          setRoundParticipants(signups.map(signup => ({
+            userId: signup.userId,
+            username: signup.username,
+            publicDisplayName: signup.publicDisplayName,
+            profilePictureUrl: signup.profilePictureUrl,
+          })));
         }
       } catch (err) {
         setError("An unexpected error occurred");
@@ -39,7 +65,7 @@ export function CommentSection({
       }
     };
 
-    fetchComments();
+    fetchData();
   }, [userContentId, roundId, sortOrder]);
 
   // Scroll to bottom on initial load when using ascending order
@@ -86,19 +112,26 @@ export function CommentSection({
       <>
         {showHeader && (
           <div className="mb-6">
-            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
+            <GradientDivider className="mb-6" />
+            <Heading as="h2" className="flex items-center gap-3">
+              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" aria-hidden="true" />
               Comments
-            </h2>
+            </Heading>
           </div>
         )}
-        <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]">
-          <div className="p-6 space-y-4 animate-pulse">
-            <div className="h-24 bg-[var(--color-gray-800)] rounded-lg"></div>
-            <div className="h-32 bg-[var(--color-gray-800)] rounded-lg"></div>
-            <div className="h-32 bg-[var(--color-gray-800)] rounded-lg"></div>
+        <div
+          className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          aria-label="Loading comments"
+        >
+          <div className="p-6 space-y-4">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
           </div>
+          <span className="sr-only">Loading comments...</span>
         </div>
       </>
     );
@@ -109,15 +142,17 @@ export function CommentSection({
       <>
         {showHeader && (
           <div className="mb-6">
-            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
+            <GradientDivider className="mb-6" />
+            <Heading as="h2" className="flex items-center gap-3">
+              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" aria-hidden="true" />
               Comments
-            </h2>
+            </Heading>
           </div>
         )}
         <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm p-6 min-h-[60vh] flex items-center justify-center">
-          <p className="text-red-400 font-roboto text-center">{error}</p>
+          <AlertBox variant="error" role="alert" aria-live="assertive">
+            {error}
+          </AlertBox>
         </div>
       </>
     );
@@ -130,11 +165,11 @@ export function CommentSection({
           {/* Header with decorative line */}
           {showHeader && (
             <div className="mb-6">
-              <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-              <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-                <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
-                Comments ({comments.length})
-              </h2>
+              <GradientDivider className="mb-6" />
+              <Heading as="h2" className="flex items-center gap-3">
+                <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" aria-hidden="true" />
+                Comments <span aria-label={`${comments.length} total comments`}>({comments.length})</span>
+              </Heading>
             </div>
           )}
 
@@ -149,6 +184,9 @@ export function CommentSection({
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgb(55, 65, 81) rgb(17, 24, 39)'
               }}
+              role="region"
+              aria-label="Comments list"
+              tabIndex={0}
             >
               {comments.length > 0 ? (
                 <div className="p-6">
@@ -156,11 +194,12 @@ export function CommentSection({
                     comments={comments}
                     currentUserId=""
                     onCommentAdded={handleCommentAdded}
+                    roundParticipants={roundParticipants}
                   />
                 </div>
               ) : (
                 <div className="p-12">
-                  <p className="font-roboto text-[var(--color-gray-400)] text-center">
+                  <p className="font-roboto text-[var(--color-gray-400)] text-center" role="status">
                     No comments yet.
                   </p>
                 </div>
@@ -190,11 +229,11 @@ export function CommentSection({
         {/* Header with decorative line */}
         {showHeader && (
           <div className="mb-6">
-            <div className="w-20 h-1 rounded bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] mb-6"></div>
-            <h2 className="font-fraunces text-[var(--color-primary)] font-bold text-2xl md:text-3xl flex items-center gap-3">
-              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" />
-              Comments ({comments.length})
-            </h2>
+            <GradientDivider className="mb-6" />
+            <Heading as="h2" className="flex items-center gap-3">
+              <MessageCircle className="h-7 w-7 text-[var(--color-accent-primary)]" aria-hidden="true" />
+              Comments <span aria-label={`${comments.length} total comments`}>({comments.length})</span>
+            </Heading>
           </div>
         )}
 
@@ -209,6 +248,9 @@ export function CommentSection({
               scrollbarWidth: 'thin',
               scrollbarColor: 'rgb(55, 65, 81) rgb(17, 24, 39)'
             }}
+            role="region"
+            aria-label="Comments list"
+            tabIndex={0}
           >
             {comments.length > 0 ? (
               <div className="p-6">
@@ -216,11 +258,12 @@ export function CommentSection({
                   comments={comments}
                   currentUserId={currentUserId}
                   onCommentAdded={handleCommentAdded}
+                  roundParticipants={roundParticipants}
                 />
               </div>
             ) : (
               <div className="p-12">
-                <p className="font-roboto text-[var(--color-gray-400)] text-center">
+                <p className="font-roboto text-[var(--color-gray-400)] text-center" role="status">
                   No comments yet. Be the first to share your thoughts!
                 </p>
               </div>
@@ -234,7 +277,7 @@ export function CommentSection({
 
           {/* Sticky comment input at bottom */}
           <div className="sticky bottom-0 border-t border-[var(--color-gray-700)] bg-[var(--color-gray-900)] backdrop-blur-md p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.3)]">
-            <CommentForm onSuccess={handleCommentAdded} />
+            <CommentForm onSuccess={handleCommentAdded} roundParticipants={roundParticipants} />
           </div>
         </div>
       </>

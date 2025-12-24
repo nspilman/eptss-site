@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form, SectionHeader } from "@eptss/ui"
+import { Button, Form, SectionHeader, AlertBox } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
 import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/data-access/schemas/signupSchemas"
@@ -12,6 +12,7 @@ import { EmailConfirmationScreen } from "./EmailConfirmationScreen"
 import { useRouter, useParams } from "next/navigation"
 import { UserSignupData } from "@eptss/data-access/types/signup"
 import { routes } from "@eptss/routing"
+import { Mail } from "lucide-react"
 
 
 interface SignupFormProps {
@@ -258,7 +259,14 @@ export function SignupForm({
               </div>
             </div>
           )}
-          
+
+          {/* Helper text for non-logged-in users */}
+          {!isLoggedIn && (
+            <AlertBox variant="info" icon={<Mail className="h-5 w-5" />}>
+              After clicking, we'll send a verification email to complete your signup
+            </AlertBox>
+          )}
+
           <Button
             type="submit"
             disabled={isLoading}
@@ -266,7 +274,10 @@ export function SignupForm({
             size="full"
             className="py-3 text-lg font-semibold text-black"
           >
-            {isLoading ? (isUpdate ? "Updating..." : "Signing up...") : (isUpdate ? "Update Song" : "Sign Up")}
+            {isLoading
+              ? (isUpdate ? "Updating..." : (isLoggedIn ? "Signing up..." : "Sending email..."))
+              : (isUpdate ? "Update Song" : (isLoggedIn ? "Sign Up" : "Continue via Email"))
+            }
           </Button>
         </motion.div>
       </Form>

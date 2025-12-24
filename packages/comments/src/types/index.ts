@@ -17,6 +17,12 @@ export interface CommentListProps {
   comments: CommentWithAuthor[];
   currentUserId: string;
   onCommentAdded?: () => void;
+  roundParticipants?: Array<{
+    userId: string;
+    username?: string;
+    publicDisplayName?: string;
+    profilePictureUrl?: string;
+  }>;
 }
 
 export interface CommentItemProps {
@@ -24,6 +30,12 @@ export interface CommentItemProps {
   currentUserId: string;
   onCommentAdded?: () => void;
   depth?: number;
+  roundParticipants?: Array<{
+    userId: string;
+    username?: string;
+    publicDisplayName?: string;
+    profilePictureUrl?: string;
+  }>;
 }
 
 export interface CommentFormProps {
@@ -33,6 +45,12 @@ export interface CommentFormProps {
   initialContent?: string;
   isEditing?: boolean;
   commentId?: string;
+  roundParticipants?: Array<{
+    userId: string;
+    username?: string;
+    publicDisplayName?: string;
+    profilePictureUrl?: string;
+  }>;
 }
 
 export interface UpvoteButtonProps {
