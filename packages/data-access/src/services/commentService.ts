@@ -115,6 +115,7 @@ export async function getCommentsByContentId(
       : eq(commentAssociations.roundId, roundId!);
 
     // Get all comments for this content with author info and upvote counts
+    // Using a correlated subquery for upvote counts instead of COUNT(DISTINCT) for better performance
     const commentsWithData = await db
       .select({
         comment: comments,
@@ -124,14 +125,16 @@ export async function getCommentsByContentId(
           publicDisplayName: users.publicDisplayName,
           profilePictureUrl: users.profilePictureUrl,
         },
-        upvoteCount: sql<number>`CAST(COUNT(DISTINCT ${commentUpvotes.id}) AS INTEGER)`,
+        upvoteCount: sql<number>`(
+          SELECT CAST(COUNT(*) AS INTEGER)
+          FROM ${commentUpvotes}
+          WHERE ${commentUpvotes.commentId} = ${comments.id}
+        )`,
       })
       .from(comments)
       .innerJoin(commentAssociations, eq(comments.id, commentAssociations.commentId))
       .leftJoin(users, eq(comments.userId, users.userid))
-      .leftJoin(commentUpvotes, eq(comments.id, commentUpvotes.commentId))
       .where(associationWhere)
-      .groupBy(comments.id, users.userid, users.username, users.publicDisplayName, users.profilePictureUrl)
       .orderBy(sortOrder === 'asc' ? asc(comments.createdAt) : desc(comments.createdAt));
 
     // If currentUserId is provided, get their upvotes
