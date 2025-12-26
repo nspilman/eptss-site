@@ -21,6 +21,8 @@ import { getProjectFeatures, getProjectTerminology, getProjectBusinessRules } fr
 import type {
   Phase
 } from "@eptss/dashboard/panels";
+import { getCommentsAction } from "@eptss/comments/actions";
+import { getSignupsByRound } from "@eptss/data-access/services/signupService";
 
 /**
  * Fetch data for the Hero Panel
@@ -30,8 +32,9 @@ import type {
 export async function fetchHeroData(projectId: string, projectSlug: string) {
   console.log('[fetchHeroData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
 
-  const [currentRound, terminology, businessRules, project] = await Promise.all([
+  const [currentRound, { roundDetails }, terminology, businessRules, project] = await Promise.all([
     roundProvider({ projectId }),
+    userParticipationProvider({ projectId }),
     getProjectTerminology(projectSlug as ProjectSlug),
     getProjectBusinessRules(projectSlug as ProjectSlug),
     getProjectBySlug(projectSlug),
@@ -53,6 +56,19 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     }
   }
 
+  // Calculate countdown/deadline data
+  const phaseCloses = currentRound.dateLabels[currentRound.phase]?.closes;
+  const timeRemaining = formatTimeRemaining(phaseCloses);
+  const urgencyLevel = calculateUrgencyLevel(phaseCloses);
+  const dueDate = phaseCloses ? new Date(phaseCloses).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }) : undefined;
+
   const heroData = {
     roundId: currentRound.roundId,
     roundSlug: currentRound.slug,
@@ -63,6 +79,15 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     requirePrompt: businessRules.requirePrompt,
     promptText,
     projectName: project?.name,
+    projectSlug,
+    // Countdown/deadline data
+    timeRemaining,
+    dueDate,
+    urgencyLevel,
+    // User progress
+    hasSignedUp: roundDetails?.hasSignedUp || false,
+    hasVoted: roundDetails?.hasVoted || false,
+    hasSubmitted: roundDetails?.hasSubmitted || false,
   };
 
   console.log('[fetchHeroData] Returning heroData:', JSON.stringify(heroData, null, 2));
@@ -436,5 +461,29 @@ export async function fetchParticipantsData(projectId: string) {
 
   return {
     roundInfo,
+  };
+}
+
+/**
+ * Fetch data for the Discussion Panel (Sticky Footer)
+ * @param roundId - Round ID to fetch comments for
+ */
+export async function fetchDiscussionData(roundId: number) {
+  const [commentsResult, signups] = await Promise.all([
+    getCommentsAction({ roundId }, 'asc'),
+    getSignupsByRound(roundId),
+  ]);
+
+  const comments = commentsResult.success ? commentsResult.comments : [];
+  const roundParticipants = signups.map(signup => ({
+    userId: signup.userId,
+    username: signup.username,
+    publicDisplayName: signup.publicDisplayName,
+    profilePictureUrl: signup.profilePictureUrl,
+  }));
+
+  return {
+    comments,
+    roundParticipants,
   };
 }

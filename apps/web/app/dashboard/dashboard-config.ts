@@ -23,10 +23,7 @@ import {
   InviteFriendsSkeleton,
 } from '@eptss/dashboard/panels';
 
-import { ActionPanelWrapper } from './ActionPanelWrapper';
 import { RoundParticipantsPanelWrapper, RoundParticipantsPanelSkeleton } from './RoundParticipantsPanelWrapper';
-import { DiscussionPanelWrapper, DiscussionPanelSkeleton } from './DiscussionPanelWrapper';
-import { CountdownBarWrapper, CountdownBarSkeleton } from './CountdownBarWrapper';
 
 /**
  * Main dashboard configuration
@@ -51,7 +48,7 @@ export const eptssDeboardConfig: DashboardConfig = {
     ),
 
     // ============================================
-    // HERO PANEL - Always at top
+    // HERO PANEL - Main content (2/3 width)
     // ============================================
     createPanel(
       definePanelConfig('hero', {
@@ -59,7 +56,7 @@ export const eptssDeboardConfig: DashboardConfig = {
         description: 'Displays current round number and song',
         priority: 'primary',
         order: 1,
-        layoutZone: 'header',
+        layoutZone: 'main',
         cardVariant: 'hero',
         showSkeleton: true,
       }),
@@ -67,57 +64,6 @@ export const eptssDeboardConfig: DashboardConfig = {
       { skeleton: HeroSkeleton }
     ),
 
-    // ============================================
-    // COUNTDOWN BAR - Slim progress indicator
-    // ============================================
-    createPanel(
-      definePanelConfig('countdown', {
-        name: 'Round Progress',
-        description: 'Shows time remaining and phase progress',
-        priority: 'primary',
-        order: 2,
-        layoutZone: 'header',
-        cardVariant: 'dark',
-        showSkeleton: true,
-      }),
-      CountdownBarWrapper,
-      { skeleton: CountdownBarSkeleton }
-    ),
-
-    // ============================================
-    // DISCUSSION PANEL - Community conversations (Main focus!)
-    // ============================================
-    createPanel(
-      definePanelConfig('discussions', {
-        name: 'Round Discussions',
-        description: 'Community conversations and engagement',
-        priority: 'primary',
-        order: 3,
-        layoutZone: 'main',
-        cardVariant: 'card',
-        minHeight: '60vh',
-        showSkeleton: true,
-      }),
-      DiscussionPanelWrapper,
-      { skeleton: DiscussionPanelSkeleton }
-    ),
-
-    // ============================================
-    // ACTION PANEL - Sidebar widget for next action
-    // ============================================
-    createPanel(
-      definePanelConfig('action', {
-        name: 'Your Next Action',
-        description: 'Shows primary action, phase status, countdown, progress, and reflections',
-        priority: 'secondary',
-        order: 1,
-        layoutZone: 'sidebar',
-        cardVariant: 'sidebar',
-        showSkeleton: true,
-      }),
-      ActionPanelWrapper,
-      { skeleton: ActionPanelSkeleton }
-    ),
 
     // ============================================
     // ROUND PARTICIPANTS - Collapsible sidebar widget

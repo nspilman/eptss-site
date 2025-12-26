@@ -22,10 +22,13 @@ export function CommentSection({
   currentUserId,
   sortOrder = 'desc',
   showHeader = true,
+  fillHeight = false,
+  initialComments,
+  roundParticipants: initialRoundParticipants,
 }: CommentSectionProps) {
-  const [comments, setComments] = useState<CommentWithAuthor[]>([]);
+  const [comments, setComments] = useState<CommentWithAuthor[]>(initialComments || []);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialComments);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const hasInitiallyScrolled = useRef(false);
   const [roundParticipants, setRoundParticipants] = useState<Array<{
@@ -33,23 +36,30 @@ export function CommentSection({
     username?: string;
     publicDisplayName?: string;
     profilePictureUrl?: string;
-  }>>([]);
+  }>>(initialRoundParticipants || []);
 
   useEffect(() => {
+    // Skip fetching if we already have initial data
+    if (initialComments && initialRoundParticipants) {
+      return;
+    }
+
     const fetchData = async () => {
       try {
         setIsLoading(true);
 
-        // Fetch comments
-        const commentsResult = await getCommentsAction({ userContentId, roundId }, sortOrder);
-        if (commentsResult.success) {
-          setComments(commentsResult.comments);
-        } else {
-          setError(commentsResult.error || "Failed to load comments");
+        // Fetch comments if not provided
+        if (!initialComments) {
+          const commentsResult = await getCommentsAction({ userContentId, roundId }, sortOrder);
+          if (commentsResult.success) {
+            setComments(commentsResult.comments);
+          } else {
+            setError(commentsResult.error || "Failed to load comments");
+          }
         }
 
-        // Fetch round participants if roundId is provided
-        if (roundId) {
+        // Fetch round participants if roundId is provided and not already provided
+        if (roundId && !initialRoundParticipants) {
           const signups = await getSignupsByRound(roundId);
           setRoundParticipants(signups.map(signup => ({
             userId: signup.userId,
@@ -66,7 +76,7 @@ export function CommentSection({
     };
 
     fetchData();
-  }, [userContentId, roundId, sortOrder]);
+  }, [userContentId, roundId, sortOrder, initialComments, initialRoundParticipants]);
 
   // Scroll to bottom on initial load when using ascending order
   useEffect(() => {
@@ -120,7 +130,7 @@ export function CommentSection({
           </div>
         )}
         <div
-          className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]"
+          className={`border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden ${fillHeight ? 'h-full' : 'min-h-[60vh]'}`}
           role="status"
           aria-live="polite"
           aria-busy="true"
@@ -149,7 +159,7 @@ export function CommentSection({
             </Heading>
           </div>
         )}
-        <div className="border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm p-6 min-h-[60vh] flex items-center justify-center">
+        <div className={`border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm p-6 ${fillHeight ? 'h-full' : 'min-h-[60vh]'} flex items-center justify-center`}>
           <AlertBox variant="error" role="alert" aria-live="assertive">
             {error}
           </AlertBox>
@@ -174,13 +184,13 @@ export function CommentSection({
           )}
 
           {/* Scrollable comments container */}
-          <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]">
+          <div className={`relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden ${fillHeight ? 'h-full flex flex-col' : 'min-h-[60vh]'}`}>
             {/* Comments list - scrollable area */}
             <div
               ref={scrollContainerRef}
-              className="overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900"
+              className={`overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 ${fillHeight ? 'flex-1' : ''}`}
               style={{
-                maxHeight: '60vh',
+                maxHeight: fillHeight ? undefined : '60vh',
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgb(55, 65, 81) rgb(17, 24, 39)'
               }}
@@ -238,13 +248,13 @@ export function CommentSection({
         )}
 
         {/* Scrollable comments container with sticky input at bottom */}
-        <div className="relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden min-h-[60vh]">
+        <div className={`relative border border-[var(--color-gray-800)] rounded-lg bg-[var(--color-gray-900-40)] backdrop-blur-sm overflow-hidden ${fillHeight ? 'h-full flex flex-col' : 'min-h-[60vh]'}`}>
           {/* Comments list - scrollable area */}
           <div
             ref={scrollContainerRef}
-            className="overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900"
+            className={`overflow-y-auto scroll-smooth scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 ${fillHeight ? 'flex-1' : ''}`}
             style={{
-              maxHeight: '60vh',
+              maxHeight: fillHeight ? undefined : '60vh',
               scrollbarWidth: 'thin',
               scrollbarColor: 'rgb(55, 65, 81) rgb(17, 24, 39)'
             }}

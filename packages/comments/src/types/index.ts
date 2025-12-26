@@ -11,6 +11,14 @@ export interface CommentSectionProps {
   currentUserId?: string | null; // Pass from server-side auth
   sortOrder?: 'asc' | 'desc'; // Optional - controls comment sort order (default: 'desc' - newest first)
   showHeader?: boolean; // Optional - whether to show the "Comments (count)" header (default: true)
+  fillHeight?: boolean; // Optional - whether to fill parent height instead of using fixed 60vh (default: false)
+  initialComments?: CommentWithAuthor[]; // Optional - pre-fetched comments to avoid re-fetching
+  roundParticipants?: Array<{
+    userId: string;
+    username?: string;
+    publicDisplayName?: string;
+    profilePictureUrl?: string;
+  }>; // Optional - pre-fetched participants to avoid re-fetching
 }
 
 export interface CommentListProps {

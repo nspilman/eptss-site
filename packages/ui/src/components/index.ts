@@ -26,6 +26,7 @@ export * from './ui/primitives';
 export * from './LoadingSpinner';
 export * from './BackgroundPattern';
 export * from './DataTable';
+export * from './StickyFooter';
 
 // Re-export utility
 export { cn } from '../lib/utils';

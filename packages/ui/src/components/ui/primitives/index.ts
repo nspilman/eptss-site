@@ -85,6 +85,11 @@ export {
 } from './card'
 export type { CardProps } from './card'
 export {
+  GridLayout,
+  GridItem,
+} from './grid-layout'
+export type { GridLayoutProps, GridItemProps } from './grid-layout'
+export {
   RadioGroup,
   RadioGroupItem,
   RadioGroupLabel,

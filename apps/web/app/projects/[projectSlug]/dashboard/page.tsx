@@ -5,9 +5,10 @@ import { getUserById, getProjectIdFromSlug, isValidProjectSlug } from '@eptss/da
 import { notFound, redirect } from 'next/navigation';
 import {
   fetchHeroData,
-  fetchActionData,
   fetchParticipantsData,
+  fetchDiscussionData,
 } from '@/app/dashboard/data-fetchers';
+import { StickyDiscussionFooterWrapper } from '@/app/dashboard/StickyDiscussionFooterWrapper';
 
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
@@ -42,60 +43,51 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
 
   // Fetch data for all panels in parallel
   console.log('[ProjectDashboardPage] Fetching panel data...');
-  const [heroData, actionData, participantsData, userData] =
+  const [heroData, participantsData, userData] =
     await Promise.all([
       fetchHeroData(projectId, slug),
-      fetchActionData(projectId, slug),
       fetchParticipantsData(projectId),
       getUserById(userId),
     ]);
 
+  // Fetch discussion data if we have a round
+  const discussionData = heroData ? await fetchDiscussionData(heroData.roundId) : null;
+
   console.log('[ProjectDashboardPage] heroData:', JSON.stringify(heroData, null, 2));
-  console.log('[ProjectDashboardPage] actionData phase:', actionData?.phase, 'phaseName:', actionData?.phaseName);
-
-  const countdownData = actionData ? {
-    phase: actionData.phase,
-    timeRemaining: actionData.timeRemaining,
-    dueDate: actionData.dueDate,
-    urgencyLevel: actionData.urgencyLevel,
-    hasSignedUp: actionData.hasSignedUp,
-    hasVoted: actionData.hasVoted,
-    hasSubmitted: actionData.hasSubmitted,
-    terminology: heroData?.terminology,
-  } : null;
-
-  console.log('[ProjectDashboardPage] countdown panel data:', JSON.stringify(countdownData, null, 2));
-  console.log('[ProjectDashboardPage] countdown terminology:', JSON.stringify(countdownData?.terminology, null, 2));
 
   return (
-    <Dashboard
-      config={eptssDeboardConfig}
-      user={{ id: userId, role: 'user' }}
-      panelData={{
-        profileSetup: userData ? {
-          userId: userData.userid,
-          username: userData.username,
-          publicDisplayName: userData.publicDisplayName,
-          profilePictureUrl: userData.profilePictureUrl,
-        } : null,
-        hero: heroData,
-        countdown: countdownData,
-        discussions: heroData ? {
-          roundSlug: heroData.roundSlug,
-          currentUserId: userId,
-        } : null,
-        action: actionData,
-        participants: participantsData,
-        reflections: heroData ? {
-          roundId: heroData.roundId,
-          projectSlug: slug, // Keep for server component in package
-        } : null,
-        inviteFriends: heroData ? {
-          userId: userId,
-          projectSlug: slug,
-          roundSlug: heroData.roundSlug,
-        } : null,
-      }}
-    />
+    <>
+      <Dashboard
+        config={eptssDeboardConfig}
+        user={{ id: userId, role: 'user' }}
+        panelData={{
+          profileSetup: userData ? {
+            userId: userData.userid,
+            username: userData.username,
+            publicDisplayName: userData.publicDisplayName,
+            profilePictureUrl: userData.profilePictureUrl,
+          } : null,
+          hero: heroData,
+          participants: participantsData,
+          reflections: heroData ? {
+            roundId: heroData.roundId,
+            projectSlug: slug, // Keep for server component in package
+          } : null,
+          inviteFriends: heroData ? {
+            userId: userId,
+            projectSlug: slug,
+            roundSlug: heroData.roundSlug,
+          } : null,
+        }}
+      />
+      {heroData && discussionData && (
+        <StickyDiscussionFooterWrapper
+          roundId={heroData.roundId}
+          currentUserId={userId}
+          initialComments={discussionData.comments}
+          roundParticipants={discussionData.roundParticipants}
+        />
+      )}
+    </>
   );
 }

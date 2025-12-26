@@ -8,13 +8,17 @@ interface DashboardLayoutProps {
 }
 
 /**
- * DashboardLayout - Handles the layout structure of the dashboard
+ * DashboardLayout - Handles the layout structure of the dashboard using CSS Grid
  *
  * Responsibilities:
  * - Layout zones (header, main, sidebar, footer)
  * - Sizing constraints (width, height, min/max)
  * - Responsive behavior (mobile stacking)
  * - Spacing between panels
+ *
+ * Grid Structure:
+ * - Desktop: 3-column grid (main: 2fr, sidebar: 1fr) = 2/3 - 1/3 split
+ * - Mobile: Single column (all panels stack)
  *
  * DOES NOT handle:
  * - Visual styling (that's PanelCard)
@@ -25,7 +29,7 @@ export function DashboardLayout({
   panelsByPriority,
   children,
 }: DashboardLayoutProps) {
-  const { variant, useGrid, gap = 'md' } = config;
+  const { gap = 'md' } = config;
 
   const gapClasses = {
     sm: 'gap-3',
@@ -86,65 +90,65 @@ export function DashboardLayout({
     return styles;
   };
 
-  // If there are no sidebar panels, use simple vertical stack
-  if (sidebarPanels.length === 0) {
-    return (
-      <div className={`w-full flex flex-col ${gapClass}`}>
-        {headerPanels.map((p, i) => (
-          <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-            {p.child}
-          </div>
-        ))}
-        {mainPanels.map((p, i) => (
-          <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-            {p.child}
-          </div>
-        ))}
-        {footerPanels.map((p, i) => (
-          <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-            {p.child}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
-    <div className={`w-full flex flex-col ${gapClass}`}>
-      {/* Header Zone - Full Width */}
-      {headerPanels.map((p, i) => (
-        <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-          {p.child}
-        </div>
-      ))}
+    <div className={`w-full grid ${gapClass}`}>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .dashboard-grid-layout {
+            grid-template-columns: 1fr;
+          }
+          @media (min-width: 768px) {
+            .dashboard-grid-layout {
+              grid-template-columns: 2fr 1fr;
+            }
+          }
+        `
+      }} />
+      <div className="dashboard-grid-layout w-full grid" style={{ gap: 'inherit' }}>
+        {/* Header Zone - Full Width - Always row 1, spans all columns */}
+        {headerPanels.length > 0 && (
+          <div className="col-span-full flex flex-col gap-6 min-w-0">
+            {headerPanels.map((p, i) => (
+              <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
+                {p.child}
+              </div>
+            ))}
+          </div>
+        )}
 
-      {/* Main + Sidebar Layout */}
-      <div className={`flex flex-col md:flex-row ${gapClass}`}>
-        {/* Sidebar Zone - Left (stacks on top on mobile) */}
-        <aside className={`w-full md:w-1/2 flex flex-col ${gapClass} min-w-0`}>
-          {sidebarPanels.map((p, i) => (
-            <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-              {p.child}
-            </div>
-          ))}
-        </aside>
+        {/* Main Zone - 2fr (2/3 width on desktop) - Column 1 */}
+        {mainPanels.length > 0 && (
+          <div className="flex flex-col gap-6 min-w-0">
+            {mainPanels.map((p, i) => (
+              <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
+                {p.child}
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* Main Zone - Right */}
-        <div className={`w-full md:w-1/2 flex flex-col ${gapClass} min-w-0`}>
-          {mainPanels.map((p, i) => (
-            <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-              {p.child}
-            </div>
-          ))}
-        </div>
+        {/* Sidebar Zone - 1fr (1/3 width on desktop) - Column 2 */}
+        {sidebarPanels.length > 0 && (
+          <aside className="flex flex-col gap-6 min-w-0">
+            {sidebarPanels.map((p, i) => (
+              <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
+                {p.child}
+              </div>
+            ))}
+          </aside>
+        )}
+
+        {/* Footer Zone - Full Width - Spans all columns */}
+        {footerPanels.length > 0 && (
+          <div className="col-span-full flex flex-col gap-6 min-w-0">
+            {footerPanels.map((p, i) => (
+              <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
+                {p.child}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Footer Zone - Full Width */}
-      {footerPanels.map((p, i) => (
-        <div key={i} className="w-full min-w-0" style={applyConstraints(p.config)}>
-          {p.child}
-        </div>
-      ))}
     </div>
   );
 }

@@ -32,9 +32,9 @@ export function PanelCard({
   // Hero variant - prominent header styling
   if (variant === 'hero') {
     return (
-      <div className={`relative overflow-hidden rounded-xl bg-gray-900/50 p-6 md:p-8 backdrop-blur-xs border border-gray-800 ${className}`}>
+      <div className={`relative overflow-hidden rounded-xl bg-gray-900/50 p-6 md:p-8 backdrop-blur-xs border border-gray-800 h-full ${className}`}>
         <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-10" />
-        <div className="relative z-10">
+        <div className="relative z-10 h-full">
           {children}
         </div>
       </div>

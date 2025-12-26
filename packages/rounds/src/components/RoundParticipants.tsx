@@ -3,8 +3,7 @@
 import { motion } from "framer-motion";
 import React from "react";
 import { RoundInfo } from "@eptss/data-access/types/round";
-import { Card, CardContent, CardHeader, UserAvatar } from "@eptss/ui";
-import { Users } from "lucide-react";
+import { UserAvatar } from "@eptss/ui";
 import { getDisplayName } from "@eptss/shared";
 
 interface RoundParticipantsProps {
@@ -84,53 +83,35 @@ export const RoundParticipants = ({ roundInfo, currentUserId }: RoundParticipant
   };
 
   return (
-    <Card className="w-full bg-background-primary/60 backdrop-blur-sm border-gray-800">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-3">
-          <div
-            className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: 'var(--color-accent-primary)' }}
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      {sortedParticipants.map((participant, index) => (
+        <motion.div
+          key={participant.userId}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.05 }}
+          className="min-w-0"
+        >
+          <a
+            href={getProfileUrl(participant)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center gap-2 group cursor-pointer"
           >
-            <Users className="w-5 h-5 text-background-primary" />
-          </div>
-          <div className="min-w-0">
-            <h3 className="text-lg font-bold text-primary">Round Participants</h3>
-            <p className="text-sm text-gray-400">{uniqueParticipants.length} {uniqueParticipants.length === 1 ? 'person' : 'people'} signed up</p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {sortedParticipants.map((participant, index) => (
-            <motion.div
-              key={participant.userId}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="min-w-0"
-            >
-              <a
-                href={getProfileUrl(participant)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center gap-2 group cursor-pointer"
-              >
-                <UserAvatar
-                  profilePictureUrl={participant.profilePictureUrl}
-                  displayName={getDisplayName(participant)}
-                  size="md"
-                  showHoverEffect
-                />
-                <div className="text-center w-full min-w-0">
-                  <p className="text-sm font-medium text-primary group-hover:text-accent-primary transition-colors truncate px-1" title={getDisplayName(participant)}>
-                    {getDisplayName(participant)}
-                  </p>
-                </div>
-              </a>
-            </motion.div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            <UserAvatar
+              profilePictureUrl={participant.profilePictureUrl}
+              displayName={getDisplayName(participant)}
+              size="md"
+              showHoverEffect
+            />
+            <div className="text-center w-full min-w-0">
+              <p className="text-sm font-medium text-primary group-hover:text-accent-primary transition-colors truncate px-1" title={getDisplayName(participant)}>
+                {getDisplayName(participant)}
+              </p>
+            </div>
+          </a>
+        </motion.div>
+      ))}
+    </div>
   );
 };

@@ -32,7 +32,7 @@ export function PanelWrapper({ config, children }: PanelWrapperProps) {
 
   return (
     <div
-      className={config.className || ''}
+      className={`h-full ${config.className || ''}`}
       data-panel-id={config.id}
       data-priority={config.priority}
       data-size={config.size}

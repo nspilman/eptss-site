@@ -51,12 +51,6 @@ export function RoundParticipantsPanelWrapper({ data, user }: PanelProps<Partici
             >
               <Users className="w-5 h-5 text-background-primary" />
             </div>
-            <div>
-              <CardTitle>Round Participants</CardTitle>
-              <p className="text-sm text-gray-400">
-                {uniqueParticipants.length} {uniqueParticipants.length === 1 ? 'person' : 'people'} signed up
-              </p>
-            </div>
           </div>
         </CardHeader>
         <CardContent>
