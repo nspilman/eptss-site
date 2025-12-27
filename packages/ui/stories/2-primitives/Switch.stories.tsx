@@ -4,6 +4,7 @@ import { Switch } from '../../src/components/ui/switch';
 import { Label } from '../../src/components/ui/label';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Switch> = {
   title: '2. Primitives/Switch',
   component: Switch,
@@ -60,9 +61,9 @@ export const Examples: Story = {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="notifications">Notifications</Label>
-              <p className="text-xs text-[var(--color-secondary)]">
+              <Text size="xs" className="text-[var(--color-secondary)]">
                 Receive email notifications
-              </p>
+              </Text>
             </div>
             <Switch
               id="notifications"
@@ -74,9 +75,9 @@ export const Examples: Story = {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="dark-mode">Dark Mode</Label>
-              <p className="text-xs text-[var(--color-secondary)]">
+              <Text size="xs" className="text-[var(--color-secondary)]">
                 Use dark theme
-              </p>
+              </Text>
             </div>
             <Switch
               id="dark-mode"
@@ -88,9 +89,9 @@ export const Examples: Story = {
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="auto-save">Auto Save</Label>
-              <p className="text-xs text-[var(--color-secondary)]">
+              <Text size="xs" className="text-[var(--color-secondary)]">
                 Automatically save changes
-              </p>
+              </Text>
             </div>
             <Switch
               id="auto-save"
@@ -102,9 +103,9 @@ export const Examples: Story = {
           <div className="flex items-center justify-between opacity-50">
             <div className="space-y-0.5">
               <Label htmlFor="disabled">Disabled Option</Label>
-              <p className="text-xs text-[var(--color-secondary)]">
+              <Text size="xs" className="text-[var(--color-secondary)]">
                 This option is disabled
-              </p>
+              </Text>
             </div>
             <Switch id="disabled" disabled />
           </div>

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Tooltip, Button } from '../../src/components';
 
+import { Text } from "@eptss/ui";
 const meta = {
   title: '3. Feedback/Tooltip',
   component: Tooltip,
@@ -75,11 +76,11 @@ export const RichContent: Story = {
         <div className="text-lg font-semibold">Health Check</div>
         <div className="space-y-1">
           <div className="flex justify-between">
-            <span className="text-gray-400">Status:</span>
-            <span className="text-emerald-400">Success</span>
+            <Text as="span" className="text-gray-400">Status:</Text>
+            <Text as="span" className="text-emerald-400">Success</Text>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Time:</span>
+            <Text as="span" className="text-gray-400">Time:</Text>
             <span>12:34 PM</span>
           </div>
         </div>

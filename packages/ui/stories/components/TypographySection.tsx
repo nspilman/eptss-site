@@ -2,6 +2,7 @@ import React from 'react';
 import { TypographyExample } from './TypographyExample';
 import { ThemeSection } from './ThemeSection';
 
+import { Text } from "@eptss/ui";
 export const TypographySection = () => (
   <ThemeSection 
     title="Typography" 
@@ -13,29 +14,29 @@ export const TypographySection = () => (
         <div className="space-y-4">
           <div className="p-4 bg-muted rounded-md border border-border">
             <div className="font-sans mb-3">
-              <span className="text-sm text-muted-foreground block mb-1">Sans:</span> 
+              <Text as="span" size="sm" color="muted" className="block mb-1">Sans:</Text> 
               <span className="">The quick brown fox jumps over the lazy dog</span>
-              <span className="text-xs text-primary block mt-1">--font-sans</span>
+              <Text as="span" size="xs" color="primary" className="block mt-1">--font-sans</Text>
             </div>
             <div className="font-serif mb-3">
-              <span className="text-sm text-muted-foreground block mb-1">Serif:</span> 
+              <Text as="span" size="sm" color="muted" className="block mb-1">Serif:</Text> 
               <span className="">The quick brown fox jumps over the lazy dog</span>
-              <span className="text-xs text-primary block mt-1">--font-serif</span>
+              <Text as="span" size="xs" color="primary" className="block mt-1">--font-serif</Text>
             </div>
             <div className="font-mono mb-3">
-              <span className="text-sm text-muted-foreground block mb-1">Mono:</span> 
+              <Text as="span" size="sm" color="muted" className="block mb-1">Mono:</Text> 
               <span className="">The quick brown fox jumps over the lazy dog</span>
-              <span className="text-xs text-primary block mt-1">--font-mono</span>
+              <Text as="span" size="xs" color="primary" className="block mt-1">--font-mono</Text>
             </div>
             <div style={{ fontFamily: 'Fraunces, serif' }} className="mb-3">
-              <span className="text-sm text-muted-foreground block mb-1">Fraunces:</span> 
+              <Text as="span" size="sm" color="muted" className="block mb-1">Fraunces:</Text> 
               <span className="">The quick brown fox jumps over the lazy dog</span>
-              <span className="text-xs text-primary block mt-1">--font-fraunces</span>
+              <Text as="span" size="xs" color="primary" className="block mt-1">--font-fraunces</Text>
             </div>
             <div style={{ fontFamily: 'Roboto, sans-serif' }}>
-              <span className="text-sm text-muted-foreground block mb-1">Roboto:</span> 
+              <Text as="span" size="sm" color="muted" className="block mb-1">Roboto:</Text> 
               <span className="">The quick brown fox jumps over the lazy dog</span>
-              <span className="text-xs text-primary block mt-1">--font-roboto</span>
+              <Text as="span" size="xs" color="primary" className="block mt-1">--font-roboto</Text>
             </div>
           </div>
         </div>

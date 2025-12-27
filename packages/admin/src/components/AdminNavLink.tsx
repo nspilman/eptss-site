@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LucideIcon } from "lucide-react";
 
+import { Text } from "@eptss/ui";
 interface AdminNavLinkProps {
   href: string;
   label: string;
@@ -24,7 +25,7 @@ export function AdminNavLink({ href, label, icon: Icon }: AdminNavLinkProps) {
       }`}
     >
       <Icon className="h-5 w-5" />
-      <span className="font-medium">{label}</span>
+      <Text as="span" weight="medium">{label}</Text>
     </Link>
   );
 }

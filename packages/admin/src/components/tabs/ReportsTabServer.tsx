@@ -3,6 +3,7 @@ import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/data-acce
 import { adminProvider } from "@eptss/data-access";
 import { ReportsTab } from "../ReportsTab";
 
+import { Text } from "@eptss/ui";
 type ReportsTabServerProps = {
   roundSlug: string;
 };
@@ -53,7 +54,7 @@ export async function ReportsTabServer({ roundSlug }: ReportsTabServerProps) {
     return (
       <div className="p-6 bg-red-500/10 border border-red-500/50 rounded-lg">
         <h3 className="text-red-500 font-semibold mb-2">Error Loading Reports</h3>
-        <p className="text-secondary">{error instanceof Error ? error.message : 'Unknown error'}</p>
+        <Text color="secondary">{error instanceof Error ? error.message : 'Unknown error'}</Text>
       </div>
     );
   }

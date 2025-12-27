@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Users, MessageSquare, Wrench, Music, Bell, Settings } from "lucide-react";
 
+import { Text } from "@eptss/ui";
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/rounds", label: "Rounds", icon: Music },
@@ -34,7 +35,7 @@ export function AdminNav() {
             }`}
           >
             <Icon className="h-4 w-4" />
-            <span className="font-medium text-sm">{item.label}</span>
+            <Text as="span" size="sm" weight="medium">{item.label}</Text>
           </Link>
         );
       })}

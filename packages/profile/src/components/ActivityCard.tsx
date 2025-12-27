@@ -1,3 +1,5 @@
+import { Text } from "@eptss/ui";
+
 export function ActivityCard({
     title,
     count,
@@ -23,15 +25,15 @@ export function ActivityCard({
               <h3 className="text-lg font-semibold text-[var(--color-primary)] mb-1">
                 {title}
               </h3>
-              <p className="text-sm text-gray-400">
+              <Text size="sm" className="text-gray-400">
                 {description}
-              </p>
+              </Text>
             </div>
 
             {/* Count with gradient */}
-            <p className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
+            <Text weight="bold" className="text-5xl bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
               {count}
-            </p>
+            </Text>
 
             {/* Link button */}
             <button

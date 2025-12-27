@@ -2,6 +2,7 @@ import React from 'react';
 import { ColorSwatch } from './ColorSwatch';
 import { ThemeSection } from './ThemeSection';
 
+import { Text } from "@eptss/ui";
 interface ColorSectionProps {
   title: string;
   description: string;
@@ -17,7 +18,7 @@ interface ColorSectionProps {
 export const ColorSection = ({ title, description, colors }: ColorSectionProps) => (
   <div className="mb-8">
     <h3 className="text-xl font-semibold mb-4 ">{title}</h3>
-    <p className="text-muted-foreground mb-4">{description}</p>
+    <Text color="muted" className="mb-4">{description}</Text>
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {colors.map((color) => (
         <ColorSwatch 

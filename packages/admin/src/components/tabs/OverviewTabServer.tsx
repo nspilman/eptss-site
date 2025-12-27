@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { adminProvider } from "@eptss/data-access";
 import { OverviewTab } from "../OverviewTab";
 
+import { Text } from "@eptss/ui";
 // Cache the stats for 60 seconds
 const getCachedStats = unstable_cache(
   async () => adminProvider(),
@@ -18,7 +19,7 @@ export async function OverviewTabServer() {
     return (
       <div className="p-6 bg-red-500/10 border border-red-500/50 rounded-lg">
         <h3 className="text-red-500 font-semibold mb-2">Error Loading Overview</h3>
-        <p className="text-secondary">{error instanceof Error ? error.message : 'Unknown error'}</p>
+        <Text color="secondary">{error instanceof Error ? error.message : 'Unknown error'}</Text>
       </div>
     );
   }

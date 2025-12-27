@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import Input from '../../src/components/ui/primitives/input';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Input> = {
   title: '2. Primitives/Input',
   component: Input,
@@ -114,7 +115,7 @@ export const AllStates: Story = {
             Error State
           </label>
           <Input error placeholder="Enter text..." defaultValue="Invalid input" />
-          <p className="text-xs text-[var(--color-destructive)]">This field has an error</p>
+          <Text size="xs" className="text-[var(--color-destructive)]">This field has an error</Text>
         </div>
 
         <div className="space-y-2">

@@ -7,6 +7,7 @@ import { updateProjectConfig } from "./actions";
 import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, Zap, Globe, BookOpen, MessageSquare, Image } from "lucide-react";
 import { ConfigSection } from "./components/ConfigSection";
 import { TableOfContents } from "./components/TableOfContents";
+import { Text } from "@eptss/ui";
 import {
   FeatureFlagsEditor,
   UIConfigEditor,
@@ -139,7 +140,7 @@ export function ProjectConfigEditor() {
   if (projects.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-secondary">No projects found.</p>
+        <Text color="secondary">No projects found.</Text>
       </div>
     );
   }
@@ -171,9 +172,9 @@ export function ProjectConfigEditor() {
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${selectedProject?.isActive ? 'bg-green-500/20 text-green-600' : 'bg-gray-500/20 text-gray-600'}`}>
             {selectedProject?.isActive ? '● Active' : '○ Inactive'}
           </span>
-          <span className="text-sm text-secondary">
+          <Text as="span" size="sm" color="secondary">
             ID: {selectedProject?.id.slice(0, 8)}...
-          </span>
+          </Text>
         </div>
       </div>
 
@@ -410,7 +411,7 @@ export function ProjectConfigEditor() {
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-white font-bold text-lg mb-1">Save Configuration</h4>
-                <p className="text-white/80 text-sm">Click to save all changes to {selectedProject.name}</p>
+                <Text size="sm" className="text-white/80">Click to save all changes to {selectedProject.name}</Text>
               </div>
               <div className="flex items-center gap-4">
                 {success && (

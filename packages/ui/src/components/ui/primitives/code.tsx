@@ -4,6 +4,7 @@ import * as React from "react"
 import { cn } from "./utils"
 import Button from "./button"
 
+import { Text } from "@eptss/ui";
 interface CodeProps extends React.HTMLAttributes<HTMLDivElement> {
   code: string
   title?: string
@@ -28,7 +29,7 @@ function Code({ code, title = "Code", className, ...props }: CodeProps) {
       className
     )} {...props}>
       <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-medium text-gray-300">{title}</span>
+        <Text as="span" size="sm" weight="medium" className="text-gray-300">{title}</Text>
         <Button
           onClick={copyToClipboard}
           variant="ghost"

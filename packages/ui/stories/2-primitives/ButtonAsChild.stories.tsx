@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import Button from '../../src/components/ui/primitives/button';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Button> = {
   title: 'Components/Button/AsChild Usage',
   component: Button,
@@ -66,14 +67,14 @@ export const WithLink: Story = {
 
         <div>
           <h3 className="text-lg font-semibold mb-3">❌ Incorrect: No child element</h3>
-          <p className="text-sm text-muted-foreground mb-2">
+          <Text size="sm" color="muted" className="mb-2">
             This will not render (button disappears):
-          </p>
+          </Text>
           <div className="flex gap-4 flex-wrap items-center">
             <code className="bg-gray-800 px-3 py-1 rounded text-xs">
               {'<Button asChild>Text</Button>'}
             </code>
-            <span className="text-destructive text-sm">← This won't work!</span>
+            <Text as="span" size="sm" color="destructive">← This won't work!</Text>
           </div>
         </div>
 
@@ -93,9 +94,9 @@ export const WithLink: Story = {
 
         <div>
           <h3 className="text-lg font-semibold mb-3">✅ Without asChild (regular button)</h3>
-          <p className="text-sm text-muted-foreground mb-2">
+          <Text size="sm" color="muted" className="mb-2">
             For comparison, here's a regular button without asChild:
-          </p>
+          </Text>
           <div className="flex gap-4 flex-wrap">
             <Button variant="default">Regular Button</Button>
             <Button variant="secondary">No Link Here</Button>

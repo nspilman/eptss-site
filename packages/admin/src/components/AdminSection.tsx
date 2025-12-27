@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 
+import { Text } from "@eptss/ui";
 export interface AdminSectionProps {
   /** Section title */
   title?: string
@@ -59,7 +60,7 @@ export const AdminSection = ({
         </h3>
       )}
       {description && (
-        <p className="text-sm text-secondary mb-4">{description}</p>
+        <Text size="sm" color="secondary" className="mb-4">{description}</Text>
       )}
       {children}
     </div>

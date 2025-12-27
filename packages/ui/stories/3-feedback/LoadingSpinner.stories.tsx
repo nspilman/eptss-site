@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { LoadingSpinner } from '../../src/components/LoadingSpinner';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof LoadingSpinner> = {
   title: '3. Feedback/Loading Spinner',
   component: LoadingSpinner,
@@ -24,17 +25,17 @@ export const Sizes: Story = {
     >
       <div className="flex items-center gap-8">
         <div className="space-y-2">
-          <p className="text-xs text-[var(--color-secondary)]">Small</p>
+          <Text size="xs" className="text-[var(--color-secondary)]">Small</Text>
           <LoadingSpinner className="h-4 w-4" />
         </div>
 
         <div className="space-y-2">
-          <p className="text-xs text-[var(--color-secondary)]">Medium</p>
+          <Text size="xs" className="text-[var(--color-secondary)]">Medium</Text>
           <LoadingSpinner className="h-8 w-8" />
         </div>
 
         <div className="space-y-2">
-          <p className="text-xs text-[var(--color-secondary)]">Large</p>
+          <Text size="xs" className="text-[var(--color-secondary)]">Large</Text>
           <LoadingSpinner className="h-12 w-12" />
         </div>
       </div>
@@ -52,20 +53,20 @@ export const InContext: Story = {
         <div className="p-4 border border-[var(--color-border-primary)] rounded-lg">
           <div className="flex items-center gap-3">
             <LoadingSpinner className="h-5 w-5" />
-            <span className="text-sm text-[var(--color-primary)]">Loading content...</span>
+            <Text as="span" size="sm" className="text-[var(--color-primary)]">Loading content...</Text>
           </div>
         </div>
 
         <div className="p-8 border border-[var(--color-border-primary)] rounded-lg flex items-center justify-center">
           <div className="text-center space-y-3">
             <LoadingSpinner className="h-8 w-8 mx-auto" />
-            <p className="text-sm text-[var(--color-secondary)]">Please wait...</p>
+            <Text size="sm" className="text-[var(--color-secondary)]">Please wait...</Text>
           </div>
         </div>
 
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-accent-primary)] text-[var(--color-background-primary)] rounded-md">
           <LoadingSpinner className="h-4 w-4" />
-          <span className="text-sm font-medium">Processing...</span>
+          <Text as="span" size="sm" weight="medium">Processing...</Text>
         </div>
       </div>
     </ThemeSection>

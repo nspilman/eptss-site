@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { Avatar, AvatarImage, AvatarFallback } from '../../src/components/ui/avatar';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Avatar> = {
   title: '4. Display/Avatar',
   component: Avatar,
@@ -112,8 +113,8 @@ export const Examples: Story = {
                 <AvatarFallback>JD</AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium text-[var(--color-primary)]">John Doe</p>
-                <p className="text-xs text-[var(--color-secondary)]">john@example.com</p>
+                <Text size="sm" weight="medium" className="text-[var(--color-primary)]">John Doe</Text>
+                <Text size="xs" className="text-[var(--color-secondary)]">john@example.com</Text>
               </div>
             </div>
 
@@ -122,8 +123,8 @@ export const Examples: Story = {
                 <AvatarFallback>SM</AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium text-[var(--color-primary)]">Sarah Miller</p>
-                <p className="text-xs text-[var(--color-secondary)]">sarah@example.com</p>
+                <Text size="sm" weight="medium" className="text-[var(--color-primary)]">Sarah Miller</Text>
+                <Text size="xs" className="text-[var(--color-secondary)]">sarah@example.com</Text>
               </div>
             </div>
           </div>

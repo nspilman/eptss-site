@@ -15,6 +15,7 @@ import { TestAdminNotificationEmailButton } from "./TestAdminNotificationEmailBu
 import { UserDetails } from "@eptss/data-access/types/user";
 import { COVER_PROJECT_ID } from "@eptss/data-access";
 
+import { Text } from "@eptss/ui";
 type ActionsTabProps = {
   roundId: number;
   users: UserDetails[];
@@ -35,15 +36,15 @@ export function ActionsTab({ roundId, users, roundSlug, allRoundSlugs }: Actions
       <section className="bg-background-secondary/50 rounded-lg border border-background-tertiary/50 p-4 space-y-4">
         <h2 className="text-xl font-semibold text-primary mb-4">Email Testing</h2>
         <div>
-          <p className="text-sm text-gray-400 mb-3">
+          <Text size="sm" className="text-gray-400 mb-3">
             Send test emails to yourself to preview the design and content for each user action.
-          </p>
+          </Text>
           <TestEmailButtons />
         </div>
         <div>
-          <p className="text-sm text-gray-400 mb-3">
+          <Text size="sm" className="text-gray-400 mb-3">
             Test notification emails using your actual unread notifications.
-          </p>
+          </Text>
           <TestAdminNotificationEmailButton />
         </div>
       </section>

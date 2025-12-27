@@ -1,21 +1,22 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 
+import { Text } from "@eptss/ui";
 const ThemeOverview = () => {
   return (
     <div className="p-8 max-w-6xl mx-auto bg-background-primary text-primary min-h-screen">
       <div className="bg-gray-900/70 p-8 rounded-xl shadow-md mb-8">
         <h1 className="text-3xl font-bold mb-3 ">EPTSS Theme Guide</h1>
-        <p className="text-muted-foreground mb-6">Documentation for Tailwind 4 theme variables used in the EPTSS website</p>
+        <Text color="muted" className="mb-6">Documentation for Tailwind 4 theme variables used in the EPTSS website</Text>
         
         <p className=" mb-4">
           This theme guide documents the design tokens and variables used throughout the EPTSS website. 
           The theme is built using Tailwind CSS 4's theming system with the <code className="bg-muted px-1 py-0.5 rounded text-primary">@theme</code> directive.
         </p>
         
-        <p className="">
+        <Text>
           Each category of theme variables is documented in its own section. Use the Storybook navigation to explore each category.
-        </p>
+        </Text>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -35,7 +36,7 @@ const ThemeOverview = () => {
             className="block bg-gray-900/70 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-border hover:border-primary"
           >
             <h2 className="text-xl font-semibold mb-2 ">{section.title}</h2>
-            <p className="text-muted-foreground">{section.description}</p>
+            <Text color="muted">{section.description}</Text>
           </a>
         ))}
       </div>

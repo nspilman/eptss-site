@@ -6,6 +6,7 @@ import React from "react";
 import Link from "next/link";
 import { BackButton } from "./BackButton";
 
+import { Text } from "@eptss/ui";
 interface Props {
   post: BlogPost;
   authorUsername?: string; // Username for profile linking
@@ -20,9 +21,9 @@ export const Post = ({ post: { content, frontmatter }, authorUsername }: Props) 
       {/* Header Section */}
       <div className="mb-10">
         {date && (
-          <span className="inline-block text-xs font-semibold font-roboto text-[var(--color-accent-secondary)] bg-[var(--color-gray-900-40)] px-4 py-1 rounded-full shadow-sm border border-[var(--color-gray-700)] mb-4">
+          <Text as="span" size="xs" weight="semibold" className="inline-block font-roboto text-[var(--color-accent-secondary)] bg-[var(--color-gray-900-40)] px-4 py-1 rounded-full shadow-sm border border-[var(--color-gray-700)] mb-4">
             {formatDate(date)}
-          </span>
+          </Text>
         )}
         <h1 className="font-fraunces text-[var(--color-primary)] font-black text-4xl md:text-5xl leading-tight mb-3 tracking-tight">
           {title}

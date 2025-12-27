@@ -2,6 +2,7 @@ import { ReactElement } from "react";
 import { RoundDetails } from "@eptss/data-access/types/roundDetails";
 import Link from "next/link";
 
+import { Text } from "@eptss/ui";
 export const RoundDisplay = ({
   round,
   currentRound,
@@ -38,15 +39,15 @@ export const RoundDisplay = ({
             target="_blank"
             rel="noreferrer"
           >
-            <span className="text-md font-bold font-roboto text-accentPrimary hover:text-white py-1 cursor-pointer">
+            <Text as="span" weight="bold" className="text-md font-roboto text-accentPrimary hover:text-white py-1 cursor-pointer">
               Listen
-            </span>
+            </Text>
           </Link>
         )}
         {!playlistUrl && (
-          <span className="text-md font-light font-roboto text-white">
+          <Text as="span" className="text-md font-light font-roboto text-white">
             The round is underway!
-          </span>
+          </Text>
         )}
       </div>
     </div>

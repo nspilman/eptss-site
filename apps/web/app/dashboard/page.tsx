@@ -3,6 +3,7 @@ import { getUserProjects } from '@eptss/data-access';
 import { redirect } from 'next/navigation';
 import { ProjectDashboardPicker } from './ProjectDashboardPicker';
 
+import { Text } from "@eptss/ui";
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -24,9 +25,9 @@ export default async function DashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-8">
         <h1 className="text-2xl font-bold mb-4">No Projects Yet</h1>
-        <p className="text-secondary mb-6">
+        <Text color="secondary" className="mb-6">
           You haven't participated in any projects yet. Sign up for a round to get started!
-        </p>
+        </Text>
         <a
           href="/"
           className="px-6 py-3 bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { EmptyState } from '../../src/components';
 import { Button } from '../../src/components';
 
+import { Text } from "@eptss/ui";
 const meta = {
   title: '3. Feedback/Empty State',
   component: EmptyState,
@@ -59,7 +60,7 @@ export const WithAction: Story = {
 
 export const SimpleText: Story = {
   args: {
-    children: <p className="text-sm text-secondary">No reflections yet. Create your first one!</p>,
+    children: <Text size="sm" color="secondary">No reflections yet. Create your first one!</Text>,
   },
 };
 
@@ -138,7 +139,7 @@ export const AllVariants: Story = {
       <div>
         <h3 className="text-lg font-semibold mb-4 text-primary">Simple Text Only</h3>
         <EmptyState>
-          <p className="text-sm text-secondary">No items to display</p>
+          <Text size="sm" color="secondary">No items to display</Text>
         </EmptyState>
       </div>
     </div>

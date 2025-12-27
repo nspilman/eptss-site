@@ -7,6 +7,7 @@ import { ClientRoundsDisplay } from "./index/Homepage/RoundsDisplay/ClientRounds
 import { roundProvider, getAllProjects } from "@eptss/data-access";
 import Link from "next/link";
 
+import { Text } from "@eptss/ui";
 export const metadata: Metadata = {
   title: "Everyone Plays the Same Song | Quarterly Community Cover Project",
   description: "Every quarter, our community picks one song. Everyone creates their own unique cover version. Then we celebrate with a virtual listening party! Join our next round.",
@@ -105,7 +106,7 @@ const Homepage = async () => {
               <div className="bg-background-secondary border-2 border-border rounded-xl p-6 hover:border-accent-primary transition-all duration-300 hover:shadow-lg hover:shadow-accent-primary/20">
                 <h3 className="text-xl font-bold mb-2">{project.name}</h3>
                 {project.config?.metadata?.description && (
-                  <p className="text-secondary text-sm mb-4">{project.config.metadata.description}</p>
+                  <Text size="sm" color="secondary" className="mb-4">{project.config.metadata.description}</Text>
                 )}
                 {project.roundInfo && <RoundInfoDisplay roundInfo={project.roundInfo} />}
               </div>

@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '../../src/components/u
 import Button from '../../src/components/ui/primitives/button';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof GridLayout> = {
   title: '4. Display/GridLayout',
   component: GridLayout,
@@ -286,11 +287,11 @@ export const DashboardExample: Story = {
               <div className="space-y-2 text-[var(--color-primary)]">
                 <div className="flex justify-between">
                   <span>Rounds Participated:</span>
-                  <span className="font-bold">12</span>
+                  <Text as="span" weight="bold">12</Text>
                 </div>
                 <div className="flex justify-between">
                   <span>Current Streak:</span>
-                  <span className="font-bold">3 weeks</span>
+                  <Text as="span" weight="bold">3 weeks</Text>
                 </div>
               </div>
             </CardContent>
@@ -341,21 +342,21 @@ export const ResponsiveBehavior: Story = {
         <GridItem colSpan={3} mobileColSpan="full">
           <DemoBox>
             Full Width on All Devices<br />
-            <span className="text-sm font-normal">(colSpan=3, mobileColSpan="full")</span>
+            <Text as="span" size="sm" weight="normal">(colSpan=3, mobileColSpan="full")</Text>
           </DemoBox>
         </GridItem>
         <GridItem colSpan={2} mobileColSpan="full">
           <DemoBox className="min-h-[150px]">
             2 Columns on Desktop<br />
             Full Width on Mobile<br />
-            <span className="text-sm font-normal">(colSpan=2, mobileColSpan="full")</span>
+            <Text as="span" size="sm" weight="normal">(colSpan=2, mobileColSpan="full")</Text>
           </DemoBox>
         </GridItem>
         <GridItem colSpan={1} mobileColSpan="full">
           <DemoBox className="min-h-[150px]">
             1 Column on Desktop<br />
             Full Width on Mobile<br />
-            <span className="text-sm font-normal">(colSpan=1, mobileColSpan="full")</span>
+            <Text as="span" size="sm" weight="normal">(colSpan=1, mobileColSpan="full")</Text>
           </DemoBox>
         </GridItem>
         <GridItem>
@@ -533,9 +534,9 @@ export const RealWorldExamples: Story = {
                   <CardContent className="pt-6">
                     <div className="aspect-square bg-gradient-to-br from-cyan-500/10 to-yellow-500/10 rounded-lg mb-4" />
                     <h4 className="font-semibold text-[var(--color-white)] mb-2">Product {i + 1}</h4>
-                    <p className="text-[var(--color-primary)] text-sm mb-4">
+                    <Text size="sm" className="text-[var(--color-primary)] mb-4">
                       Description of the product goes here.
-                    </p>
+                    </Text>
                     <Button variant="secondary" size="full">
                       View Details
                     </Button>
@@ -569,9 +570,9 @@ export const RealWorldExamples: Story = {
                     <CardTitle>Article {i + 1}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-[var(--color-primary)] text-sm">
+                    <Text size="sm" className="text-[var(--color-primary)]">
                       Article excerpt...
-                    </p>
+                    </Text>
                   </CardContent>
                 </Card>
               </GridItem>

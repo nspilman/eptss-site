@@ -1,5 +1,6 @@
 import { PanelProps } from '../types';
 
+import { Text } from "@eptss/ui";
 export type Phase = 'signups' | 'covering' | 'voting' | 'celebration';
 
 export interface CurrentRoundData {
@@ -29,7 +30,7 @@ export function CurrentRoundPanel({ data }: PanelProps<CurrentRoundData>) {
   if (!data) {
     return (
       <div className="w-full p-4 bg-gray-900/30 border border-gray-800 rounded-lg">
-        <p className="text-sm text-gray-400">No active round data available.</p>
+        <Text size="sm" className="text-gray-400">No active round data available.</Text>
       </div>
     );
   }

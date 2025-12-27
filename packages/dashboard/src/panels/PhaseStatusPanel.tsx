@@ -1,5 +1,6 @@
 import { PanelProps } from '../types';
 
+import { Text } from "@eptss/ui";
 export type Phase = 'signups' | 'covering' | 'voting' | 'celebration';
 export type UrgencyLevel = 'normal' | 'warning' | 'urgent';
 
@@ -119,15 +120,15 @@ export function PhaseStatusPanel({ data }: PanelProps<PhaseStatusData>) {
           {/* Title */}
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-2xl leading-none">{styles.icon}</span>
+              <Text as="span" className="text-2xl leading-none">{styles.icon}</Text>
               <h2 className="text-xl sm:text-2xl font-bold text-[var(--color-primary)]">
                 {phaseNames[phase]}
               </h2>
             </div>
             {message && (
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <Text size="sm" className="text-gray-300 leading-relaxed">
                 {message}
-              </p>
+              </Text>
             )}
           </div>
 
@@ -178,21 +179,21 @@ export function PhaseStatusPanel({ data }: PanelProps<PhaseStatusData>) {
         {/* Time Remaining */}
         {timeRemaining && (
           <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800 min-w-[180px] sm:min-w-[200px] self-start">
-            <p className="text-xs text-gray-400 mb-1.5 font-medium">
+            <Text size="xs" weight="medium" className="text-gray-400 mb-1.5">
               Time Remaining
-            </p>
+            </Text>
             <p className={`text-2xl font-bold ${styles.timeColor} leading-tight`}>
               {timeRemaining}
             </p>
             {urgencyLevel === 'urgent' && (
-              <p className="text-xs text-red-400 mt-2 font-medium">
+              <Text size="xs" weight="medium" className="text-red-400 mt-2">
                 Deadline approaching!
-              </p>
+              </Text>
             )}
             {urgencyLevel === 'warning' && (
-              <p className="text-xs text-yellow-400 mt-2 font-medium">
+              <Text size="xs" weight="medium" className="text-yellow-400 mt-2">
                 Less than 3 days left
-              </p>
+              </Text>
             )}
           </div>
         )}

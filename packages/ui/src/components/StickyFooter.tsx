@@ -3,6 +3,7 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { X, LucideIcon } from 'lucide-react';
 
+import { Text } from "@eptss/ui";
 interface StickyFooterProps {
   /**
    * Icon to display in the floating button and header
@@ -89,7 +90,7 @@ export function StickyFooter({
           aria-label={ariaLabel || `Open ${title}`}
         >
           {Icon && <Icon className="w-5 h-5" />}
-          <span className="font-medium">{title}</span>
+          <Text as="span" weight="medium">{title}</Text>
         </button>
       </div>
     );
@@ -110,7 +111,7 @@ export function StickyFooter({
       >
         <div className="flex items-center gap-2">
           {Icon && <Icon className="w-5 h-5 text-[var(--color-accent-primary,#FFDD57)]" />}
-          <span className="font-semibold text-lg text-[var(--color-accent-primary,#FFDD57)]">{title}</span>
+          <Text as="span" size="lg" weight="semibold" className="text-[var(--color-accent-primary,#FFDD57)]">{title}</Text>
         </div>
 
         <button

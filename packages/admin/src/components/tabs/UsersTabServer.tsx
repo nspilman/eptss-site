@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { getActiveUsers } from "@eptss/data-access";
 import { UsersTab } from "../AdminTabs/UsersTab";
 
+import { Text } from "@eptss/ui";
 // Cache active users for 60 seconds
 const getCachedActiveUsers = unstable_cache(
   async () => getActiveUsers(),
@@ -18,7 +19,7 @@ export async function UsersTabServer() {
     return (
       <div className="p-6 bg-red-500/10 border border-red-500/50 rounded-lg">
         <h3 className="text-red-500 font-semibold mb-2">Error Loading Users</h3>
-        <p className="text-secondary">{error instanceof Error ? error.message : 'Unknown error'}</p>
+        <Text color="secondary">{error instanceof Error ? error.message : 'Unknown error'}</Text>
       </div>
     );
   }

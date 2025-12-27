@@ -2,6 +2,7 @@ import { monitoringProvider } from "@eptss/data-access";
 import HealthBars from './HealthBars';
 import { Metadata } from 'next';
 
+import { Text } from "@eptss/ui";
 export const metadata: Metadata = {
   title: "System Health | Everyone Plays the Same Song",
   description: "System health and monitoring dashboard for Everyone Plays the Same Song platform",
@@ -23,9 +24,9 @@ export default async function HealthPage() {
           <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             <div className="flex items-baseline gap-3">
               <h3 className="text-xl font-semibold text-gray-900">24h Success Rate:</h3>
-              <span className="text-2xl font-bold text-gray-900">{successRate.toFixed(1)}%</span>
+              <Text as="span" weight="bold" className="text-2xl text-gray-900">{successRate.toFixed(1)}%</Text>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Based on {totalRuns} test runs in the last 24 hours</p>
+            <Text size="sm" className="text-gray-500 mt-1">Based on {totalRuns} test runs in the last 24 hours</Text>
           </div>
           
           {/* Recent Runs */}
@@ -42,7 +43,7 @@ export default async function HealthPage() {
                   }`}
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">{run.testName}</span>
+                    <Text as="span" weight="medium">{run.testName}</Text>
                     <span>{new Date(run.startedAt).toLocaleTimeString()}</span>
                   </div>
                 </div>

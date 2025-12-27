@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import { Text } from "@eptss/ui";
 // Markdown theme component for react-markdown
 export const markdownTheme = {
   h1: (props: { children: ReactNode }) => (
@@ -12,7 +13,7 @@ export const markdownTheme = {
     <h3 className="font-fraunces text-[var(--color-primary)] font-bold text-xl md:text-2xl my-6 leading-snug">{props.children}</h3>
   ),
   p: (props: { children: ReactNode }) => (
-    <p className="font-roboto text-[var(--color-primary)] text-base leading-relaxed my-4">{props.children}</p>
+    <Text size="base" className="font-roboto text-[var(--color-primary)] leading-relaxed my-4">{props.children}</Text>
   ),
   ul: (props: { children: ReactNode }) => (
     <ul className="list-disc pl-8 my-4 marker:text-[var(--color-accent-primary)]">{props.children}</ul>

@@ -5,6 +5,7 @@ import { PanelConfig } from '../types';
 import { PanelCard } from '../components/PanelCard';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
+import { Text } from "@eptss/ui";
 interface PanelWrapperProps {
   config: PanelConfig;
   children: ReactNode;
@@ -46,9 +47,9 @@ export function PanelWrapper({ config, children }: PanelWrapperProps) {
             aria-expanded={!isCollapsed}
             aria-label={isCollapsed ? `Expand ${config.name}` : `Collapse ${config.name}`}
           >
-            <span className="text-lg font-semibold text-[var(--color-primary)]">
+            <Text as="span" size="lg" weight="semibold" className="text-[var(--color-primary)]">
               {config.name}
-            </span>
+            </Text>
             {isCollapsed ? (
               <ChevronDown className="w-5 h-5 text-gray-400" />
             ) : (

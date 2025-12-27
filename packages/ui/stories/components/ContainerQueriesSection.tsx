@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeSection } from './ThemeSection';
 
+import { Text } from "@eptss/ui";
 export const ContainerQueriesSection = () => (
   <ThemeSection 
     title="Container Queries" 
@@ -12,24 +13,24 @@ export const ContainerQueriesSection = () => (
       </div>
       <div className="mt-4 grid grid-cols-4 gap-4 text-center text-sm">
         <div className="p-2 bg-red-100 rounded text-red-800">
-          <span className="block font-medium">@sm</span>
-          <span className="text-xs text-primary">--container-sm</span>
-          <span className="text-xs text-muted-foreground">40rem</span>
+          <Text as="span" weight="medium" className="block">@sm</Text>
+          <Text as="span" size="xs" color="primary">--container-sm</Text>
+          <Text as="span" size="xs" color="muted">40rem</Text>
         </div>
         <div className="p-2 bg-green-100 rounded text-green-800">
-          <span className="block font-medium">@md</span>
-          <span className="text-xs text-primary">--container-md</span>
-          <span className="text-xs text-muted-foreground">48rem</span>
+          <Text as="span" weight="medium" className="block">@md</Text>
+          <Text as="span" size="xs" color="primary">--container-md</Text>
+          <Text as="span" size="xs" color="muted">48rem</Text>
         </div>
         <div className="p-2 bg-blue-100 rounded text-blue-800">
-          <span className="block font-medium">@lg</span>
-          <span className="text-xs text-primary">--container-lg</span>
-          <span className="text-xs text-muted-foreground">64rem</span>
+          <Text as="span" weight="medium" className="block">@lg</Text>
+          <Text as="span" size="xs" color="primary">--container-lg</Text>
+          <Text as="span" size="xs" color="muted">64rem</Text>
         </div>
         <div className="p-2 bg-purple-100 rounded text-purple-800">
-          <span className="block font-medium">@xl</span>
-          <span className="text-xs text-primary">--container-xl</span>
-          <span className="text-xs text-muted-foreground">80rem</span>
+          <Text as="span" weight="medium" className="block">@xl</Text>
+          <Text as="span" size="xs" color="primary">--container-xl</Text>
+          <Text as="span" size="xs" color="muted">80rem</Text>
         </div>
       </div>
     </div>

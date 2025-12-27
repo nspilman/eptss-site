@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeSection } from './ThemeSection';
 
+import { Text } from "@eptss/ui";
 interface AnimationExampleProps {
   name: string;
   variable: string;
@@ -14,7 +15,7 @@ const AnimationExample = ({ name, variable, className, description }: AnimationE
       <h3 className="text-lg font-medium">{name}</h3>
       <code className="text-sm bg-gray-900 px-2 py-1 rounded mt-1 md:mt-0">{variable}</code>
     </div>
-    {description && <p className="text-sm text-muted-foreground mb-4">{description}</p>}
+    {description && <Text size="sm" color="muted" className="mb-4">{description}</Text>}
     <div className="h-24 flex items-center justify-center bg-gray-900/30 rounded-md overflow-hidden">
       <div 
         className={`w-16 h-16 bg-accent-primary rounded-md ${className}`}
@@ -32,9 +33,9 @@ export const AnimationsSection = () => (
     <div className="space-y-8">
       <div>
         <h3 className="text-xl font-semibold mb-4">Animation Variables</h3>
-        <p className="text-muted-foreground mb-6">
+        <Text color="muted" className="mb-6">
           These animation variables can be used directly in your components by referencing the CSS variable.
-        </p>
+        </Text>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <AnimationExample 
@@ -69,9 +70,9 @@ export const AnimationsSection = () => (
       
       <div>
         <h3 className="text-xl font-semibold mb-4">Animation Utilities</h3>
-        <p className="text-muted-foreground mb-6">
+        <Text color="muted" className="mb-6">
           These utility classes can be applied to elements to modify their animation behavior.
-        </p>
+        </Text>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 bg-gray-800/50 rounded-lg">
@@ -79,7 +80,7 @@ export const AnimationsSection = () => (
               <h3 className="text-lg font-medium">Animation Delay 2s</h3>
               <code className="text-sm bg-gray-900 px-2 py-1 rounded mt-1 md:mt-0">.animation-delay-2000</code>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">Delays the start of an animation by 2 seconds</p>
+            <Text size="sm" color="muted" className="mb-4">Delays the start of an animation by 2 seconds</Text>
             <div className="h-24 flex items-center justify-center bg-gray-900/30 rounded-md">
               <div className="w-16 h-16 bg-accent-primary rounded-md animate-[blob_7s_infinite] animation-delay-2000"></div>
             </div>
@@ -90,7 +91,7 @@ export const AnimationsSection = () => (
               <h3 className="text-lg font-medium">Animation Delay 4s</h3>
               <code className="text-sm bg-gray-900 px-2 py-1 rounded mt-1 md:mt-0">.animation-delay-4000</code>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">Delays the start of an animation by 4 seconds</p>
+            <Text size="sm" color="muted" className="mb-4">Delays the start of an animation by 4 seconds</Text>
             <div className="h-24 flex items-center justify-center bg-gray-900/30 rounded-md">
               <div className="w-16 h-16 bg-accent-primary rounded-md animate-[blob_7s_infinite] animation-delay-4000"></div>
             </div>

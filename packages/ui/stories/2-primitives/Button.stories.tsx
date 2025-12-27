@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import Button from '../../src/components/ui/primitives/button';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Button> = {
   title: '2. Primitives/Button',
   component: Button,
@@ -123,31 +124,31 @@ export const AllVariants: Story = {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="flex flex-col gap-2 items-center">
             <Button variant="default">Default</Button>
-            <span className="text-xs text-primary mt-1">Default</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Default</Text>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <Button variant="secondary">Secondary</Button>
-            <span className="text-xs text-primary mt-1">Secondary</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Secondary</Text>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <Button variant="outline">Outline</Button>
-            <span className="text-xs text-primary mt-1">Outline</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Outline</Text>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <Button variant="destructive">Destructive</Button>
-            <span className="text-xs text-primary mt-1">Destructive</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Destructive</Text>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <Button variant="ghost">Ghost</Button>
-            <span className="text-xs text-primary mt-1">Ghost</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Ghost</Text>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <Button variant="link">Link</Button>
-            <span className="text-xs text-primary mt-1">Link</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Link</Text>
           </div>
           <div className="flex flex-col gap-2 items-center">
             <Button variant="gradient">Gradient</Button>
-            <span className="text-xs text-primary mt-1">Gradient</span>
+            <Text as="span" size="xs" color="primary" className="mt-1">Gradient</Text>
           </div>
         </div>
         
@@ -156,15 +157,15 @@ export const AllVariants: Story = {
           <div className="flex flex-wrap gap-4 items-end">
             <div className="flex flex-col gap-2 items-center">
               <Button size="sm">Small</Button>
-              <span className="text-xs text-primary mt-1">Small</span>
+              <Text as="span" size="xs" color="primary" className="mt-1">Small</Text>
             </div>
             <div className="flex flex-col gap-2 items-center">
               <Button size="md">Medium</Button>
-              <span className="text-xs text-primary mt-1">Medium</span>
+              <Text as="span" size="xs" color="primary" className="mt-1">Medium</Text>
             </div>
             <div className="flex flex-col gap-2 items-center">
               <Button size="lg">Large</Button>
-              <span className="text-xs text-primary mt-1">Large</span>
+              <Text as="span" size="xs" color="primary" className="mt-1">Large</Text>
             </div>
           </div>
         </div>

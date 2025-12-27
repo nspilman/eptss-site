@@ -2,6 +2,7 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "./utils"
 
+import { Text } from "@eptss/ui";
 const emptyStateVariants = cva(
   "flex flex-col items-center justify-center text-center",
   {
@@ -97,7 +98,7 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
 
         {description && (
           <div className={cn(descriptionVariants({ size }))}>
-            {typeof description === 'string' ? <p>{description}</p> : description}
+            {typeof description === 'string' ? <Text>{description}</Text> : description}
           </div>
         )}
 

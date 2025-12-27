@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { Skeleton } from '../../src/components/ui/primitives/skeleton';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Skeleton> = {
   title: '3. Feedback/Skeleton',
   component: Skeleton,
@@ -26,22 +27,22 @@ export const Shapes: Story = {
     >
       <div className="space-y-6">
         <div>
-          <p className="text-xs text-[var(--color-secondary)] mb-2">Line</p>
+          <Text size="xs" className="text-[var(--color-secondary)] mb-2">Line</Text>
           <Skeleton className="h-4 w-full" />
         </div>
 
         <div>
-          <p className="text-xs text-[var(--color-secondary)] mb-2">Short Line</p>
+          <Text size="xs" className="text-[var(--color-secondary)] mb-2">Short Line</Text>
           <Skeleton className="h-4 w-64" />
         </div>
 
         <div>
-          <p className="text-xs text-[var(--color-secondary)] mb-2">Circle</p>
+          <Text size="xs" className="text-[var(--color-secondary)] mb-2">Circle</Text>
           <Skeleton className="h-12 w-12 rounded-full" />
         </div>
 
         <div>
-          <p className="text-xs text-[var(--color-secondary)] mb-2">Card</p>
+          <Text size="xs" className="text-[var(--color-secondary)] mb-2">Card</Text>
           <Skeleton className="h-32 w-full" />
         </div>
       </div>

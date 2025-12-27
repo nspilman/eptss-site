@@ -5,6 +5,7 @@ import Input from '../../src/components/ui/primitives/input';
 import { Textarea } from '../../src/components/ui/primitives/textarea';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Label> = {
   title: '7. Deprecated/Label (Use FormLabel)',
   component: Label,
@@ -65,9 +66,9 @@ export const Examples: Story = {
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" placeholder="••••••••" />
-          <p className="text-xs text-[var(--color-secondary)]">
+          <Text size="xs" className="text-[var(--color-secondary)]">
             Must be at least 8 characters
-          </p>
+          </Text>
         </div>
       </div>
     </ThemeSection>

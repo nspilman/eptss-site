@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../..
 import Button from '../../src/components/ui/primitives/button';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Card> = {
   title: '4. Display/Card',
   component: Card,
@@ -149,9 +150,9 @@ export const AllVariants: Story = {
               <CardDescription>Solid with border & shadow</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Standard card with full border and strong shadow.
-              </p>
+              </Text>
             </CardContent>
           </Card>
 
@@ -161,9 +162,9 @@ export const AllVariants: Story = {
               <CardDescription>With gradient border effect</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Hover to see the gradient effect.
-              </p>
+              </Text>
             </CardContent>
           </Card>
 
@@ -174,9 +175,9 @@ export const AllVariants: Story = {
               <CardDescription>Semi-transparent + blur</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Semi-transparent with backdrop blur. Notice the background shows through!
-              </p>
+              </Text>
             </CardContent>
           </Card>
 
@@ -186,9 +187,9 @@ export const AllVariants: Story = {
               <CardDescription>Semi-transparent with gradient</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Combines glass effect with gradient.
-              </p>
+              </Text>
             </CardContent>
           </Card>
 
@@ -199,9 +200,9 @@ export const AllVariants: Story = {
               <CardDescription>Solid, subtle shadow</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Solid background with subtle shadow, no border.
-              </p>
+              </Text>
             </CardContent>
           </Card>
 
@@ -211,9 +212,9 @@ export const AllVariants: Story = {
               <CardDescription>Solid with gradient glow</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Simple card with gradient glow effect.
-              </p>
+              </Text>
             </CardContent>
           </Card>
 
@@ -224,9 +225,9 @@ export const AllVariants: Story = {
               <CardDescription>Solid with gradient border</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-[var(--color-primary)] text-sm">
+              <Text size="sm" className="text-[var(--color-primary)]">
                 Vibrant gradient border, solid background.
-              </p>
+              </Text>
             </CardContent>
           </Card>
         </div>
@@ -248,9 +249,9 @@ export const Examples: Story = {
             <CardDescription>Simple card with title and description</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-[var(--color-primary)] text-sm">
+            <Text size="sm" className="text-[var(--color-primary)]">
               This is a basic card component that can be used for various content types.
-            </p>
+            </Text>
           </CardContent>
         </Card>
 
@@ -260,9 +261,9 @@ export const Examples: Story = {
             <CardDescription>Card with hover gradient effect</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-[var(--color-primary)] text-sm">
+            <Text size="sm" className="text-[var(--color-primary)]">
               Hover over this card to see the gradient effect.
-            </p>
+            </Text>
           </CardContent>
         </Card>
 
@@ -272,9 +273,9 @@ export const Examples: Story = {
             <CardDescription>Using glass variant for forms</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-[var(--color-primary)] text-sm mb-4">
+            <Text size="sm" className="text-[var(--color-primary)] mb-4">
               Perfect for admin panels and form containers.
-            </p>
+            </Text>
             <Button variant="secondary" size="md">
               Submit Form
             </Button>
@@ -287,9 +288,9 @@ export const Examples: Story = {
             <CardDescription>Using plain variant</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-[var(--color-primary)] text-sm mb-4">
+            <Text size="sm" className="text-[var(--color-primary)] mb-4">
               Clean minimal card for simple content.
-            </p>
+            </Text>
             <Button variant="default" size="full">
               Get Started
             </Button>
@@ -302,9 +303,9 @@ export const Examples: Story = {
             <CardDescription>Using gradient-border variant</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-[var(--color-primary)] text-sm mb-4">
+            <Text size="sm" className="text-[var(--color-primary)] mb-4">
               Stand out with a vibrant gradient border!
-            </p>
+            </Text>
             <Button variant="secondary" size="full">
               Learn More
             </Button>

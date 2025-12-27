@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { Text } from "@eptss/ui";
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -63,9 +64,9 @@ export const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = (
         </h3>
 
         {/* Message */}
-        <p className="text-sm text-[var(--color-gray-400)] text-center mb-6">
+        <Text size="sm" className="text-[var(--color-gray-400)] text-center mb-6">
           {message}
-        </p>
+        </Text>
 
         {/* Buttons */}
         <div className="flex gap-3">

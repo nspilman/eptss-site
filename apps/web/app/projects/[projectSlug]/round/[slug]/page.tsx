@@ -6,6 +6,7 @@ import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 import { RoundParamsProvider } from '../../ProjectContext';
 
+import { Text } from "@eptss/ui";
 interface Props {
   params: Promise<{ projectSlug: string; slug: string }>;
 }
@@ -85,7 +86,7 @@ export default async function Round({ params }: Props) {
     return (
       <div className="container mx-auto py-8">
         <h1 className="text-2xl font-bold mb-4">Round Not Found</h1>
-        <p>Sorry, we couldn&apos;t find the round you&apos;re looking for.</p>
+        <Text>Sorry, we couldn&apos;t find the round you&apos;re looking for.</Text>
       </div>
     );
   }

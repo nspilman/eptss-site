@@ -1,5 +1,6 @@
 import type { PanelProps } from "@eptss/dashboard";
 
+import { Text } from "@eptss/ui";
 interface CountdownBarData {
   phase: 'signups' | 'voting' | 'covering' | 'celebration';
   timeRemaining?: string;
@@ -80,8 +81,8 @@ export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
           </span>
           {dueDate && (
             <>
-              <span className="text-gray-600">·</span>
-              <span className="text-gray-400">Due {dueDate}</span>
+              <Text as="span" className="text-gray-600">·</Text>
+              <Text as="span" className="text-gray-400">Due {dueDate}</Text>
             </>
           )}
         </div>

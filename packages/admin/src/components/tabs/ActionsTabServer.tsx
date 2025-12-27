@@ -3,6 +3,7 @@ import { getAllUsers as getAllUsersService } from "@eptss/data-access";
 import { roundsProvider, roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
 import { ActionsTab } from "../ActionsTab";
 
+import { Text } from "@eptss/ui";
 type ActionsTabServerProps = {
   roundSlug: string;
 };
@@ -47,7 +48,7 @@ export async function ActionsTabServer({ roundSlug }: ActionsTabServerProps) {
     return (
       <div className="p-6 bg-red-500/10 border border-red-500/50 rounded-lg">
         <h3 className="text-red-500 font-semibold mb-2">Error Loading Actions</h3>
-        <p className="text-secondary">{error instanceof Error ? error.message : 'Unknown error'}</p>
+        <Text color="secondary">{error instanceof Error ? error.message : 'Unknown error'}</Text>
       </div>
     );
   }

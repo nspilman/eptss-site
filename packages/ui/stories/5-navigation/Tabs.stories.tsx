@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../src/components/u
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../src/components/ui/primitives/card';
 import { ThemeSection } from '../components/ThemeSection';
 
+import { Text } from "@eptss/ui";
 const meta: Meta<typeof Tabs> = {
   title: '5. Navigation/Tabs',
   component: Tabs,
@@ -80,9 +81,9 @@ export const WithCards: Story = {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-[var(--color-primary)]">
+            <Text size="sm" className="text-[var(--color-primary)]">
               Account settings and preferences
-            </p>
+            </Text>
           </CardContent>
         </Card>
       </TabsContent>
@@ -95,9 +96,9 @@ export const WithCards: Story = {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-[var(--color-primary)]">
+            <Text size="sm" className="text-[var(--color-primary)]">
               Password security settings
-            </p>
+            </Text>
           </CardContent>
         </Card>
       </TabsContent>
@@ -110,9 +111,9 @@ export const WithCards: Story = {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-[var(--color-primary)]">
+            <Text size="sm" className="text-[var(--color-primary)]">
               Email and push notification settings
-            </p>
+            </Text>
           </CardContent>
         </Card>
       </TabsContent>

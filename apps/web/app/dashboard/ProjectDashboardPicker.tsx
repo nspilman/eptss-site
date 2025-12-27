@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Music, Sparkles } from "lucide-react";
 
+import { Text } from "@eptss/ui";
 interface ProjectInfo {
   id: string;
   name: string;
@@ -23,9 +24,9 @@ export function ProjectDashboardPicker({ projects }: ProjectDashboardPickerProps
           <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)] bg-clip-text text-transparent">
             Choose Your Project
           </h1>
-          <p className="text-secondary text-lg">
+          <Text size="lg" color="secondary">
             You're participating in multiple projects. Select one to view your dashboard.
-          </p>
+          </Text>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,16 +58,16 @@ export function ProjectDashboardPicker({ projects }: ProjectDashboardPickerProps
 
                 {/* Description */}
                 {project.config?.metadata?.description && (
-                  <p className="text-secondary mb-4">
+                  <Text color="secondary" className="mb-4">
                     {project.config.metadata.description}
-                  </p>
+                  </Text>
                 )}
 
                 {/* Tagline */}
                 {project.config?.metadata?.tagline && (
-                  <p className="text-sm italic text-accent-secondary">
+                  <Text size="sm" className="italic text-accent-secondary">
                     "{project.config.metadata.tagline}"
-                  </p>
+                  </Text>
                 )}
 
                 {/* Hover indicator */}

@@ -2,6 +2,7 @@ import * as React from "react";
 import { PageTitle } from "@/components/PageTitle";
 import { Metadata } from 'next';
 
+import { Text } from "@eptss/ui";
 export const metadata: Metadata = {
   title: "FAQ | Everyone Plays the Same Song",
   description: "Frequently asked questions about the Everyone Plays the Same Song project. Learn how to participate, submit your covers, and join our music community.",
@@ -100,9 +101,9 @@ const FAQList: React.FC<FAQListProps> = ({ items }) => {
             </div>
           </h2>
           <div className="py-2">
-            <span className="text-md font-light font-roboto text-white opacity-75">
+            <Text as="span" className="text-md font-light font-roboto text-white opacity-75">
               {item.answer}
-            </span>
+            </Text>
           </div>
         </article>
       ))}

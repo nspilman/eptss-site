@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "./utils"
 import { Info, AlertTriangle, CheckCircle2, XCircle } from "lucide-react"
 
+import { Text } from "@eptss/ui";
 const alertBoxVariants = cva(
   "rounded-lg p-4 flex items-start gap-3",
   {
@@ -69,9 +70,9 @@ const AlertBox = React.forwardRef<HTMLDivElement, AlertBoxProps>(
         )}
         <div className="flex-1 min-w-0">
           {title && (
-            <p className="text-sm text-primary font-medium mb-1">
+            <Text size="sm" color="primary" weight="medium" className="mb-1">
               {title}
-            </p>
+            </Text>
           )}
           <div className="text-sm text-secondary">
             {children}

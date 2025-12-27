@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeSection } from './ThemeSection';
 
+import { Text } from "@eptss/ui";
 interface UtilityExampleProps {
   name: string;
   className: string;
@@ -14,7 +15,7 @@ const UtilityExample = ({ name, className, description, children }: UtilityExamp
       <h3 className="text-lg font-medium">{name}</h3>
       <code className="text-sm bg-gray-900 px-2 py-1 rounded mt-1 md:mt-0">.{className}</code>
     </div>
-    <p className="text-sm text-muted-foreground mb-4">{description}</p>
+    <Text size="sm" color="muted" className="mb-4">{description}</Text>
     <div className="p-4 bg-gray-900/30 rounded-md">
       {children || (
         <div className={className}>
@@ -33,9 +34,9 @@ export const UtilitiesSection = () => (
     <div className="space-y-8">
       <div>
         <h3 className="text-xl font-semibold mb-4">Container Utilities</h3>
-        <p className="text-muted-foreground mb-6">
+        <Text color="muted" className="mb-6">
           Custom container utilities for layout management
-        </p>
+        </Text>
         
         <div className="grid grid-cols-1 gap-4">
           <UtilityExample 
@@ -44,10 +45,10 @@ export const UtilitiesSection = () => (
             description="A responsive container with auto margins and padding"
           >
             <div className="container bg-gray-800 p-4 text-center rounded">
-              <p>This is a container element with auto margins and responsive width</p>
-              <p className="text-xs text-muted-foreground mt-2">
+              <Text>This is a container element with auto margins and responsive width</Text>
+              <Text size="xs" color="muted" className="mt-2">
                 Resizes based on viewport width with max-width of 1400px at larger screens
-              </p>
+              </Text>
             </div>
           </UtilityExample>
         </div>
@@ -55,9 +56,9 @@ export const UtilitiesSection = () => (
       
       <div>
         <h3 className="text-xl font-semibold mb-4">Button Utilities</h3>
-        <p className="text-muted-foreground mb-6">
+        <Text color="muted" className="mb-6">
           Custom button styling utilities
-        </p>
+        </Text>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UtilityExample 
@@ -74,9 +75,9 @@ export const UtilitiesSection = () => (
       
       <div>
         <h3 className="text-xl font-semibold mb-4">UI Styling Utilities</h3>
-        <p className="text-muted-foreground mb-6">
+        <Text color="muted" className="mb-6">
           Custom utilities for UI element styling
-        </p>
+        </Text>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <UtilityExample 

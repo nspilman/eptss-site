@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 
+import { Text } from "@eptss/ui";
 interface ConfigSectionProps {
   id?: string;
   title: string;
@@ -55,7 +56,7 @@ export function ConfigSection({
               <ChevronDown className="h-5 w-5 text-secondary" />
             )}
           </div>
-          <p className="text-sm text-secondary">{description}</p>
+          <Text size="sm" color="secondary">{description}</Text>
         </div>
       </button>
       {!isCollapsed && (
