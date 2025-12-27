@@ -102,6 +102,22 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
   const roundTitle = formatRoundTitle();
   const phaseLabel = terminology?.phases?.[currentPhase] || currentPhase;
 
+  // Determine deadline label based on current phase
+  const getDeadlineLabel = () => {
+    switch (currentPhase) {
+      case 'signups':
+        return 'Signup Deadline';
+      case 'voting':
+        return 'Voting Deadline';
+      case 'covering':
+        return 'Submission Deadline';
+      case 'celebration':
+        return 'Celebration Date';
+      default:
+        return 'Deadline';
+    }
+  };
+
   // Progress phases
   const progressPhases = [
     {
@@ -221,7 +237,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
             <Clock className="w-5 h-5 text-[var(--color-accent-primary)] mt-0.5" />
             <div>
               <Text size="sm" color="primary" weight="medium" as="p">
-                Submission Deadline
+                {getDeadlineLabel()}
               </Text>
               <Label size="xs" color="secondary" as="p">
                 {dueDate}
