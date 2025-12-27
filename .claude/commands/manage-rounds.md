@@ -63,12 +63,12 @@ curl -X PATCH "http://localhost:3000/api/admin/rounds/32" \
 
 ### Important Date Calculation
 
-The signup close date is calculated as:
+The signup close date is the same as when voting opens:
 ```typescript
-signups.closes = subDays(votingOpens, 1)
+signups.closes = votingOpens
 ```
 
-This means the signup phase ends **1 day before** `votingOpens`.
+This means the signup phase ends **when** `votingOpens` begins.
 
 ### Timezone Best Practices
 

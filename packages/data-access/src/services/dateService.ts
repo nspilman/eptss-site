@@ -164,7 +164,7 @@ export const formatTimeRemaining = (targetDate: string | Date): string => {
 export const getPhaseDates = (dates: RoundDates) => ({
   signups: {
     opens: dates.signupOpens,
-    closes: subDays(dates.votingOpens, 1),
+    closes: dates.votingOpens,
   },
   voting: {
     opens: dates.votingOpens,
