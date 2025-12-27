@@ -2,6 +2,7 @@ import type { ProjectConfig } from "@eptss/project-config";
 import { Tooltip } from "@eptss/ui";
 import { HelpCircle } from "lucide-react";
 import { LabelWithTooltip } from "../LabelWithTooltip";
+import { Text } from "@eptss/ui";
 
 interface BusinessRulesEditorProps {
   rules: ProjectConfig["businessRules"];
@@ -22,21 +23,21 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
       {disabledFeatures.length > 0 && (
         <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
           <div className="flex items-start gap-2">
-            <span className="text-orange-500 mt-0.5">ℹ️</span>
+            <Text as="span" className="text-orange-500 mt-0.5">ℹ️</Text>
             <div className="flex-1">
-              <p className="text-sm font-medium text-orange-600">
+              <Text size="sm" weight="medium" className="text-orange-600">
                 Some settings are disabled because these features are turned off:
-              </p>
+              </Text>
               <div className="flex gap-2 mt-2">
                 {disabledFeatures.map((feature) => (
-                  <span key={feature} className="text-xs bg-orange-500/20 text-orange-700 px-2 py-1 rounded font-medium">
+                  <Text as="span" key={feature} size="xs" weight="medium" className="bg-orange-500/20 text-orange-700 px-2 py-1 rounded">
                     {feature}
-                  </span>
+                  </Text>
                 ))}
               </div>
-              <p className="text-xs text-secondary mt-2">
+              <Text size="xs" color="secondary" className="mt-2">
                 Enable these features in the "Features & Functionality" section above to use their related settings.
-              </p>
+              </Text>
             </div>
           </div>
         </div>
@@ -58,7 +59,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
             className="w-full px-3 py-2 rounded border border-border bg-background disabled:cursor-not-allowed"
           />
           {!submissionsEnabled && (
-            <p className="text-xs text-secondary mt-1">⚠️ Enable Submissions to use this setting</p>
+            <Text size="xs" color="secondary" className="mt-1">⚠️ Enable Submissions to use this setting</Text>
           )}
         </div>
         <div className={!votingEnabled ? "opacity-50" : ""}>
@@ -75,7 +76,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
             className="w-full px-3 py-2 rounded border border-border bg-background disabled:cursor-not-allowed"
           />
           {!votingEnabled && (
-            <p className="text-xs text-secondary mt-1">⚠️ Enable Voting to use this setting</p>
+            <Text size="xs" color="secondary" className="mt-1">⚠️ Enable Voting to use this setting</Text>
           )}
         </div>
         <div className={!votingEnabled ? "opacity-50" : ""}>
@@ -94,7 +95,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
             className="w-full px-3 py-2 rounded border border-border bg-background disabled:cursor-not-allowed"
           />
           {!votingEnabled && (
-            <p className="text-xs text-secondary mt-1">⚠️ Enable Voting to use this setting</p>
+            <Text size="xs" color="secondary" className="mt-1">⚠️ Enable Voting to use this setting</Text>
           )}
         </div>
         <div className={!votingEnabled ? "opacity-50" : ""}>
@@ -113,7 +114,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
             className="w-full px-3 py-2 rounded border border-border bg-background disabled:cursor-not-allowed"
           />
           {!votingEnabled && (
-            <p className="text-xs text-secondary mt-1">⚠️ Enable Voting to use this setting</p>
+            <Text size="xs" color="secondary" className="mt-1">⚠️ Enable Voting to use this setting</Text>
           )}
         </div>
         <div>
@@ -147,7 +148,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
             className="w-full px-3 py-2 rounded border border-border bg-background disabled:cursor-not-allowed"
           />
           {!rules.allowLateSubmissions && (
-            <p className="text-xs text-secondary mt-1">⚠️ Enable Allow Late Submissions below to use this</p>
+            <Text size="xs" color="secondary" className="mt-1">⚠️ Enable Allow Late Submissions below to use this</Text>
           )}
         </div>
       </div>
@@ -160,7 +161,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
               onChange={(e) => onChange({ ...rules, requireEmailVerification: e.target.checked })}
               className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
             />
-            <span className="text-sm font-medium">Require Email Verification</span>
+            <Text as="span" size="sm" weight="medium">Require Email Verification</Text>
           </label>
           <Tooltip content={<div className="max-w-xs">When enabled, users must verify their email before participating. Increases security but adds friction to signup.</div>} side="right">
             <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
@@ -174,7 +175,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
               onChange={(e) => onChange({ ...rules, requireSongOnSignup: e.target.checked })}
               className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
             />
-            <span className="text-sm font-medium">Require Song on Signup</span>
+            <Text as="span" size="sm" weight="medium">Require Song on Signup</Text>
           </label>
           <Tooltip content={<div className="max-w-xs">When enabled, signup form shows song selection fields. When disabled, users only provide personal info and can add songs later. Critical for projects like Monthly Original Songs.</div>} side="right">
             <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
@@ -188,7 +189,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
               onChange={(e) => onChange({ ...rules, requirePrompt: e.target.checked })}
               className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
             />
-            <span className="text-sm font-medium">Require Prompt</span>
+            <Text as="span" size="sm" weight="medium">Require Prompt</Text>
           </label>
           <Tooltip content={<div className="max-w-xs">When enabled, rounds must have a prompt/theme (e.g. for original songs projects). When disabled, rounds do not require a prompt (e.g. for cover projects where the song itself is the focus).</div>} side="right">
             <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />
@@ -202,7 +203,7 @@ export function BusinessRulesEditor({ rules, onChange, features }: BusinessRules
               onChange={(e) => onChange({ ...rules, allowLateSubmissions: e.target.checked })}
               className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
             />
-            <span className="text-sm font-medium">Allow Late Submissions</span>
+            <Text as="span" size="sm" weight="medium">Allow Late Submissions</Text>
           </label>
           <Tooltip content={<div className="max-w-xs">When enabled, submissions are accepted during the grace period after deadline. Provides flexibility for users in different time zones.</div>} side="right">
             <HelpCircle className="h-3.5 w-3.5 text-secondary hover:text-primary cursor-help transition-colors flex-shrink-0" />

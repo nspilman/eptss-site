@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { routes } from "@eptss/routing";
 import { MusicIcon, Github, Heart } from "lucide-react";
+import { Text } from "@eptss/ui";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -16,14 +17,14 @@ export const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center gap-2 group mb-4">
               <MusicIcon className="h-6 w-6 text-[var(--color-accent-primary)] group-hover:text-[var(--color-accent-primary)] transition-colors" />
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
+              <Text as="span" size="xl" weight="bold" className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-accent-primary)] to-[var(--color-accent-secondary)]">
                 everyone plays the same song
-              </span>
+              </Text>
             </Link>
-            <p className="text-[var(--color-gray-400)] max-w-md">
+            <Text size="base" color="muted" className="max-w-md">
               A community of musicians covering the same song, each in their own unique style.
               Join us to collaborate, learn, and grow together.
-            </p>
+            </Text>
             
             <div className="flex items-center gap-4 mt-6">
               <a 
@@ -73,14 +74,14 @@ export const Footer = () => {
         </div>
         
         <div className="mt-12 pt-6 border-t border-[var(--color-gray-800)] flex flex-col md:flex-row justify-between items-center">
-          <p className="text-[var(--color-gray-400)] text-sm">
+          <Text size="sm" color="muted">
             &copy; {currentYear} Everyone Plays The Same Song. All rights reserved.
-          </p>
-          <div className="mt-4 md:mt-0 flex flex-col md:flex-row items-center text-[var(--color-gray-400)] text-sm gap-2 md:gap-6">
-            <span className="flex items-center">
+          </Text>
+          <div className="mt-4 md:mt-0 flex flex-col md:flex-row items-center gap-2 md:gap-6">
+            <Text as="span" size="sm" color="muted" className="flex items-center">
               Made with <Heart className="h-3 w-3 mx-1 text-[var(--color-accent-primary)]" /> by musicians, for musicians
-            </span>
-            <span className="flex items-center gap-4 md:ml-6">
+            </Text>
+            <Text as="span" size="sm" color="muted" className="flex items-center gap-4 md:ml-6">
               <Link href="/privacy-policy" className="hover:text-[var(--color-accent-primary)] transition-colors underline underline-offset-2">
                 Privacy Policy
               </Link>
@@ -88,7 +89,7 @@ export const Footer = () => {
               <Link href="/terms-of-service" className="hover:text-[var(--color-accent-primary)] transition-colors underline underline-offset-2">
                 Terms of Service
               </Link>
-            </span>
+            </Text>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { Heart, MessageCircle } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@eptss/ui"
+import { Text } from "@eptss/ui"
 
 interface CommentData {
   id: string
@@ -40,12 +41,12 @@ export default function Comment({ comment, onToggleLike, depth }: CommentProps) 
       <div className="flex-1 min-w-0">
         {/* Header */}
         <div className="flex items-baseline gap-3 mb-2">
-          <span className="font-semibold text-foreground text-sm">{comment.author}</span>
-          <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
+          <Text as="span" size="sm" weight="semibold" color="primary">{comment.author}</Text>
+          <Text as="span" size="xs" color="muted">{comment.timestamp}</Text>
         </div>
 
         {/* Comment text */}
-        <p className="text-foreground text-sm leading-relaxed mb-3 text-balance">{comment.content}</p>
+        <Text size="sm" color="primary" className="leading-relaxed mb-3 text-balance">{comment.content}</Text>
 
         {/* Actions */}
         <div className="flex items-center gap-6">
@@ -62,13 +63,13 @@ export default function Comment({ comment, onToggleLike, depth }: CommentProps) 
                 comment.liked ? "fill-destructive text-destructive" : "group-hover:text-[var(--color-accent-primary)]"
               }`}
             />
-            <span className="font-medium">{comment.likes}</span>
+            <Text as="span" weight="medium">{comment.likes}</Text>
           </Button>
 
           {depth < maxDepth && (
             <Button variant="action" size="action" className="group gap-2">
               <MessageCircle size={16} className="group-hover:text-[var(--color-accent-primary)]" />
-              <span className="font-medium">Reply</span>
+              <Text as="span" weight="medium">Reply</Text>
             </Button>
           )}
         </div>
