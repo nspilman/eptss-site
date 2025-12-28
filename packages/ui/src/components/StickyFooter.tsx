@@ -3,7 +3,7 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { X, LucideIcon } from 'lucide-react';
 
-import { Text } from "@eptss/ui";
+import { Text, Button } from "@eptss/ui";
 interface StickyFooterProps {
   /**
    * Icon to display in the floating button and header
@@ -81,17 +81,16 @@ export function StickyFooter({
   if (!isOpen) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
-        <button
+        <Button
+          variant="secondary"
+          size="lg"
           onClick={() => setIsOpen(true)}
-          className={
-            buttonClassName ||
-            'flex items-center gap-2 rounded-full bg-[var(--color-accent-primary,#FFDD57)] px-4 py-3 text-black shadow-lg hover:bg-[var(--color-accent-secondary,#FFB84D)] transition-colors'
-          }
+          className={buttonClassName || 'rounded-full gap-2'}
           aria-label={ariaLabel || `Open ${title}`}
         >
           {Icon && <Icon className="w-5 h-5" />}
-          <Text as="span" weight="medium">{title}</Text>
-        </button>
+          {title}
+        </Button>
       </div>
     );
   }
