@@ -292,7 +292,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
         {requirePrompt && (
           <Card>
             <CardContent>
-              {promptText ? (
+              {promptText && currentPhase !== 'signups' ? (
                 <div className="space-y-2">
                   <Label size="xs" color="secondary" className="uppercase tracking-wide" as="p">
                     This Month's Prompt
@@ -312,7 +312,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
                         Round Prompt Locked
                       </Heading>
                       <Text size="sm" color="secondary" as="p">
-                        Prompt will be revealed when the round begins. Keep an eye on this space when the round starts.
+                        Prompt will be revealed when signups close. Keep an eye on this space!
                       </Text>
                     </div>
                   </div>
