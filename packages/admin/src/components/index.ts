@@ -49,6 +49,8 @@ export { UsersTab } from './AdminTabs/UsersTab';
 // Selectors
 export { RoundSelector } from './RoundSelector';
 export { RoundSelectorServer } from './RoundSelectorServer';
+export { ProjectSelector } from './ProjectSelector';
+export type { Project } from './ProjectSelector';
 
 // Utilities
 export { PageTitle } from './PageTitle';

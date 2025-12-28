@@ -1,21 +1,36 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Textarea, useToast } from "@eptss/ui";
 import { Edit, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { updateRound, getRoundBySlug } from "@eptss/data-access";
+import { updateRound, getRoundBySlug, getRoundPrompt } from "@eptss/data-access";
 
 type UpdateRoundFormProps = {
   projectId: string; // Required - must be passed from parent
+  projectSlug?: string; // Optional - for dynamic labels
   allRoundSlugs: string[];
+  requirePrompt?: boolean; // Whether this project requires prompts
 };
 
-export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormProps) {
+// Helper to get project-specific labels
+function getProjectLabels(projectSlug?: string) {
+  const isCoverProject = projectSlug === 'cover';
+
+  return {
+    workPhaseBegins: isCoverProject ? "Covering Begins" : "Work Begins",
+    submissionsDue: isCoverProject ? "Covers Due" : "Submissions Due",
+  };
+}
+
+export function UpdateRoundForm({ projectId, projectSlug, allRoundSlugs, requirePrompt }: UpdateRoundFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+  const { toast } = useToast();
+
+  // Get project-specific labels
+  const labels = getProjectLabels(projectSlug);
+
   // Form state
   const [selectedSlug, setSelectedSlug] = useState("");
   const [signupOpens, setSignupOpens] = useState("");
@@ -24,6 +39,8 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
   const [coversDue, setCoversDue] = useState("");
   const [listeningParty, setListeningParty] = useState("");
   const [playlistUrl, setPlaylistUrl] = useState("");
+  const [prompt, setPrompt] = useState("");
+  const [roundId, setRoundId] = useState<number | null>(null);
 
   // Format date for datetime-local input
   const formatDateForInput = (date: Date | string | null) => {
@@ -48,30 +65,45 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
         setCoversDue("");
         setListeningParty("");
         setPlaylistUrl("");
+        setPrompt("");
+        setRoundId(null);
         return;
       }
 
       setIsLoading(true);
-      setMessage(null);
 
       try {
         const result = await getRoundBySlug(projectId, selectedSlug);
 
         if (result.status === "success") {
           const round = result.data;
+          setRoundId(round.roundId);
           setSignupOpens(formatDateForInput(round.signupOpens));
           setVotingOpens(formatDateForInput(round.votingOpens));
           setCoveringBegins(formatDateForInput(round.coveringBegins));
           setCoversDue(formatDateForInput(round.coversDue));
           setListeningParty(formatDateForInput(round.listeningParty));
           setPlaylistUrl(round.playlistUrl || "");
+
+          // Load prompt if this project requires prompts
+          if (requirePrompt && round.roundId) {
+            const promptResult = await getRoundPrompt(round.roundId);
+            if (promptResult.status === "success") {
+              setPrompt(promptResult.data || "");
+            }
+          }
         } else {
-          setMessage({ type: 'error', text: result.message || "Failed to load round data" });
+          toast({
+            title: "Error",
+            description: result.message || "Failed to load round data",
+            variant: "destructive",
+          });
         }
       } catch (error) {
-        setMessage({ 
-          type: 'error', 
-          text: error instanceof Error ? error.message : "An unexpected error occurred" 
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "An unexpected error occurred",
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -79,15 +111,14 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
     };
 
     loadRoundData();
-  }, [selectedSlug]);
+  }, [selectedSlug, projectId, requirePrompt]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setMessage(null);
 
     try {
-      const result = await updateRound({
+      const updateData: any = {
         projectId,
         slug: selectedSlug,
         signupOpens: new Date(signupOpens),
@@ -96,17 +127,33 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
         coversDue: new Date(coversDue),
         listeningParty: new Date(listeningParty),
         playlistUrl: playlistUrl || undefined
-      });
+      };
+
+      // Include prompt if this project requires prompts
+      if (requirePrompt) {
+        updateData.prompt = prompt;
+      }
+
+      const result = await updateRound(updateData);
 
       if (result.status === "success") {
-        setMessage({ type: 'success', text: `Round "${selectedSlug}" updated successfully!` });
+        toast({
+          title: "Success",
+          description: `Round "${selectedSlug}" updated successfully!`,
+          variant: "default",
+        });
       } else {
-        setMessage({ type: 'error', text: result.message || "Failed to update round" });
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update round",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : "An unexpected error occurred" 
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -127,12 +174,6 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {message && (
-            <div className={`mb-4 p-3 rounded-md ${message.type === 'success' ? 'bg-accent-primary/20 text-accent-primary' : 'bg-red-500/20 text-red-500'}`}>
-              {message.text}
-            </div>
-          )}
-          
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <FormLabel htmlFor="roundSlug" className="text-primary">Select Round</FormLabel>
@@ -186,7 +227,7 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FormLabel htmlFor="coveringBegins" className="text-primary">Covering Begins</FormLabel>
+                    <FormLabel htmlFor="coveringBegins" className="text-primary">{labels.workPhaseBegins}</FormLabel>
                     <Input
                       id="coveringBegins"
                       type="datetime-local"
@@ -198,7 +239,7 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
                   </div>
 
                   <div className="space-y-2">
-                    <FormLabel htmlFor="coversDue" className="text-primary">Covers Due</FormLabel>
+                    <FormLabel htmlFor="coversDue" className="text-primary">{labels.submissionsDue}</FormLabel>
                     <Input
                       id="coversDue"
                       type="datetime-local"
@@ -235,8 +276,25 @@ export function UpdateRoundForm({ projectId, allRoundSlugs }: UpdateRoundFormPro
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
+                {requirePrompt && (
+                  <div className="space-y-2">
+                    <FormLabel htmlFor="prompt" className="text-primary">Round Prompt/Theme</FormLabel>
+                    <Textarea
+                      id="prompt"
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="Enter the theme or prompt for this round..."
+                      className="text-primary min-h-[100px]"
+                      rows={4}
+                    />
+                    <p className="text-xs text-secondary">
+                      This prompt will guide participants in creating their submissions
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
                   disabled={isSubmitting}
                   className="w-full"
                 >

@@ -15,7 +15,8 @@ export * from './providers/profileProvider/profileProvider';
 
 // Re-export commonly used services
 export * from './services/roundService';
-export * from './services/projectService';
+export { getAllProjects, getProjectBySlug, getUserProjects } from './services/projectService';
+export type { ProjectInfo } from './services/projectService';
 export * from './utils/projectUtils';
 export { formatDate } from './services/dateService';
 export { getVotesByUserForRoundWithDetails, getDetailedVoteResults } from './services/votesService';

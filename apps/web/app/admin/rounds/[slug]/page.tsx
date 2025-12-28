@@ -6,10 +6,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { SignupsCard, SubmissionsCard, AdminSection, CopyEmailsButton } from "@eptss/admin";
 
-async function RoundDetailContent({ slug }: { slug: string }) {
-  // TODO: Support multi-project - currently hardcoded to Cover Project
-  const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider({ slug, projectId: COVER_PROJECT_ID });
-  const { voteResults, outstandingVoters } = await votesProvider({ projectId: COVER_PROJECT_ID, roundSlug: slug });
+async function RoundDetailContent({ slug, projectId }: { slug: string; projectId: string }) {
+  const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider({ slug, projectId });
+  const { voteResults, outstandingVoters } = await votesProvider({ projectId, roundSlug: slug });
 
   const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;
   const voteHeaders = voteResultsHeaderKeys.map(key => ({
@@ -44,7 +43,7 @@ async function RoundDetailContent({ slug }: { slug: string }) {
     <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
         <Link
-          href="/admin/rounds"
+          href={`/admin/rounds?projectId=${projectId}`}
           className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -91,13 +90,21 @@ async function RoundDetailContent({ slug }: { slug: string }) {
   );
 }
 
-export default async function AdminRoundPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function AdminRoundPage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ projectId?: string }>;
+}) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
   const slugParam = resolvedParams.slug;
+  const projectId = resolvedSearchParams.projectId || COVER_PROJECT_ID;
 
   return (
     <Suspense fallback={<div className="space-y-6"><div className="h-12 bg-background-secondary/30 animate-pulse rounded" /></div>}>
-      <RoundDetailContent slug={slugParam} />
+      <RoundDetailContent slug={slugParam} projectId={projectId} />
     </Suspense>
   );
 }

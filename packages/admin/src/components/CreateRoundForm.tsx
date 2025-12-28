@@ -1,19 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel } from "@eptss/ui";
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, useToast } from "@eptss/ui";
 import { Calendar, Music } from "lucide-react";
 import { motion } from "framer-motion";
 import { createRound } from "@eptss/data-access";
 
 type CreateRoundFormProps = {
   projectId: string; // Required - must be passed from parent
+  projectSlug?: string; // Optional - for dynamic labels
 };
 
-export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
+// Helper to get project-specific labels
+function getProjectLabels(projectSlug?: string) {
+  const isCoverProject = projectSlug === 'cover';
+
+  return {
+    workPhaseBegins: isCoverProject ? "Covering Begins" : "Work Begins",
+    workPhaseHelper: isCoverProject ? "For cover projects only" : "For creation phase",
+    submissionsDue: isCoverProject ? "Covers Due" : "Submissions Due",
+  };
+}
+
+export function CreateRoundForm({ projectId, projectSlug }: CreateRoundFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+  const { toast } = useToast();
+
+  // Get project-specific labels
+  const labels = getProjectLabels(projectSlug);
+
   // Form state
   const [slug, setSlug] = useState("");
   const [signupOpens, setSignupOpens] = useState("");
@@ -26,7 +41,6 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setMessage(null);
 
     try {
       const result = await createRound({
@@ -41,7 +55,11 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
       });
 
       if (result.status === "success") {
-        setMessage({ type: 'success', text: `Round "${slug}" created successfully!` });
+        toast({
+          title: "Success",
+          description: `Round "${slug}" created successfully!`,
+          variant: "default",
+        });
         // Reset form
         setSlug("");
         setSignupOpens("");
@@ -51,12 +69,17 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
         setListeningParty("");
         setPlaylistUrl("");
       } else {
-        setMessage({ type: 'error', text: result.message || "Failed to create round" });
+        toast({
+          title: "Error",
+          description: result.message || "Failed to create round",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : "An unexpected error occurred" 
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -77,12 +100,6 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {message && (
-            <div className={`mb-4 p-3 rounded-md ${message.type === 'success' ? 'bg-accent-primary/20 text-accent-primary' : 'bg-red-500/20 text-red-500'}`}>
-              {message.text}
-            </div>
-          )}
-          
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <FormLabel htmlFor="slug" className="text-primary">Round Slug</FormLabel>
@@ -126,7 +143,7 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <FormLabel htmlFor="coveringBegins" className="text-primary">Covering Begins (Optional)</FormLabel>
+                <FormLabel htmlFor="coveringBegins" className="text-primary">{labels.workPhaseBegins} (Optional)</FormLabel>
                 <Input
                   id="coveringBegins"
                   type="datetime-local"
@@ -134,11 +151,11 @@ export function CreateRoundForm({ projectId }: CreateRoundFormProps) {
                   onChange={(e) => setCoveringBegins(e.target.value)}
                   className="text-primary"
                 />
-                <p className="text-xs text-secondary">For cover projects only</p>
+                <p className="text-xs text-secondary">{labels.workPhaseHelper}</p>
               </div>
 
               <div className="space-y-2">
-                <FormLabel htmlFor="coversDue" className="text-primary">Submissions Due</FormLabel>
+                <FormLabel htmlFor="coversDue" className="text-primary">{labels.submissionsDue}</FormLabel>
                 <Input
                   id="coversDue"
                   type="datetime-local"

@@ -646,6 +646,7 @@ type UpdateRoundInput = {
   coversDue?: Date;
   listeningParty?: Date;
   playlistUrl?: string;
+  prompt?: string; // Optional round prompt
 };
 
 export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<Round>> => {
@@ -690,6 +691,14 @@ export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<
       .update(roundMetadata)
       .set(updateData)
       .where(eq(roundMetadata.id, roundId));
+
+    // Update prompt if provided
+    if (input.prompt !== undefined) {
+      const promptResult = await setRoundPrompt(roundId, input.prompt);
+      if (promptResult.status !== 'success') {
+        return createErrorResult(new Error('Failed to update round prompt'));
+      }
+    }
 
     // Get the updated round
     const updatedRound = await getRoundBySlug(input.projectId, input.slug);
@@ -755,6 +764,55 @@ export const getRoundPrompt = async (roundId: number): Promise<AsyncResult<strin
   } catch (error) {
     console.error('Error getting round prompt:', error);
     return createErrorResult(error instanceof Error ? error : new Error(`Failed to get prompt for round ${roundId}`));
+  }
+};
+
+/**
+ * Set or update round prompt
+ */
+export const setRoundPrompt = async (roundId: number, promptText: string): Promise<AsyncResult<void>> => {
+  try {
+    // Validate roundId
+    if (isNaN(roundId) || !Number.isFinite(roundId)) {
+      return createErrorResult(new Error(`Invalid round ID: ${roundId}`));
+    }
+
+    // Check if prompt already exists
+    const existing = await db
+      .select({ id: roundPrompts.id })
+      .from(roundPrompts)
+      .where(eq(roundPrompts.roundId, roundId))
+      .limit(1);
+
+    if (existing.length > 0) {
+      // Update existing prompt
+      await db
+        .update(roundPrompts)
+        .set({
+          promptText,
+          updatedAt: new Date(),
+        })
+        .where(eq(roundPrompts.roundId, roundId));
+    } else {
+      // Generate next ID for new prompt
+      const maxIdResult = await db
+        .select({ maxId: sql<number>`COALESCE(MAX(${roundPrompts.id}), 0)` })
+        .from(roundPrompts);
+
+      const nextId = maxIdResult.length > 0 && maxIdResult[0].maxId ? Number(maxIdResult[0].maxId) + 1 : 1;
+
+      // Insert new prompt with generated ID
+      await db.insert(roundPrompts).values({
+        id: nextId,
+        roundId,
+        promptText,
+      });
+    }
+
+    return createSuccessResult(undefined);
+  } catch (error) {
+    console.error('Error setting round prompt:', error);
+    return createErrorResult(error instanceof Error ? error : new Error(`Failed to set prompt for round ${roundId}`));
   }
 };
 
