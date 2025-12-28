@@ -2,8 +2,9 @@
 
 import { useState, useEffect, ReactNode } from 'react';
 import { X, LucideIcon } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
-import { Text, Button } from "@eptss/ui";
+import { Text, Button, Animated } from "@eptss/ui";
 interface StickyFooterProps {
   /**
    * Icon to display in the floating button and header
@@ -77,58 +78,79 @@ export function StickyFooter({
     };
   }, []);
 
-  // When closed, show floating button
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={() => setIsOpen(true)}
-          className={buttonClassName || 'rounded-full gap-2'}
-          aria-label={ariaLabel || `Open ${title}`}
-        >
-          {Icon && <Icon className="w-5 h-5" />}
-          {title}
-        </Button>
-      </div>
-    );
-  }
+  // Animation variants
+  const slideUpVariants = {
+    initial: { y: '100%', opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    exit: { y: '100%', opacity: 0 },
+  };
 
-  // When open, show full footer
+  const scaleInVariants = {
+    initial: { scale: 0, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    exit: { scale: 0, opacity: 0 },
+  };
+
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--color-gray-900,#0F172A)] border-t border-[var(--color-gray-800,#1E293B)] shadow-2xl transition-all duration-300 ease-in-out"
-      style={{ height }}
-    >
-      {/* Header with close button */}
-      <div
-        className={
-          headerClassName ||
-          'flex items-center justify-between px-4 py-3 border-b border-[var(--color-gray-800,#1E293B)] bg-[var(--color-gray-900,#0F172A)]'
-        }
-      >
-        <div className="flex items-center gap-2">
-          {Icon && <Icon className="w-5 h-5 text-[var(--color-accent-primary,#FFDD57)]" />}
-          <Text as="span" size="lg" weight="semibold" className="text-[var(--color-accent-primary,#FFDD57)]">{title}</Text>
-        </div>
-
-        <button
-          onClick={() => setIsOpen(false)}
-          className="text-gray-400 hover:text-white transition-colors p-1"
-          aria-label={`Close ${title}`}
+    <AnimatePresence mode="wait">
+      {!isOpen && (
+        <Animated
+          key="floating-button"
+          customVariants={scaleInVariants}
+          duration={0.15}
+          className="fixed bottom-4 right-4 z-50"
         >
-          <X className="w-5 h-5" />
-        </button>
-      </div>
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => setIsOpen(true)}
+            className={buttonClassName || 'rounded-full gap-2'}
+            aria-label={ariaLabel || `Open ${title}`}
+          >
+            {Icon && <Icon className="w-5 h-5" />}
+            {title}
+          </Button>
+        </Animated>
+      )}
 
-      {/* Content */}
-      <div
-        className={contentClassName || 'h-full'}
-        style={{ height: `calc(${height} - 56px)` }}
-      >
-        {children}
-      </div>
-    </div>
+      {isOpen && (
+        <Animated
+          key="discussion-panel"
+          customVariants={slideUpVariants}
+          duration={0.25}
+          className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--color-gray-900,#0F172A)] border-t border-[var(--color-gray-800,#1E293B)] shadow-2xl h-[95vh] md:h-auto"
+          style={{ height: typeof window !== 'undefined' && window.innerWidth >= 768 ? height : undefined }}
+        >
+          {/* Header with close button */}
+          <div
+            className={
+              headerClassName ||
+              'flex items-center justify-between px-4 py-3 border-b border-[var(--color-gray-800,#1E293B)] bg-[var(--color-gray-900,#0F172A)]'
+            }
+          >
+            <div className="flex items-center gap-2">
+              {Icon && <Icon className="w-5 h-5 text-[var(--color-accent-primary,#FFDD57)]" />}
+              <Text as="span" size="lg" weight="semibold" className="text-[var(--color-accent-primary,#FFDD57)]">{title}</Text>
+            </div>
+
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-white transition-colors p-1"
+              aria-label={`Close ${title}`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div
+            className={contentClassName || 'h-full'}
+            style={{ height: `calc(100% - 56px)` }}
+          >
+            {children}
+          </div>
+        </Animated>
+      )}
+    </AnimatePresence>
   );
 }

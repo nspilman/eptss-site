@@ -30,19 +30,17 @@ export function StickyDiscussionFooterWrapper({
       height="70vh"
       defaultOpen={false}
       ariaLabel="Round discussions"
-      contentClassName="h-full p-4"
+      contentClassName="h-full flex flex-col"
     >
-      <div className="h-full flex flex-col">
-        <CommentSection
-          roundId={roundId}
-          currentUserId={currentUserId}
-          sortOrder="asc"
-          showHeader={false}
-          fillHeight={true}
-          initialComments={initialComments}
-          roundParticipants={roundParticipants}
-        />
-      </div>
+      <CommentSection
+        roundId={roundId}
+        currentUserId={currentUserId}
+        sortOrder="asc"
+        showHeader={false}
+        fillHeight={true}
+        initialComments={initialComments}
+        roundParticipants={roundParticipants}
+      />
     </StickyFooter>
   );
 }

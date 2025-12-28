@@ -102,7 +102,7 @@ export function CommentForm({
           aria-invalid={!!error}
           aria-describedby={error ? errorId.current : undefined}
           aria-label={labelText}
-          className="min-h-[100px]"
+          className="min-h-[60px] md:min-h-[100px]"
         />
         <p className="text-xs text-[var(--color-gray-400)] font-roboto">
           Tip: Press {typeof navigator !== 'undefined' && navigator.platform.includes('Mac') ? 'Cmd' : 'Ctrl'}+Enter to post • Type @ to mention someone

@@ -199,7 +199,7 @@ export function CommentSection({
               tabIndex={0}
             >
               {comments.length > 0 ? (
-                <div className="p-6">
+                <div className="p-3 md:p-6">
                   <CommentList
                     comments={comments}
                     currentUserId=""
@@ -208,7 +208,7 @@ export function CommentSection({
                   />
                 </div>
               ) : (
-                <div className="p-12">
+                <div className="p-6 md:p-12">
                   <p className="font-roboto text-[var(--color-gray-400)] text-center" role="status">
                     No comments yet.
                   </p>
@@ -222,7 +222,7 @@ export function CommentSection({
             </div>
 
             {/* Login prompt at bottom */}
-            <div className="sticky bottom-0 border-t border-[var(--color-gray-700)] bg-[var(--color-gray-900)] backdrop-blur-md p-6 text-center">
+            <div className="sticky bottom-0 border-t border-[var(--color-gray-700)] bg-[var(--color-gray-900)] backdrop-blur-md p-3 md:p-6 text-center">
               <p className="font-roboto text-[var(--color-gray-400)]">
                 Please log in to leave a comment.
               </p>
@@ -263,7 +263,7 @@ export function CommentSection({
             tabIndex={0}
           >
             {comments.length > 0 ? (
-              <div className="p-6">
+              <div className="p-3 md:p-6">
                 <CommentList
                   comments={comments}
                   currentUserId={currentUserId}
@@ -272,7 +272,7 @@ export function CommentSection({
                 />
               </div>
             ) : (
-              <div className="p-12">
+              <div className="p-6 md:p-12">
                 <p className="font-roboto text-[var(--color-gray-400)] text-center" role="status">
                   No comments yet. Be the first to share your thoughts!
                 </p>
@@ -286,7 +286,7 @@ export function CommentSection({
           </div>
 
           {/* Sticky comment input at bottom */}
-          <div className="sticky bottom-0 border-t border-[var(--color-gray-700)] bg-[var(--color-gray-900)] backdrop-blur-md p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.3)]">
+          <div className="sticky bottom-0 border-t border-[var(--color-gray-700)] bg-[var(--color-gray-900)] backdrop-blur-md p-2 md:p-4 shadow-[0_-4px_12px_rgba(0,0,0,0.3)]">
             <CommentForm onSuccess={handleCommentAdded} roundParticipants={roundParticipants} />
           </div>
         </div>
