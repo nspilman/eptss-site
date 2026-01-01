@@ -306,6 +306,7 @@ export const pageContentSchema = z.object({
   dashboard: z.object({
     title: z.string().default("Dashboard"),
     welcomeMessage: z.string().default("Welcome back!"),
+    submissionCtaLabel: z.string().default("Submit Cover"),
   }).default({}),
 
   voting: z.object({

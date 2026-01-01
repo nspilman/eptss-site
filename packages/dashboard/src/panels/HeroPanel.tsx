@@ -37,6 +37,7 @@ interface HeroData {
   hasSignedUp?: boolean;
   hasVoted?: boolean;
   hasSubmitted?: boolean;
+  submitCtaLabel?: string;
   // Project features
   votingEnabled?: boolean;
 }
@@ -85,6 +86,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
     hasVoted,
     hasSubmitted,
     votingEnabled = true,
+    submitCtaLabel,
   } = data;
 
   // Format round title based on terminology
@@ -170,7 +172,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
             <Button variant="secondary" size="md" asChild>
               <a href={`/projects/${projectSlug}/submit`}>
                 <Send className="w-4 h-4 mr-2" />
-                Submit Cover
+                {submitCtaLabel || 'Submit Cover'}
               </a>
             </Button>
           )}

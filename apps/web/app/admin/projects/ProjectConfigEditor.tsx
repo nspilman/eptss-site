@@ -7,6 +7,7 @@ import { updateProjectConfig } from "./actions";
 import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, Zap, Globe, BookOpen, MessageSquare, Image } from "lucide-react";
 import { ConfigSection } from "./components/ConfigSection";
 import { TableOfContents } from "./components/TableOfContents";
+import { LabelWithTooltip } from "./components/LabelWithTooltip";
 import { Text } from "@eptss/ui";
 import {
   FeatureFlagsEditor,
@@ -388,6 +389,30 @@ export function ProjectConfigEditor() {
                 gallery={config.content.pages.home.submissionsGallery}
                 onChange={(gallery) => updateConfig(["content", "pages", "home", "submissionsGallery"], gallery)}
               />
+            </ConfigSection>
+
+            <ConfigSection
+              id="dashboard-submit-cta"
+              title="Dashboard Submission CTA"
+              description="Text for the submit button shown in the dashboard hero panel during the covering phase"
+              variant="blue"
+              icon={<FileText className="h-5 w-5" />}
+              isCollapsed={collapsedSections.has('dashboard-submit-cta')}
+              onToggle={() => toggleSection('dashboard-submit-cta')}
+            >
+              <div className="space-y-2">
+                <LabelWithTooltip
+                  label="Submission CTA Label"
+                  tooltip="Label used for the submit button in the dashboard hero panel (e.g., 'Submit Cover' or 'Submit song')."
+                />
+                <input
+                  type="text"
+                  value={config.content.pages.dashboard.submissionCtaLabel}
+                  onChange={(e) => updateConfig(["content", "pages", "dashboard", "submissionCtaLabel"], e.target.value)}
+                  className="w-full px-3 py-2 rounded border border-border bg-background"
+                  placeholder="Submit Cover"
+                />
+              </div>
             </ConfigSection>
 
             <ConfigSection

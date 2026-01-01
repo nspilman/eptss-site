@@ -17,7 +17,7 @@ import {
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { routes } from "@eptss/routing";
-import { getProjectTerminology, getProjectBusinessRules } from "@eptss/project-config";
+import { getProjectTerminology, getProjectBusinessRules, getProjectConfig } from "@eptss/project-config";
 import type {
   Phase
 } from "@eptss/dashboard/panels";
@@ -32,12 +32,13 @@ import { getSignupsByRound } from "@eptss/data-access/services/signupService";
 export async function fetchHeroData(projectId: string, projectSlug: string) {
   console.log('[fetchHeroData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
 
-  const [currentRound, { roundDetails }, terminology, businessRules, project] = await Promise.all([
+  const [currentRound, { roundDetails }, terminology, businessRules, project, projectConfig] = await Promise.all([
     roundProvider({ projectId }),
     userParticipationProvider({ projectId }),
     getProjectTerminology(projectSlug as ProjectSlug),
     getProjectBusinessRules(projectSlug as ProjectSlug),
     getProjectBySlug(projectSlug),
+    getProjectConfig(projectSlug as ProjectSlug),
   ]);
 
   console.log('[fetchHeroData] Fetched terminology:', JSON.stringify(terminology, null, 2));
@@ -80,6 +81,7 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     promptText,
     projectName: project?.name,
     projectSlug,
+    submitCtaLabel: projectConfig.content.pages.dashboard.submissionCtaLabel,
     // Countdown/deadline data
     timeRemaining,
     dueDate,
@@ -154,7 +156,6 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
     getProjectBusinessRules(projectSlug as ProjectSlug),
   ]);
 
-  console.log('[fetchActionData] Fetched terminology:', JSON.stringify(terminology, null, 2));
 
   if (!currentRound) {
     console.log('[fetchActionData] No current round found');
