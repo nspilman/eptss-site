@@ -19,6 +19,7 @@ export interface CommentSectionProps {
     publicDisplayName?: string;
     profilePictureUrl?: string;
   }>; // Optional - pre-fetched participants to avoid re-fetching
+  refetchTrigger?: number; // Optional - increment this value to trigger a refetch of comments
 }
 
 export interface CommentListProps {

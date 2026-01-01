@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { MessageCircle } from "lucide-react";
 import {
   Skeleton,
@@ -25,6 +25,7 @@ export function CommentSection({
   fillHeight = false,
   initialComments,
   roundParticipants: initialRoundParticipants,
+  refetchTrigger,
 }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentWithAuthor[]>(initialComments || []);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +38,7 @@ export function CommentSection({
     publicDisplayName?: string;
     profilePictureUrl?: string;
   }>>(initialRoundParticipants || []);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     // Skip fetching if we already have initial data
@@ -78,6 +80,20 @@ export function CommentSection({
     fetchData();
   }, [userContentId, roundId, sortOrder, initialComments, initialRoundParticipants]);
 
+  // Refetch comments when refetchTrigger changes
+  useEffect(() => {
+    // Skip on first render
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    // Refetch when trigger changes
+    if (refetchTrigger !== undefined && refetchTrigger > 0) {
+      fetchComments();
+    }
+  }, [refetchTrigger]);
+
   // Scroll to bottom on initial load when using ascending order
   useEffect(() => {
     if (!isLoading && sortOrder === 'asc' && !hasInitiallyScrolled.current && scrollContainerRef.current) {
@@ -91,7 +107,7 @@ export function CommentSection({
     }
   }, [isLoading, sortOrder]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     try {
       const result = await getCommentsAction({ userContentId, roundId }, sortOrder);
       if (result.success) {
@@ -102,7 +118,7 @@ export function CommentSection({
     } catch (err) {
       setError("An unexpected error occurred");
     }
-  };
+  }, [userContentId, roundId, sortOrder]);
 
   const handleCommentAdded = () => {
     fetchComments();

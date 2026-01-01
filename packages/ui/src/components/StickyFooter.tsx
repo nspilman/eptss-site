@@ -42,6 +42,10 @@ interface StickyFooterProps {
    * Optional aria-label for accessibility
    */
   ariaLabel?: string;
+  /**
+   * Optional callback when open state changes
+   */
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
 export function StickyFooter({
@@ -54,14 +58,20 @@ export function StickyFooter({
   headerClassName,
   contentClassName,
   ariaLabel,
+  onOpenChange,
 }: StickyFooterProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const handleOpenChange = (newIsOpen: boolean) => {
+    setIsOpen(newIsOpen);
+    onOpenChange?.(newIsOpen);
+  };
 
   // Listen for hash changes to open the footer
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash === '#discussion') {
-        setIsOpen(true);
+        handleOpenChange(true);
         // Clear the hash after opening
         history.replaceState(null, '', window.location.pathname + window.location.search);
       }
@@ -103,7 +113,7 @@ export function StickyFooter({
           <Button
             variant="secondary"
             size="lg"
-            onClick={() => setIsOpen(true)}
+            onClick={() => handleOpenChange(true)}
             className={buttonClassName || 'rounded-full gap-2'}
             aria-label={ariaLabel || `Open ${title}`}
           >
@@ -134,7 +144,7 @@ export function StickyFooter({
             </div>
 
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() => handleOpenChange(false)}
               className="text-gray-400 hover:text-white transition-colors p-1"
               aria-label={`Close ${title}`}
             >
