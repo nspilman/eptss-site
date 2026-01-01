@@ -48,4 +48,6 @@ export interface RoundInfo {
   coveringBegins: Date;
   coversDue: Date;
   listeningParty: Date;
+  // Project features
+  votingEnabled: boolean;
 }

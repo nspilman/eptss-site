@@ -117,7 +117,7 @@ export const formatDate = {
   }
 };
 
-export const getCurrentPhase = (dates: RoundDates): Phase => {
+export const getCurrentPhase = (dates: RoundDates, votingEnabled: boolean = true): Phase => {
   const now = new Date();
 
   // If no dates are set, default to signups
@@ -126,6 +126,13 @@ export const getCurrentPhase = (dates: RoundDates): Phase => {
   }
 
   if (isBefore(now, dates.votingOpens)) return "signups";
+
+  // If voting is disabled, skip directly to covering phase
+  if (!votingEnabled) {
+    if (isBefore(now, dates.coversDue)) return "covering";
+    return "celebration";
+  }
+
   if (isBefore(now, dates.coveringBegins)) return "voting";
   if (isBefore(now, dates.coversDue)) return "covering";
   return "celebration";
@@ -161,21 +168,45 @@ export const formatTimeRemaining = (targetDate: string | Date): string => {
   }
 };
 
-export const getPhaseDates = (dates: RoundDates) => ({
-  signups: {
-    opens: dates.signupOpens,
-    closes: dates.votingOpens,
-  },
-  voting: {
-    opens: dates.votingOpens,
-    closes: subDays(dates.coveringBegins, 1),
-  },
-  covering: {
-    opens: dates.coveringBegins,
-    closes: subDays(dates.coversDue, 1),
-  },
-  celebration: {
-    opens: dates.coversDue,
-    closes: dates.listeningParty,
-  },
-});
+export const getPhaseDates = (dates: RoundDates, votingEnabled: boolean = true) => {
+  if (!votingEnabled) {
+    // When voting is disabled, skip the voting phase
+    return {
+      signups: {
+        opens: dates.signupOpens,
+        closes: dates.votingOpens,
+      },
+      voting: {
+        opens: dates.votingOpens,
+        closes: dates.votingOpens, // Zero-length phase when disabled
+      },
+      covering: {
+        opens: dates.votingOpens, // Start covering immediately after signups
+        closes: subDays(dates.coversDue, 1),
+      },
+      celebration: {
+        opens: dates.coversDue,
+        closes: dates.listeningParty,
+      },
+    };
+  }
+
+  return {
+    signups: {
+      opens: dates.signupOpens,
+      closes: dates.votingOpens,
+    },
+    voting: {
+      opens: dates.votingOpens,
+      closes: subDays(dates.coveringBegins, 1),
+    },
+    covering: {
+      opens: dates.coveringBegins,
+      closes: subDays(dates.coversDue, 1),
+    },
+    celebration: {
+      opens: dates.coversDue,
+      closes: dates.listeningParty,
+    },
+  };
+};

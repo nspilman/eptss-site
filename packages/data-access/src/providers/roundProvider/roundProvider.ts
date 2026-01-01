@@ -6,10 +6,12 @@ import {
   getSignupsByRound,
   getSubmissions,
 } from "../../services";
+import { getProjectBySlug } from "../../services/projectService";
 import { COVER_PROJECT_ID } from "../../db/schema";
 import { Phase, RoundInfo } from "@eptss/data-access/types/round";
 import { getCurrentPhase, getPhaseDates, RoundDates, formatDate } from "../../services/dateService";
 import { VoteOption } from "@eptss/data-access/types/vote";
+import { getProjectSlugFromId } from "../../utils/projectUtils";
 
 const phaseOrder: Phase[] = ["signups", "voting", "covering", "celebration"];
 
@@ -57,6 +59,8 @@ export const roundProvider = async (params: RoundProviderParams): Promise<RoundI
       coveringBegins: now,
       coversDue: now,
       listeningParty: now,
+      // Project features
+      votingEnabled: true, // Default to true for empty rounds
     };
   }
 
@@ -73,6 +77,11 @@ export const roundProvider = async (params: RoundProviderParams): Promise<RoundI
     playlistUrl,
   } = round;
 
+  // Get project configuration to check if voting is enabled
+  const projectSlug = getProjectSlugFromId(projectId);
+  const project = projectSlug ? await getProjectBySlug(projectSlug) : null;
+  const votingEnabled = project?.config?.features?.enableVoting ?? true;
+
   // Convert string dates to Date objects
   const roundDates: RoundDates = {
     signupOpens: signupOpens ? new Date(signupOpens) : new Date(),
@@ -82,8 +91,8 @@ export const roundProvider = async (params: RoundProviderParams): Promise<RoundI
     listeningParty: listeningParty ? new Date(listeningParty) : new Date(),
   };
 
-  const phase = getCurrentPhase(roundDates);
-  const phaseDates = getPhaseDates(roundDates);
+  const phase = getCurrentPhase(roundDates, votingEnabled);
+  const phaseDates = getPhaseDates(roundDates, votingEnabled);
 
   // Convert dates to human-readable format for display
   const dateLabels = Object.fromEntries(
@@ -125,6 +134,8 @@ export const roundProvider = async (params: RoundProviderParams): Promise<RoundI
     coveringBegins: roundDates.coveringBegins,
     coversDue: roundDates.coversDue,
     listeningParty: roundDates.listeningParty,
+    // Project features
+    votingEnabled,
   }
 };
 

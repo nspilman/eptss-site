@@ -37,6 +37,8 @@ interface HeroData {
   hasSignedUp?: boolean;
   hasVoted?: boolean;
   hasSubmitted?: boolean;
+  // Project features
+  votingEnabled?: boolean;
 }
 
 /**
@@ -82,6 +84,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
     hasSignedUp,
     hasVoted,
     hasSubmitted,
+    votingEnabled = true,
   } = data;
 
   // Format round title based on terminology
@@ -118,8 +121,8 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
     }
   };
 
-  // Progress phases
-  const progressPhases = [
+  // Progress phases - filter out voting if disabled
+  const allProgressPhases = [
     {
       id: 'signups',
       label: terminology?.phaseShortNames?.signups || 'Sign Up',
@@ -141,6 +144,10 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
       completed: currentPhase === 'celebration',
     },
   ];
+
+  const progressPhases = votingEnabled
+    ? allProgressPhases
+    : allProgressPhases.filter(p => p.id !== 'voting');
 
   const currentPhaseIndex = progressPhases.findIndex(p => p.id === currentPhase);
 

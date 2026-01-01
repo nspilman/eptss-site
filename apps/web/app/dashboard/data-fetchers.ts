@@ -17,7 +17,7 @@ import {
 } from "@eptss/data-access";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { routes } from "@eptss/routing";
-import { getProjectFeatures, getProjectTerminology, getProjectBusinessRules } from "@eptss/project-config";
+import { getProjectTerminology, getProjectBusinessRules } from "@eptss/project-config";
 import type {
   Phase
 } from "@eptss/dashboard/panels";
@@ -88,6 +88,8 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     hasSignedUp: roundDetails?.hasSignedUp || false,
     hasVoted: roundDetails?.hasVoted || false,
     hasSubmitted: roundDetails?.hasSubmitted || false,
+    // Project features
+    votingEnabled: currentRound.votingEnabled,
   };
 
   console.log('[fetchHeroData] Returning heroData:', JSON.stringify(heroData, null, 2));
@@ -145,16 +147,14 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
   // Get auth user first to fetch reflections
   const { userId } = await getAuthUser();
 
-  const [currentRound, { roundDetails }, features, terminology, businessRules] = await Promise.all([
+  const [currentRound, { roundDetails }, terminology, businessRules] = await Promise.all([
     roundProvider({ projectId }),
     userParticipationProvider({ projectId }),
-    getProjectFeatures(projectSlug as ProjectSlug),
     getProjectTerminology(projectSlug as ProjectSlug),
     getProjectBusinessRules(projectSlug as ProjectSlug),
   ]);
 
   console.log('[fetchActionData] Fetched terminology:', JSON.stringify(terminology, null, 2));
-  console.log('[fetchActionData] Features:', JSON.stringify(features, null, 2));
 
   if (!currentRound) {
     console.log('[fetchActionData] No current round found');
@@ -269,7 +269,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
 
     case 'voting':
       // If voting is disabled for this project, show a message about the next phase
-      if (!features.enableVoting) {
+      if (!currentRound.votingEnabled) {
         // If user hasn't signed up, offer late signup option
         if (!roundDetails?.hasSignedUp) {
           return {
