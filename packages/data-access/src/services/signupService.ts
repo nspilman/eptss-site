@@ -729,6 +729,21 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
         )[0].id;
     }
 
+    // Get the project ID from the round
+    console.log("Getting project ID from round");
+    const roundResult = await db
+      .select({ projectId: roundMetadata.projectId })
+      .from(roundMetadata)
+      .where(eq(roundMetadata.id, roundId))
+      .limit(1);
+
+    if (!roundResult.length) {
+      return { status: "Error", message: "Round not found" };
+    }
+
+    const projectId = roundResult[0].projectId;
+    console.log("Found projectId:", projectId);
+
     // Check if user is already signed up for this round
     console.log("Checking for existing signup");
     const existingSignup = await db
@@ -739,19 +754,20 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
         eq(signUps.roundId, roundId)
       ));
     console.log("Existing signup check complete:", existingSignup.length);
-      
+
     if (existingSignup.length > 0) {
       return { status: "Error", message: "User is already signed up for this round" };
     }
 
     // Insert the signup using raw SQL to avoid ID generation issues
-    console.log("Inserting signup with songId:", songId);
-    
+    console.log("Inserting signup with songId:", songId, "projectId:", projectId);
+
     try {
       const result = await db.execute(sql`
-        INSERT INTO sign_ups (id, youtube_link, additional_comments, round_id, song_id, user_id, created_at)
+        INSERT INTO sign_ups (id, project_id, youtube_link, additional_comments, round_id, song_id, user_id, created_at)
         VALUES (
           (SELECT COALESCE(MAX(id), 0) + 1 FROM sign_ups),
+          ${projectId},
           ${youtubeLink || ""},
           ${additionalComments || ""},
           ${roundId},
