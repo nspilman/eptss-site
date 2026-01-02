@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { clsx } from 'clsx';
+import { Button, Text, AlertBox, cn } from '@eptss/ui';
 import type { MediaUploaderProps, MediaUploaderState } from '../types';
 import { FileInput } from './FileInput';
 import { FileDropzone } from './FileDropzone';
@@ -187,7 +187,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   // Cropper view
   if (showCropper && fileToProcess) {
     return (
-      <div className={clsx('flex flex-col gap-4', className)}>
+      <div className={cn('flex flex-col gap-4', className)}>
         <ImageCropper
           file={fileToProcess}
           onCropComplete={handleCropComplete}
@@ -210,7 +210,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
   // Default render
   return (
-    <div className={clsx('flex flex-col gap-4', className)}>
+    <div className={cn('flex flex-col gap-4', className)}>
       {/* Upload Interface */}
       {variant === 'dropzone' && (
         <FileDropzone
@@ -242,7 +242,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
             placeholder={placeholder}
           />
           <div className="text-center">
-            <p className="text-xs text-[var(--color-gray-400)] mb-2">or</p>
+            <Text size="xs" color="muted" className="mb-2">or</Text>
             <FileInput
               accept={inputAccept}
               multiple={multiple}
@@ -257,14 +257,13 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
       {/* Validation Errors */}
       {validationErrors.length > 0 && (
-        <div className="p-3 bg-red-500/10 border border-red-500 rounded-md">
-          <p className="text-sm text-red-500 font-medium mb-1">Validation Errors:</p>
-          <ul className="text-xs text-red-500 list-disc list-inside">
+        <AlertBox variant="error" title="Validation Errors">
+          <ul className="text-xs list-disc list-inside">
             {validationErrors.map((error, index) => (
               <li key={index}>{error}</li>
             ))}
           </ul>
-        </div>
+        </AlertBox>
       )}
 
       {/* File Previews (before upload or when autoUpload is false) */}
@@ -288,19 +287,13 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
       {/* Manual Upload Button (when autoUpload is false) */}
       {!autoUpload && selectedFiles.length > 0 && !uploadQueue.isUploading && (
-        <button
-          type="button"
+        <Button
           onClick={startUpload}
-          className={clsx(
-            'px-4 py-2 rounded-md',
-            'bg-[var(--color-accent-primary)] text-[var(--color-background-primary)]',
-            'font-medium text-sm',
-            'hover:opacity-90',
-            'transition-opacity duration-200'
-          )}
+          variant="default"
+          size="md"
         >
           Upload {selectedFiles.length} {selectedFiles.length === 1 ? 'File' : 'Files'}
-        </button>
+        </Button>
       )}
     </div>
   );

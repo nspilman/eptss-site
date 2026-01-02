@@ -1,0 +1,6 @@
+/* Import the base UI styles */
+@import "@eptss/ui/styles";
+
+/* Tell Tailwind v4 to also scan media-upload components for utility classes */
+@source "../src/**/*.{js,jsx,ts,tsx}";
+@source "../stories/**/*.{js,jsx,ts,tsx}";

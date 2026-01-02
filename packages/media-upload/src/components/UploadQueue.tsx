@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { clsx } from 'clsx';
+import { Text, cn } from '@eptss/ui';
 import type { UploadQueueItem } from '../types';
 import { UploadProgress } from './UploadProgress';
 
@@ -37,11 +37,11 @@ export const UploadQueue: React.FC<UploadQueueProps> = ({
   }
 
   return (
-    <div className={clsx('flex flex-col gap-3', className)}>
+    <div className={cn('flex flex-col gap-3', className)}>
       {hiddenCount > 0 && (
-        <p className="text-xs text-[var(--color-gray-400)] text-center">
+        <Text size="xs" color="muted" className="text-center">
           {hiddenCount} more {hiddenCount === 1 ? 'file' : 'files'} uploading...
-        </p>
+        </Text>
       )}
 
       {visibleItems.map((item) => (

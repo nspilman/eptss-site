@@ -6,7 +6,7 @@
 import React, { useCallback } from 'react';
 import { useDropzone, type DropzoneOptions } from 'react-dropzone';
 import { Upload, FileIcon } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Text, cn } from '@eptss/ui';
 
 export interface FileDropzoneProps {
   /** Accept pattern for file types */
@@ -78,7 +78,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   return (
     <div
       {...getRootProps()}
-      className={clsx(
+      className={cn(
         'relative',
         'border-2 border-dashed rounded-lg',
         'p-8',
@@ -99,7 +99,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
 
       {/* Icon */}
       <div
-        className={clsx(
+        className={cn(
           'w-12 h-12 rounded-full',
           'flex items-center justify-center',
           'transition-colors duration-200',
@@ -121,19 +121,20 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
 
       {/* Text */}
       <div className="text-center">
-        <p
-          className={clsx('text-sm font-medium', {
+        <Text
+          size="sm"
+          weight="medium"
+          className={cn({
             'text-[var(--color-accent-primary)]': isDragActive && !isDragReject,
             'text-red-500': isDragReject,
-            'text-[var(--color-primary)]': !isDragActive && !isDragReject,
           })}
         >
           {isDragReject ? 'File type not accepted' : getPlaceholderText()}
-        </p>
+        </Text>
         {!isDragActive && !isDragReject && (
-          <p className="text-xs text-[var(--color-gray-400)] mt-1">
+          <Text size="xs" color="muted" className="mt-1">
             {multiple ? 'Select multiple files' : 'Select a file'}
-          </p>
+          </Text>
         )}
       </div>
     </div>

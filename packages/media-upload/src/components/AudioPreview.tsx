@@ -50,9 +50,19 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [containerReady, setContainerReady] = useState(false);
+
+  // Track when container ref is attached
+  const containerCallbackRef = React.useCallback((node: HTMLDivElement | null) => {
+    containerRef.current = node;
+    if (node) {
+      setContainerReady(true);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!containerRef.current || !showWaveform) return;
+    if (!showWaveform) return;
+    if (!containerReady || !containerRef.current) return;
 
     // Create WaveSurfer instance
     const wavesurfer = WaveSurfer.create({
@@ -79,6 +89,11 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
       setIsLoading(false);
     });
 
+    wavesurfer.on('error', (error) => {
+      console.error('[AudioPreview] WaveSurfer error:', error);
+      setIsLoading(false);
+    });
+
     wavesurfer.on('play', () => setIsPlaying(true));
     wavesurfer.on('pause', () => setIsPlaying(false));
     wavesurfer.on('timeupdate', (time) => setCurrentTime(time));
@@ -87,7 +102,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
       wavesurfer.destroy();
       URL.revokeObjectURL(url);
     };
-  }, [file, showWaveform, waveColor, progressColor, height]);
+  }, [file, showWaveform, waveColor, progressColor, height, containerReady]);
 
   const togglePlayPause = () => {
     if (wavesurferRef.current) {
@@ -148,14 +163,14 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
           {/* Waveform */}
           {isLoading ? (
             <Skeleton className="w-full rounded" style={{ height: `${height}px` }} />
-          ) : (
-            <div
-              ref={containerRef}
-              className={cn('w-full rounded overflow-hidden', {
-                'opacity-50': isLoading,
-              })}
-            />
-          )}
+          ) : null}
+          <div
+            ref={containerCallbackRef}
+            className={cn('w-full rounded overflow-hidden', {
+              'opacity-50': isLoading,
+              'hidden': isLoading,
+            })}
+          />
 
           {/* Controls */}
           <div className="flex items-center gap-3">

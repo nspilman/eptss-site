@@ -5,7 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { FileIcon, FileText, FileVideo, FileImage, FileAudio, X } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Button, Text, cn } from '@eptss/ui';
 import { getFileCategory } from '../utils/mimeTypes';
 import { createPreviewUrl, revokePreviewUrl } from '../utils/filePreview';
 import { formatFileSize } from '../utils/fileValidation';
@@ -63,17 +63,18 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
   // Audio files get special treatment
   if (category === 'audio') {
     return (
-      <div className={clsx('relative', className)}>
+      <div className={cn('relative', className)}>
         <AudioPreview file={file} showWaveform={true} />
         {showRemove && onRemove && (
-          <button
-            type="button"
+          <Button
             onClick={onRemove}
-            className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            size="icon"
+            variant="ghost"
+            className="absolute top-2 right-2 rounded-full bg-black/50 text-white hover:bg-black/70"
             aria-label="Remove file"
           >
             <X className="w-4 h-4" />
-          </button>
+          </Button>
         )}
       </div>
     );
@@ -82,7 +83,7 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
   // Image preview
   if (category === 'image' && previewUrl) {
     return (
-      <div className={clsx('relative group', className)}>
+      <div className={cn('relative group', className)}>
         <div className="relative aspect-video w-full bg-[var(--color-gray-700)] rounded-lg overflow-hidden">
           <img
             src={previewUrl}
@@ -90,18 +91,19 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
             className="w-full h-full object-contain"
           />
           {showRemove && onRemove && (
-            <button
-              type="button"
+            <Button
               onClick={onRemove}
-              className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
+              size="icon"
+              variant="ghost"
+              className="absolute top-2 right-2 rounded-full bg-black/50 text-white hover:bg-black/70 opacity-0 group-hover:opacity-100"
               aria-label="Remove file"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           )}
         </div>
         {showDetails && (
-          <p className="mt-2 text-xs text-[var(--color-gray-400)] truncate">{file.name}</p>
+          <Text size="xs" color="muted" className="mt-2 truncate">{file.name}</Text>
         )}
       </div>
     );
@@ -110,7 +112,7 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
   // Video preview
   if (category === 'video' && previewUrl) {
     return (
-      <div className={clsx('relative group', className)}>
+      <div className={cn('relative group', className)}>
         <div className="relative aspect-video w-full bg-[var(--color-gray-700)] rounded-lg overflow-hidden">
           <video
             src={previewUrl}
@@ -118,18 +120,19 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
             className="w-full h-full"
           />
           {showRemove && onRemove && (
-            <button
-              type="button"
+            <Button
               onClick={onRemove}
-              className="absolute top-2 right-2 p-1 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
+              size="icon"
+              variant="ghost"
+              className="absolute top-2 right-2 rounded-full bg-black/50 text-white hover:bg-black/70 opacity-0 group-hover:opacity-100"
               aria-label="Remove file"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           )}
         </div>
         {showDetails && (
-          <p className="mt-2 text-xs text-[var(--color-gray-400)] truncate">{file.name}</p>
+          <Text size="xs" color="muted" className="mt-2 truncate">{file.name}</Text>
         )}
       </div>
     );
@@ -137,30 +140,30 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
 
   // Generic file preview (document, other)
   return (
-    <div className={clsx('relative', className)}>
+    <div className={cn('relative', className)}>
       <div className="flex items-center gap-3 p-4 bg-[var(--color-gray-700)] rounded-lg">
         <div className="flex-shrink-0 text-[var(--color-accent-primary)]">
           {getFileIcon()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-[var(--color-primary)] truncate">
+          <Text size="sm" weight="medium" className="truncate">
             {file.name}
-          </p>
+          </Text>
           {showDetails && (
-            <p className="text-xs text-[var(--color-gray-400)] mt-0.5">
+            <Text size="xs" color="muted" className="mt-0.5">
               {formatFileSize(file.size)}
-            </p>
+            </Text>
           )}
         </div>
         {showRemove && onRemove && (
-          <button
-            type="button"
+          <Button
             onClick={onRemove}
-            className="flex-shrink-0 p-1 rounded hover:bg-[var(--color-gray-600)] transition-colors"
+            size="icon"
+            variant="ghost"
             aria-label="Remove file"
           >
-            <X className="w-4 h-4 text-[var(--color-gray-400)]" />
-          </button>
+            <X className="w-4 h-4" />
+          </Button>
         )}
       </div>
     </div>

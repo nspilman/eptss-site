@@ -6,7 +6,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { clsx } from 'clsx';
+import { Button, cn } from '@eptss/ui';
 
 export interface ImageCropperProps {
   /** Image file to crop */
@@ -83,7 +83,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
   };
 
   return (
-    <div className={clsx('flex flex-col gap-4', className)}>
+    <div className={cn('flex flex-col gap-4', className)}>
       {/* Crop Area */}
       <div className="max-h-[500px] overflow-auto bg-[var(--color-gray-700)] rounded-lg p-4">
         <ReactCrop
@@ -104,35 +104,22 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
       {/* Actions */}
       <div className="flex items-center justify-end gap-3">
         {onCancel && (
-          <button
-            type="button"
+          <Button
             onClick={onCancel}
-            className={clsx(
-              'px-4 py-2 rounded-md',
-              'border border-[var(--color-gray-700)]',
-              'text-sm font-medium text-[var(--color-primary)]',
-              'hover:bg-[var(--color-gray-700)]',
-              'transition-colors duration-200'
-            )}
+            variant="outline"
+            size="md"
           >
             Cancel
-          </button>
+          </Button>
         )}
-        <button
-          type="button"
+        <Button
           onClick={handleCropComplete}
           disabled={!completedCrop}
-          className={clsx(
-            'px-4 py-2 rounded-md',
-            'bg-[var(--color-accent-primary)] text-[var(--color-background-primary)]',
-            'text-sm font-medium',
-            'hover:opacity-90',
-            'transition-opacity duration-200',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
-          )}
+          variant="default"
+          size="md"
         >
           Apply Crop
-        </button>
+        </Button>
       </div>
     </div>
   );

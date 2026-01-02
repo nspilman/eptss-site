@@ -5,7 +5,7 @@
 
 import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Button, cn } from '@eptss/ui';
 
 export interface FileInputProps {
   /** Accept pattern for file types */
@@ -49,7 +49,7 @@ export const FileInput: React.FC<FileInputProps> = ({
   };
 
   return (
-    <div className={clsx('inline-block', className)}>
+    <div className={cn('inline-block', className)}>
       <input
         ref={inputRef}
         type="file"
@@ -60,25 +60,15 @@ export const FileInput: React.FC<FileInputProps> = ({
         className="hidden"
         aria-label={buttonText}
       />
-      <button
-        type="button"
+      <Button
         onClick={handleClick}
         disabled={disabled}
-        className={clsx(
-          'inline-flex items-center justify-center gap-2',
-          'px-4 py-2 rounded-md',
-          'bg-[var(--color-accent-primary)] text-[var(--color-background-primary)]',
-          'font-medium text-sm',
-          'shadow-sm hover:shadow-[0_0_20px_4px_rgba(226,226,64,0.6)]',
-          'transition-all duration-300',
-          'focus-visible:outline-none focus-visible:ring-2',
-          'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm',
-          'cursor-pointer'
-        )}
+        variant="default"
+        size="md"
       >
         {showIcon && <Upload className="w-4 h-4" />}
-        <span>{buttonText}</span>
-      </button>
+        {buttonText}
+      </Button>
     </div>
   );
 };
