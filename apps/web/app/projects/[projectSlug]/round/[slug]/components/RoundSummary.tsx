@@ -154,7 +154,7 @@ export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResult
       },
       {
         label: "Submission",
-        key: "soundcloudUrl",
+        key: "submission",
       },
     ];
 

@@ -80,8 +80,11 @@ export const submissions = pgTable("submissions", {
   id: bigint("id", { mode: "number" }).primaryKey().notNull(),
   projectId: uuid("project_id").references(() => projects.id).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  audioFileUrl: text("audio_file_url").notNull(),
-  audioFilePath: text("audio_file_path").notNull(),
+  // Legacy field for old SoundCloud submissions
+  soundcloudUrl: text("soundcloud_url"),
+  // New fields for uploaded audio files
+  audioFileUrl: text("audio_file_url"),
+  audioFilePath: text("audio_file_path"),
   coverImageUrl: text("cover_image_url"),
   coverImagePath: text("cover_image_path"),
   audioDuration: integer("audio_duration"),

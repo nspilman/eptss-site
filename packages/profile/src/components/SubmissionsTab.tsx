@@ -49,10 +49,27 @@ export function SubmissionsTab({ submissions }: SubmissionsTabProps) {
 
               {/* Audio Player */}
               <div className="w-full">
-                <AudioPreview
-                  src={submission.audio_file_url}
-                  title={submission.title || 'Unknown Title'}
-                />
+                {submission.audio_file_url ? (
+                  <AudioPreview
+                    src={submission.audio_file_url}
+                    title={submission.title || 'Unknown Title'}
+                    fileSize={submission.audio_file_size || undefined}
+                  />
+                ) : submission.soundcloud_url ? (
+                  <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
+                    <a
+                      href={submission.soundcloud_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
+                      </svg>
+                      Listen on SoundCloud
+                    </a>
+                  </div>
+                ) : null}
               </div>
             </CardContent>
           </Card>

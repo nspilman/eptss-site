@@ -2,6 +2,8 @@ import { createClient } from "@eptss/data-access/utils/supabase/server";
 
 export const BUCKETS = {
   PROFILE_PICTURES: "profile-pictures",
+  AUDIO_SUBMISSIONS: "audio-submissions",
+  SUBMISSION_IMAGES: "submission-images",
 } as const;
 
 export type BucketName = (typeof BUCKETS)[keyof typeof BUCKETS];

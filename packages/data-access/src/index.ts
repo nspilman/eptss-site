@@ -112,6 +112,9 @@ export * from './schemas/signupSchemas';
 export * from './schemas/submission';
 export * from './schemas/voting';
 
+// Re-export types
+export type { AudioFileFields, Submission } from './types/round';
+
 // Re-export project utils
 export {
   getAllProjectSlugs,

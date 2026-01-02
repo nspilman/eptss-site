@@ -9,19 +9,22 @@ import { getAuthUser } from "../utils/supabase/server";
 import { eq, sql } from "drizzle-orm";
 import { submissionFormSchema } from "../schemas/submission";
 import { validateFormData } from "../utils/formDataHelpers";
-import { deleteFile } from "@eptss/bucket-storage";
+import { deleteFile, BUCKETS } from "@eptss/bucket-storage";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
     .select({
       created_at: submissions.createdAt,
       round_id: submissions.roundId,
+      // Legacy field
+      soundcloud_url: submissions.soundcloudUrl,
+      // New fields
       audio_file_url: submissions.audioFileUrl,
       cover_image_url: submissions.coverImageUrl,
       audio_duration: submissions.audioDuration,
       audio_file_size: submissions.audioFileSize,
       username: users.username || "",
-      user_id: submissions.userId,  // Add userId to the selection
+      user_id: submissions.userId,
     })
     .from(submissions)
     .leftJoin(users, eq(submissions.userId, users.userid))
@@ -30,12 +33,15 @@ export const getSubmissions = async (id: number) => {
   return data.map((val) => ({
     createdAt: val.created_at,
     roundId: val.round_id,
+    // Legacy field
+    soundcloudUrl: val.soundcloud_url,
+    // New fields
     audioFileUrl: val.audio_file_url,
     coverImageUrl: val.cover_image_url,
     audioDuration: val.audio_duration,
     audioFileSize: val.audio_file_size,
     username: val.username || "",
-    userId: val.user_id,  // Include userId in the returned object
+    userId: val.user_id,
   }));
 };
 
@@ -142,9 +148,9 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     if (!roundResult.length) {
       // Clean up uploaded files if round not found
-      await deleteFile("audio-submissions", validData.audioFilePath).catch(() => {});
+      await deleteFile(BUCKETS.AUDIO_SUBMISSIONS, validData.audioFilePath).catch(() => {});
       if (validData.coverImagePath) {
-        await deleteFile("submission-images", validData.coverImagePath).catch(() => {});
+        await deleteFile(BUCKETS.SUBMISSION_IMAGES, validData.coverImagePath).catch(() => {});
       }
       return handleResponse(404, routes.dashboard.root(), "Round not found");
     }

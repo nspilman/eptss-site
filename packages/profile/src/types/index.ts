@@ -51,15 +51,19 @@ export type GroupedSignup = {
 export type Signup = GroupedSignup;
 
 // Custom type for submissions
+// Supports both legacy SoundCloud submissions and new uploaded audio files
 export type Submission = {
   id: number;
   created_at: string | null;
   title: string | null;
   artist: string | null;
-  audio_file_url: string;
-  cover_image_url: string | null;
-  audio_duration: number | null;
-  audio_file_size: number | null;
+  // Legacy field for old SoundCloud submissions
+  soundcloud_url?: string | null;
+  // New fields for uploaded audio
+  audio_file_url?: string | null;
+  cover_image_url?: string | null;
+  audio_duration?: number | null;
+  audio_file_size?: number | null;
   round_slug: string | null;
   user_id: string | null;
   additional_comments: string | null;

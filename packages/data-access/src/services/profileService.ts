@@ -81,6 +81,9 @@ export const getUserSubmissions = async (userId: string) => {
     .select({
       id: submissions.id,
       createdAt: submissions.createdAt,
+      // Legacy field
+      soundcloudUrl: submissions.soundcloudUrl,
+      // New fields
       audioFileUrl: submissions.audioFileUrl,
       audioFilePath: submissions.audioFilePath,
       coverImageUrl: submissions.coverImageUrl,
@@ -108,6 +111,9 @@ export const getUserSubmissions = async (userId: string) => {
     created_at: submission.createdAt?.toISOString() || null,
     title: submission.songTitle || 'Unknown Title',
     artist: submission.songArtist || 'Unknown Artist',
+    // Legacy field
+    soundcloud_url: submission.soundcloudUrl,
+    // New fields
     audio_file_url: submission.audioFileUrl,
     audio_file_path: submission.audioFilePath,
     cover_image_url: submission.coverImageUrl,

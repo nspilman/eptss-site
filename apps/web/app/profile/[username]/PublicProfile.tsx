@@ -35,10 +35,13 @@ interface PublicProfileProps {
   };
   submissions: Array<{
     id: string;
-    audioFileUrl: string;
-    coverImageUrl: string | null;
-    audioDuration: number | null;
-    audioFileSize: number | null;
+    // Legacy field
+    soundcloudUrl?: string | null;
+    // New fields
+    audioFileUrl?: string | null;
+    coverImageUrl?: string | null;
+    audioDuration?: number | null;
+    audioFileSize?: number | null;
     createdAt: string | null;
     roundSlug: string | null;
     roundId: number;
@@ -207,10 +210,27 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
 
                     {/* Audio Player */}
                     <div className="w-full">
-                      <AudioPreview
-                        src={submission.audioFileUrl}
-                        title={submission.songTitle}
-                      />
+                      {submission.audioFileUrl ? (
+                        <AudioPreview
+                          src={submission.audioFileUrl}
+                          title={submission.songTitle}
+                          fileSize={submission.audioFileSize || undefined}
+                        />
+                      ) : submission.soundcloudUrl ? (
+                        <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
+                          <a
+                            href={submission.soundcloudUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                          >
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
+                            </svg>
+                            Listen on SoundCloud
+                          </a>
+                        </div>
+                      ) : null}
                     </div>
                   </CardContent>
                 </Card>
