@@ -44,9 +44,13 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   );
 
   // Convert accept pattern to react-dropzone format
-  const acceptObject = typeof accept === 'string'
-    ? { [accept]: [] }
-    : accept;
+  const acceptObject: Record<string, string[]> | undefined = accept
+    ? typeof accept === 'string'
+      ? { [accept]: [] }
+      : Array.isArray(accept)
+        ? accept.reduce((acc, type) => ({ ...acc, [type]: [] }), {})
+        : accept
+    : undefined;
 
   const dropzoneOptions: DropzoneOptions = {
     onDrop,

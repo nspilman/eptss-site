@@ -25,7 +25,7 @@ export type { FileInputProps } from './components/FileInput';
 export { FileDropzone } from './components/FileDropzone';
 export type { FileDropzoneProps } from './components/FileDropzone';
 
-export { UploadProgress } from './components/UploadProgress';
+export { UploadProgress as UploadProgressComponent } from './components/UploadProgress';
 export type { UploadProgressProps } from './components/UploadProgress';
 
 export { UploadQueue } from './components/UploadQueue';
@@ -64,7 +64,7 @@ export type {
   UploadVariant,
   UploadResult,
   UploadError,
-  UploadProgress,
+  UploadProgress as UploadProgressInfo,
   UploadQueueItem,
   FileValidationConfig,
   PathGenerator,

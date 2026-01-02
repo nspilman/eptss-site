@@ -46,7 +46,7 @@ export async function uploadMediaFile(
     const filePath = path || generateUniqueFileName(file.name);
 
     // Upload file using bucket-storage
-    const { url, error } = await uploadFile(bucket, filePath, file, {
+    const { url, error } = await uploadFile(bucket as any, filePath, file, {
       upsert: options?.upsert,
       contentType: file.type,
     });
@@ -132,7 +132,7 @@ export async function deleteMediaFile(
   path: string
 ): Promise<{ success: boolean; error: string | null }> {
   try {
-    return await deleteFile(bucket, path);
+    return await deleteFile(bucket as any, path);
   } catch (err) {
     console.error('Delete media file error:', err);
     return {
@@ -147,7 +147,7 @@ export async function deleteMediaFile(
  */
 export async function getMediaFileUrl(bucket: string, path: string): Promise<string> {
   try {
-    return await getPublicUrl(bucket, path);
+    return await getPublicUrl(bucket as any, path);
   } catch (err) {
     console.error('Get media file URL error:', err);
     throw err;

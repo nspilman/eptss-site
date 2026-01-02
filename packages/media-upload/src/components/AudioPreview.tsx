@@ -1,13 +1,23 @@
 /**
  * AudioPreview Component
- * Audio player with waveform visualization
+ * Audio player with waveform visualization using UI library components
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
 import WaveSurfer from 'wavesurfer.js';
+import {
+  Card,
+  CardContent,
+  Button,
+  Tooltip,
+  Badge,
+  Text,
+  Skeleton,
+  cn,
+} from '@eptss/ui';
 import { formatDuration } from '../utils/filePreview';
+import { formatFileSize } from '../utils/fileValidation';
 
 export interface AudioPreviewProps {
   /** File to preview */
@@ -102,77 +112,102 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
     }
   };
 
+  // Simple preview without waveform
   if (!showWaveform) {
     return (
-      <div className={clsx('flex items-center gap-3 p-3 bg-[var(--color-gray-700)] rounded-lg', className)}>
-        <Volume2 className="w-5 h-5 text-[var(--color-accent-primary)]" />
-        <p className="text-sm text-[var(--color-primary)] truncate">{file.name}</p>
-      </div>
+      <Card variant="plain" className={className}>
+        <CardContent className="py-3">
+          <div className="flex items-center gap-3">
+            <Music className="w-5 h-5 text-[var(--color-accent-primary)]" />
+            <Text className="truncate">{file.name}</Text>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className={clsx('flex flex-col gap-3 p-4 bg-[var(--color-gray-700)] rounded-lg', className)}>
-      {/* File Name */}
-      <p className="text-sm font-medium text-[var(--color-primary)] truncate">{file.name}</p>
+    <Card variant="glass" className={className}>
+      <CardContent className="py-4">
+        <div className="flex flex-col gap-3">
+          {/* Header with file info */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <Text className="font-medium truncate">{file.name}</Text>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="secondary" className="text-xs">
+                  Audio
+                </Badge>
+                <Text className="text-xs text-[var(--color-gray-400)]">
+                  {formatFileSize(file.size)}
+                </Text>
+              </div>
+            </div>
+          </div>
 
-      {/* Waveform */}
-      <div
-        ref={containerRef}
-        className={clsx('w-full rounded overflow-hidden', {
-          'opacity-50': isLoading,
-        })}
-      />
-
-      {/* Controls */}
-      <div className="flex items-center gap-3">
-        {/* Play/Pause Button */}
-        <button
-          type="button"
-          onClick={togglePlayPause}
-          disabled={isLoading}
-          className={clsx(
-            'flex items-center justify-center',
-            'w-8 h-8 rounded-full',
-            'bg-[var(--color-accent-primary)] text-[var(--color-background-primary)]',
-            'hover:opacity-90 transition-opacity',
-            'disabled:opacity-50 disabled:cursor-not-allowed'
+          {/* Waveform */}
+          {isLoading ? (
+            <Skeleton className="w-full rounded" style={{ height: `${height}px` }} />
+          ) : (
+            <div
+              ref={containerRef}
+              className={cn('w-full rounded overflow-hidden', {
+                'opacity-50': isLoading,
+              })}
+            />
           )}
-          aria-label={isPlaying ? 'Pause' : 'Play'}
-        >
-          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-        </button>
 
-        {/* Time */}
-        <span className="text-xs text-[var(--color-gray-400)] font-mono">
-          {formatDuration(currentTime)} / {formatDuration(duration)}
-        </span>
+          {/* Controls */}
+          <div className="flex items-center gap-3">
+            {/* Play/Pause Button */}
+            <Tooltip content={isPlaying ? 'Pause' : 'Play'}>
+              <Button
+                size="icon"
+                variant="default"
+                onClick={togglePlayPause}
+                disabled={isLoading}
+                className="h-8 w-8 rounded-full"
+              >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+              </Button>
+            </Tooltip>
 
-        {/* Spacer */}
-        <div className="flex-1" />
+            {/* Time Display */}
+            <Badge variant="outline" className="font-mono text-xs">
+              {formatDuration(currentTime)} / {formatDuration(duration)}
+            </Badge>
 
-        {/* Volume Controls */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="text-[var(--color-gray-400)] hover:text-[var(--color-accent-primary)] transition-colors"
-            aria-label={isMuted ? 'Unmute' : 'Mute'}
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={isMuted ? 0 : volume}
-            onChange={handleVolumeChange}
-            className="w-16 h-1 accent-[var(--color-accent-primary)]"
-            aria-label="Volume"
-          />
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Volume Controls */}
+            <div className="flex items-center gap-2">
+              <Tooltip content={isMuted ? 'Unmute' : 'Mute'}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={toggleMute}
+                  className="h-8 w-8"
+                >
+                  {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </Button>
+              </Tooltip>
+              <Tooltip content={`Volume: ${Math.round((isMuted ? 0 : volume) * 100)}%`}>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="w-16 h-1 accent-[var(--color-accent-primary)] cursor-pointer"
+                  aria-label="Volume"
+                />
+              </Tooltip>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };

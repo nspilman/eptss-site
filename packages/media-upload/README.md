@@ -380,6 +380,14 @@ async function setupMediaBuckets() {
 }
 ```
 
+## UI Library Integration
+
+This package integrates seamlessly with `@eptss/ui` components:
+
+- **AudioPreview**: Uses `Card`, `Button`, `Tooltip`, `Badge`, `Text`, `Skeleton`
+- **UploadProgress**: Uses `Progress` component for progress bars
+- **Consistent styling**: All components follow the UI library design system
+
 ## Styling
 
 The package uses Tailwind CSS with CSS variables from your theme. All components respect your project's color scheme:

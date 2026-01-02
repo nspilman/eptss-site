@@ -80,9 +80,11 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
         const path = options.generatePath ? options.generatePath(item.file) : undefined;
 
         // Simulate progress updates
+        let currentProgress = 0;
         const progressInterval = setInterval(() => {
+          currentProgress = Math.min(currentProgress + 10, 90);
           updateItem(item.id, {
-            progress: (prev) => Math.min((prev.progress || 0) + 10, 90),
+            progress: currentProgress,
           });
         }, 100);
 

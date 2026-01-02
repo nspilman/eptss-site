@@ -197,13 +197,24 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
     );
   }
 
+  // Convert accept for different components
+  const dropzoneAccept: Record<string, string[]> | undefined = accept
+    ? typeof accept === 'string'
+      ? { [accept]: [] }
+      : Array.isArray(accept)
+        ? accept.reduce((acc, type) => ({ ...acc, [type]: [] }), {})
+        : accept as Record<string, string[]>
+    : undefined;
+
+  const inputAccept = Array.isArray(accept) ? accept.join(',') : accept;
+
   // Default render
   return (
     <div className={clsx('flex flex-col gap-4', className)}>
       {/* Upload Interface */}
       {variant === 'dropzone' && (
         <FileDropzone
-          accept={accept}
+          accept={dropzoneAccept}
           multiple={multiple}
           onFilesSelected={handleFilesSelected}
           disabled={disabled}
@@ -213,7 +224,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
       {variant === 'button' && (
         <FileInput
-          accept={Array.isArray(accept) ? accept.join(',') : accept}
+          accept={inputAccept}
           multiple={multiple}
           onFilesSelected={handleFilesSelected}
           disabled={disabled}
@@ -224,7 +235,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
       {variant === 'both' && (
         <>
           <FileDropzone
-            accept={accept}
+            accept={dropzoneAccept}
             multiple={multiple}
             onFilesSelected={handleFilesSelected}
             disabled={disabled}
@@ -233,7 +244,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
           <div className="text-center">
             <p className="text-xs text-[var(--color-gray-400)] mb-2">or</p>
             <FileInput
-              accept={Array.isArray(accept) ? accept.join(',') : accept}
+              accept={inputAccept}
               multiple={multiple}
               onFilesSelected={handleFilesSelected}
               disabled={disabled}

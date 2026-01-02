@@ -6,6 +6,7 @@
 import React from 'react';
 import { CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Progress } from '@eptss/ui';
 import type { UploadStatus } from '../types';
 import { formatFileSize } from '../utils/fileValidation';
 
@@ -127,12 +128,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 
       {/* Progress Bar */}
       {(status === 'uploading' || status === 'validating') && (
-        <div className="w-full bg-[var(--color-gray-700)] rounded-full h-1.5 overflow-hidden">
-          <div
-            className="h-full bg-[var(--color-accent-primary)] transition-all duration-300 ease-out"
-            style={{ width: `${Math.min(progress, 100)}%` }}
-          />
-        </div>
+        <Progress value={progress} size="sm" />
       )}
     </div>
   );
