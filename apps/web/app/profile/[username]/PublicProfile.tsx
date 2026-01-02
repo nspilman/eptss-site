@@ -4,6 +4,8 @@ import Link from "next/link";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection } from "@eptss/data-access";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text } from "@eptss/ui";
+import { AudioPreview } from "@eptss/media-upload";
+import Image from "next/image";
 
 interface SocialLink {
   id: string;
@@ -33,7 +35,10 @@ interface PublicProfileProps {
   };
   submissions: Array<{
     id: string;
-    soundcloudUrl: string;
+    audioFileUrl: string;
+    coverImageUrl: string | null;
+    audioDuration: number | null;
+    audioFileSize: number | null;
     createdAt: string | null;
     roundSlug: string | null;
     roundId: number;
@@ -161,31 +166,52 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
             {submissions.map((submission) => (
               <article key={submission.id} className="group">
                 <Card gradient hover="lift">
-                  <CardContent className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-1">
-                        {submission.songTitle}
-                      </h3>
-                      <p className="text-sm text-[var(--color-gray-300)] font-roboto mb-2">
-                        by {submission.songArtist}
-                      </p>
-                      {submission.createdAt && (
-                        <p className="text-xs text-[var(--color-gray-400)] font-roboto">
-                          Submitted {formatDate(submission.createdAt)}
+                  <CardContent className="flex flex-col gap-4">
+                    <div className="flex flex-col md:flex-row gap-4">
+                      {/* Cover Art */}
+                      {submission.coverImageUrl ? (
+                        <div className="relative w-full md:w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                          <Image
+                            src={submission.coverImageUrl}
+                            alt={`Cover art for ${submission.songTitle}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : user.profilePictureUrl ? (
+                        <div className="relative w-full md:w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                          <Image
+                            src={user.profilePictureUrl}
+                            alt={`${user.displayName}'s profile picture`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : null}
+
+                      {/* Submission Info */}
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-1">
+                          {submission.songTitle}
+                        </h3>
+                        <p className="text-sm text-[var(--color-gray-300)] font-roboto mb-2">
+                          by {submission.songArtist}
                         </p>
-                      )}
+                        {submission.createdAt && (
+                          <p className="text-xs text-[var(--color-gray-400)] font-roboto">
+                            Submitted {formatDate(submission.createdAt)}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <a
-                      href={submission.soundcloudUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
-                      </svg>
-                      Listen on SoundCloud
-                    </a>
+
+                    {/* Audio Player */}
+                    <div className="w-full">
+                      <AudioPreview
+                        src={submission.audioFileUrl}
+                        title={submission.songTitle}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </article>

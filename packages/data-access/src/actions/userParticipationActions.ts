@@ -107,7 +107,12 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
     const roundId = Number(formData.get("roundId")?.toString() || "-1");
     const validation = submitCoverSchema.safeParse({
       roundId: formData.get("roundId"),
-      soundcloudUrl: formData.get("soundcloudUrl"),
+      audioFileUrl: formData.get("audioFileUrl"),
+      audioFilePath: formData.get("audioFilePath"),
+      coverImageUrl: formData.get("coverImageUrl") || undefined,
+      coverImagePath: formData.get("coverImagePath") || undefined,
+      audioDuration: formData.get("audioDuration") || undefined,
+      audioFileSize: formData.get("audioFileSize") || undefined,
       coolThingsLearned: formData.get("coolThingsLearned"),
       toolsUsed: formData.get("toolsUsed"),
       happyAccidents: formData.get("happyAccidents"),

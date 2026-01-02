@@ -3,12 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form } from "@eptss/ui"
+import { Button, Form, Label } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
 import { submissionSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
 import { PageContent } from "@eptss/project-config";
 import { useProject } from "../../ProjectContext";
+import { MediaUploader, UploadResult } from "@eptss/media-upload";
+import { useState } from "react";
 
 interface Props {
   roundId: number;
@@ -26,14 +28,6 @@ interface Props {
 }
 
 const getFormFields = (isOriginal: boolean): FieldConfig[] => [
-  {
-    type: "input",
-    name: "soundcloudUrl",
-    label: "SoundCloud URL",
-    placeholder: "https://soundcloud.com/your-username/your-track",
-    inputType: "url",
-    description: isOriginal ? "Link to your song on SoundCloud" : "Link to your cover on SoundCloud",
-  },
   {
     type: "textarea",
     name: "coolThingsLearned",
@@ -75,10 +69,19 @@ export const SubmitPage = ({
   const { projectSlug } = useProject();
   const { coverClosesLabel, listeningPartyLabel } = dateStrings;
 
+  const [audioUpload, setAudioUpload] = useState<UploadResult | null>(null);
+  const [coverImageUpload, setCoverImageUpload] = useState<UploadResult | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   const form = useForm<SubmissionInput>({
     resolver: zodResolver(submissionSchema),
     defaultValues: {
-      soundcloudUrl: "",
+      audioFileUrl: "",
+      audioFilePath: "",
+      coverImageUrl: "",
+      coverImagePath: "",
+      audioDuration: undefined,
+      audioFileSize: undefined,
       coolThingsLearned: "",
       toolsUsed: "",
       happyAccidents: "",
@@ -92,6 +95,24 @@ export const SubmitPage = ({
   const successMessage = submitContent.successMessage;
 
   const onSubmit = async (formData: FormData): Promise<FormReturn> => {
+    // Validate that audio has been uploaded
+    if (!audioUpload) {
+      return { status: "Error" as const, message: "Please upload an audio file" };
+    }
+
+    // Add audio file data to formData
+    formData.set("audioFileUrl", audioUpload.url);
+    formData.set("audioFilePath", audioUpload.path);
+    if (audioUpload.fileSize) {
+      formData.set("audioFileSize", audioUpload.fileSize.toString());
+    }
+
+    // Add cover image data if uploaded
+    if (coverImageUpload) {
+      formData.set("coverImageUrl", coverImageUpload.url);
+      formData.set("coverImagePath", coverImageUpload.path);
+    }
+
     const result = await submitCover(formData)
 
     if (result.status === "Error") {
@@ -147,12 +168,74 @@ export const SubmitPage = ({
           className="space-y-6"
         >
           <input type="hidden" name="roundId" value={roundId} />
+
+          {/* Audio Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="audio-upload">
+              Audio File <span className="text-red-500">*</span>
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {song.title !== null ? "Upload your song" : "Upload your cover"}
+            </p>
+            <MediaUploader
+              bucket="audio-submissions"
+              accept="audio/*"
+              maxSizeMB={50}
+              variant="dropzone"
+              showPreview={true}
+              onUploadComplete={(results) => {
+                if (results.length > 0) {
+                  setAudioUpload(results[0]);
+                  setUploadError(null);
+                  // Update form values
+                  form.setValue("audioFileUrl", results[0].url);
+                  form.setValue("audioFilePath", results[0].path);
+                  if (results[0].fileSize) {
+                    form.setValue("audioFileSize", results[0].fileSize);
+                  }
+                }
+              }}
+              onUploadError={(error) => {
+                setUploadError(error.message);
+              }}
+            />
+            {uploadError && (
+              <p className="text-sm text-red-500">{uploadError}</p>
+            )}
+          </div>
+
+          {/* Cover Image Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="cover-image-upload">
+              Cover Art <span className="text-sm text-muted-foreground">(Optional)</span>
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              Upload cover art for your submission (will use your profile picture if not provided)
+            </p>
+            <MediaUploader
+              bucket="submission-images"
+              accept="image/*"
+              maxSizeMB={5}
+              enableCrop={true}
+              variant="dropzone"
+              showPreview={true}
+              onUploadComplete={(results) => {
+                if (results.length > 0) {
+                  setCoverImageUpload(results[0]);
+                  // Update form values
+                  form.setValue("coverImageUrl", results[0].url);
+                  form.setValue("coverImagePath", results[0].path);
+                }
+              }}
+            />
+          </div>
+
           <FormBuilder
             fields={getFormFields(song.title !== null)}
             control={form.control}
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading} size="full">
+          <Button type="submit" disabled={isLoading || !audioUpload} size="full">
             {isLoading ? submitContent.submittingText : submitButtonText}
           </Button>
         </motion.div>

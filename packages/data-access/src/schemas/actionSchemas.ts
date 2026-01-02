@@ -18,7 +18,12 @@ export const submitVotesSchema = z.object({
 
 export const submitCoverSchema = z.object({
   roundId: z.coerce.number().int().positive("Round ID must be a positive number"),
-  soundcloudUrl: z.string().url("Invalid SoundCloud URL"),
+  audioFileUrl: z.string().url("Invalid audio file URL"),
+  audioFilePath: z.string().min(1, "Audio file path is required"),
+  coverImageUrl: z.string().url().optional(),
+  coverImagePath: z.string().optional(),
+  audioDuration: z.coerce.number().positive().optional(),
+  audioFileSize: z.coerce.number().positive().optional(),
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),

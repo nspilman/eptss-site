@@ -56,7 +56,10 @@ export type Submission = {
   created_at: string | null;
   title: string | null;
   artist: string | null;
-  soundcloud_url: string | null;
+  audio_file_url: string;
+  cover_image_url: string | null;
+  audio_duration: number | null;
+  audio_file_size: number | null;
   round_slug: string | null;
   user_id: string | null;
   additional_comments: string | null;
