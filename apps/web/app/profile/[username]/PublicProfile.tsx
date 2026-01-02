@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection } from "@eptss/data-access";
-import { Card, CardContent, SectionHeader, EmptyState, Display, Text } from "@eptss/ui";
+import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
 import { AudioPreview } from "@eptss/media-upload";
 import Image from "next/image";
 
@@ -191,16 +191,16 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
 
                       {/* Submission Info */}
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-1">
+                        <Heading as="h3" size="xs" className="mb-1">
                           {submission.songTitle}
-                        </h3>
-                        <p className="text-sm text-[var(--color-gray-300)] font-roboto mb-2">
+                        </Heading>
+                        <Text size="sm" color="tertiary" className="mb-2">
                           by {submission.songArtist}
-                        </p>
+                        </Text>
                         {submission.createdAt && (
-                          <p className="text-xs text-[var(--color-gray-400)] font-roboto">
+                          <Text size="xs" color="secondary">
                             Submitted {formatDate(submission.createdAt)}
-                          </p>
+                          </Text>
                         )}
                       </div>
                     </div>

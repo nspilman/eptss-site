@@ -1,7 +1,7 @@
 'use client';
 
 import { formatDate } from '@eptss/data-access/utils/formatDate';
-import { Card, CardContent } from '@eptss/ui';
+import { Card, CardContent, Text, Heading } from '@eptss/ui';
 import { AudioPreview } from '@eptss/media-upload';
 import type { Submission } from '../types';
 
@@ -13,9 +13,9 @@ export function SubmissionsTab({ submissions }: SubmissionsTabProps) {
   if (submissions.length === 0) {
     return (
       <div className="w-full text-center py-12">
-        <p className="text-[var(--color-gray-400)] text-lg font-roboto">
+        <Text size="lg" color="secondary">
           You haven&apos;t submitted any songs yet.
-        </p>
+        </Text>
       </div>
     );
   }
@@ -34,16 +34,16 @@ export function SubmissionsTab({ submissions }: SubmissionsTabProps) {
           <Card className="relative group-hover:shadow-xl transition-shadow duration-300">
             <CardContent className="flex flex-col gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-1">
+                <Heading as="h3" size="xs" className="mb-1">
                   {submission.title || 'Unknown Title'}
-                </h3>
-                <p className="text-sm text-[var(--color-gray-300)] font-roboto mb-2">
+                </Heading>
+                <Text size="sm" color="tertiary" className="mb-2">
                   by {submission.artist || 'Unknown Artist'}
-                </p>
+                </Text>
                 {submission.created_at && (
-                  <p className="text-xs text-[var(--color-gray-400)] font-roboto">
+                  <Text size="xs" color="secondary">
                     Submitted {formatDate(submission.created_at)}
-                  </p>
+                  </Text>
                 )}
               </div>
 

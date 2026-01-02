@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form, Label } from "@eptss/ui"
+import { Button, Form, Label, Text } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
 import { submissionSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
@@ -174,9 +174,9 @@ export const SubmitPage = ({
             <Label htmlFor="audio-upload">
               Audio File <span className="text-red-500">*</span>
             </Label>
-            <p className="text-sm text-muted-foreground">
+            <Text size="sm" color="muted">
               {song.title !== null ? "Upload your song" : "Upload your cover"}
-            </p>
+            </Text>
             <MediaUploader
               bucket="audio-submissions"
               accept="audio/*"
@@ -200,18 +200,18 @@ export const SubmitPage = ({
               }}
             />
             {uploadError && (
-              <p className="text-sm text-red-500">{uploadError}</p>
+              <Text size="sm" color="destructive">{uploadError}</Text>
             )}
           </div>
 
           {/* Cover Image Upload */}
           <div className="space-y-2">
             <Label htmlFor="cover-image-upload">
-              Cover Art <span className="text-sm text-muted-foreground">(Optional)</span>
+              Cover Art <Text as="span" size="sm" color="muted">(Optional)</Text>
             </Label>
-            <p className="text-sm text-muted-foreground">
+            <Text size="sm" color="muted">
               Upload cover art for your submission (will use your profile picture if not provided)
-            </p>
+            </Text>
             <MediaUploader
               bucket="submission-images"
               accept="image/*"
