@@ -84,11 +84,11 @@ export const FilePreview: React.FC<FilePreviewProps> = ({
   if (category === 'image' && previewUrl) {
     return (
       <div className={cn('relative group', className)}>
-        <div className="relative aspect-video w-full bg-[var(--color-gray-700)] rounded-lg overflow-hidden">
+        <div className="relative aspect-square max-w-xs w-full bg-[var(--color-gray-700)] rounded-lg overflow-hidden">
           <img
             src={previewUrl}
             alt={file.name}
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
           {showRemove && onRemove && (
             <Button

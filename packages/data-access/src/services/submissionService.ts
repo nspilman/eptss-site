@@ -113,7 +113,8 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
       audioFilePath: audioFilePath,
       coverImageUrl: coverImageUrl || null,
       coverImagePath: coverImagePath || null,
-      audioDuration: audioDuration || null,
+      // Round audioDuration to nearest integer for database storage
+      audioDuration: audioDuration ? Math.round(audioDuration) : null,
       audioFileSize: audioFileSize || null,
       userId: userId,
       additionalComments: additionalComments,
@@ -176,7 +177,8 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         audioFilePath: validData.audioFilePath,
         coverImageUrl: validData.coverImageUrl || null,
         coverImagePath: validData.coverImagePath || null,
-        audioDuration: validData.audioDuration || null,
+        // Round audioDuration to nearest integer for database storage
+        audioDuration: validData.audioDuration ? Math.round(validData.audioDuration) : null,
         audioFileSize: validData.audioFileSize || null,
         userId: userId || "",
         additionalComments: JSON.stringify({

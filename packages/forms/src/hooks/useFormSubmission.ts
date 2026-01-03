@@ -21,14 +21,50 @@ export function useFormSubmission<T extends FieldValues>({
   const [isLoading, setIsLoading] = useState(false);
   const { formState } = form;
 
+  // Helper function to convert field names to human-friendly labels
+  const getFieldLabel = (fieldName: string): string => {
+    const labels: Record<string, string> = {
+      audioFileUrl: 'Audio File',
+      audioFilePath: 'Audio File',
+      coverImageUrl: 'Cover Image',
+      coverImagePath: 'Cover Image',
+      audioDuration: 'Audio Duration',
+      audioFileSize: 'Audio File Size',
+      coolThingsLearned: 'Cool Things Learned',
+      toolsUsed: 'Tools Used',
+      happyAccidents: 'Happy Accidents',
+      didntWork: "What Didn't Work",
+      roundId: 'Round ID',
+      email: 'Email',
+      songTitle: 'Song Title',
+      artist: 'Artist',
+      youtubeLink: 'YouTube Link',
+      soundcloudUrl: 'SoundCloud URL',
+      additionalComments: 'Additional Comments',
+    };
+    return labels[fieldName] || fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+  };
+
   // This effect will run when formState.errors changes
   useEffect(() => {
-    // If there are errors and the form has been submitted or fields touched
-    if (Object.keys(formState.errors).length > 0 &&
-        (formState.isSubmitted || Object.keys(formState.touchedFields).length > 0)) {
-      // Get all error messages
+    // Only show errors if the form has been submitted (submitCount > 0)
+    // This prevents showing errors on page load even if validation fails
+    if (Object.keys(formState.errors).length > 0 && formState.submitCount > 0) {
+      // Get all error messages with field names
       const errorMessages = Object.entries(formState.errors)
-        .map(([field, error]) => `${field}: ${error?.message}`)
+        .map(([fieldName, error]) => {
+          const fieldLabel = getFieldLabel(fieldName);
+          const message = error?.message;
+          // Ensure message is a string
+          const messageStr = typeof message === 'string' ? message : String(message || '');
+          // If the message already contains the field info, just return it
+          // Otherwise, prepend the field label
+          if (messageStr && !messageStr.toLowerCase().includes(fieldLabel.toLowerCase())) {
+            return `${fieldLabel}: ${messageStr}`;
+          }
+          return messageStr;
+        })
+        .filter(Boolean)
         .join('\n');
 
       if (errorMessages) {
@@ -39,7 +75,7 @@ export function useFormSubmission<T extends FieldValues>({
         });
       }
     }
-  }, [formState.errors, formState.isSubmitted, formState.touchedFields]);
+  }, [formState.errors, formState.submitCount]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,7 +84,30 @@ export function useFormSubmission<T extends FieldValues>({
     const isValid = await form.trigger();
 
     if (!isValid) {
-      // Don't proceed if validation fails - errors will be shown by the useEffect above
+      // Show validation errors in a toast with field names
+      const errorMessages = Object.entries(formState.errors)
+        .map(([fieldName, error]) => {
+          const fieldLabel = getFieldLabel(fieldName);
+          const message = error?.message;
+          // Ensure message is a string
+          const messageStr = typeof message === 'string' ? message : String(message || '');
+          // If the message already contains the field info, just return it
+          // Otherwise, prepend the field label
+          if (messageStr && !messageStr.toLowerCase().includes(fieldLabel.toLowerCase())) {
+            return `${fieldLabel}: ${messageStr}`;
+          }
+          return messageStr;
+        })
+        .filter(Boolean)
+        .join('\n');
+
+      if (errorMessages) {
+        toast({
+          variant: "destructive",
+          title: "Validation Error",
+          description: errorMessages,
+        });
+      }
       return;
     }
 
@@ -61,7 +120,11 @@ export function useFormSubmission<T extends FieldValues>({
       // Create FormData object
       const formData = new FormData();
       Object.entries(values).forEach(([key, value]) => {
-        formData.append(key, value as string);
+        // Only append non-null, non-undefined values
+        // FormData.append automatically converts to string, so we just pass the value
+        if (value !== undefined && value !== null && value !== '') {
+          formData.append(key, String(value));
+        }
       });
 
       // Submit the form

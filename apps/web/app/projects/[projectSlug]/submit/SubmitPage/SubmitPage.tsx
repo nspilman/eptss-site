@@ -72,6 +72,8 @@ export const SubmitPage = ({
   const [audioUpload, setAudioUpload] = useState<UploadResult | null>(null);
   const [coverImageUpload, setCoverImageUpload] = useState<UploadResult | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [audioResetKey, setAudioResetKey] = useState(0);
+  const [coverResetKey, setCoverResetKey] = useState(0);
 
   const form = useForm<SubmissionInput>({
     resolver: zodResolver(submissionSchema),
@@ -178,25 +180,57 @@ export const SubmitPage = ({
               {song.title !== null ? "Upload your song" : "Upload your cover"}
             </Text>
             <MediaUploader
+              key={`audio-${audioResetKey}`}
               bucket="audio-submissions"
               accept="audio/*"
               maxSizeMB={50}
-              variant="dropzone"
+              variant="button"
+              buttonText="Choose Audio File"
               showPreview={true}
-              onUploadComplete={(results) => {
+              onFilesSelected={(files) => {
+                console.log('[SubmitPage] Audio files selected:', files);
+                // Clear any previous upload state when new file is selected
+                if (files.length > 0) {
+                  setAudioUpload(null);
+                  setUploadError(null);
+                }
+              }}
+              onFilesRemoved={() => {
+                console.log('[SubmitPage] Audio file removed');
+                // Clear upload state and reset component when file is removed
+                setAudioUpload(null);
+                form.setValue("audioFileUrl", "");
+                form.setValue("audioFilePath", "");
+                form.setValue("audioFileSize", undefined);
+                form.setValue("audioDuration", undefined);
+                setAudioResetKey(prev => prev + 1);
+              }}
+              onUploadComplete={async (results) => {
                 if (results.length > 0) {
                   setAudioUpload(results[0]);
                   setUploadError(null);
+
+                  // Extract audio duration from metadata if available
+                  const audioDuration = results[0].metadata?.audio
+                    ? (results[0].metadata.audio as { duration?: number }).duration
+                    : undefined;
+
                   // Update form values
-                  form.setValue("audioFileUrl", results[0].url);
-                  form.setValue("audioFilePath", results[0].path);
+                  form.setValue("audioFileUrl", results[0].url, { shouldValidate: true });
+                  form.setValue("audioFilePath", results[0].path, { shouldValidate: true });
                   if (results[0].fileSize) {
-                    form.setValue("audioFileSize", results[0].fileSize);
+                    form.setValue("audioFileSize", results[0].fileSize, { shouldValidate: true });
                   }
+                  if (audioDuration) {
+                    form.setValue("audioDuration", audioDuration, { shouldValidate: true });
+                  }
+                  // Trigger validation to ensure form recognizes the new values
+                  await form.trigger(['audioFileUrl', 'audioFilePath']);
                 }
               }}
               onUploadError={(error) => {
                 setUploadError(error.message);
+                setAudioUpload(null);
               }}
             />
             {uploadError && (
@@ -213,12 +247,27 @@ export const SubmitPage = ({
               Upload cover art for your submission (will use your profile picture if not provided)
             </Text>
             <MediaUploader
+              key={`cover-${coverResetKey}`}
               bucket="submission-images"
               accept="image/*"
               maxSizeMB={5}
               enableCrop={true}
-              variant="dropzone"
+              variant="button"
+              buttonText="Choose Cover Image"
               showPreview={true}
+              onFilesSelected={(files) => {
+                // Clear any previous upload state when new file is selected
+                if (files.length > 0) {
+                  setCoverImageUpload(null);
+                }
+              }}
+              onFilesRemoved={() => {
+                // Clear upload state and reset component when file is removed
+                setCoverImageUpload(null);
+                form.setValue("coverImageUrl", "");
+                form.setValue("coverImagePath", "");
+                setCoverResetKey(prev => prev + 1);
+              }}
               onUploadComplete={(results) => {
                 if (results.length > 0) {
                   setCoverImageUpload(results[0]);

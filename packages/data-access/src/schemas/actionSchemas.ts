@@ -20,14 +20,29 @@ export const submitCoverSchema = z.object({
   roundId: z.coerce.number().int().positive("Round ID must be a positive number"),
   audioFileUrl: z.string().url("Invalid audio file URL"),
   audioFilePath: z.string().min(1, "Audio file path is required"),
-  coverImageUrl: z.string().url().optional(),
-  coverImagePath: z.string().optional(),
-  audioDuration: z.coerce.number().positive().optional(),
-  audioFileSize: z.coerce.number().positive().optional(),
-  coolThingsLearned: z.string().optional(),
-  toolsUsed: z.string().optional(),
-  happyAccidents: z.string().optional(),
-  didntWork: z.string().optional(),
+  coverImageUrl: z.string().url().optional().or(z.literal("")),
+  coverImagePath: z.string().optional().or(z.literal("")),
+  // Use preprocess to handle string to number conversion for optional fields
+  audioDuration: z.preprocess(
+    (val) => {
+      if (val === undefined || val === "" || val === null) return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    },
+    z.number().positive().optional()
+  ),
+  audioFileSize: z.preprocess(
+    (val) => {
+      if (val === undefined || val === "" || val === null) return undefined;
+      const num = Number(val);
+      return isNaN(num) ? undefined : num;
+    },
+    z.number().positive().optional()
+  ),
+  coolThingsLearned: z.string().optional().or(z.literal("")),
+  toolsUsed: z.string().optional().or(z.literal("")),
+  happyAccidents: z.string().optional().or(z.literal("")),
+  didntWork: z.string().optional().or(z.literal("")),
 });
 
 export const signupWithSongSchema = z.object({

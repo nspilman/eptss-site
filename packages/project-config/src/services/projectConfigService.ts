@@ -57,10 +57,7 @@ async function getProjectConfigById(projectId: string): Promise<ProjectConfig> {
   }
 
   // Parse and validate config
-  console.log('[ProjectConfig] Raw config from DB for project', projectId, ':', JSON.stringify(result[0].config, null, 2));
   const parsedConfig = safeParseProjectConfig(result[0].config);
-  console.log('[ProjectConfig] Parsed config:', JSON.stringify(parsedConfig, null, 2));
-  console.log('[ProjectConfig] requireSongOnSignup:', parsedConfig.businessRules.requireSongOnSignup);
 
   // Cache the result
   configCache.set(projectId, {

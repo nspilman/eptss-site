@@ -85,20 +85,24 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
   return (
     <div className={cn('flex flex-col gap-4', className)}>
       {/* Crop Area */}
-      <div className="max-h-[500px] overflow-auto bg-[var(--color-gray-700)] rounded-lg p-4">
-        <ReactCrop
-          crop={crop}
-          onChange={(c) => setCrop(c)}
-          onComplete={(c) => setCompletedCrop(c)}
-          aspect={aspectRatio}
-        >
-          <img
-            ref={imageRef}
-            src={imageUrl}
-            alt="Crop preview"
-            className="max-w-full h-auto"
-          />
-        </ReactCrop>
+      <div className="bg-[var(--color-gray-700)] rounded-lg p-4 flex items-center justify-center">
+        {imageUrl && (
+          <div className="max-w-md max-h-96 w-full">
+            <ReactCrop
+              crop={crop}
+              onChange={(c) => setCrop(c)}
+              onComplete={(c) => setCompletedCrop(c)}
+              aspect={aspectRatio}
+            >
+              <img
+                ref={imageRef}
+                src={imageUrl}
+                alt="Crop preview"
+                style={{ maxWidth: '448px', maxHeight: '384px', width: 'auto', height: 'auto' }}
+              />
+            </ReactCrop>
+          </div>
+        )}
       </div>
 
       {/* Actions */}

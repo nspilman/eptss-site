@@ -35,6 +35,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   onUploadComplete,
   onUploadError,
   onFilesSelected,
+  onFilesRemoved,
   className,
   disabled = false,
   placeholder,
@@ -70,37 +71,44 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   // Handle file selection
   const handleFilesSelected = useCallback(
     (files: File[]) => {
+      console.log('[MediaUploader] Files selected:', files);
       // Validate files
       const { validFiles, errors } = filterValid(files);
+      console.log('[MediaUploader] Validation result:', { validFiles, errors });
 
       // Set validation errors
       setValidationErrors(errors.map((e) => e.error));
 
       // If no valid files, don't proceed
       if (validFiles.length === 0) {
+        console.log('[MediaUploader] No valid files, aborting');
         return;
       }
 
       // Process first file for cropping if enabled
       if (enableCrop && validFiles.length > 0 && isImage(validFiles[0])) {
+        console.log('[MediaUploader] Enabling crop for first image');
         setFileToProcess(validFiles[0]);
         setShowCropper(true);
         // Keep other files for later
         setSelectedFiles(validFiles.slice(1));
       } else {
+        console.log('[MediaUploader] Setting selected files:', validFiles);
         setSelectedFiles(validFiles);
 
         // Auto-upload if enabled
         if (autoUpload) {
-          const queueItems = uploadQueue.addFiles(validFiles);
-          // Start uploading after files are added
-          setTimeout(() => uploadQueue.uploadAll(), 0);
+          console.log('[MediaUploader] Auto-upload enabled, starting upload');
+          // Add files and immediately start upload with the returned items
+          uploadQueue.addAndUploadFiles(validFiles);
         } else {
+          console.log('[MediaUploader] Auto-upload disabled, adding to queue');
           uploadQueue.addFiles(validFiles);
         }
       }
 
       // Notify parent
+      console.log('[MediaUploader] Notifying parent of selected files');
       onFilesSelected?.(validFiles);
       if (autoUpload) {
         onUploadStart?.(validFiles);
@@ -119,8 +127,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
       setSelectedFiles(allFiles);
 
       if (autoUpload) {
-        const queueItems = uploadQueue.addFiles(allFiles);
-        setTimeout(() => uploadQueue.uploadAll(), 0);
+        uploadQueue.addAndUploadFiles(allFiles);
         onUploadStart?.(allFiles);
       } else {
         uploadQueue.addFiles(allFiles);
@@ -136,8 +143,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
     if (selectedFiles.length > 0) {
       if (autoUpload) {
-        const queueItems = uploadQueue.addFiles(selectedFiles);
-        setTimeout(() => uploadQueue.uploadAll(), 0);
+        uploadQueue.addAndUploadFiles(selectedFiles);
         onUploadStart?.(selectedFiles);
       } else {
         uploadQueue.addFiles(selectedFiles);
@@ -149,8 +155,9 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   const handleRemoveFile = useCallback(
     (index: number) => {
       setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+      onFilesRemoved?.(index);
     },
-    []
+    [onFilesRemoved]
   );
 
   // Manual upload trigger
@@ -211,47 +218,51 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   // Default render
   return (
     <div className={cn('flex flex-col gap-4', className)}>
-      {/* Upload Interface */}
-      {variant === 'dropzone' && (
-        <FileDropzone
-          accept={dropzoneAccept}
-          multiple={multiple}
-          onFilesSelected={handleFilesSelected}
-          disabled={disabled}
-          placeholder={placeholder}
-        />
-      )}
-
-      {variant === 'button' && (
-        <FileInput
-          accept={inputAccept}
-          multiple={multiple}
-          onFilesSelected={handleFilesSelected}
-          disabled={disabled}
-          buttonText={buttonText}
-        />
-      )}
-
-      {variant === 'both' && (
+      {/* Upload Interface - only show when no files selected */}
+      {selectedFiles.length === 0 && (
         <>
-          <FileDropzone
-            accept={dropzoneAccept}
-            multiple={multiple}
-            onFilesSelected={handleFilesSelected}
-            disabled={disabled}
-            placeholder={placeholder}
-          />
-          <div className="text-center">
-            <Text size="xs" color="muted" className="mb-2">or</Text>
+          {variant === 'dropzone' && (
+            <FileDropzone
+              accept={dropzoneAccept}
+              multiple={multiple}
+              onFilesSelected={handleFilesSelected}
+              disabled={disabled}
+              placeholder={placeholder}
+            />
+          )}
+
+          {variant === 'button' && (
             <FileInput
               accept={inputAccept}
               multiple={multiple}
               onFilesSelected={handleFilesSelected}
               disabled={disabled}
               buttonText={buttonText}
-              className="inline-block"
             />
-          </div>
+          )}
+
+          {variant === 'both' && (
+            <>
+              <FileDropzone
+                accept={dropzoneAccept}
+                multiple={multiple}
+                onFilesSelected={handleFilesSelected}
+                disabled={disabled}
+                placeholder={placeholder}
+              />
+              <div className="text-center">
+                <Text size="xs" color="muted" className="mb-2">or</Text>
+                <FileInput
+                  accept={inputAccept}
+                  multiple={multiple}
+                  onFilesSelected={handleFilesSelected}
+                  disabled={disabled}
+                  buttonText={buttonText}
+                  className="inline-block"
+                />
+              </div>
+            </>
+          )}
         </>
       )}
 
@@ -266,22 +277,22 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
         </AlertBox>
       )}
 
-      {/* File Previews (before upload or when autoUpload is false) */}
-      {showPreview && selectedFiles.length > 0 && uploadQueue.items.length === 0 && (
+      {/* File Previews */}
+      {showPreview && selectedFiles.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {selectedFiles.map((file, index) => (
             <FilePreview
               key={`${file.name}-${index}`}
               file={file}
-              showRemove
+              showRemove={true}
               onRemove={() => handleRemoveFile(index)}
             />
           ))}
         </div>
       )}
 
-      {/* Upload Queue */}
-      {uploadQueue.items.length > 0 && (
+      {/* Upload Queue Progress - only show if previews are disabled */}
+      {!showPreview && uploadQueue.items.length > 0 && (
         <UploadQueue items={uploadQueue.items} showCancel showRetry />
       )}
 

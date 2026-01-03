@@ -27,12 +27,14 @@ export async function uploadFile(
 ): Promise<{ url: string | null; error: string | null }> {
   "use server";
   try {
+    console.log('[storageService] uploadFile called - bucket:', bucket, 'path:', path);
     const supabase = await createClient();
 
     // Convert File/Blob to ArrayBuffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
 
+    console.log('[storageService] Calling supabase.storage.from("' + bucket + '").upload()');
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(path, buffer, {
@@ -41,9 +43,11 @@ export async function uploadFile(
       });
 
     if (error) {
-      console.error("Upload error:", error);
+      console.error("[storageService] Upload error - bucket:", bucket, "error:", error);
       return { url: null, error: error.message };
     }
+
+    console.log('[storageService] Upload successful, data:', data);
 
     // Get public URL
     const { data: publicUrlData } = supabase.storage
