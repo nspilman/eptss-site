@@ -37,6 +37,8 @@ export type { FilePreviewProps } from './components/FilePreview';
 export { AudioPreview } from './components/AudioPreview';
 export type { AudioPreviewProps } from './components/AudioPreview';
 
+export { AudioPreviewErrorBoundary } from './components/AudioPreviewErrorBoundary';
+
 export { ImageCropper } from './components/ImageCropper';
 export type { ImageCropperProps } from './components/ImageCropper';
 

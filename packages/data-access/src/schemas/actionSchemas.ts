@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalPositiveNumber, urlOrEmpty } from "./zodHelpers";
 
 /**
  * Validation schemas for Server Actions
@@ -20,25 +21,11 @@ export const submitCoverSchema = z.object({
   roundId: z.coerce.number().int().positive("Round ID must be a positive number"),
   audioFileUrl: z.string().url("Invalid audio file URL"),
   audioFilePath: z.string().min(1, "Audio file path is required"),
-  coverImageUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  coverImageUrl: urlOrEmpty(),
   coverImagePath: z.string().optional(),
-  // Use preprocess to handle string to number conversion for optional fields
-  audioDuration: z.preprocess(
-    (val) => {
-      if (val === undefined || val === "" || val === null) return undefined;
-      const num = Number(val);
-      return isNaN(num) ? undefined : num;
-    },
-    z.number().positive().optional()
-  ),
-  audioFileSize: z.preprocess(
-    (val) => {
-      if (val === undefined || val === "" || val === null) return undefined;
-      const num = Number(val);
-      return isNaN(num) ? undefined : num;
-    },
-    z.number().positive().optional()
-  ),
+  // Use shared helper for optional positive numbers
+  audioDuration: optionalPositiveNumber,
+  audioFileSize: optionalPositiveNumber,
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),

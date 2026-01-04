@@ -1,4 +1,5 @@
-import { z } from "zod"
+import { z } from "zod";
+import { optionalPositiveNumber, urlOrEmpty } from "./zodHelpers";
 
 // Define the submission schema directly as an object
 export const submissionSchema = z.object({
@@ -10,25 +11,11 @@ export const submissionSchema = z.object({
     required_error: "Please upload an audio file",
     invalid_type_error: "Audio file path must be a string",
   }).min(1, "Please upload an audio file"),
-  coverImageUrl: z.union([z.string().url(), z.literal("")]).optional(),
+  coverImageUrl: urlOrEmpty(),
   coverImagePath: z.string().optional(),
-  // Use preprocess to handle string to number conversion from FormData
-  audioDuration: z.preprocess(
-    (val) => {
-      if (val === undefined || val === "" || val === null) return undefined;
-      const num = Number(val);
-      return isNaN(num) ? undefined : num;
-    },
-    z.number().positive().optional()
-  ),
-  audioFileSize: z.preprocess(
-    (val) => {
-      if (val === undefined || val === "" || val === null) return undefined;
-      const num = Number(val);
-      return isNaN(num) ? undefined : num;
-    },
-    z.number().positive().optional()
-  ),
+  // Use shared helpers for optional positive numbers
+  audioDuration: optionalPositiveNumber,
+  audioFileSize: optionalPositiveNumber,
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),

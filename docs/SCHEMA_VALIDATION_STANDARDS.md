@@ -24,9 +24,31 @@ coverImageUrl: z.union([z.string().url(), z.literal("")]).optional()
 
 ## Standard Patterns
 
+### Shared Zod Helpers
+
+For consistency across schemas, use shared helpers from `zodHelpers.ts`:
+
+```typescript
+import {
+  optionalPositiveNumber,
+  urlOrEmpty,
+  trimmedString,
+  nonEmptyTrimmedString,
+  optionalBoolean,
+  optionalDate,
+} from "./zodHelpers";
+```
+
 ### ✅ Optional URL or Empty String
 
-**Correct Pattern:**
+**Correct Pattern (Using Shared Helper):**
+```typescript
+import { urlOrEmpty } from "./zodHelpers";
+
+coverImageUrl: urlOrEmpty(),
+```
+
+**Manual Pattern (if needed):**
 ```typescript
 coverImageUrl: z.union([z.string().url(), z.literal("")]).optional()
 ```
@@ -69,7 +91,15 @@ description: z.string().optional().or(z.literal(""))
 
 ### ✅ Optional Number with Preprocessing
 
-**Correct Pattern:**
+**Correct Pattern (Using Shared Helper):**
+```typescript
+import { optionalPositiveNumber } from "./zodHelpers";
+
+audioDuration: optionalPositiveNumber,
+audioFileSize: optionalPositiveNumber,
+```
+
+**Manual Pattern (if needed):**
 ```typescript
 audioDuration: z.preprocess(
   (val) => {
@@ -85,6 +115,7 @@ audioDuration: z.preprocess(
 - Handles FormData string inputs
 - Converts to number or undefined
 - Validates as positive number if present
+- Using shared helpers ensures consistency across schemas
 
 ### ✅ Required URL
 

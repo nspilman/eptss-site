@@ -15,6 +15,8 @@ import {
   commitPendingUpload,
   failPendingUpload,
 } from "./uploadTrackingService";
+import { MAX_AUDIO_DURATION_SECONDS } from "../utils/serverFileValidation";
+import { logger } from "@eptss/logger/server";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
@@ -224,6 +226,26 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     // PHASE 2: Attempt to insert submission into database
     try {
+      // Validate and convert audio duration with sanity check
+      let audioDurationMs: number | null = null;
+      if (validData.audioDuration) {
+        if (validData.audioDuration <= 0) {
+          logger.warn("Invalid audio duration (≤ 0), storing as null", {
+            duration: validData.audioDuration,
+            userId,
+          });
+        } else if (validData.audioDuration > MAX_AUDIO_DURATION_SECONDS) {
+          logger.warn("Audio duration exceeds maximum, storing as null", {
+            duration: validData.audioDuration,
+            maxDuration: MAX_AUDIO_DURATION_SECONDS,
+            userId,
+          });
+        } else {
+          // Valid duration - convert to milliseconds
+          audioDurationMs = Math.round(validData.audioDuration * 1000);
+        }
+      }
+
       await db.insert(submissions).values({
         id: nextSubmissionId,
         projectId: projectId,
@@ -233,7 +255,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         coverImageUrl: validData.coverImageUrl || null,
         coverImagePath: validData.coverImagePath || null,
         // Store audio duration in milliseconds for precision (input is in seconds)
-        audioDuration: validData.audioDuration ? Math.round(validData.audioDuration * 1000) : null,
+        audioDuration: audioDurationMs,
         audioFileSize: validData.audioFileSize || null,
         userId: userId || "",
         additionalComments: JSON.stringify({

@@ -237,6 +237,74 @@ results.forEach(({ path, url, error, expiresAt }) => {
 export async function getPublicUrl(...) { ... }
 ```
 
+### Design Decision: Public URLs for Music Submissions
+
+**Current Implementation:**
+The EPTSS platform currently uses **public URLs** for audio submissions and cover images, not signed URLs. This is an intentional design decision based on the platform's use case.
+
+**Why Public URLs for This Use Case:**
+
+1. **Public Community Platform**
+   - Music submissions are intended to be shared publicly
+   - Users expect their submissions to be accessible to the community
+   - No privacy concerns for submitted content
+
+2. **Long-Term Accessibility**
+   - Submissions should remain accessible across voting periods
+   - Public URLs don't expire, avoiding broken links
+   - Reduces complexity for playback in various contexts
+
+3. **Performance & Simplicity**
+   - No need to regenerate URLs before playback
+   - Direct file access without server round-trips
+   - Simpler architecture for public content
+
+4. **Supabase RLS Policies Provide Access Control**
+   - Row-Level Security (RLS) policies control who can upload
+   - File paths include user IDs for organization
+   - Bucket policies restrict uploads to authenticated users
+
+**Implementation:**
+```typescript
+// In uploadFile() - returns public URL
+const { data: publicUrlData } = supabase.storage
+  .from(bucket)
+  .getPublicUrl(data.path);
+
+return { url: publicUrlData.publicUrl, error: null };
+```
+
+**When to Switch to Signed URLs:**
+
+Consider using signed URLs for future features requiring:
+- **Private content** (draft submissions, admin-only files)
+- **Temporary access** (download links, time-limited previews)
+- **Sensitive data** (user documents, personal information)
+- **Paid content** (premium features, downloadable content)
+
+**Example Use Cases for Each:**
+
+```typescript
+// PUBLIC URL - Music submissions (current)
+const { url } = await uploadFile(
+  BUCKETS.AUDIO_SUBMISSIONS,
+  `${userId}/${timestamp}-track.mp3`,
+  audioFile,
+  { audioDuration: 180 }
+);
+// Returns: https://xxx.supabase.co/storage/v1/object/public/audio-submissions/...
+// Accessible by anyone with the link, forever
+
+// SIGNED URL - Private admin reports (future feature)
+const { url, expiresAt } = await getSignedUrl(
+  BUCKETS.ADMIN_REPORTS,
+  `reports/2024-01-financial.pdf`,
+  { expiresIn: 3600 } // 1 hour
+);
+// Returns: https://xxx.supabase.co/storage/v1/object/sign/...?token=...
+// Accessible only for 1 hour, requires auth to generate
+```
+
 ## Upload Flow with Security
 
 ### Complete Secure Upload Flow
