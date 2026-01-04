@@ -1,3 +1,4 @@
+// Server actions (async functions with "use server")
 export {
   uploadFile,
   deleteFile,
@@ -5,7 +6,11 @@ export {
   getSignedUrl,
   getSignedUrls,
   listFiles,
-  generateProfilePicturePath,
+} from './storageActions';
+
+// Constants and helper functions
+export {
   BUCKETS,
+  generateProfilePicturePath,
 } from './storageService';
 export type { BucketName } from './storageService';
