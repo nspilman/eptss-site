@@ -89,6 +89,8 @@ export const submissions = pgTable("submissions", {
   coverImagePath: text("cover_image_path"),
   audioDuration: bigint("audio_duration", { mode: "number" }), // Stored in milliseconds for precision
   audioFileSize: integer("audio_file_size"),
+  // Lyrics field for original songs project
+  lyrics: text("lyrics"),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
   additionalComments: text("additional_comments"),
   userId: uuid("user_id").references(() => users.userid).notNull(),

@@ -38,6 +38,7 @@ export default async function SubmitForRound({ params }: Props) {
       song={song}
       submitCover={submitCover}
       submitContent={projectConfig.content.pages.submit}
+      submissionFormConfig={projectConfig.submissionForm}
     />
   );
 }

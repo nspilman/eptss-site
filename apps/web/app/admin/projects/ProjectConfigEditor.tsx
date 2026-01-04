@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { getAllProjects, type ProjectInfo } from "@eptss/data-access/services/projectService";
 import { safeParseProjectConfig, type ProjectConfig } from "@eptss/project-config";
 import { updateProjectConfig } from "./actions";
-import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, Zap, Globe, BookOpen, MessageSquare, Image } from "lucide-react";
+import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, Zap, Globe, BookOpen, MessageSquare, Image, ClipboardList } from "lucide-react";
 import { ConfigSection } from "./components/ConfigSection";
 import { TableOfContents } from "./components/TableOfContents";
 import { LabelWithTooltip } from "./components/LabelWithTooltip";
-import { Text } from "@eptss/ui";
+import { Text, Button, Badge } from "@eptss/ui";
 import {
   FeatureFlagsEditor,
   UIConfigEditor,
@@ -22,6 +22,7 @@ import {
   RoundInfoLabelsEditor,
   SubmissionsGalleryEditor,
   SubmitPageEditor,
+  SubmissionFormEditor,
 } from "./components/editors";
 
 export function ProjectConfigEditor() {
@@ -265,6 +266,28 @@ export function ProjectConfigEditor() {
             </ConfigSection>
           </div>
 
+          {/* Submission Form Group */}
+          <div id="submission-form" className="space-y-4 scroll-mt-8">
+            <div className="flex items-center gap-2 mb-2">
+              <ClipboardList className="h-5 w-5 text-teal-500" />
+              <h3 className="text-lg font-bold text-teal-500 uppercase tracking-wide">Submission Form</h3>
+            </div>
+            <ConfigSection
+              id="submission-form-fields"
+              title="Form Fields Configuration"
+              description="Configure which fields appear on the submission form and their validation rules"
+              variant="purple"
+              icon={<ClipboardList className="h-5 w-5" />}
+              isCollapsed={collapsedSections.has('submission-form-fields')}
+              onToggle={() => toggleSection('submission-form-fields')}
+            >
+              <SubmissionFormEditor
+                submissionForm={config.submissionForm}
+                onChange={(submissionForm) => updateConfig(["submissionForm"], submissionForm)}
+              />
+            </ConfigSection>
+          </div>
+
           {/* Communication Group */}
           <div id="communication" className="space-y-4 scroll-mt-8">
             <div className="flex items-center gap-2 mb-2">
@@ -431,34 +454,36 @@ export function ProjectConfigEditor() {
             </ConfigSection>
           </div>
 
-          {/* Save Button - Sticky at bottom */}
-          <div className="sticky bottom-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 shadow-2xl border-2 border-blue-500/30">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="text-white font-bold text-lg mb-1">Save Configuration</h4>
-                <Text size="sm" className="text-white/80">Click to save all changes to {selectedProject.name}</Text>
-              </div>
-              <div className="flex items-center gap-4">
-                {success && (
-                  <span className="flex items-center gap-2 text-green-300 font-semibold bg-green-500/20 px-4 py-2 rounded-lg">
-                    <span className="text-xl">✓</span> Saved successfully!
-                  </span>
-                )}
-                {error && (
-                  <span className="flex items-center gap-2 text-red-300 font-semibold bg-red-500/20 px-4 py-2 rounded-lg">
-                    <span className="text-xl">✗</span> {error}
-                  </span>
-                )}
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="px-8 py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg transition-all hover:scale-105"
-                >
-                  {saving && <Loader2 className="h-5 w-5 animate-spin" />}
-                  {saving ? "Saving..." : "Save All Changes"}
-                </button>
-              </div>
-            </div>
+        </div>
+      )}
+
+      {/* Floating Save Island */}
+      {config && selectedProject && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-full px-6 py-3 shadow-2xl border-2 border-white/20 backdrop-blur-sm flex items-center gap-4">
+            {success && (
+              <Badge variant="secondary" className="bg-green-500/20 text-green-300 border-green-500/30">
+                ✓ Saved!
+              </Badge>
+            )}
+            {error && (
+              <Badge variant="destructive" className="max-w-[200px] truncate">
+                ✗ {error}
+              </Badge>
+            )}
+            <Text size="sm" className="text-white/80 hidden sm:inline">
+              {selectedProject.name}
+            </Text>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              variant="default"
+              size="md"
+              className="rounded-full"
+            >
+              {saving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
           </div>
         </div>
       )}

@@ -354,6 +354,71 @@ export const faqContentSchema = z.object({
 }).default({});
 
 // ============================================================================
+// SUBMISSION FORM CONFIGURATION
+// ============================================================================
+
+/**
+ * Base field configuration for submission form fields
+ * Each field can be enabled/disabled, required, and customized
+ */
+export const submissionFieldConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  required: z.boolean().default(false),
+  requiredGroup: z.string().optional(), // For boolean OR logic between fields
+  label: z.string().optional(), // Custom label override
+  placeholder: z.string().optional(), // Custom placeholder text
+  description: z.string().optional(), // Helper text below the field
+});
+
+/**
+ * Audio file field configuration with file-specific options
+ */
+export const audioFileFieldSchema = submissionFieldConfigSchema.extend({
+  maxSizeMB: z.number().positive().default(50),
+  acceptedFormats: z.array(z.string()).default(["audio/*"]),
+}).default({
+  enabled: true,
+  required: true,
+});
+
+/**
+ * Cover image field configuration with image-specific options
+ */
+export const coverImageFieldSchema = submissionFieldConfigSchema.extend({
+  maxSizeMB: z.number().positive().default(5),
+  enableCrop: z.boolean().default(true),
+}).default({
+  enabled: true,
+  required: false,
+});
+
+/**
+ * Lyrics field configuration with text-specific options
+ */
+export const lyricsFieldSchema = submissionFieldConfigSchema.extend({
+  maxLength: z.number().positive().optional(),
+}).default({
+  enabled: false, // Disabled by default, enabled for originals project
+  required: false,
+});
+
+/**
+ * Submission form configuration per project
+ * Configures which fields appear and their validation rules
+ */
+export const submissionFormConfigSchema = z.object({
+  fields: z.object({
+    audioFile: audioFileFieldSchema,
+    coverImage: coverImageFieldSchema,
+    lyrics: lyricsFieldSchema,
+    coolThingsLearned: submissionFieldConfigSchema.default({ enabled: true }),
+    toolsUsed: submissionFieldConfigSchema.default({ enabled: true }),
+    happyAccidents: submissionFieldConfigSchema.default({ enabled: true }),
+    didntWork: submissionFieldConfigSchema.default({ enabled: true }),
+  }).default({}),
+}).default({});
+
+// ============================================================================
 // COMPLETE PROJECT CONFIG SCHEMA
 // ============================================================================
 
@@ -370,6 +435,7 @@ export const projectConfigSchema = z.object({
   metadata: projectMetadataSchema,
   seo: seoMetadataSchema,
   terminology: terminologySchema,
+  submissionForm: submissionFormConfigSchema,
   content: z.object({
     pages: pageContentSchema,
     faq: faqContentSchema,
@@ -394,6 +460,11 @@ export type FAQContent = z.infer<typeof faqContentSchema>;
 export type HowItWorks = z.infer<typeof howItWorksSchema>;
 export type RoundInfoLabels = z.infer<typeof roundInfoLabelsSchema>;
 export type SubmissionsGallery = z.infer<typeof submissionsGallerySchema>;
+export type SubmissionFormConfig = z.infer<typeof submissionFormConfigSchema>;
+export type SubmissionFieldConfig = z.infer<typeof submissionFieldConfigSchema>;
+export type AudioFileFieldConfig = z.infer<typeof audioFileFieldSchema>;
+export type CoverImageFieldConfig = z.infer<typeof coverImageFieldSchema>;
+export type LyricsFieldConfig = z.infer<typeof lyricsFieldSchema>;
 
 // ============================================================================
 // VALIDATION UTILITIES

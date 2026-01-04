@@ -1,4 +1,4 @@
-import { BookOpen, ToggleLeft, Palette, Shield, Mail, Zap } from "lucide-react";
+import { BookOpen, ToggleLeft, Palette, Shield, Mail, Zap, ClipboardList } from "lucide-react";
 
 interface TableOfContentsProps {
   onNavigate: (sectionId: string) => void;
@@ -16,6 +16,10 @@ const sectionStyles = {
   rules: {
     button: "hover:bg-orange-500/10 border-orange-500/20 hover:border-orange-500/40",
     text: "text-orange-600 dark:text-orange-400",
+  },
+  "submission-form": {
+    button: "hover:bg-teal-500/10 border-teal-500/20 hover:border-teal-500/40",
+    text: "text-teal-600 dark:text-teal-400",
   },
   communication: {
     button: "hover:bg-green-500/10 border-green-500/20 hover:border-green-500/40",
@@ -36,6 +40,7 @@ export function TableOfContents({ onNavigate }: TableOfContentsProps) {
     { id: 'features' as const, label: 'Features', icon: ToggleLeft },
     { id: 'design' as const, label: 'Design', icon: Palette },
     { id: 'rules' as const, label: 'Rules', icon: Shield },
+    { id: 'submission-form' as const, label: 'Submission Form', icon: ClipboardList },
     { id: 'communication' as const, label: 'Communication', icon: Mail },
     { id: 'automation' as const, label: 'Automation', icon: Zap },
     { id: 'content' as const, label: 'Content', icon: BookOpen },

@@ -1,5 +1,5 @@
 import { roundProvider, userParticipationProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from "@eptss/data-access";
-import { getProjectSEOMetadata, getPageContent } from "@eptss/project-config";
+import { getProjectSEOMetadata, getPageContent, getProjectConfig } from "@eptss/project-config";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "./SubmitPage";
 import { Metadata } from 'next';
@@ -63,6 +63,8 @@ const Submit = async ({ params }: Props) => {
     roundId,
   });
 
+  const projectConfig = await getProjectConfig(projectSlug as ProjectSlug);
+
   return (
     <SubmitPage
       roundId={roundId}
@@ -74,6 +76,7 @@ const Submit = async ({ params }: Props) => {
       }}
       submitCover={submitCover}
       submitContent={submitContent}
+      submissionFormConfig={projectConfig.submissionForm}
     />
   );
 };

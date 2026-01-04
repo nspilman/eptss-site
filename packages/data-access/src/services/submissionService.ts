@@ -31,6 +31,7 @@ export const getSubmissions = async (id: number) => {
       cover_image_url: submissions.coverImageUrl,
       audio_duration: submissions.audioDuration,
       audio_file_size: submissions.audioFileSize,
+      lyrics: submissions.lyrics,
       username: users.username || "",
       user_id: submissions.userId,
     })
@@ -48,6 +49,7 @@ export const getSubmissions = async (id: number) => {
     coverImageUrl: val.cover_image_url,
     audioDuration: val.audio_duration,
     audioFileSize: val.audio_file_size,
+    lyrics: val.lyrics,
     username: val.username || "",
     userId: val.user_id,
   }));
@@ -67,6 +69,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
     const coverImagePath = formData.get("coverImagePath")?.toString();
     const audioDuration = formData.get("audioDuration") ? Number(formData.get("audioDuration")) : undefined;
     const audioFileSize = formData.get("audioFileSize") ? Number(formData.get("audioFileSize")) : undefined;
+    const lyrics = formData.get("lyrics")?.toString() || "";
     const additionalComments = formData.get("additionalComments")?.toString() || "";
 
     if (!userId) {
@@ -124,6 +127,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
       // Store audio duration in milliseconds for precision
       audioDuration: audioDuration ? secondsToMilliseconds(audioDuration) : null,
       audioFileSize: audioFileSize || null,
+      lyrics: lyrics || null,
       userId: userId,
       additionalComments: additionalComments,
     });
@@ -258,6 +262,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         // Store audio duration in milliseconds for precision (input is in seconds)
         audioDuration: audioDurationMs,
         audioFileSize: validData.audioFileSize || null,
+        lyrics: validData.lyrics || null,
         userId: userId || "",
         additionalComments: JSON.stringify({
           coolThingsLearned: validData.coolThingsLearned || "",

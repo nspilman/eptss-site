@@ -15,6 +15,7 @@ import {
   HowItWorks,
   RoundInfoLabels,
   SubmissionsGallery,
+  SubmissionFormConfig,
   safeParseProjectConfig,
   getDefaultProjectConfig,
 } from "../schemas/projectConfig";
@@ -208,6 +209,14 @@ export async function getSubmissionsGalleryContent(slug: ProjectSlug): Promise<S
 }
 
 /**
+ * Get submission form configuration for a project
+ */
+export async function getSubmissionFormConfig(slug: ProjectSlug): Promise<SubmissionFormConfig> {
+  const config = await getProjectConfig(slug);
+  return config.submissionForm;
+}
+
+/**
  * Update project configuration (admin function)
  * Note: This doesn't validate permissions - that should be done at the route/action level
  */
@@ -233,6 +242,14 @@ export async function updateProjectConfig(
     businessRules: { ...currentConfig.businessRules, ...config.businessRules },
     terminology: { ...currentConfig.terminology, ...config.terminology },
     email: { ...currentConfig.email, ...config.email },
+    submissionForm: {
+      ...currentConfig.submissionForm,
+      ...config.submissionForm,
+      fields: {
+        ...currentConfig.submissionForm?.fields,
+        ...config.submissionForm?.fields,
+      },
+    },
     content: {
       pages: { ...currentConfig.content.pages, ...config.content?.pages },
       faq: { ...currentConfig.content.faq, ...config.content?.faq },

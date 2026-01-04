@@ -16,6 +16,8 @@ export const submissionSchema = z.object({
   // Use shared helpers for optional positive numbers
   audioDuration: optionalPositiveNumber,
   audioFileSize: optionalPositiveNumber,
+  // Lyrics field for original songs
+  lyrics: z.string().optional(),
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),

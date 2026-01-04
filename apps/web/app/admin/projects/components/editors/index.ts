@@ -10,3 +10,4 @@ export { HowItWorksEditor } from './HowItWorksEditor';
 export { RoundInfoLabelsEditor } from './RoundInfoLabelsEditor';
 export { SubmissionsGalleryEditor } from './SubmissionsGalleryEditor';
 export { SubmitPageEditor } from './SubmitPageEditor';
+export { SubmissionFormEditor } from './SubmissionFormEditor';
