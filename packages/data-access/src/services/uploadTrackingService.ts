@@ -193,6 +193,16 @@ export async function deletePendingUploadRecord(
 /**
  * Clean up old committed/failed records (housekeeping)
  * Keeps records for a certain period for auditing, then removes them
+ *
+ * **Limitation**: This function always returns `deletedCount: 0` because Drizzle ORM
+ * does not return rowCount for delete operations in the current implementation.
+ *
+ * To get the actual count of deleted rows, you would need to:
+ * - Use `.returning()` to get deleted records (e.g., `.returning({ id: pendingUploads.id })`)
+ * - Or perform a COUNT query before deletion
+ *
+ * @param daysToKeep - Number of days to keep records before deletion (default: 30)
+ * @returns Object with deletedCount (always 0) and error (if any)
  */
 export async function cleanupOldUploadRecords(
   daysToKeep: number = 30
@@ -210,7 +220,8 @@ export async function cleanupOldUploadRecords(
         )
       );
 
-    // Note: Drizzle doesn't return rowCount directly, we'll need to check the result
+    // LIMITATION: Drizzle doesn't return rowCount for delete operations
+    // Always returns 0 - use .returning() if you need the actual count
     return { deletedCount: 0, error: null };
   } catch (error) {
     console.error("[uploadTrackingService] Cleanup old upload records error:", error);

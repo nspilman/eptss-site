@@ -4,7 +4,7 @@ import Link from "next/link";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection } from "@eptss/data-access";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
-import { AudioPreview } from "@eptss/media-upload";
+import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-upload";
 import Image from "next/image";
 
 interface SocialLink {
@@ -211,11 +211,13 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
                     {/* Audio Player */}
                     <div className="w-full">
                       {submission.audioFileUrl ? (
-                        <AudioPreview
-                          src={submission.audioFileUrl}
-                          title={submission.songTitle}
-                          fileSize={submission.audioFileSize || undefined}
-                        />
+                        <AudioPreviewErrorBoundary>
+                          <AudioPreview
+                            src={submission.audioFileUrl}
+                            title={submission.songTitle}
+                            fileSize={submission.audioFileSize || undefined}
+                          />
+                        </AudioPreviewErrorBoundary>
                       ) : submission.soundcloudUrl ? (
                         <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
                           <a

@@ -2,7 +2,7 @@
 
 import { formatDate } from '@eptss/data-access/utils/formatDate';
 import { Card, CardContent, Text, Heading } from '@eptss/ui';
-import { AudioPreview } from '@eptss/media-upload';
+import { AudioPreview, AudioPreviewErrorBoundary } from '@eptss/media-upload';
 import type { Submission } from '../types';
 
 interface SubmissionsTabProps {
@@ -50,11 +50,13 @@ export function SubmissionsTab({ submissions }: SubmissionsTabProps) {
               {/* Audio Player */}
               <div className="w-full">
                 {submission.audio_file_url ? (
-                  <AudioPreview
-                    src={submission.audio_file_url}
-                    title={submission.title || 'Unknown Title'}
-                    fileSize={submission.audio_file_size || undefined}
-                  />
+                  <AudioPreviewErrorBoundary>
+                    <AudioPreview
+                      src={submission.audio_file_url}
+                      title={submission.title || 'Unknown Title'}
+                      fileSize={submission.audio_file_size || undefined}
+                    />
+                  </AudioPreviewErrorBoundary>
                 ) : submission.soundcloud_url ? (
                   <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
                     <a

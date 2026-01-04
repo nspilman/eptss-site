@@ -112,6 +112,39 @@ export * from './schemas/signupSchemas';
 export * from './schemas/submission';
 export * from './schemas/voting';
 
+/**
+ * Shared Zod preprocessing helpers for consistent validation
+ *
+ * These helpers handle common FormData transformations and provide
+ * consistent validation patterns across the application.
+ *
+ * @example
+ * ```typescript
+ * import { optionalPositiveNumber, nonEmptyTrimmedString, urlOrEmpty } from '@eptss/data-access';
+ *
+ * const schema = z.object({
+ *   audioDuration: optionalPositiveNumber,
+ *   title: nonEmptyTrimmedString("Title is required"),
+ *   coverImageUrl: urlOrEmpty(),
+ * });
+ * ```
+ */
+export {
+  // Number helpers
+  optionalPositiveNumber,
+  optionalNonNegativeNumber,
+  optionalInteger,
+  requiredPositiveNumber,
+  // Boolean helpers
+  optionalBoolean,
+  // Date helpers
+  optionalDate,
+  // String helpers
+  urlOrEmpty,
+  trimmedString,
+  nonEmptyTrimmedString,
+} from './schemas/zodHelpers';
+
 // Re-export types
 export type { AudioFileFields, Submission } from './types/round';
 

@@ -189,7 +189,6 @@ export const SubmitPage = ({
               buttonText="Choose Audio File"
               showPreview={true}
               onFilesSelected={(files) => {
-                console.log('[SubmitPage] Audio files selected:', files);
                 // Clear any previous upload state when new file is selected
                 if (files.length > 0) {
                   setAudioUpload(null);
@@ -197,7 +196,6 @@ export const SubmitPage = ({
                 }
               }}
               onFilesRemoved={() => {
-                console.log('[SubmitPage] Audio file removed');
                 // Clear upload state and reset component when file is removed
                 setAudioUpload(null);
                 form.setValue("audioFileUrl", "");

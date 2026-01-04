@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runComprehensiveCleanup } from "@eptss/data-access/services/orphanFileCleanupService";
+import { logger } from "@eptss/logger/server";
 
 /**
  * Cron job to clean up orphan files from storage
@@ -25,18 +26,22 @@ import { runComprehensiveCleanup } from "@eptss/data-access/services/orphanFileC
  */
 export async function POST(request: NextRequest) {
   try {
-    // Verify cron secret for security
+    // Verify cron secret for security (fail closed - require secret)
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+      logger.warn("Unauthorized cleanup attempt", {
+        hasSecret: !!cronSecret,
+        hasAuth: !!authHeader,
+      });
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    console.log("[cleanup-orphan-files] Starting cleanup job");
+    logger.info("Starting orphan file cleanup job");
 
     // Run comprehensive cleanup
     const result = await runComprehensiveCleanup(30); // Keep records for 30 days
@@ -56,11 +61,19 @@ export async function POST(request: NextRequest) {
       totalDuration: result.totalDuration,
     };
 
-    console.log("[cleanup-orphan-files] Cleanup completed:", response);
+    logger.info("Orphan file cleanup completed", {
+      filesDeleted: result.expiredUploads.filesDeleted,
+      errorCount: result.expiredUploads.errors.length,
+      oldRecordsDeleted: result.oldRecords.deletedCount,
+      duration: result.totalDuration,
+    });
 
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
-    console.error("[cleanup-orphan-files] Cleanup failed:", error);
+    logger.error("Orphan file cleanup failed", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+    });
 
     return NextResponse.json(
       {
