@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
-import { Reflection } from "@eptss/data-access";
+import { Reflection, PublicProfileSubmission } from "@eptss/data-access";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
 import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-upload";
 import Image from "next/image";
@@ -33,21 +33,7 @@ interface PublicProfileProps {
     bio: string | null;
     showEmail: boolean;
   };
-  submissions: Array<{
-    id: string;
-    // Legacy field
-    soundcloudUrl?: string | null;
-    // New fields
-    audioFileUrl?: string | null;
-    coverImageUrl?: string | null;
-    audioDuration?: number | null;
-    audioFileSize?: number | null;
-    createdAt: string | null;
-    roundSlug: string | null;
-    roundId: number;
-    songTitle: string;
-    songArtist: string;
-  }>;
+  submissions: PublicProfileSubmission[];
   reflections: Reflection[];
   socialLinks: SocialLink[];
   embeddedMedia: EmbeddedMedia[];

@@ -44,6 +44,7 @@ export {
   deleteUserEmbeddedMedia,
   updateUserProfilePicture
 } from './services/userService';
+export type { PublicProfileData, PublicProfileSubmission } from './services/userService';
 export {
   getUserSignups,
   getUserSubmissions,
@@ -111,6 +112,7 @@ export { verifySignupByEmail } from './services/signupService';
 export * from './schemas/signupSchemas';
 export * from './schemas/submission';
 export * from './schemas/voting';
+export { FIELD_LABELS, getFieldLabel } from './schemas/fieldLabels';
 
 /**
  * Shared Zod preprocessing helpers for consistent validation

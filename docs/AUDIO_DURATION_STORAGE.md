@@ -200,11 +200,12 @@ const durationInSeconds = millisecondsToSeconds(submission.audioDuration); // 12
 ## Examples in Codebase
 
 ### Submission Service
-`packages/data-access/src/services/submissionService.ts:122, 236`
+`packages/data-access/src/services/submissionService.ts:125, 246`
 
 ```typescript
 // Store audio duration in milliseconds for precision (input is in seconds)
-audioDuration: audioDuration ? Math.round(audioDuration * 1000) : null,
+// Uses the secondsToMilliseconds() utility from utils/audioDuration.ts
+audioDuration: audioDuration ? secondsToMilliseconds(audioDuration) : null,
 ```
 
 ### Upload Tracking

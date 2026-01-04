@@ -295,6 +295,16 @@ export const getPublicProfileByUsername = async (username: string) => {
 };
 
 /**
+ * Type for public profile data returned by getPublicProfileByUsername
+ */
+export type PublicProfileData = NonNullable<Awaited<ReturnType<typeof getPublicProfileByUsername>>>;
+
+/**
+ * Type for public profile submission data
+ */
+export type PublicProfileSubmission = PublicProfileData['submissions'][number];
+
+/**
  * Get user privacy settings by user ID
  */
 export const getUserPrivacySettings = async (userId: string) => {

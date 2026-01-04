@@ -333,7 +333,7 @@ async function handleAudioUpload(file: File, duration: number) {
   await db.insert(submissions).values({
     audioFileUrl: url,
     audioFilePath: path,
-    audioDuration: Math.round(duration * 1000), // Store in milliseconds
+    audioDuration: secondsToMilliseconds(duration), // Store in milliseconds
     userId,
   });
 

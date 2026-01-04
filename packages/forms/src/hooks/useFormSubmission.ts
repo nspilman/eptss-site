@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 import { toast } from "@eptss/ui";
 import { FormReturn } from "../types";
+import { getFieldLabel } from "@eptss/data-access";
 
 interface UseFormSubmissionProps<T extends FieldValues> {
   onSubmit: (data: FormData) => Promise<FormReturn>;
@@ -20,30 +21,6 @@ export function useFormSubmission<T extends FieldValues>({
 }: UseFormSubmissionProps<T>) {
   const [isLoading, setIsLoading] = useState(false);
   const { formState } = form;
-
-  // Helper function to convert field names to human-friendly labels
-  const getFieldLabel = (fieldName: string): string => {
-    const labels: Record<string, string> = {
-      audioFileUrl: 'Audio File',
-      audioFilePath: 'Audio File',
-      coverImageUrl: 'Cover Image',
-      coverImagePath: 'Cover Image',
-      audioDuration: 'Audio Duration',
-      audioFileSize: 'Audio File Size',
-      coolThingsLearned: 'Cool Things Learned',
-      toolsUsed: 'Tools Used',
-      happyAccidents: 'Happy Accidents',
-      didntWork: "What Didn't Work",
-      roundId: 'Round ID',
-      email: 'Email',
-      songTitle: 'Song Title',
-      artist: 'Artist',
-      youtubeLink: 'YouTube Link',
-      soundcloudUrl: 'SoundCloud URL',
-      additionalComments: 'Additional Comments',
-    };
-    return labels[fieldName] || fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-  };
 
   // This effect will run when formState.errors changes
   useEffect(() => {

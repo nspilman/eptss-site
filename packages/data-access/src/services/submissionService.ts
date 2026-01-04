@@ -17,6 +17,7 @@ import {
 } from "./uploadTrackingService";
 import { MAX_AUDIO_DURATION_SECONDS } from "../utils/serverFileValidation";
 import { logger } from "@eptss/logger/server";
+import { secondsToMilliseconds } from "../utils/audioDuration";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
@@ -121,7 +122,7 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
       coverImageUrl: coverImageUrl || null,
       coverImagePath: coverImagePath || null,
       // Store audio duration in milliseconds for precision
-      audioDuration: audioDuration ? Math.round(audioDuration * 1000) : null,
+      audioDuration: audioDuration ? secondsToMilliseconds(audioDuration) : null,
       audioFileSize: audioFileSize || null,
       userId: userId,
       additionalComments: additionalComments,
@@ -242,7 +243,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
           });
         } else {
           // Valid duration - convert to milliseconds
-          audioDurationMs = Math.round(validData.audioDuration * 1000);
+          audioDurationMs = secondsToMilliseconds(validData.audioDuration);
         }
       }
 

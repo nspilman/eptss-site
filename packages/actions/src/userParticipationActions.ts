@@ -11,7 +11,7 @@ import { submitVotes as submitVotesService } from "@eptss/data-access/services/v
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import type { FormReturn } from "@eptss/data-access/types/index";
 import { revalidatePath } from "next/cache";
-import { signupSchema } from "@eptss/data-access/schemas/signupSchemas";
+import { signupSchema, FIELD_LABELS } from "@eptss/data-access";
 import { validateFormData } from "@eptss/data-access/utils/formDataHelpers";
 import { submitVotesSchema, submitCoverSchema } from "@eptss/data-access/schemas/actionSchemas";
 import { logger } from "@eptss/logger/server";
@@ -145,24 +145,10 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
     if (!validation.success) {
       logger.warn('Cover submission validation failed', { errors: validation.error.errors });
 
-      // Create human-friendly error messages with field names
-      const fieldLabels: Record<string, string> = {
-        audioFileUrl: 'Audio File URL',
-        audioFilePath: 'Audio File Path',
-        coverImageUrl: 'Cover Image URL',
-        coverImagePath: 'Cover Image Path',
-        audioDuration: 'Audio Duration',
-        audioFileSize: 'Audio File Size',
-        coolThingsLearned: 'Cool Things Learned',
-        toolsUsed: 'Tools Used',
-        happyAccidents: 'Happy Accidents',
-        didntWork: "What Didn't Work",
-        roundId: 'Round ID',
-      };
-
+      // Create human-friendly error messages using shared field labels
       const errorMessages = validation.error.errors.map(err => {
         const fieldPath = err.path.join('.');
-        const fieldLabel = fieldLabels[fieldPath] || fieldPath;
+        const fieldLabel = FIELD_LABELS[fieldPath] || fieldPath;
         return `${fieldLabel}: ${err.message}`;
       }).join(', ');
 
