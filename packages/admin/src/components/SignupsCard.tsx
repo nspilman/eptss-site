@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@eptss/ui"
 import { Users } from "lucide-react"
 import { DataTable } from "@eptss/ui"
+import { CopyEmailsButton } from "./CopyEmailsButton"
 
 type SignupData = {
   email?: string | null;
@@ -46,9 +47,12 @@ export const SignupsCard = ({ signups }: SignupsCardProps) => {
               <Users className="mr-2" />
               Signups
             </CardTitle>
-            <span className="text-sm text-gray-400">
-              {signups.length} total
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-400">
+                {signups.length} total
+              </span>
+              <CopyEmailsButton signups={signups} />
+            </div>
           </div>
         </CardHeader>
         <CardContent>

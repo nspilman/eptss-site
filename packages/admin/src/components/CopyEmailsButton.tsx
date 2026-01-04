@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@eptss/ui";
-import { Mail, Check } from "lucide-react";
+import { Button, useToast } from "@eptss/ui";
+import { Mail } from "lucide-react";
 
 type SignupData = {
   email?: string | null;
@@ -14,10 +13,11 @@ type CopyEmailsButtonProps = {
 };
 
 export function CopyEmailsButton({ signups }: CopyEmailsButtonProps) {
-  const [copied, setCopied] = useState(false);
+  const { toast } = useToast();
+
+  const emailCount = signups.filter((s) => s.email).length;
 
   const handleCopyEmails = async () => {
-    // Extract emails, filter out null/undefined, and join with commas
     const emails = signups
       .map((signup) => signup.email)
       .filter((email): email is string => !!email)
@@ -25,33 +25,28 @@ export function CopyEmailsButton({ signups }: CopyEmailsButtonProps) {
 
     try {
       await navigator.clipboard.writeText(emails);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      toast({
+        title: "Copied!",
+        description: `${emailCount} email${emailCount !== 1 ? "s" : ""} copied to clipboard`,
+      });
     } catch (error) {
-      console.error("Failed to copy emails:", error);
+      toast({
+        title: "Error",
+        description: "Failed to copy emails to clipboard",
+        variant: "destructive",
+      });
     }
   };
-
-  const emailCount = signups.filter((s) => s.email).length;
 
   return (
     <Button
       onClick={handleCopyEmails}
-      variant={copied ? "default" : "secondary"}
+      variant="secondary"
       size="sm"
       className="gap-2"
     >
-      {copied ? (
-        <>
-          <Check className="h-4 w-4" />
-          Copied!
-        </>
-      ) : (
-        <>
-          <Mail className="h-4 w-4" />
-          Copy {emailCount} Email{emailCount !== 1 ? "s" : ""}
-        </>
-      )}
+      <Mail className="w-4 h-4" />
+      Copy {emailCount} Email{emailCount !== 1 ? "s" : ""}
     </Button>
   );
 }

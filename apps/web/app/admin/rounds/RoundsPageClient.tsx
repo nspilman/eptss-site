@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CreateRoundForm, UpdateRoundForm, SetRoundSongForm, ProjectSelector, type Project } from "@eptss/admin";
 import { Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
+import { routes } from "@eptss/routing";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
@@ -103,7 +104,7 @@ export function RoundsPageClient({ projects, initialProjectId, roundsByProject, 
               rounds.map((round) => (
                 <Link
                   key={round.roundId}
-                  href={`/admin/rounds/${round.slug}?projectId=${selectedProjectId}`}
+                  href={routes.admin.rounds.detail(round.slug, { query: { projectId: selectedProjectId } })}
                   className="block p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
                 >
                   <div className="flex items-center justify-between">

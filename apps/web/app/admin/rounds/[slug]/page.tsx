@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { DataTable } from "@eptss/ui";
 import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/data-access";
-import { notFound } from "next/navigation";
-import Link from "next/link";
+import { routes } from "@eptss/routing";
 import { ArrowLeft } from "lucide-react";
-import { SignupsCard, SubmissionsCard, AdminSection, CopyEmailsButton } from "@eptss/admin";
+import Link from "next/link";
+import { SignupsCard, SubmissionsCard, AdminSection } from "@eptss/admin";
 
 async function RoundDetailContent({ slug, projectId }: { slug: string; projectId: string }) {
   const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider({ slug, projectId });
@@ -43,16 +43,13 @@ async function RoundDetailContent({ slug, projectId }: { slug: string; projectId
     <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
         <Link
-          href={`/admin/rounds?projectId=${projectId}`}
+          href={routes.admin.rounds.list({ query: { projectId } })}
           className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Rounds
         </Link>
-        <div className="flex items-center justify-between gap-4 mb-2">
-          <h2 className="text-3xl font-bold text-primary">{slug}</h2>
-          <CopyEmailsButton signups={signups} />
-        </div>
+        <h2 className="text-3xl font-bold text-primary mb-2">{slug}</h2>
         <p className="text-secondary">
           Current Phase: <span className="text-primary font-medium">{phase}</span>
         </p>
