@@ -16,7 +16,7 @@ const nextConfig = {
   // Optimize bundle size
   experimental: {
     optimizePackageImports: [
-      'lucide-react', 
+      'lucide-react',
       'framer-motion',
       '@radix-ui/react-tabs',
       '@radix-ui/react-dialog',
@@ -29,6 +29,9 @@ const nextConfig = {
       '@sentry/nextjs',
       'date-fns'
     ],
+    serverActions: {
+      bodySizeLimit: '52mb', // Increased from 1mb default to support audio file uploads up to 50mb
+    },
   },
   // Reduce serverless function size by excluding unnecessary files
   outputFileTracingIncludes: {

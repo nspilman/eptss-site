@@ -142,6 +142,8 @@ export interface MediaUploaderProps {
   onUploadError?: (error: UploadError) => void;
   /** Callback when files are selected/validated */
   onFilesSelected?: (files: File[]) => void;
+  /** Callback when files are removed */
+  onFilesRemoved?: (index: number) => void;
   /** Additional CSS classes */
   className?: string;
   /** Disable the uploader */

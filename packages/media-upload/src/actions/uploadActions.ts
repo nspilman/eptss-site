@@ -20,6 +20,7 @@ export async function uploadMediaFile(
     upsert?: boolean;
     validateSize?: number; // Max size in MB for server-side validation
     validateType?: string | string[]; // Allowed MIME types for server-side validation
+    metadata?: Record<string, unknown>; // Optional metadata to include in the result
   }
 ): Promise<{ result: UploadResult | null; error: UploadError | null }> {
   try {
@@ -62,7 +63,7 @@ export async function uploadMediaFile(
       };
     }
 
-    // Return upload result
+    // Return upload result with optional metadata from client
     const result: UploadResult = {
       url,
       fileName: file.name,
@@ -70,11 +71,11 @@ export async function uploadMediaFile(
       mimeType: file.type,
       path: filePath,
       uploadedAt: new Date(),
+      ...(options?.metadata && { metadata: options.metadata }),
     };
 
     return { result, error: null };
   } catch (err) {
-    console.error('Upload media file error:', err);
     return {
       result: null,
       error: {
@@ -134,7 +135,6 @@ export async function deleteMediaFile(
   try {
     return await deleteFile(bucket as any, path);
   } catch (err) {
-    console.error('Delete media file error:', err);
     return {
       success: false,
       error: err instanceof Error ? err.message : 'Unknown error occurred',
@@ -149,7 +149,6 @@ export async function getMediaFileUrl(bucket: string, path: string): Promise<str
   try {
     return await getPublicUrl(bucket as any, path);
   } catch (err) {
-    console.error('Get media file URL error:', err);
     throw err;
   }
 }

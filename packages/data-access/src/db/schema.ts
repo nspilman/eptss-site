@@ -80,7 +80,15 @@ export const submissions = pgTable("submissions", {
   id: bigint("id", { mode: "number" }).primaryKey().notNull(),
   projectId: uuid("project_id").references(() => projects.id).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  soundcloudUrl: text("soundcloud_url").notNull(),
+  // Legacy field for old SoundCloud submissions
+  soundcloudUrl: text("soundcloud_url"),
+  // New fields for uploaded audio files
+  audioFileUrl: text("audio_file_url"),
+  audioFilePath: text("audio_file_path"),
+  coverImageUrl: text("cover_image_url"),
+  coverImagePath: text("cover_image_path"),
+  audioDuration: bigint("audio_duration", { mode: "number" }), // Stored in milliseconds for precision
+  audioFileSize: integer("audio_file_size"),
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
   additionalComments: text("additional_comments"),
   userId: uuid("user_id").references(() => users.userid).notNull(),
@@ -452,3 +460,32 @@ export type NewProject = typeof projects.$inferInsert;
 // Project IDs - fixed UUIDs for consistency across migrations
 export const COVER_PROJECT_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 export const ORIGINAL_PROJECT_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+
+// ============================================================================
+// PENDING UPLOADS TABLE - Track file uploads for cleanup
+// ============================================================================
+
+export const uploadStatusEnum = pgEnum('upload_status', ['pending', 'committed', 'failed']);
+
+// Pending Uploads Table - tracks file uploads before DB commit
+export const pendingUploads = pgTable("pending_uploads", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  bucket: text("bucket").notNull(), // The storage bucket name
+  filePath: text("file_path").notNull(), // The file path within the bucket
+  fileUrl: text("file_url"), // The public URL if available
+  uploadedBy: uuid("uploaded_by").references(() => users.userid, { onDelete: "set null" }),
+  status: uploadStatusEnum("status").notNull().default("pending"),
+  relatedTable: text("related_table"), // e.g., 'submissions', for reference
+  relatedId: text("related_id"), // The ID of the related record (stored as text for flexibility)
+  metadata: jsonb("metadata"), // Additional context (roundId, userId, etc.)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  committedAt: timestamp("committed_at"),
+  expiresAt: timestamp("expires_at").notNull(), // Auto-cleanup after this time if still pending
+}, (table) => ({
+  statusIdx: index("pending_uploads_status_idx").on(table.status),
+  expiresAtIdx: index("pending_uploads_expires_at_idx").on(table.expiresAt),
+  bucketPathIdx: index("pending_uploads_bucket_path_idx").on(table.bucket, table.filePath),
+}));
+
+export type PendingUpload = typeof pendingUploads.$inferSelect;
+export type NewPendingUpload = typeof pendingUploads.$inferInsert;

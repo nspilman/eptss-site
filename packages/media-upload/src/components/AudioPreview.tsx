@@ -16,12 +16,19 @@ import {
   Skeleton,
   cn,
 } from '@eptss/ui';
+import { logger } from '@eptss/logger/client';
 import { formatDuration } from '../utils/filePreview';
 import { formatFileSize } from '../utils/fileValidation';
 
 export interface AudioPreviewProps {
-  /** File to preview */
-  file: File;
+  /** File to preview (use either file or src) */
+  file?: File;
+  /** URL to audio file (use either file or src) */
+  src?: string;
+  /** Title to display (optional, used when src is provided) */
+  title?: string;
+  /** File size in bytes (optional, used when src is provided) */
+  fileSize?: number;
   /** Show waveform visualization */
   showWaveform?: boolean;
   /** Waveform color */
@@ -36,13 +43,22 @@ export interface AudioPreviewProps {
 
 export const AudioPreview: React.FC<AudioPreviewProps> = ({
   file,
+  src,
+  title,
+  fileSize,
   showWaveform = true,
   waveColor = 'rgb(128, 128, 128)',
   progressColor = 'rgb(226, 226, 64)',
   height = 80,
   className,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  // Validate props: at least one of file or src must be provided
+  if (!file && !src) {
+    logger.error('AudioPreview requires either file or src prop');
+    throw new Error('AudioPreview: Either file or src prop is required');
+  }
+
+  const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -50,23 +66,19 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [containerReady, setContainerReady] = useState(false);
 
   // Track when container ref is attached
   const containerCallbackRef = React.useCallback((node: HTMLDivElement | null) => {
-    containerRef.current = node;
-    if (node) {
-      setContainerReady(true);
-    }
+    setContainerElement(node);
   }, []);
 
   useEffect(() => {
     if (!showWaveform) return;
-    if (!containerReady || !containerRef.current) return;
+    if (!containerElement) return;
 
     // Create WaveSurfer instance
     const wavesurfer = WaveSurfer.create({
-      container: containerRef.current,
+      container: containerElement,
       waveColor,
       progressColor,
       height,
@@ -79,9 +91,14 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
 
     wavesurferRef.current = wavesurfer;
 
-    // Load audio file
-    const url = URL.createObjectURL(file);
-    wavesurfer.load(url);
+    // Load audio file - either from File object or URL string
+    let objectUrl: string | null = null;
+    if (file) {
+      objectUrl = URL.createObjectURL(file);
+      wavesurfer.load(objectUrl);
+    } else if (src) {
+      wavesurfer.load(src);
+    }
 
     // Event listeners
     wavesurfer.on('ready', () => {
@@ -90,7 +107,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
     });
 
     wavesurfer.on('error', (error) => {
-      console.error('[AudioPreview] WaveSurfer error:', error);
+      logger.error('WaveSurfer error', { error, file: file?.name, src });
       setIsLoading(false);
     });
 
@@ -100,9 +117,11 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
 
     return () => {
       wavesurfer.destroy();
-      URL.revokeObjectURL(url);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
     };
-  }, [file, showWaveform, waveColor, progressColor, height, containerReady]);
+  }, [file, src, showWaveform, waveColor, progressColor, height, containerElement]);
 
   const togglePlayPause = () => {
     if (wavesurferRef.current) {
@@ -127,6 +146,10 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
     }
   };
 
+  // Get display name and size
+  const displayName = title || file?.name || 'Audio File';
+  const displaySize = fileSize || file?.size;
+
   // Simple preview without waveform
   if (!showWaveform) {
     return (
@@ -134,7 +157,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
         <CardContent className="py-3">
           <div className="flex items-center gap-3">
             <Music className="w-5 h-5 text-[var(--color-accent-primary)]" />
-            <Text className="truncate">{file.name}</Text>
+            <Text className="truncate">{displayName}</Text>
           </div>
         </CardContent>
       </Card>
@@ -148,14 +171,16 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
           {/* Header with file info */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
-              <Text className="font-medium truncate">{file.name}</Text>
+              <Text className="font-medium truncate">{displayName}</Text>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="secondary" className="text-xs">
                   Audio
                 </Badge>
-                <Text className="text-xs text-[var(--color-gray-400)]">
-                  {formatFileSize(file.size)}
-                </Text>
+                {displaySize && (
+                  <Text className="text-xs text-[var(--color-gray-400)]">
+                    {formatFileSize(displaySize)}
+                  </Text>
+                )}
               </div>
             </div>
           </div>

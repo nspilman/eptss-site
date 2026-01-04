@@ -5,6 +5,7 @@
 import { useState, useCallback, useRef } from 'react';
 import type { UploadQueueItem, UploadResult, UploadError, UploadStatus } from '../types';
 import { uploadMediaFile } from '../actions/uploadActions';
+import { extractAudioMetadata, isAudioFile } from '../utils/audioMetadata';
 
 export interface UseUploadQueueOptions {
   bucket: string;
@@ -79,6 +80,13 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
       try {
         const path = options.generatePath ? options.generatePath(item.file) : undefined;
 
+        // Extract metadata if this is an audio file (client-side)
+        let metadata: Record<string, unknown> | undefined;
+        if (isAudioFile(item.file)) {
+          const audioMetadata = await extractAudioMetadata(item.file);
+          metadata = { audio: audioMetadata };
+        }
+
         // Simulate progress updates
         let currentProgress = 0;
         const progressInterval = setInterval(() => {
@@ -88,7 +96,9 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
           });
         }, 100);
 
-        const { result, error } = await uploadMediaFile(options.bucket, item.file, path);
+        const { result, error } = await uploadMediaFile(options.bucket, item.file, path, {
+          metadata,
+        });
 
         clearInterval(progressInterval);
         abortControllersRef.current.delete(item.id);
@@ -109,7 +119,10 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
             progress: 100,
             result,
           });
+
+          // Update results immediately for real-time tracking
           setResults((prev) => [...prev, result]);
+
           return result;
         }
 
@@ -138,8 +151,10 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
    * Upload all files in the queue
    */
   const uploadAll = useCallback(async () => {
-    setStatus('uploading');
+    // Clear previous results before starting new upload batch
     setResults([]);
+    setStatus('uploading');
+    const uploadResults: UploadResult[] = [];
 
     const maxConcurrent = options.maxConcurrent || 3;
     const pendingItems = items.filter((item) => item.status === 'idle' || item.status === 'error');
@@ -149,7 +164,12 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
       if (index >= pendingItems.length) return;
 
       const item = pendingItems[index];
-      await uploadFile(item);
+      const result = await uploadFile(item);
+
+      // Collect results from successful uploads for final callback
+      if (result) {
+        uploadResults.push(result);
+      }
 
       // Upload next file
       await uploadNext(index + maxConcurrent);
@@ -163,14 +183,18 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
 
     await Promise.all(uploadPromises);
 
+    // Note: results state is updated incrementally in uploadFile()
+    // No need to batch update here
+
     // Check if all succeeded
     const hasErrors = items.some((item) => item.status === 'error');
     setStatus(hasErrors ? 'error' : 'success');
 
-    if (!hasErrors) {
-      options.onComplete?.(results);
+    // Call onComplete with all collected results
+    if (!hasErrors && uploadResults.length > 0) {
+      options.onComplete?.(uploadResults);
     }
-  }, [items, options, results, uploadFile]);
+  }, [items, options, uploadFile]);
 
   /**
    * Cancel a specific upload
@@ -233,6 +257,69 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
     setStatus('idle');
   }, [cancelAll]);
 
+  /**
+   * Add files and immediately upload them (bypasses state timing issues)
+   */
+  const addAndUploadFiles = useCallback(async (files: File[]) => {
+    const newItems: UploadQueueItem[] = files.map((file) => ({
+      id: generateId(),
+      file,
+      progress: 0,
+      bytesUploaded: 0,
+      totalBytes: file.size,
+      status: 'idle' as UploadStatus,
+      cancel: () => {}, // Will be set during upload
+      retry: () => {}, // Will be set during upload
+    }));
+
+    // Add to state
+    setItems((prev) => [...prev, ...newItems]);
+
+    // Clear previous results before starting new upload batch
+    setResults([]);
+
+    // Upload immediately using the items we just created
+    setStatus('uploading');
+    const uploadResults: UploadResult[] = [];
+    const maxConcurrent = options.maxConcurrent || 3;
+
+    // Upload files with concurrency control
+    const uploadNext = async (index: number): Promise<void> => {
+      if (index >= newItems.length) return;
+
+      const item = newItems[index];
+      const result = await uploadFile(item);
+
+      // Collect results from successful uploads for final callback
+      if (result) {
+        uploadResults.push(result);
+      }
+
+      // Upload next file
+      await uploadNext(index + maxConcurrent);
+    };
+
+    // Start concurrent uploads
+    const uploadPromises: Promise<void>[] = [];
+    for (let i = 0; i < Math.min(maxConcurrent, newItems.length); i++) {
+      uploadPromises.push(uploadNext(i));
+    }
+
+    await Promise.all(uploadPromises);
+
+    // Note: results state is updated incrementally in uploadFile()
+    // No need to batch update here
+
+    // Check if all succeeded (check newItems, not state items)
+    const hasErrors = newItems.some((item) => item.status === 'error');
+    setStatus(hasErrors ? 'error' : 'success');
+
+    // Call onComplete with all collected results
+    if (!hasErrors && uploadResults.length > 0) {
+      options.onComplete?.(uploadResults);
+    }
+  }, [options, uploadFile]);
+
   return {
     items,
     results,
@@ -240,6 +327,7 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
     addFiles,
     uploadAll,
     uploadFile,
+    addAndUploadFiles,
     cancel,
     retry,
     removeItem,

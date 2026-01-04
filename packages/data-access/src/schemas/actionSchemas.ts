@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalPositiveNumber, urlOrEmpty } from "./zodHelpers";
 
 /**
  * Validation schemas for Server Actions
@@ -18,7 +19,13 @@ export const submitVotesSchema = z.object({
 
 export const submitCoverSchema = z.object({
   roundId: z.coerce.number().int().positive("Round ID must be a positive number"),
-  soundcloudUrl: z.string().url("Invalid SoundCloud URL"),
+  audioFileUrl: z.string().url("Invalid audio file URL"),
+  audioFilePath: z.string().min(1, "Audio file path is required"),
+  coverImageUrl: urlOrEmpty(),
+  coverImagePath: z.string().optional(),
+  // Use shared helper for optional positive numbers
+  audioDuration: optionalPositiveNumber,
+  audioFileSize: optionalPositiveNumber,
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),

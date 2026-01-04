@@ -1,7 +1,8 @@
 'use client';
 
 import { formatDate } from '@eptss/data-access/utils/formatDate';
-import { Card, CardContent } from '@eptss/ui';
+import { Card, CardContent, Text, Heading } from '@eptss/ui';
+import { AudioPreview, AudioPreviewErrorBoundary } from '@eptss/media-upload';
 import type { Submission } from '../types';
 
 interface SubmissionsTabProps {
@@ -12,9 +13,9 @@ export function SubmissionsTab({ submissions }: SubmissionsTabProps) {
   if (submissions.length === 0) {
     return (
       <div className="w-full text-center py-12">
-        <p className="text-[var(--color-gray-400)] text-lg font-roboto">
+        <Text size="lg" color="secondary">
           You haven&apos;t submitted any songs yet.
-        </p>
+        </Text>
       </div>
     );
   }
@@ -31,33 +32,47 @@ export function SubmissionsTab({ submissions }: SubmissionsTabProps) {
 
           {/* Card content */}
           <Card className="relative group-hover:shadow-xl transition-shadow duration-300">
-            <CardContent className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <CardContent className="flex flex-col gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-bold font-fraunces text-[var(--color-primary)] mb-1">
+                <Heading as="h3" size="xs" className="mb-1">
                   {submission.title || 'Unknown Title'}
-                </h3>
-                <p className="text-sm text-[var(--color-gray-300)] font-roboto mb-2">
+                </Heading>
+                <Text size="sm" color="tertiary" className="mb-2">
                   by {submission.artist || 'Unknown Artist'}
-                </p>
+                </Text>
                 {submission.created_at && (
-                  <p className="text-xs text-[var(--color-gray-400)] font-roboto">
+                  <Text size="xs" color="secondary">
                     Submitted {formatDate(submission.created_at)}
-                  </p>
+                  </Text>
                 )}
               </div>
-              {submission.soundcloud_url && (
-                <a
-                  href={submission.soundcloud_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
-                  </svg>
-                  Listen on SoundCloud
-                </a>
-              )}
+
+              {/* Audio Player */}
+              <div className="w-full">
+                {submission.audio_file_url ? (
+                  <AudioPreviewErrorBoundary>
+                    <AudioPreview
+                      src={submission.audio_file_url}
+                      title={submission.title || 'Unknown Title'}
+                      fileSize={submission.audio_file_size || undefined}
+                    />
+                  </AudioPreviewErrorBoundary>
+                ) : submission.soundcloud_url ? (
+                  <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
+                    <a
+                      href={submission.soundcloud_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                    >
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
+                      </svg>
+                      Listen on SoundCloud
+                    </a>
+                  </div>
+                ) : null}
+              </div>
             </CardContent>
           </Card>
         </article>

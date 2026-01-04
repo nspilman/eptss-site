@@ -13,15 +13,22 @@ type SubmissionsCardProps = {
 export const SubmissionsCard = ({ submissions }: SubmissionsCardProps) => {
   const submissionHeaders = [
     { key: 'username', label: 'Username', sortable: true },
-    { key: 'soundcloudUrl', label: 'SoundCloud URL', sortable: true },
+    { key: 'submission', label: 'Submission', sortable: true },
     { key: 'createdAt', label: 'Submission Date', sortable: true },
   ]
 
-  const submissionRows = submissions.map(submission => ({
-    username: submission.username,
-    soundcloudUrl: <Link href={submission.soundcloudUrl} className="text-blue-400 hover:text-blue-300" target="_blank">Listen</Link>,
-    createdAt: submission.createdAt.toLocaleString(),
-  }))
+  const submissionRows = submissions.map(submission => {
+    // Use audioFileUrl if available (new submissions), otherwise fall back to soundcloudUrl (legacy)
+    const submissionUrl = submission.audioFileUrl || submission.soundcloudUrl;
+
+    return {
+      username: submission.username,
+      submission: submissionUrl ? (
+        <Link href={submissionUrl} className="text-blue-400 hover:text-blue-300" target="_blank">Listen</Link>
+      ) : 'N/A',
+      createdAt: submission.createdAt.toLocaleString(),
+    };
+  })
 
   return (
     <motion.div

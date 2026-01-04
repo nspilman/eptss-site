@@ -8,7 +8,7 @@ interface CelebrationTablesProps {
   roundSummaryHeaders: Readonly<Header<string>[]>;
   roundSummary: Record<string, string | number | React.ReactElement>[];
   submissionsDisplayHeaders: Readonly<Header<string>[]>;
-  submissions: { username: string; soundcloudUrl: string }[];
+  submissions: { username: string; soundcloudUrl?: string | null; audioFileUrl?: string | null }[];
 }
 
 export const CelebrationTables = ({ roundSummaryHeaders, roundSummary, submissionsDisplayHeaders, submissions }: CelebrationTablesProps) => (
@@ -19,10 +19,14 @@ export const CelebrationTables = ({ roundSummaryHeaders, roundSummary, submissio
         title="Cover Submissions"
         headers={submissionsDisplayHeaders}
         rows={(submissions || []).map(
-          ({ username, soundcloudUrl }: any) => ({
-            username,
-            soundcloudUrl: <Link href={soundcloudUrl}>Link</Link>,
-          })
+          ({ username, soundcloudUrl, audioFileUrl }: any) => {
+            // Use audioFileUrl if available (new submissions), otherwise fall back to soundcloudUrl (legacy)
+            const submissionUrl = audioFileUrl || soundcloudUrl;
+            return {
+              username,
+              submission: submissionUrl ? <Link href={submissionUrl}>Link</Link> : 'N/A',
+            };
+          }
         )}
       />
     </div>

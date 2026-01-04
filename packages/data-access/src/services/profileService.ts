@@ -81,7 +81,15 @@ export const getUserSubmissions = async (userId: string) => {
     .select({
       id: submissions.id,
       createdAt: submissions.createdAt,
+      // Legacy field
       soundcloudUrl: submissions.soundcloudUrl,
+      // New fields
+      audioFileUrl: submissions.audioFileUrl,
+      audioFilePath: submissions.audioFilePath,
+      coverImageUrl: submissions.coverImageUrl,
+      coverImagePath: submissions.coverImagePath,
+      audioDuration: submissions.audioDuration,
+      audioFileSize: submissions.audioFileSize,
       roundId: submissions.roundId,
       userId: submissions.userId,
       additionalComments: submissions.additionalComments,
@@ -103,7 +111,15 @@ export const getUserSubmissions = async (userId: string) => {
     created_at: submission.createdAt?.toISOString() || null,
     title: submission.songTitle || 'Unknown Title',
     artist: submission.songArtist || 'Unknown Artist',
+    // Legacy field
     soundcloud_url: submission.soundcloudUrl,
+    // New fields
+    audio_file_url: submission.audioFileUrl,
+    audio_file_path: submission.audioFilePath,
+    cover_image_url: submission.coverImageUrl,
+    cover_image_path: submission.coverImagePath,
+    audio_duration: submission.audioDuration,
+    audio_file_size: submission.audioFileSize,
     round_slug: submission.roundSlug,
     user_id: submission.userId,
     additional_comments: submission.additionalComments,

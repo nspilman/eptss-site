@@ -11,7 +11,7 @@ import { submitVotes as submitVotesService } from "@eptss/data-access/services/v
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import type { FormReturn } from "@eptss/data-access/types/index";
 import { revalidatePath } from "next/cache";
-import { signupSchema } from "@eptss/data-access/schemas/signupSchemas";
+import { signupSchema, FIELD_LABELS } from "@eptss/data-access";
 import { validateFormData } from "@eptss/data-access/utils/formDataHelpers";
 import { submitVotesSchema, submitCoverSchema } from "@eptss/data-access/schemas/actionSchemas";
 import { logger } from "@eptss/logger/server";
@@ -100,20 +100,61 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     // 2. Validate input
     const roundId = Number(formData.get("roundId")?.toString() || "-1");
-    const validation = submitCoverSchema.safeParse({
+
+    // Helper to get value or undefined (handles empty strings and null)
+    // Don't convert to String - let the schema handle type conversion
+    const getValue = (value: FormDataEntryValue | null): FormDataEntryValue | undefined => {
+      if (!value || value === '' || value === 'undefined' || value === 'null') return undefined;
+      return value;
+    };
+
+    // Build validation input, only including defined values for optional fields
+    const validationInput: Record<string, unknown> = {
       roundId: formData.get("roundId"),
-      soundcloudUrl: formData.get("soundcloudUrl"),
-      coolThingsLearned: formData.get("coolThingsLearned"),
-      toolsUsed: formData.get("toolsUsed"),
-      happyAccidents: formData.get("happyAccidents"),
-      didntWork: formData.get("didntWork"),
-    });
+      audioFileUrl: formData.get("audioFileUrl"),
+      audioFilePath: formData.get("audioFilePath"),
+    };
+
+    // Only add optional fields if they have values
+    const coverImageUrl = getValue(formData.get("coverImageUrl"));
+    if (coverImageUrl !== undefined) validationInput.coverImageUrl = coverImageUrl;
+
+    const coverImagePath = getValue(formData.get("coverImagePath"));
+    if (coverImagePath !== undefined) validationInput.coverImagePath = coverImagePath;
+
+    const audioDuration = getValue(formData.get("audioDuration"));
+    if (audioDuration !== undefined) validationInput.audioDuration = audioDuration;
+
+    const audioFileSize = getValue(formData.get("audioFileSize"));
+    if (audioFileSize !== undefined) validationInput.audioFileSize = audioFileSize;
+
+    const coolThingsLearned = getValue(formData.get("coolThingsLearned"));
+    if (coolThingsLearned !== undefined) validationInput.coolThingsLearned = coolThingsLearned;
+
+    const toolsUsed = getValue(formData.get("toolsUsed"));
+    if (toolsUsed !== undefined) validationInput.toolsUsed = toolsUsed;
+
+    const happyAccidents = getValue(formData.get("happyAccidents"));
+    if (happyAccidents !== undefined) validationInput.happyAccidents = happyAccidents;
+
+    const didntWork = getValue(formData.get("didntWork"));
+    if (didntWork !== undefined) validationInput.didntWork = didntWork;
+
+    const validation = submitCoverSchema.safeParse(validationInput);
 
     if (!validation.success) {
       logger.warn('Cover submission validation failed', { errors: validation.error.errors });
+
+      // Create human-friendly error messages using shared field labels
+      const errorMessages = validation.error.errors.map(err => {
+        const fieldPath = err.path.join('.');
+        const fieldLabel = FIELD_LABELS[fieldPath] || fieldPath;
+        return `${fieldLabel}: ${err.message}`;
+      }).join(', ');
+
       return {
         status: "Error",
-        message: validation.error.errors[0].message
+        message: errorMessages
       };
     }
 

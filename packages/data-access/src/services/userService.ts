@@ -204,7 +204,13 @@ export const getPublicProfileByUsername = async (username: string) => {
   const userSubmissions = await db
     .select({
       id: submissions.id,
+      // Legacy field
       soundcloudUrl: submissions.soundcloudUrl,
+      // New fields
+      audioFileUrl: submissions.audioFileUrl,
+      coverImageUrl: submissions.coverImageUrl,
+      audioDuration: submissions.audioDuration,
+      audioFileSize: submissions.audioFileSize,
       createdAt: submissions.createdAt,
       roundSlug: roundMetadata.slug,
       roundId: roundMetadata.id,
@@ -262,7 +268,13 @@ export const getPublicProfileByUsername = async (username: string) => {
     },
     submissions: filteredSubmissions.map(s => ({
       id: s.id.toString(),
+      // Legacy field
       soundcloudUrl: s.soundcloudUrl,
+      // New fields
+      audioFileUrl: s.audioFileUrl,
+      coverImageUrl: s.coverImageUrl,
+      audioDuration: s.audioDuration,
+      audioFileSize: s.audioFileSize,
       createdAt: s.createdAt?.toISOString() || null,
       roundSlug: s.roundSlug,
       roundId: s.roundId,
@@ -281,6 +293,16 @@ export const getPublicProfileByUsername = async (username: string) => {
     },
   };
 };
+
+/**
+ * Type for public profile data returned by getPublicProfileByUsername
+ */
+export type PublicProfileData = NonNullable<Awaited<ReturnType<typeof getPublicProfileByUsername>>>;
+
+/**
+ * Type for public profile submission data
+ */
+export type PublicProfileSubmission = PublicProfileData['submissions'][number];
 
 /**
  * Get user privacy settings by user ID

@@ -12,11 +12,33 @@ export type DateLabel = {
   closes: string;
 };
 
+/**
+ * Shared audio file fields used across submission types
+ * For new submissions (uploaded to our buckets)
+ */
+export interface AudioFileFields {
+  audioFileUrl: string;
+  coverImageUrl: string | null;
+  audioDuration: number | null;
+  audioFileSize: number | null;
+}
+
+/**
+ * Submission type for round provider
+ * Supports both legacy SoundCloud URLs and new audio file uploads
+ */
 export interface Submission {
   roundId: number;
-  soundcloudUrl: string;
   username: string;
+  userId: string;
   createdAt: Date;
+  // Legacy field for old submissions
+  soundcloudUrl?: string | null;
+  // New fields for uploaded audio
+  audioFileUrl?: string | null;
+  coverImageUrl?: string | null;
+  audioDuration?: number | null;
+  audioFileSize?: number | null;
 }
 
 // SignupData is now imported from ./signup
