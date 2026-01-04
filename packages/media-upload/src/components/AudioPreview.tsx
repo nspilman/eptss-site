@@ -16,6 +16,7 @@ import {
   Skeleton,
   cn,
 } from '@eptss/ui';
+import { logger } from '@eptss/logger/client';
 import { formatDuration } from '../utils/filePreview';
 import { formatFileSize } from '../utils/fileValidation';
 
@@ -51,6 +52,12 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
   height = 80,
   className,
 }) => {
+  // Validate props: at least one of file or src must be provided
+  if (!file && !src) {
+    logger.error('AudioPreview requires either file or src prop');
+    throw new Error('AudioPreview: Either file or src prop is required');
+  }
+
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -100,7 +107,7 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
     });
 
     wavesurfer.on('error', (error) => {
-      console.error('[AudioPreview] WaveSurfer error:', error);
+      logger.error('WaveSurfer error', { error, file: file?.name, src });
       setIsLoading(false);
     });
 

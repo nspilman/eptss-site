@@ -119,6 +119,10 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
             progress: 100,
             result,
           });
+
+          // Update results immediately for real-time tracking
+          setResults((prev) => [...prev, result]);
+
           return result;
         }
 
@@ -147,6 +151,8 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
    * Upload all files in the queue
    */
   const uploadAll = useCallback(async () => {
+    // Clear previous results before starting new upload batch
+    setResults([]);
     setStatus('uploading');
     const uploadResults: UploadResult[] = [];
 
@@ -160,7 +166,7 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
       const item = pendingItems[index];
       const result = await uploadFile(item);
 
-      // Collect results from successful uploads
+      // Collect results from successful uploads for final callback
       if (result) {
         uploadResults.push(result);
       }
@@ -177,13 +183,14 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
 
     await Promise.all(uploadPromises);
 
-    // Update results state
-    setResults(uploadResults);
+    // Note: results state is updated incrementally in uploadFile()
+    // No need to batch update here
 
     // Check if all succeeded
     const hasErrors = items.some((item) => item.status === 'error');
     setStatus(hasErrors ? 'error' : 'success');
 
+    // Call onComplete with all collected results
     if (!hasErrors && uploadResults.length > 0) {
       options.onComplete?.(uploadResults);
     }
@@ -268,6 +275,9 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
     // Add to state
     setItems((prev) => [...prev, ...newItems]);
 
+    // Clear previous results before starting new upload batch
+    setResults([]);
+
     // Upload immediately using the items we just created
     setStatus('uploading');
     const uploadResults: UploadResult[] = [];
@@ -280,7 +290,7 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
       const item = newItems[index];
       const result = await uploadFile(item);
 
-      // Collect results from successful uploads
+      // Collect results from successful uploads for final callback
       if (result) {
         uploadResults.push(result);
       }
@@ -297,13 +307,14 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
 
     await Promise.all(uploadPromises);
 
-    // Update results state
-    setResults(uploadResults);
+    // Note: results state is updated incrementally in uploadFile()
+    // No need to batch update here
 
     // Check if all succeeded (check newItems, not state items)
     const hasErrors = newItems.some((item) => item.status === 'error');
     setStatus(hasErrors ? 'error' : 'success');
 
+    // Call onComplete with all collected results
     if (!hasErrors && uploadResults.length > 0) {
       options.onComplete?.(uploadResults);
     }

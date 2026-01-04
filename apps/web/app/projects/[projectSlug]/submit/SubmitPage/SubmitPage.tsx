@@ -10,6 +10,7 @@ import { submissionSchema, type SubmissionInput } from "@eptss/data-access/schem
 import { PageContent } from "@eptss/project-config";
 import { useProject } from "../../ProjectContext";
 import { MediaUploader, UploadResult } from "@eptss/media-upload";
+import { BUCKETS } from "@eptss/bucket-storage";
 import { useState } from "react";
 
 interface Props {
@@ -181,7 +182,7 @@ export const SubmitPage = ({
             </Text>
             <MediaUploader
               key={`audio-${audioResetKey}`}
-              bucket="audio-submissions"
+              bucket={BUCKETS.AUDIO_SUBMISSIONS}
               accept="audio/*"
               maxSizeMB={50}
               variant="button"
@@ -248,7 +249,7 @@ export const SubmitPage = ({
             </Text>
             <MediaUploader
               key={`cover-${coverResetKey}`}
-              bucket="submission-images"
+              bucket={BUCKETS.SUBMISSION_IMAGES}
               accept="image/*"
               maxSizeMB={5}
               enableCrop={true}

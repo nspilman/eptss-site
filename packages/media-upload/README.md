@@ -82,10 +82,12 @@ function AudioUpload({ projectId, userId }) {
 ```tsx
 import { MediaUploader } from '@eptss/media-upload';
 
+import { BUCKETS } from '@eptss/bucket-storage';
+
 function ProfilePictureUpload() {
   return (
     <MediaUploader
-      bucket="profile-pictures"
+      bucket={BUCKETS.PROFILE_PICTURES}
       accept="image/*"
       maxSizeMB={5}
       enableCrop
@@ -417,8 +419,10 @@ Components are fully customizable via the `className` prop.
 ### 2. Profile Pictures
 
 ```tsx
+import { BUCKETS } from '@eptss/bucket-storage';
+
 <MediaUploader
-  bucket="profile-pictures"
+  bucket={BUCKETS.PROFILE_PICTURES}
   accept="image/*"
   maxSizeMB={5}
   enableCrop // Let users crop their image

@@ -71,44 +71,36 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   // Handle file selection
   const handleFilesSelected = useCallback(
     (files: File[]) => {
-      console.log('[MediaUploader] Files selected:', files);
       // Validate files
       const { validFiles, errors } = filterValid(files);
-      console.log('[MediaUploader] Validation result:', { validFiles, errors });
 
       // Set validation errors
       setValidationErrors(errors.map((e) => e.error));
 
       // If no valid files, don't proceed
       if (validFiles.length === 0) {
-        console.log('[MediaUploader] No valid files, aborting');
         return;
       }
 
       // Process first file for cropping if enabled
       if (enableCrop && validFiles.length > 0 && isImage(validFiles[0])) {
-        console.log('[MediaUploader] Enabling crop for first image');
         setFileToProcess(validFiles[0]);
         setShowCropper(true);
         // Keep other files for later
         setSelectedFiles(validFiles.slice(1));
       } else {
-        console.log('[MediaUploader] Setting selected files:', validFiles);
         setSelectedFiles(validFiles);
 
         // Auto-upload if enabled
         if (autoUpload) {
-          console.log('[MediaUploader] Auto-upload enabled, starting upload');
           // Add files and immediately start upload with the returned items
           uploadQueue.addAndUploadFiles(validFiles);
         } else {
-          console.log('[MediaUploader] Auto-upload disabled, adding to queue');
           uploadQueue.addFiles(validFiles);
         }
       }
 
       // Notify parent
-      console.log('[MediaUploader] Notifying parent of selected files');
       onFilesSelected?.(validFiles);
       if (autoUpload) {
         onUploadStart?.(validFiles);

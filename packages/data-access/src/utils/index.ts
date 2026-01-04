@@ -20,3 +20,4 @@ export const getDataToString = (formData: FormData, key: string) => {
 export * from './isAdmin';
 export * from './supabase/server';
 export * from './dbHelpers';
+export * from './audioDuration';

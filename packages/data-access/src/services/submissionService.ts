@@ -10,6 +10,11 @@ import { eq, sql } from "drizzle-orm";
 import { submissionFormSchema } from "../schemas/submission";
 import { validateFormData } from "../utils/formDataHelpers";
 import { deleteFile, BUCKETS } from "@eptss/bucket-storage";
+import {
+  registerPendingUpload,
+  commitPendingUpload,
+  failPendingUpload,
+} from "./uploadTrackingService";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
@@ -113,8 +118,8 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
       audioFilePath: audioFilePath,
       coverImageUrl: coverImageUrl || null,
       coverImagePath: coverImagePath || null,
-      // Round audioDuration to nearest integer for database storage
-      audioDuration: audioDuration ? Math.round(audioDuration) : null,
+      // Store audio duration in milliseconds for precision
+      audioDuration: audioDuration ? Math.round(audioDuration * 1000) : null,
       audioFileSize: audioFileSize || null,
       userId: userId,
       additionalComments: additionalComments,
@@ -129,6 +134,10 @@ export async function adminSubmitCover(formData: FormData): Promise<FormReturn> 
 export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
   const { userId } = await getAuthUser();
+
+  // Track pending upload IDs for two-phase commit
+  let audioUploadId: string | null = null;
+  let imageUploadId: string | null = null;
 
   try {
     // Validate form data with Zod
@@ -167,7 +176,53 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     const nextSubmissionId = (lastSubmissionId[0]?.id || 0) + 1;
 
-    // Attempt to insert submission
+    // PHASE 1: Register pending uploads
+    // This creates tracking records for uploaded files before DB commit
+    const audioUploadResult = await registerPendingUpload({
+      bucket: BUCKETS.AUDIO_SUBMISSIONS,
+      filePath: validData.audioFilePath,
+      fileUrl: validData.audioFileUrl,
+      uploadedBy: userId,
+      relatedTable: "submissions",
+      relatedId: String(nextSubmissionId),
+      metadata: {
+        roundId: validData.roundId,
+        audioDuration: validData.audioDuration,
+        audioFileSize: validData.audioFileSize,
+      },
+      expiresInHours: 24, // Files will be auto-cleaned after 24 hours if not committed
+    });
+
+    if (audioUploadResult.error) {
+      console.error("[submitCover] Failed to register audio upload:", audioUploadResult.error);
+      // Continue anyway - tracking is best effort
+    } else {
+      audioUploadId = audioUploadResult.id;
+    }
+
+    if (validData.coverImagePath) {
+      const imageUploadResult = await registerPendingUpload({
+        bucket: BUCKETS.SUBMISSION_IMAGES,
+        filePath: validData.coverImagePath,
+        fileUrl: validData.coverImageUrl,
+        uploadedBy: userId,
+        relatedTable: "submissions",
+        relatedId: String(nextSubmissionId),
+        metadata: {
+          roundId: validData.roundId,
+        },
+        expiresInHours: 24,
+      });
+
+      if (imageUploadResult.error) {
+        console.error("[submitCover] Failed to register image upload:", imageUploadResult.error);
+        // Continue anyway - tracking is best effort
+      } else {
+        imageUploadId = imageUploadResult.id;
+      }
+    }
+
+    // PHASE 2: Attempt to insert submission into database
     try {
       await db.insert(submissions).values({
         id: nextSubmissionId,
@@ -177,8 +232,8 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         audioFilePath: validData.audioFilePath,
         coverImageUrl: validData.coverImageUrl || null,
         coverImagePath: validData.coverImagePath || null,
-        // Round audioDuration to nearest integer for database storage
-        audioDuration: validData.audioDuration ? Math.round(validData.audioDuration) : null,
+        // Store audio duration in milliseconds for precision (input is in seconds)
+        audioDuration: validData.audioDuration ? Math.round(validData.audioDuration * 1000) : null,
         audioFileSize: validData.audioFileSize || null,
         userId: userId || "",
         additionalComments: JSON.stringify({
@@ -189,13 +244,36 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         }),
       });
 
+      // SUCCESS: Mark uploads as committed
+      if (audioUploadId) {
+        await commitPendingUpload(audioUploadId).catch((err) =>
+          console.error("[submitCover] Failed to commit audio upload:", err)
+        );
+      }
+      if (imageUploadId) {
+        await commitPendingUpload(imageUploadId).catch((err) =>
+          console.error("[submitCover] Failed to commit image upload:", err)
+        );
+      }
+
       return handleResponse(201, routes.dashboard.root(), "");
     } catch (dbError) {
-      // Clean up uploaded files if database insert fails
-      await deleteFile("audio-submissions", validData.audioFilePath).catch(() => {});
-      if (validData.coverImagePath) {
-        await deleteFile("submission-images", validData.coverImagePath).catch(() => {});
+      // FAILURE: Mark uploads as failed and clean up files
+      console.error("[submitCover] Database insert failed:", dbError);
+
+      if (audioUploadId) {
+        await failPendingUpload(audioUploadId).catch(() => {});
       }
+      if (imageUploadId) {
+        await failPendingUpload(imageUploadId).catch(() => {});
+      }
+
+      // Clean up uploaded files immediately (don't wait for cron job)
+      await deleteFile(BUCKETS.AUDIO_SUBMISSIONS, validData.audioFilePath).catch(() => {});
+      if (validData.coverImagePath) {
+        await deleteFile(BUCKETS.SUBMISSION_IMAGES, validData.coverImagePath).catch(() => {});
+      }
+
       throw dbError;
     }
   } catch (error) {

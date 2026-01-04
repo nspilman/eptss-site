@@ -3,6 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { MediaUploader } from '../src';
 import { ThemeSection } from './components/ThemeSection';
 import { Text } from '@eptss/ui';
+import { BUCKETS } from '@eptss/bucket-storage';
 
 const meta: Meta<typeof MediaUploader> = {
   title: 'Media Upload/MediaUploader',
@@ -385,7 +386,7 @@ export const CustomExample: Story = {
       </Text>
 
       <MediaUploader
-        bucket="audio-submissions"
+        bucket={BUCKETS.AUDIO_SUBMISSIONS}
         accept={{ 'audio/*': ['.mp3', '.wav', '.ogg', '.m4a'] }}
         multiple
         maxFiles={5}
