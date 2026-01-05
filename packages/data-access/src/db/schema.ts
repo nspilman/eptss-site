@@ -231,7 +231,11 @@ export const notifications = pgTable("notifications", {
   isDeleted: boolean("is_deleted").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   readAt: timestamp("read_at"),
-});
+}, (table) => ({
+  userIdIdx: index("notifications_user_id_idx").on(table.userId),
+  userIdReadIdx: index("notifications_user_read_idx").on(table.userId, table.isDeleted, table.isRead),
+  createdAtIdx: index("notifications_created_at_idx").on(table.createdAt),
+}));
 
 // Notification Emails Sent Table
 export const notificationEmailsSent = pgTable("notification_emails_sent", {
