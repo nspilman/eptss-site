@@ -3,7 +3,7 @@
 import { routes } from "@eptss/routing";
 import { useRoute } from "@eptss/routing/client";
 import Link from "next/link";
-import { HomeIcon, HistoryIcon, UserIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
+import { HomeIcon, HistoryIcon, MusicNoteIcon, ChatBubbleLeftEllipsisIcon } from "@eptss/ui";
 import { Shield, FileText } from "lucide-react";
 import { extractParams } from "@eptss/routing";
 
@@ -74,14 +74,6 @@ export function DashboardSidebar({ isSidebarOpen, isCollapsed, toggleCollapse, o
           icon={<HistoryIcon className="w-5 h-5" />}
           label="Past Rounds"
           isActive={route.is('/rounds')}
-          onClick={onNavigate}
-          isCollapsed={isCollapsed}
-        />
-        <SidebarItem
-          href={routes.dashboard.profile()}
-          icon={<UserIcon className="w-5 h-5" />}
-          label="Profile"
-          isActive={route.is('/dashboard/profile')}
           onClick={onNavigate}
           isCollapsed={isCollapsed}
         />
