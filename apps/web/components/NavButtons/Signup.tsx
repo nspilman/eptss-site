@@ -49,7 +49,7 @@ export const SignupButton = ({ isLoggedIn }: Props): ReactElement => {
             className="flex items-center gap-2 bg-[#e2e240] text-gray-900 hover:bg-[#f0f050] transition-all"
           >
             <LogIn className="h-4 w-4" />
-            <span className="hidden sm:inline">Log In</span>
+            <span>Log In</span>
           </Button>
         </Link>
       )}

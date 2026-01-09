@@ -6,10 +6,25 @@ import { Menu, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { Footer } from "@/components/Footer/Footer";
 import { NotificationBell } from "@/components/notifications";
+import { UserDropdown } from "@/components/UserDropdown";
 import { Button } from "@eptss/ui";
 
+export interface UserProfile {
+  email: string;
+  username: string | null;
+  profilePictureUrl: string | null;
+}
+
 // Dashboard header that replaces the regular header's mobile menu button with our sidebar toggle
-const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () => void, isSidebarOpen: boolean }) => {
+const DashboardHeader = ({
+  toggleSidebar,
+  isSidebarOpen,
+  userProfile
+}: {
+  toggleSidebar: () => void;
+  isSidebarOpen: boolean;
+  userProfile: UserProfile | null;
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -57,9 +72,16 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () =
             </Link>
           </div>
 
-          {/* Notification Bell */}
+          {/* Notification Bell and User Dropdown */}
           <div className="flex items-center gap-2">
             <NotificationBell />
+            {userProfile && (
+              <UserDropdown
+                email={userProfile.email}
+                username={userProfile.username}
+                profilePictureUrl={userProfile.profilePictureUrl}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -70,9 +92,11 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: { toggleSidebar: () =
 export default function DashboardLayout({
   children,
   isAdmin = false,
+  userProfile = null,
 }: {
   children: React.ReactNode;
   isAdmin?: boolean;
+  userProfile?: UserProfile | null;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -100,7 +124,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen w-screen overflow-x-hidden bg-gradient-to-br from-background-primary via-accent-primary/20 to-accent-secondary/20 flex flex-col">
       {/* Custom dashboard header with integrated sidebar toggle */}
-      <DashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+      <DashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} userProfile={userProfile} />
 
       {/* Mobile Menu - Dropdown from top */}
       <div className={`md:hidden fixed top-16 left-0 right-0 z-40 bg-background-primary/95 backdrop-blur-md border-b border-accent-secondary/20 transition-all duration-500 ease-in-out ${isSidebarOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>

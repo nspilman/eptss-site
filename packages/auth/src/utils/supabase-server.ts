@@ -84,6 +84,43 @@ export async function getCurrentUsername(): Promise<string | null> {
 }
 
 /**
+ * User profile data for header display
+ */
+export interface HeaderUserProfile {
+  userId: string;
+  email: string;
+  username: string | null;
+  profilePictureUrl: string | null;
+}
+
+/**
+ * Gets authenticated user profile data for header display
+ *
+ * Returns user profile with username and avatar, or null if not authenticated
+ */
+export async function getUserProfileForHeader(): Promise<HeaderUserProfile | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data: userData } = await supabase
+    .from('users')
+    .select('username, profile_picture_url')
+    .eq('userid', user.id)
+    .single();
+
+  return {
+    userId: user.id,
+    email: user.email || '',
+    username: userData?.username || null,
+    profilePictureUrl: userData?.profile_picture_url || null,
+  };
+}
+
+/**
  * Gets all request headers
  * 
  * Useful for debugging and passing headers to external services

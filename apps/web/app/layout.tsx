@@ -3,6 +3,7 @@ import { Header } from "@/components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
 import { AuthStateListener } from "@eptss/auth";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
+import { getUserProfileForHeader } from "@eptss/auth/server";
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
@@ -47,6 +48,7 @@ export default async function RootLayout({
 }) {
   const { userId } = await getAuthUser();
   const userIsAdmin = userId ? await isAdmin() : false;
+  const userProfile = userId ? await getUserProfileForHeader() : null;
   return (
     <html lang="en">
       <head>
@@ -61,7 +63,7 @@ export default async function RootLayout({
         <AuthStateListener>
           {userId ? (
             // Authenticated users get the dashboard layout with sidebar
-            <DashboardLayout isAdmin={userIsAdmin}>
+            <DashboardLayout isAdmin={userIsAdmin} userProfile={userProfile}>
               {children}
               <Toaster />
             </DashboardLayout>
