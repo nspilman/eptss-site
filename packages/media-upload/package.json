@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@eptss/bucket-storage": "workspace:*",
+    "@eptss/media-display": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@radix-ui/react-progress": "^1.1.4",
     "react-dropzone": "^14.3.5",

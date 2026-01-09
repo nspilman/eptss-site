@@ -4,7 +4,7 @@ import Link from "next/link";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection, PublicProfileSubmission } from "@eptss/data-access";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
-import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-upload";
+import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-display";
 import Image from "next/image";
 
 interface SocialLink {

@@ -1,0 +1,8 @@
+# Storybook build output
+storybook-static/
+
+# Node modules (handled by root, but just in case)
+node_modules/
+
+# Build output
+dist/

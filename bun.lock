@@ -353,11 +353,49 @@
         "typescript": "5.1.3",
       },
     },
+    "packages/media-display": {
+      "name": "@eptss/media-display",
+      "version": "0.1.0",
+      "dependencies": {
+        "@eptss/logger": "workspace:*",
+        "@eptss/ui": "workspace:*",
+        "clsx": "^2.1.1",
+        "lucide-react": "^0.546.0",
+        "wavesurfer.js": "^7.8.14",
+      },
+      "devDependencies": {
+        "@storybook/addon-essentials": "^8.6.14",
+        "@storybook/addon-interactions": "^8.6.14",
+        "@storybook/addon-links": "^8.6.14",
+        "@storybook/addon-storysource": "^8.6.14",
+        "@storybook/blocks": "^8.6.14",
+        "@storybook/react": "^8.6.14",
+        "@storybook/react-vite": "^8.6.14",
+        "@storybook/test": "^8.6.14",
+        "@tailwindcss/postcss": "^4.0.14",
+        "@types/node": "18.11.3",
+        "@types/react": "18",
+        "@types/react-dom": "18",
+        "buffer": "^6.0.3",
+        "eslint": "8.26.0",
+        "eslint-plugin-storybook": "^0.6.15",
+        "postcss": "8.4.35",
+        "storybook": "^8.6.14",
+        "tailwindcss": "^4.0.14",
+        "typescript": "5.1.3",
+        "vite": "^6.0.7",
+      },
+      "peerDependencies": {
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+      },
+    },
     "packages/media-upload": {
       "name": "@eptss/media-upload",
       "version": "0.1.0",
       "dependencies": {
         "@eptss/bucket-storage": "workspace:*",
+        "@eptss/media-display": "workspace:*",
         "@eptss/ui": "workspace:*",
         "@radix-ui/react-progress": "^1.1.4",
         "clsx": "^2.1.1",
@@ -398,6 +436,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@eptss/data-access": "workspace:*",
+        "@eptss/media-display": "workspace:*",
         "@eptss/shared": "workspace:*",
         "@eptss/ui": "workspace:*",
         "@radix-ui/react-icons": "^1.3.0",
@@ -832,6 +871,8 @@
     "@eptss/forms": ["@eptss/forms@workspace:packages/forms"],
 
     "@eptss/logger": ["@eptss/logger@workspace:packages/logger"],
+
+    "@eptss/media-display": ["@eptss/media-display@workspace:packages/media-display"],
 
     "@eptss/media-upload": ["@eptss/media-upload@workspace:packages/media-upload"],
 

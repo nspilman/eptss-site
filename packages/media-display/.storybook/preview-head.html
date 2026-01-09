@@ -1,0 +1,15 @@
+<script>
+  // Polyfill process for browser environment
+  // This runs before any modules are loaded
+  window.process = window.process || {
+    env: { NODE_ENV: 'development' },
+    on: function() {}, // No-op for browser
+    version: '',
+    versions: {},
+    platform: 'browser',
+    cwd: function() { return '/'; },
+  };
+
+  // Also set on globalThis to catch all references
+  globalThis.process = window.process;
+</script>

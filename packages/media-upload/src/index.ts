@@ -14,6 +14,25 @@
  * - Upload queue management
  */
 
+// Re-export display components from @eptss/media-display for backward compatibility
+export {
+  AudioPreview,
+  AudioPreviewErrorBoundary,
+  FilePreview,
+  Playlist,
+  PlaylistTrackItem,
+  usePlaylist,
+} from '@eptss/media-display';
+
+export type {
+  AudioPreviewProps,
+  FilePreviewProps,
+  PlaylistProps,
+  PlaylistTrackItemProps,
+  UsePlaylistOptions,
+  Track,
+} from '@eptss/media-display';
+
 // Main component
 export { MediaUploader } from './components/MediaUploader';
 export type { MediaUploaderProps, MediaUploaderState } from './types';
@@ -30,14 +49,6 @@ export type { UploadProgressProps } from './components/UploadProgress';
 
 export { UploadQueue } from './components/UploadQueue';
 export type { UploadQueueProps } from './components/UploadQueue';
-
-export { FilePreview } from './components/FilePreview';
-export type { FilePreviewProps } from './components/FilePreview';
-
-export { AudioPreview } from './components/AudioPreview';
-export type { AudioPreviewProps } from './components/AudioPreview';
-
-export { AudioPreviewErrorBoundary } from './components/AudioPreviewErrorBoundary';
 
 export { ImageCropper } from './components/ImageCropper';
 export type { ImageCropperProps } from './components/ImageCropper';

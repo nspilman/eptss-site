@@ -7,10 +7,10 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button, Text, AlertBox, cn } from '@eptss/ui';
+import { FilePreview } from '@eptss/media-display';
 import type { MediaUploaderProps, MediaUploaderState } from '../types';
 import { FileInput } from './FileInput';
 import { FileDropzone } from './FileDropzone';
-import { FilePreview } from './FilePreview';
 import { UploadQueue } from './UploadQueue';
 import { ImageCropper } from './ImageCropper';
 import { useFileValidation } from '../hooks/useFileValidation';

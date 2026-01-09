@@ -2,7 +2,7 @@
 
 import { formatDate } from '@eptss/data-access/utils/formatDate';
 import { Card, CardContent, Text, Heading } from '@eptss/ui';
-import { AudioPreview, AudioPreviewErrorBoundary } from '@eptss/media-upload';
+import { AudioPreview, AudioPreviewErrorBoundary } from '@eptss/media-display';
 import type { Submission } from '../types';
 
 interface SubmissionsTabProps {
