@@ -8,9 +8,13 @@ import {
   deactivateReferralCode,
   reactivateReferralCode,
   getReferralStats,
+  getAllReferralCodes,
+  getAllUserReferrals,
+  getSystemReferralStats,
 } from "@eptss/data-access/services/referralService";
 import { createClient } from "@eptss/data-access/utils/supabase/server";
 import { logger } from "@eptss/logger/server";
+import { isAdmin } from "@eptss/data-access/utils/isAdmin";
 
 /**
  * Server Action: Create a new referral code for the current user
@@ -236,6 +240,111 @@ export async function getMyReferralStats() {
     return {
       success: false,
       stats: { totalCodes: 0, activeCodes: 0, totalReferrals: 0 },
+    };
+  }
+}
+
+/**
+ * ADMIN Server Action: Get all referral codes system-wide
+ */
+export async function adminGetAllReferralCodes() {
+  logger.action("adminGetAllReferralCodes", "started");
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || !(await isAdmin())) {
+      logger.action("adminGetAllReferralCodes", "failed", {
+        reason: "User not authenticated or not admin",
+      });
+      return { success: false, codes: [] };
+    }
+
+    const result = await getAllReferralCodes();
+    logger.action("adminGetAllReferralCodes", "completed", {
+      codesCount: result.codes.length,
+    });
+
+    return result;
+  } catch (error) {
+    logger.action("adminGetAllReferralCodes", "failed", {
+      error: error instanceof Error ? error : undefined,
+    });
+    return { success: false, codes: [] };
+  }
+}
+
+/**
+ * ADMIN Server Action: Get all user referrals system-wide
+ */
+export async function adminGetAllUserReferrals() {
+  logger.action("adminGetAllUserReferrals", "started");
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || !(await isAdmin())) {
+      logger.action("adminGetAllUserReferrals", "failed", {
+        reason: "User not authenticated or not admin",
+      });
+      return { success: false, referrals: [] };
+    }
+
+    const result = await getAllUserReferrals();
+    logger.action("adminGetAllUserReferrals", "completed", {
+      referralsCount: result.referrals.length,
+    });
+
+    return result;
+  } catch (error) {
+    logger.action("adminGetAllUserReferrals", "failed", {
+      error: error instanceof Error ? error : undefined,
+    });
+    return { success: false, referrals: [] };
+  }
+}
+
+/**
+ * ADMIN Server Action: Get system-wide referral statistics
+ */
+export async function adminGetSystemReferralStats() {
+  logger.action("adminGetSystemReferralStats", "started");
+
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user || !(await isAdmin())) {
+      logger.action("adminGetSystemReferralStats", "failed", {
+        reason: "User not authenticated or not admin",
+      });
+      return {
+        success: false,
+        stats: { totalCodes: 0, activeCodes: 0, totalReferrals: 0, totalUsersWithCodes: 0 },
+      };
+    }
+
+    const result = await getSystemReferralStats();
+    logger.action("adminGetSystemReferralStats", "completed", {
+      stats: result.stats,
+    });
+
+    return result;
+  } catch (error) {
+    logger.action("adminGetSystemReferralStats", "failed", {
+      error: error instanceof Error ? error : undefined,
+    });
+    return {
+      success: false,
+      stats: { totalCodes: 0, activeCodes: 0, totalReferrals: 0, totalUsersWithCodes: 0 },
     };
   }
 }

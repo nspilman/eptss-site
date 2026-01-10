@@ -91,6 +91,13 @@ async function DashboardContent() {
               <p className="text-sm text-secondary">See user activity</p>
             </a>
             <a
+              href="/admin/referrals"
+              className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
+            >
+              <h4 className="font-semibold text-primary mb-1">Referrals</h4>
+              <p className="text-sm text-secondary">View referral data</p>
+            </a>
+            <a
               href="/admin/notifications"
               className="p-4 bg-background-tertiary/30 hover:bg-background-tertiary/50 border border-background-tertiary/50 rounded-lg transition-colors"
             >

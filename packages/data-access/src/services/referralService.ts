@@ -308,3 +308,108 @@ export async function getReferralStats(userId: string) {
     };
   }
 }
+
+/**
+ * ADMIN: Get all referral codes system-wide with usage details
+ */
+export async function getAllReferralCodes() {
+  try {
+    const codes = await db
+      .select({
+        id: referralCodes.id,
+        code: referralCodes.code,
+        maxUses: referralCodes.maxUses,
+        usesCount: referralCodes.usesCount,
+        isActive: referralCodes.isActive,
+        expiresAt: referralCodes.expiresAt,
+        createdAt: referralCodes.createdAt,
+        createdByUserId: referralCodes.createdByUserId,
+        creatorEmail: users.email,
+        creatorUsername: users.username,
+        creatorDisplayName: users.publicDisplayName,
+      })
+      .from(referralCodes)
+      .innerJoin(users, eq(referralCodes.createdByUserId, users.userid))
+      .orderBy(sql`${referralCodes.createdAt} DESC`);
+
+    return { success: true, codes };
+  } catch (error) {
+    console.error('Error fetching all referral codes:', error);
+    return { success: false, codes: [] };
+  }
+}
+
+/**
+ * ADMIN: Get all user referrals system-wide
+ */
+export async function getAllUserReferrals() {
+  try {
+    const referrals = await db
+      .select({
+        id: userReferrals.id,
+        referredUserId: userReferrals.referredUserId,
+        referrerUserId: userReferrals.referrerUserId,
+        referralCodeId: userReferrals.referralCodeId,
+        createdAt: userReferrals.createdAt,
+        // Referred user info
+        referredUserEmail: sql<string>`referred_user.email`,
+        referredUsername: sql<string>`referred_user.username`,
+        referredDisplayName: sql<string>`referred_user.public_display_name`,
+        // Referrer info
+        referrerEmail: sql<string>`referrer_user.email`,
+        referrerUsername: sql<string>`referrer_user.username`,
+        referrerDisplayName: sql<string>`referrer_user.public_display_name`,
+        // Referral code
+        code: referralCodes.code,
+      })
+      .from(userReferrals)
+      .innerJoin(
+        sql`users AS referred_user`,
+        eq(userReferrals.referredUserId, sql`referred_user.userid`)
+      )
+      .innerJoin(
+        sql`users AS referrer_user`,
+        eq(userReferrals.referrerUserId, sql`referrer_user.userid`)
+      )
+      .innerJoin(referralCodes, eq(userReferrals.referralCodeId, referralCodes.id))
+      .orderBy(sql`${userReferrals.createdAt} DESC`);
+
+    return { success: true, referrals };
+  } catch (error) {
+    console.error('Error fetching all user referrals:', error);
+    return { success: false, referrals: [] };
+  }
+}
+
+/**
+ * ADMIN: Get system-wide referral statistics
+ */
+export async function getSystemReferralStats() {
+  try {
+    const [stats] = await db
+      .select({
+        totalCodes: sql<number>`COUNT(DISTINCT ${referralCodes.id})`,
+        activeCodes: sql<number>`COUNT(DISTINCT CASE WHEN ${referralCodes.isActive} THEN ${referralCodes.id} END)`,
+        totalReferrals: sql<number>`COUNT(DISTINCT ${userReferrals.id})`,
+        totalUsersWithCodes: sql<number>`COUNT(DISTINCT ${referralCodes.createdByUserId})`,
+      })
+      .from(referralCodes)
+      .leftJoin(userReferrals, eq(referralCodes.id, userReferrals.referralCodeId));
+
+    return {
+      success: true,
+      stats: {
+        totalCodes: Number(stats?.totalCodes || 0),
+        activeCodes: Number(stats?.activeCodes || 0),
+        totalReferrals: Number(stats?.totalReferrals || 0),
+        totalUsersWithCodes: Number(stats?.totalUsersWithCodes || 0),
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching system referral stats:', error);
+    return {
+      success: false,
+      stats: { totalCodes: 0, activeCodes: 0, totalReferrals: 0, totalUsersWithCodes: 0 },
+    };
+  }
+}

@@ -45,6 +45,7 @@ export { AdminTabs } from './AdminTabs/AdminTabs';
 export { AdminTabsServer } from './AdminTabs/AdminTabsServer';
 export { FeedbackTab } from './AdminTabs/FeedbackTab';
 export { UsersTab } from './AdminTabs/UsersTab';
+export { ReferralsTab } from './AdminTabs/ReferralsTab';
 
 // Selectors
 export { RoundSelector } from './RoundSelector';
