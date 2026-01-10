@@ -75,7 +75,7 @@ export function ProjectSwitcher({ projects, currentProjectSlug }: ProjectSwitche
       </Button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-background-primary border border-border rounded-lg shadow-lg overflow-hidden z-50">
+        <div className="absolute top-full right-0 mt-2 w-64 bg-[var(--color-background-primary)] border border-border rounded-lg shadow-lg overflow-hidden z-50 opacity-100">
           <div className="p-2">
             <div className="px-3 py-2 text-xs text-secondary font-semibold uppercase">
               Switch Project
@@ -84,7 +84,7 @@ export function ProjectSwitcher({ projects, currentProjectSlug }: ProjectSwitche
               <button
                 key={project.id}
                 onClick={() => handleProjectSwitch(project.slug)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors cursor-pointer ${
                   project.slug === currentProjectSlug
                     ? 'bg-accent-primary/10 text-accent-primary'
                     : 'hover:bg-background-secondary text-primary'

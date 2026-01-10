@@ -9,7 +9,7 @@ import {
   fetchDiscussionData,
 } from '@/app/dashboard/data-fetchers';
 import { StickyDiscussionFooterWrapper } from '@/app/dashboard/StickyDiscussionFooterWrapper';
-import { cookies } from 'next/headers';
+import { ProjectCookieSetter } from './ProjectCookieSetter';
 
 // Force dynamic rendering for authenticated content
 export const dynamic = 'force-dynamic';
@@ -42,14 +42,6 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
 
   console.log('[ProjectDashboardPage] User ID:', userId);
 
-  // Store the last viewed project slug in a cookie
-  const cookieStore = await cookies();
-  cookieStore.set('lastViewedProject', slug, {
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    sameSite: 'lax',
-  });
-
   // Fetch data for all panels in parallel
   console.log('[ProjectDashboardPage] Fetching panel data...');
   const [heroData, participantsData, userData] =
@@ -66,6 +58,7 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
 
   return (
     <>
+      <ProjectCookieSetter projectSlug={slug} />
       <Dashboard
         config={eptssDeboardConfig}
         user={{ id: userId, role: 'user' }}

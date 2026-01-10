@@ -22,6 +22,11 @@ export interface CommentWithAuthor extends Comment {
   };
   upvoteCount: number;
   hasUserUpvoted?: boolean;
+  upvoters?: Array<{
+    userid: string;
+    username: string;
+    publicDisplayName: string | null;
+  }>;
   replies?: CommentWithAuthor[];
 }
 
@@ -148,6 +153,49 @@ export async function getCommentsByContentId(
       userUpvotes = new Set(upvotes.map(u => u.commentId));
     }
 
+    // Get all upvoters for all comments in this content
+    const commentIds = commentsWithData.map(row => row.comment.id);
+    let upvotersData: Array<{
+      commentId: string;
+      userid: string | null;
+      username: string;
+      publicDisplayName: string | null;
+    }> = [];
+
+    if (commentIds.length > 0) {
+      upvotersData = await db
+        .select({
+          commentId: commentUpvotes.commentId,
+          userid: users.userid,
+          username: users.username,
+          publicDisplayName: users.publicDisplayName,
+        })
+        .from(commentUpvotes)
+        .leftJoin(users, eq(commentUpvotes.userId, users.userid))
+        .where(sql`${commentUpvotes.commentId} IN ${commentIds}`);
+    }
+
+    // Group upvoters by comment ID
+    const upvotersByComment = new Map<string, Array<{
+      userid: string;
+      username: string;
+      publicDisplayName: string | null;
+    }>>();
+
+    upvotersData.forEach(row => {
+      if (!row.userid) return; // Skip if user not found
+
+      if (!upvotersByComment.has(row.commentId)) {
+        upvotersByComment.set(row.commentId, []);
+      }
+
+      upvotersByComment.get(row.commentId)!.push({
+        userid: row.userid,
+        username: row.username,
+        publicDisplayName: row.publicDisplayName,
+      });
+    });
+
     // Map to CommentWithAuthor format
     const formattedComments: CommentWithAuthor[] = commentsWithData
       .filter(row => row.author !== null)
@@ -156,6 +204,7 @@ export async function getCommentsByContentId(
         author: row.author!,
         upvoteCount: row.upvoteCount,
         hasUserUpvoted: currentUserId ? userUpvotes.has(row.comment.id) : false,
+        upvoters: upvotersByComment.get(row.comment.id) || [],
       }));
 
     // Build tree structure for nested comments

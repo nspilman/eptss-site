@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Tooltip,
 } from "@eptss/ui";
 import { CommentForm } from "./CommentForm";
 import { CommentList } from "./CommentList";
@@ -192,26 +193,41 @@ export function CommentItem({
             {/* Actions */}
             {!isDeleted && !isEditing && (
               <div className="flex items-center gap-2 flex-wrap" role="group" aria-label="Comment actions">
-                <Button
-                  variant="action"
-                  size="action"
-                  onClick={handleToggleUpvote}
-                  disabled={isUpvoting}
-                  className="group gap-2 font-medium"
-                  aria-label={isUpvoted ? `Unlike comment. Current likes: ${upvoteCount}` : `Like comment. Current likes: ${upvoteCount}`}
-                  aria-pressed={isUpvoted}
+                <Tooltip
+                  content={
+                    upvoteCount > 0 && comment.upvoters && comment.upvoters.length > 0 ? (
+                      <div className="max-w-xs">
+                        <p className="font-semibold text-xs mb-1">Liked by:</p>
+                        <p className="text-xs">
+                          {comment.upvoters
+                            .map(upvoter => getDisplayName(upvoter))
+                            .join(', ')}
+                        </p>
+                      </div>
+                    ) : undefined
+                  }
                 >
-                  <Heart
-                    size={16}
-                    className={`transition-all duration-200 ${
-                      isUpvoted
-                        ? "fill-[var(--color-accent-primary)] text-[var(--color-accent-primary)]"
-                        : "group-hover:text-[var(--color-accent-primary)]"
-                    }`}
-                    aria-hidden="true"
-                  />
-                  <span aria-label={`${upvoteCount} ${upvoteCount === 1 ? 'like' : 'likes'}`}>{upvoteCount}</span>
-                </Button>
+                  <Button
+                    variant="action"
+                    size="action"
+                    onClick={handleToggleUpvote}
+                    disabled={isUpvoting}
+                    className="group gap-2 font-medium"
+                    aria-label={isUpvoted ? `Unlike comment. Current likes: ${upvoteCount}` : `Like comment. Current likes: ${upvoteCount}`}
+                    aria-pressed={isUpvoted}
+                  >
+                    <Heart
+                      size={16}
+                      className={`transition-all duration-200 ${
+                        isUpvoted
+                          ? "fill-[var(--color-accent-primary)] text-[var(--color-accent-primary)]"
+                          : "group-hover:text-[var(--color-accent-primary)]"
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span aria-label={`${upvoteCount} ${upvoteCount === 1 ? 'like' : 'likes'}`}>{upvoteCount}</span>
+                  </Button>
+                </Tooltip>
 
                 {depth < MAX_DEPTH && (
                   <Button
