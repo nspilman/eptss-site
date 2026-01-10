@@ -2,6 +2,7 @@ import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
 import { getUserProjects } from '@eptss/data-access';
 import { redirect } from 'next/navigation';
 import { ProjectDashboardPicker } from './ProjectDashboardPicker';
+import { cookies } from 'next/headers';
 
 import { Text } from "@eptss/ui";
 // Force dynamic rendering for authenticated content
@@ -44,6 +45,15 @@ export default async function DashboardPage() {
     redirect(`/projects/${projectSlug}/dashboard`);
   }
 
-  // Multiple projects: show project picker
+  // Multiple projects: check for last viewed project
+  const cookieStore = await cookies();
+  const lastViewedSlug = cookieStore.get('lastViewedProject')?.value;
+
+  // If we have a last viewed project and it's in the user's project list, redirect there
+  if (lastViewedSlug && userProjects.some(p => p.slug === lastViewedSlug)) {
+    redirect(`/projects/${lastViewedSlug}/dashboard`);
+  }
+
+  // No last viewed project or it's not valid: show project picker
   return <ProjectDashboardPicker projects={userProjects} />;
 }

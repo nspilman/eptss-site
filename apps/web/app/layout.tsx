@@ -40,6 +40,7 @@ import "@eptss/ui/styles";
 
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 import { isAdmin } from "@eptss/auth";
+import { getUserProjects } from "@eptss/data-access";
 
 export default async function RootLayout({
   children,
@@ -49,6 +50,7 @@ export default async function RootLayout({
   const { userId } = await getAuthUser();
   const userIsAdmin = userId ? await isAdmin() : false;
   const userProfile = userId ? await getUserProfileForHeader() : null;
+  const userProjects = userId ? await getUserProjects(userId) : [];
   return (
     <html lang="en">
       <head>
@@ -63,7 +65,7 @@ export default async function RootLayout({
         <AuthStateListener>
           {userId ? (
             // Authenticated users get the dashboard layout with sidebar
-            <DashboardLayout isAdmin={userIsAdmin} userProfile={userProfile}>
+            <DashboardLayout isAdmin={userIsAdmin} userProfile={userProfile} userProjects={userProjects}>
               {children}
               <Toaster />
             </DashboardLayout>

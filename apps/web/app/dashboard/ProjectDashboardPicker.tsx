@@ -17,6 +17,11 @@ interface ProjectDashboardPickerProps {
 }
 
 export function ProjectDashboardPicker({ projects }: ProjectDashboardPickerProps) {
+  // Set cookie when clicking a project
+  const handleProjectClick = (slug: string) => {
+    document.cookie = `lastViewedProject=${slug}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="max-w-4xl w-full">
@@ -37,6 +42,7 @@ export function ProjectDashboardPicker({ projects }: ProjectDashboardPickerProps
               <Link
                 key={project.id}
                 href={`/projects/${project.slug}/dashboard`}
+                onClick={() => handleProjectClick(project.slug)}
                 className="group relative bg-background-secondary border-2 border-border rounded-xl p-8 hover:border-accent-primary transition-all duration-300 hover:shadow-lg hover:shadow-accent-primary/20"
               >
                 {/* Icon */}
