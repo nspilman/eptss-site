@@ -158,7 +158,7 @@ export async function getCommentsByContentId(
     let upvotersData: Array<{
       commentId: string;
       userid: string | null;
-      username: string;
+      username: string | null;
       publicDisplayName: string | null;
     }> = [];
 
@@ -183,7 +183,8 @@ export async function getCommentsByContentId(
     }>>();
 
     upvotersData.forEach(row => {
-      if (!row.userid) return; // Skip if user not found
+      // Skip if user not found or username is missing
+      if (!row.userid || !row.username) return;
 
       if (!upvotersByComment.has(row.commentId)) {
         upvotersByComment.set(row.commentId, []);
