@@ -7,3 +7,4 @@ export * from './signupActions';
 export * from './userParticipationActions';
 export * from './profileActions';
 export * from './referralActions';
+export * from './surveyActions';

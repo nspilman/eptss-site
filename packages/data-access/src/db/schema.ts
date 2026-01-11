@@ -198,6 +198,7 @@ export const notificationTypeEnum = pgEnum('notification_type', [
   'comment_upvoted',
   'mention_received',
   'admin_announcement',
+  'survey_available',
   'test_notification'
 ]);
 
@@ -495,3 +496,79 @@ export const pendingUploads = pgTable("pending_uploads", {
 
 export type PendingUpload = typeof pendingUploads.$inferSelect;
 export type NewPendingUpload = typeof pendingUploads.$inferInsert;
+
+// ============================================================================
+// SURVEY SYSTEM TABLES - User feedback collection
+// ============================================================================
+
+// Survey Templates Table - reusable survey definitions
+export const surveyTemplates = pgTable("survey_templates", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+  createdBy: uuid("created_by").references(() => users.userid, { onDelete: "set null" }),
+  questions: jsonb("questions").notNull(), // Array of question objects
+  isActive: boolean("is_active").notNull().default(true),
+  isDeleted: boolean("is_deleted").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  projectIdIdx: index("survey_templates_project_id_idx").on(table.projectId),
+  isActiveIdx: index("survey_templates_is_active_idx").on(table.isActive, table.isDeleted),
+}));
+
+export type SurveyTemplate = typeof surveyTemplates.$inferSelect;
+export type NewSurveyTemplate = typeof surveyTemplates.$inferInsert;
+
+// Survey Target Audience Enum
+export const surveyTargetAudienceEnum = pgEnum('survey_target_audience', ['submitters', 'signups', 'all_project_members']);
+
+// Survey Instance Status Enum
+export const surveyInstanceStatusEnum = pgEnum('survey_instance_status', ['scheduled', 'active', 'completed', 'cancelled']);
+
+// Survey Instances Table - links surveys to specific rounds
+export const surveyInstances = pgTable("survey_instances", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  templateId: uuid("template_id").references(() => surveyTemplates.id, { onDelete: "cascade" }).notNull(),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id, { onDelete: "cascade" }).notNull(),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
+  status: surveyInstanceStatusEnum("status").notNull().default("scheduled"),
+  targetAudience: surveyTargetAudienceEnum("target_audience").notNull(),
+  triggerDate: timestamp("trigger_date").notNull(), // When survey becomes available
+  expiresAt: timestamp("expires_at"), // Optional expiration date
+  notificationsSent: boolean("notifications_sent").notNull().default(false),
+  notificationsSentAt: timestamp("notifications_sent_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  roundIdIdx: index("survey_instances_round_id_idx").on(table.roundId),
+  projectIdIdx: index("survey_instances_project_id_idx").on(table.projectId),
+  statusIdx: index("survey_instances_status_idx").on(table.status),
+  triggerDateIdx: index("survey_instances_trigger_date_idx").on(table.triggerDate),
+}));
+
+export type SurveyInstance = typeof surveyInstances.$inferSelect;
+export type NewSurveyInstance = typeof surveyInstances.$inferInsert;
+
+// Survey Responses Table - stores user submissions
+export const surveyResponses = pgTable("survey_responses", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  instanceId: uuid("instance_id").references(() => surveyInstances.id, { onDelete: "cascade" }).notNull(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id, { onDelete: "cascade" }).notNull(),
+  answers: jsonb("answers").notNull(), // Object mapping question IDs to answers
+  isComplete: boolean("is_complete").notNull().default(false),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  submittedAt: timestamp("submitted_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  instanceIdIdx: index("survey_responses_instance_id_idx").on(table.instanceId),
+  userIdIdx: index("survey_responses_user_id_idx").on(table.userId),
+  roundIdIdx: index("survey_responses_round_id_idx").on(table.roundId),
+  // Composite index for fast lookups of user's response to a specific survey
+  instanceUserIdx: uniqueIndex("survey_responses_instance_user_idx").on(table.instanceId, table.userId),
+}));
+
+export type SurveyResponse = typeof surveyResponses.$inferSelect;
+export type NewSurveyResponse = typeof surveyResponses.$inferInsert;
