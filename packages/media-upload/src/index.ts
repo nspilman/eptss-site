@@ -68,7 +68,11 @@ export {
   uploadMediaFiles,
   deleteMediaFile,
   getMediaFileUrl,
+  getSignedUploadUrl,
 } from './actions/uploadActions';
+
+// Client-side direct upload (bypasses server size limits)
+export { uploadWithSignedUrl } from './utils/directUpload';
 
 // Types
 export type {

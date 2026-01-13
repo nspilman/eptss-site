@@ -6,6 +6,8 @@ export {
   getSignedUrl,
   getSignedUrls,
   listFiles,
+  createSignedUploadUrl,
+  uploadToSignedUrl,
 } from './storageActions';
 
 // Constants and helper functions

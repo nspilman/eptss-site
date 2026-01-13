@@ -4,7 +4,7 @@
  * Server actions for media upload
  */
 
-import { uploadFile, deleteFile, getPublicUrl } from '@eptss/bucket-storage';
+import { uploadFile, deleteFile, getPublicUrl, createSignedUploadUrl } from '@eptss/bucket-storage';
 import type { UploadResult, UploadError } from '../types';
 import { validateFile } from '../utils/fileValidation';
 import { sanitizeFileName, generateUniqueFileName } from '../utils/mimeTypes';
@@ -152,3 +152,62 @@ export async function getMediaFileUrl(bucket: string, path: string): Promise<str
     throw err;
   }
 }
+
+/**
+ * Get a signed upload URL for direct client-to-storage uploads
+ * This bypasses server size limits (like Vercel's 4.5MB limit) by letting
+ * the client upload directly to Supabase storage.
+ *
+ * @param bucket - The storage bucket name
+ * @param path - The file path within the bucket (optional, will be generated if not provided)
+ * @param fileName - Original file name (used to generate path if path not provided)
+ * @returns The signed upload URL, token, and path for direct upload
+ */
+export async function getSignedUploadUrl(
+  bucket: string,
+  path?: string,
+  fileName?: string
+): Promise<{
+  signedUrl: string | null;
+  token: string | null;
+  path: string | null;
+  publicUrl: string | null;
+  error: string | null;
+}> {
+  try {
+    // Generate path if not provided
+    const filePath = path || generateUniqueFileName(fileName || 'file');
+
+    const { signedUrl, token, error } = await createSignedUploadUrl(bucket as any, filePath);
+
+    if (error || !signedUrl || !token) {
+      return {
+        signedUrl: null,
+        token: null,
+        path: null,
+        publicUrl: null,
+        error: error || 'Failed to create signed upload URL',
+      };
+    }
+
+    // Get the public URL that will be available after upload
+    const publicUrl = await getPublicUrl(bucket as any, filePath);
+
+    return {
+      signedUrl,
+      token,
+      path: filePath,
+      publicUrl,
+      error: null,
+    };
+  } catch (err) {
+    return {
+      signedUrl: null,
+      token: null,
+      path: null,
+      publicUrl: null,
+      error: err instanceof Error ? err.message : 'Unknown error occurred',
+    };
+  }
+}
+

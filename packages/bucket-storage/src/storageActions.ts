@@ -252,6 +252,108 @@ export async function getSignedUrls(
  * @param options - List options (path prefix, limit, offset)
  * @returns List of file metadata or error
  */
+/**
+ * Create a signed upload URL for direct client-to-storage uploads
+ * This bypasses server size limits (like Vercel's 4.5MB limit) by letting
+ * the client upload directly to Supabase storage.
+ *
+ * @param bucket - The storage bucket name
+ * @param path - The file path within the bucket
+ * @returns The signed upload URL and token, or error
+ */
+export async function createSignedUploadUrl(
+  bucket: BucketName,
+  path: string
+): Promise<{
+  signedUrl: string | null;
+  token: string | null;
+  path: string | null;
+  error: string | null;
+}> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUploadUrl(path);
+
+    if (error) {
+      logger.error("Create signed upload URL error", { bucket, path, error: error.message });
+      return { signedUrl: null, token: null, path: null, error: error.message };
+    }
+
+    if (!data) {
+      logger.error("No signed upload URL returned", { bucket, path });
+      return { signedUrl: null, token: null, path: null, error: "Failed to generate signed upload URL" };
+    }
+
+    logger.debug("Signed upload URL created", { bucket, path });
+
+    return {
+      signedUrl: data.signedUrl,
+      token: data.token,
+      path: data.path,
+      error: null,
+    };
+  } catch (error) {
+    logger.error("Create signed upload URL error", {
+      bucket,
+      path,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return {
+      signedUrl: null,
+      token: null,
+      path: null,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Upload a file using a signed upload URL (client-side)
+ * Call this from the client after getting a signed URL from createSignedUploadUrl
+ *
+ * @param signedUrl - The signed upload URL from createSignedUploadUrl
+ * @param token - The upload token from createSignedUploadUrl
+ * @param file - The file to upload
+ * @returns Success status and any error
+ */
+export async function uploadToSignedUrl(
+  bucket: BucketName,
+  path: string,
+  token: string,
+  file: File | Blob
+): Promise<{ success: boolean; error: string | null }> {
+  try {
+    const supabase = await createClient();
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .uploadToSignedUrl(path, token, file, {
+        contentType: (file as File).type || 'application/octet-stream',
+      });
+
+    if (error) {
+      logger.error("Upload to signed URL error", { bucket, path, error: error.message });
+      return { success: false, error: error.message };
+    }
+
+    logger.debug("Upload to signed URL successful", { bucket, path });
+    return { success: true, error: null };
+  } catch (error) {
+    logger.error("Upload to signed URL error", {
+      bucket,
+      path,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 export async function listFiles(
   bucket: BucketName,
   options?: {

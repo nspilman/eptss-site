@@ -1,10 +1,11 @@
 /**
  * Hook for managing multiple file uploads with queue
+ * Uses direct-to-storage uploads via signed URLs to bypass server size limits
  */
 
 import { useState, useCallback, useRef } from 'react';
 import type { UploadQueueItem, UploadResult, UploadError, UploadStatus } from '../types';
-import { uploadMediaFile } from '../actions/uploadActions';
+import { uploadWithSignedUrl } from '../utils/directUpload';
 import { extractAudioMetadata, isAudioFile } from '../utils/audioMetadata';
 
 export interface UseUploadQueueOptions {
@@ -69,6 +70,7 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
 
   /**
    * Upload a single file from the queue
+   * Uses signed URL for direct-to-storage upload to bypass server size limits
    */
   const uploadFile = useCallback(
     async (item: UploadQueueItem) => {
@@ -96,7 +98,8 @@ export function useUploadQueue(options: UseUploadQueueOptions) {
           });
         }, 100);
 
-        const { result, error } = await uploadMediaFile(options.bucket, item.file, path, {
+        // Use direct upload via signed URL to bypass server size limits (Vercel's 4.5MB limit)
+        const { result, error } = await uploadWithSignedUrl(options.bucket, item.file, path, {
           metadata,
         });
 
