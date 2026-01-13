@@ -5,8 +5,7 @@ import { useState } from "react";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection, PublicProfileSubmission } from "@eptss/data-access";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
-import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-display";
-import Image from "next/image";
+import { Playlist, Track } from "@eptss/media-display";
 import { Share2, Check } from "lucide-react";
 
 function ShareButton({ submissionId }: { submissionId: string }) {
@@ -195,83 +194,70 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
             className="pb-6"
           />
           <div className="grid grid-cols-1 gap-6 w-full">
-            {submissions.map((submission) => (
-              <article key={submission.id} className="group">
-                <Card gradient hover="lift">
-                  <CardContent className="flex flex-col gap-4">
-                    <div className="flex flex-col md:flex-row gap-4">
-                      {/* Cover Art */}
-                      {submission.coverImageUrl ? (
-                        <div className="relative w-full md:w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                          <Image
-                            src={submission.coverImageUrl}
-                            alt={`Cover art for ${submission.songTitle}`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : user.profilePictureUrl ? (
-                        <div className="relative w-full md:w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                          <Image
-                            src={user.profilePictureUrl}
-                            alt={`${user.displayName}'s profile picture`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : null}
+            {submissions.map((submission) => {
+              // Create a single-track playlist for the submission
+              const track: Track | null = submission.audioFileUrl ? {
+                id: submission.id,
+                src: submission.audioFileUrl,
+                title: submission.songTitle,
+                artist: submission.songArtist,
+                coverArt: submission.coverImageUrl || user.profilePictureUrl || undefined,
+                fileSize: submission.audioFileSize || undefined,
+              } : null;
 
-                      {/* Submission Info */}
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <Heading as="h3" size="xs" className="mb-1">
-                              {submission.songTitle}
-                            </Heading>
-                            <Text size="sm" color="tertiary" className="mb-2">
-                              by {submission.songArtist}
-                            </Text>
+              return (
+                <article key={submission.id} className="group">
+                  <div className="relative">
+                    {/* Share button overlay */}
+                    <div className="absolute top-4 right-4 z-10">
+                      <ShareButton submissionId={submission.id} />
+                    </div>
+
+                    {track ? (
+                      <Playlist
+                        tracks={[track]}
+                        showTrackList={false}
+                        showControls={false}
+                        layout="compact"
+                      />
+                    ) : submission.soundcloudUrl ? (
+                      <Card gradient hover="lift">
+                        <CardContent className="flex flex-col gap-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <Heading as="h3" size="xs" className="mb-1">
+                                {submission.songTitle}
+                              </Heading>
+                              <Text size="sm" color="tertiary" className="mb-2">
+                                by {submission.songArtist}
+                              </Text>
+                            </div>
                           </div>
-                          <ShareButton submissionId={submission.id} />
-                        </div>
-                        {submission.createdAt && (
-                          <Text size="xs" color="secondary">
-                            Submitted {formatDate(submission.createdAt)}
-                          </Text>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Audio Player */}
-                    <div className="w-full">
-                      {submission.audioFileUrl ? (
-                        <AudioPreviewErrorBoundary>
-                          <AudioPreview
-                            src={submission.audioFileUrl}
-                            title={submission.songTitle}
-                            fileSize={submission.audioFileSize || undefined}
-                          />
-                        </AudioPreviewErrorBoundary>
-                      ) : submission.soundcloudUrl ? (
-                        <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
-                          <a
-                            href={submission.soundcloudUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
-                          >
-                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
-                            </svg>
-                            Listen on SoundCloud
-                          </a>
-                        </div>
-                      ) : null}
-                    </div>
-                  </CardContent>
-                </Card>
-              </article>
-            ))}
+                          <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
+                            <a
+                              href={submission.soundcloudUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[var(--color-accent-secondary)] to-[var(--color-accent-primary)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                            >
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7 6.5L16 12L7 17.5V6.5Z"/>
+                              </svg>
+                              Listen on SoundCloud
+                            </a>
+                          </div>
+                          {submission.createdAt && (
+                            <Text size="xs" color="secondary">
+                              Submitted {formatDate(submission.createdAt)}
+                            </Text>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </section>
       )}

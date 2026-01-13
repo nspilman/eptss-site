@@ -283,7 +283,7 @@ export const SubmitPage = ({
                   form.setValue("audioDuration", undefined);
                   setAudioResetKey(prev => prev + 1);
                 }}
-                onUploadComplete={async (results) => {
+                onUploadComplete={(results) => {
                   if (results.length > 0) {
                     setAudioUpload(results[0]);
                     setUploadError(null);
@@ -293,17 +293,15 @@ export const SubmitPage = ({
                       ? (results[0].metadata.audio as { duration?: number }).duration
                       : undefined;
 
-                    // Update form values
-                    form.setValue("audioFileUrl", results[0].url, { shouldValidate: true });
-                    form.setValue("audioFilePath", results[0].path, { shouldValidate: true });
+                    // Update form values (shouldValidate: false to avoid showing errors before submit)
+                    form.setValue("audioFileUrl", results[0].url);
+                    form.setValue("audioFilePath", results[0].path);
                     if (results[0].fileSize) {
-                      form.setValue("audioFileSize", results[0].fileSize, { shouldValidate: true });
+                      form.setValue("audioFileSize", results[0].fileSize);
                     }
                     if (audioDuration) {
-                      form.setValue("audioDuration", audioDuration, { shouldValidate: true });
+                      form.setValue("audioDuration", audioDuration);
                     }
-                    // Trigger validation to ensure form recognizes the new values
-                    await form.trigger(['audioFileUrl', 'audioFilePath']);
                   }
                 }}
                 onUploadError={(error) => {
