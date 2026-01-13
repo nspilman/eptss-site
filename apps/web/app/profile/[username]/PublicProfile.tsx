@@ -1,11 +1,54 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { Reflection, PublicProfileSubmission } from "@eptss/data-access";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
 import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-display";
 import Image from "next/image";
+import { Share2, Check } from "lucide-react";
+
+function ShareButton({ submissionId }: { submissionId: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const shareUrl = `${window.location.origin}/share/song/${submissionId}`;
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className="p-2 rounded-lg bg-[var(--color-background-secondary)] hover:bg-[var(--color-gray-700)] transition-colors"
+      title={copied ? "Link copied!" : "Copy share link"}
+    >
+      {copied ? (
+        <Check className="w-4 h-4 text-green-400" />
+      ) : (
+        <Share2 className="w-4 h-4 text-[var(--color-gray-400)]" />
+      )}
+    </button>
+  );
+}
 
 interface SocialLink {
   id: string;
@@ -180,12 +223,17 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
 
                       {/* Submission Info */}
                       <div className="flex-1">
-                        <Heading as="h3" size="xs" className="mb-1">
-                          {submission.songTitle}
-                        </Heading>
-                        <Text size="sm" color="tertiary" className="mb-2">
-                          by {submission.songArtist}
-                        </Text>
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <Heading as="h3" size="xs" className="mb-1">
+                              {submission.songTitle}
+                            </Heading>
+                            <Text size="sm" color="tertiary" className="mb-2">
+                              by {submission.songArtist}
+                            </Text>
+                          </div>
+                          <ShareButton submissionId={submission.id} />
+                        </div>
                         {submission.createdAt && (
                           <Text size="xs" color="secondary">
                             Submitted {formatDate(submission.createdAt)}

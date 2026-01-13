@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "../db";
-import { submissions, users, roundMetadata } from "../db/schema";
+import { submissions, users, roundMetadata, songs } from "../db/schema";
 import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
@@ -54,6 +54,65 @@ export const getSubmissions = async (id: number) => {
     userId: val.user_id,
   }));
 };
+
+/**
+ * Get a single submission by ID with full details including user and round info
+ */
+export const getSubmissionById = async (submissionId: number) => {
+  const data = await db
+    .select({
+      id: submissions.id,
+      createdAt: submissions.createdAt,
+      roundId: submissions.roundId,
+      soundcloudUrl: submissions.soundcloudUrl,
+      audioFileUrl: submissions.audioFileUrl,
+      coverImageUrl: submissions.coverImageUrl,
+      audioDuration: submissions.audioDuration,
+      audioFileSize: submissions.audioFileSize,
+      lyrics: submissions.lyrics,
+      additionalComments: submissions.additionalComments,
+      userId: submissions.userId,
+      username: users.username,
+      publicDisplayName: users.publicDisplayName,
+      profilePictureUrl: users.profilePictureUrl,
+      roundSlug: roundMetadata.slug,
+      songTitle: songs.title,
+      songArtist: songs.artist,
+    })
+    .from(submissions)
+    .leftJoin(users, eq(submissions.userId, users.userid))
+    .leftJoin(roundMetadata, eq(submissions.roundId, roundMetadata.id))
+    .leftJoin(songs, eq(roundMetadata.songId, songs.id))
+    .where(eq(submissions.id, submissionId))
+    .limit(1);
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  const val = data[0];
+  return {
+    id: val.id,
+    createdAt: val.createdAt,
+    roundId: val.roundId,
+    soundcloudUrl: val.soundcloudUrl,
+    audioFileUrl: val.audioFileUrl,
+    coverImageUrl: val.coverImageUrl,
+    audioDuration: val.audioDuration,
+    audioFileSize: val.audioFileSize,
+    lyrics: val.lyrics,
+    additionalComments: val.additionalComments,
+    userId: val.userId,
+    username: val.username || "",
+    publicDisplayName: val.publicDisplayName,
+    profilePictureUrl: val.profilePictureUrl,
+    roundSlug: val.roundSlug,
+    songTitle: val.songTitle,
+    songArtist: val.songArtist,
+  };
+};
+
+export type SubmissionDetails = NonNullable<Awaited<ReturnType<typeof getSubmissionById>>>;
 
 
 export async function adminSubmitCover(formData: FormData): Promise<FormReturn> {

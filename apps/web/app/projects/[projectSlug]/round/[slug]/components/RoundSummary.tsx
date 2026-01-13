@@ -8,6 +8,7 @@ import { VotingResultsSection } from "./VotingResultsSection";
 import { SignupsTable } from "./SignupsTable";
 import { RoundNavigationWrapper } from "./RoundNavigationWrapper";
 import { CoveringPhaseSignup } from "./CoveringPhaseSignup";
+import { SubmissionsPlaylist } from "./SubmissionsPlaylist";
 import { RoundReflections } from "@eptss/user-content";
 import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
 
@@ -101,7 +102,7 @@ const signupsHeaders = [
 export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResults = [], outstandingVoters = [], voteBreakdown = [], allRounds = [], hasVoted = false }: Props) => {
   try {
     const { phase, song, playlistUrl, submissions, signups, dateLabels } = roundData;
-    
+
     // Check if the current user is signed up for this round
     const { userId } = await getAuthUser();
     const isUserSignedUp = userId ? signups.some(signup => signup.userId === userId) : false;
@@ -177,7 +178,15 @@ export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResult
           <CoveringPhaseSignup roundId={roundId} isSignedUp={isUserSignedUp} />
         )}
         {phase === "celebration" && (
-          <CelebrationTables roundSummaryHeaders={roundSummaryHeaders} roundSummary={roundSummary} submissionsDisplayHeaders={submissionsDisplayHeaders} submissions={submissions} />
+          <>
+            <CelebrationTables roundSummaryHeaders={roundSummaryHeaders} roundSummary={roundSummary} submissionsDisplayHeaders={submissionsDisplayHeaders} submissions={submissions} />
+            <SubmissionsPlaylist
+              submissions={submissions}
+              song={song}
+              roundId={roundId}
+              roundSlug={roundData.slug}
+            />
+          </>
         )}
         {shouldShowVotingResultsSection && (
           <VotingResultsSection
