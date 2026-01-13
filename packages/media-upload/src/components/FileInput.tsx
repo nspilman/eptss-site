@@ -61,6 +61,7 @@ export const FileInput: React.FC<FileInputProps> = ({
         aria-label={buttonText}
       />
       <Button
+        type="button"
         onClick={handleClick}
         disabled={disabled}
         variant="default"

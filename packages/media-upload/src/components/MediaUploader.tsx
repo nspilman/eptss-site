@@ -291,6 +291,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
       {/* Manual Upload Button (when autoUpload is false) */}
       {!autoUpload && selectedFiles.length > 0 && !uploadQueue.isUploading && (
         <Button
+          type="button"
           onClick={startUpload}
           variant="default"
           size="md"

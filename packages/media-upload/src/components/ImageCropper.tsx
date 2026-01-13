@@ -109,6 +109,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
       <div className="flex items-center justify-end gap-3">
         {onCancel && (
           <Button
+            type="button"
             onClick={onCancel}
             variant="outline"
             size="md"
@@ -117,6 +118,7 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({
           </Button>
         )}
         <Button
+          type="button"
           onClick={handleCropComplete}
           disabled={!completedCrop}
           variant="default"
