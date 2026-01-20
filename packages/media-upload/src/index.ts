@@ -62,6 +62,39 @@ export type { UseUploadQueueOptions } from './hooks/useUploadQueue';
 
 export { useFileValidation } from './hooks/useFileValidation';
 
+export { useUpload } from './hooks/useUpload';
+export type { UseUploadOptions, UseUploadReturn } from './hooks/useUpload';
+
+// Pure functions for upload state management (easily testable)
+export {
+  uploadReducer,
+  initialUploadState,
+} from './uploadReducer';
+export type {
+  UploadState,
+  UploadAction,
+  UploadResult as UploadResultState,
+} from './uploadReducer';
+
+export {
+  canSubmit,
+  deriveSubmitConfig,
+} from './canSubmit';
+export type {
+  UploadStates,
+  SubmitConfig,
+  CanSubmitResult,
+} from './canSubmit';
+
+export {
+  buildPayload,
+  payloadToFormData,
+} from './buildPayload';
+export type {
+  TextFields,
+  SubmissionPayload,
+} from './buildPayload';
+
 // Server actions
 export {
   uploadMediaFile,

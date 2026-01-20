@@ -2,14 +2,23 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form, FormLabel, Text, Textarea } from "@eptss/ui"
+import { useReducer } from "react";
+import { FormWrapper, FormReturn } from "@eptss/forms"
+import { Button, Form, FormLabel, Text, Textarea, toast } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
-import { submissionSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
-import { PageContent, SubmissionFormConfig, validateSubmissionForm } from "@eptss/project-config";
-import { useProject } from "../../ProjectContext";
-import { MediaUploader, UploadResult } from "@eptss/media-upload";
+import { submissionFormSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
+import { PageContent, SubmissionFormConfig } from "@eptss/project-config";
+import {
+  MediaUploader,
+  uploadReducer,
+  initialUploadState,
+  canSubmit,
+  deriveSubmitConfig,
+  buildPayload,
+  payloadToFormData,
+  type UploadState,
+} from "@eptss/media-upload";
 import { BUCKETS } from "@eptss/bucket-storage";
 import { useState } from "react";
 
@@ -83,23 +92,28 @@ export const SubmitPage = ({
   submitContent,
   submissionFormConfig,
 }: Props) => {
-  const { projectSlug } = useProject();
   const { coverClosesLabel, listeningPartyLabel } = dateStrings;
 
-  const [audioUpload, setAudioUpload] = useState<UploadResult | null>(null);
-  const [coverImageUpload, setCoverImageUpload] = useState<UploadResult | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [audioResetKey, setAudioResetKey] = useState(0);
-  const [coverResetKey, setCoverResetKey] = useState(0);
+  // Validation errors
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Get field configs for easier access
   const audioConfig = submissionFormConfig.fields.audioFile;
   const coverImageConfig = submissionFormConfig.fields.coverImage;
   const lyricsConfig = submissionFormConfig.fields.lyrics;
 
+  // Derive submit config from form config (what's required)
+  const submitConfig = deriveSubmitConfig(submissionFormConfig);
+
+  // Upload state - using reducers for explicit state tracking
+  // MediaUploader handles the actual upload, we just track state via callbacks
+  const [audioState, dispatchAudio] = useReducer(uploadReducer, initialUploadState);
+  const [imageState, dispatchImage] = useReducer(uploadReducer, initialUploadState);
+
+  // Form for text fields only (what react-hook-form is good at)
   const form = useForm<SubmissionInput>({
-    resolver: zodResolver(submissionSchema),
+    resolver: zodResolver(submissionFormSchema),
     defaultValues: {
       audioFileUrl: "",
       audioFilePath: "",
@@ -114,67 +128,92 @@ export const SubmitPage = ({
       didntWork: "",
       roundId
     },
-    mode: "onChange",
-    reValidateMode: "onChange"
   })
 
   const successMessage = submitContent.successMessage;
 
-  const onSubmit = async (formData: FormData): Promise<FormReturn> => {
-    // Build field values for validation
-    const lyrics = form.getValues("lyrics");
-    const fieldValues = [
-      { fieldName: "audioFile", value: audioUpload?.url },
-      { fieldName: "coverImage", value: coverImageUpload?.url },
-      { fieldName: "lyrics", value: lyrics },
-      { fieldName: "coolThingsLearned", value: form.getValues("coolThingsLearned") },
-      { fieldName: "toolsUsed", value: form.getValues("toolsUsed") },
-      { fieldName: "happyAccidents", value: form.getValues("happyAccidents") },
-      { fieldName: "didntWork", value: form.getValues("didntWork") },
-    ];
+  // Watch lyrics for the audio-or-lyrics validation
+  const lyrics = form.watch("lyrics");
+  const hasLyrics = Boolean(lyrics?.trim());
 
-    // Validate required fields and required groups
-    const validation = validateSubmissionForm(submissionFormConfig, fieldValues);
-    if (!validation.valid) {
-      setValidationErrors(validation.errors);
-      return { status: "Error" as const, message: validation.errors[0] };
+  // Check if form can be submitted using pure function
+  const submitCheck = canSubmit(
+    { audio: audioState, image: imageState },
+    submitConfig,
+    hasLyrics
+  );
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Check upload status first
+    if (!submitCheck.allowed) {
+      setValidationErrors(submitCheck.errors);
+      return;
     }
     setValidationErrors([]);
 
-    // Add audio file data to formData if uploaded
-    if (audioUpload) {
-      formData.set("audioFileUrl", audioUpload.url);
-      formData.set("audioFilePath", audioUpload.path);
-      if (audioUpload.fileSize) {
-        formData.set("audioFileSize", audioUpload.fileSize.toString());
+    // Validate text fields with react-hook-form
+    const isValid = await form.trigger();
+    if (!isValid) {
+      const errorMessages = Object.values(form.formState.errors)
+        .map(error => error?.message)
+        .filter(Boolean);
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: errorMessages.join(", ") || "Please check your form inputs.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Build payload from upload states + text fields
+      const textFields = form.getValues();
+      const payload = buildPayload(
+        roundId,
+        { audio: audioState, image: imageState },
+        {
+          lyrics: textFields.lyrics,
+          coolThingsLearned: textFields.coolThingsLearned,
+          toolsUsed: textFields.toolsUsed,
+          happyAccidents: textFields.happyAccidents,
+          didntWork: textFields.didntWork,
+        }
+      );
+
+      // Convert to FormData for server action
+      const formData = payloadToFormData(payload);
+
+      // Submit
+      const result = await submitCover(formData);
+
+      if (result.status === "Success") {
+        form.reset();
+        dispatchAudio({ type: 'CLEAR' });
+        dispatchImage({ type: 'CLEAR' });
+        toast({
+          description: successMessage,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: result.message || "Something went wrong. Please try again.",
+        });
       }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Add cover image data if uploaded
-    if (coverImageUpload) {
-      formData.set("coverImageUrl", coverImageUpload.url);
-      formData.set("coverImagePath", coverImageUpload.path);
-    }
-
-    // Add lyrics if provided
-    if (lyrics) {
-      formData.set("lyrics", lyrics);
-    }
-
-    const result = await submitCover(formData)
-
-    if (result.status === "Error") {
-      return result
-    }
-
-    return { status: "Success" as const, message: successMessage }
-  }
-
-  const { isLoading, handleSubmit } = useFormSubmission({
-    onSubmit,
-    form,
-    successMessage,
-  })
+  };
 
   if (hasSubmitted) {
     return (
@@ -200,25 +239,16 @@ export const SubmitPage = ({
 
   const formDescription = `${submitContent.formDescriptionPrefix} ${coverClosesLabel}`;
 
-  const submitButtonText = submitContent.submitButtonText;
-
   // Determine if audio is required based on config
   const isAudioRequired = audioConfig.required || (audioConfig.requiredGroup && !lyricsConfig.enabled);
 
-  // Check if submit should be enabled (either audio or lyrics if in a required group)
-  const canSubmit = (() => {
-    // If audio is simply required, need audio
-    if (audioConfig.required && !audioUpload) return false;
-    // If lyrics is simply required, need lyrics
-    if (lyricsConfig.required && !form.watch("lyrics")?.trim()) return false;
-    // If both are in a required group, need at least one
-    if (audioConfig.requiredGroup && lyricsConfig.requiredGroup === audioConfig.requiredGroup) {
-      return !!audioUpload || !!form.watch("lyrics")?.trim();
-    }
-    // Otherwise, just check individual required fields
-    if (audioConfig.enabled && audioConfig.required && !audioUpload) return false;
-    return true;
-  })();
+  // Get upload status text
+  const getUploadStatusText = (state: UploadState) => {
+    if (state.status === 'uploading') return "Uploading...";
+    if (state.status === 'complete') return "Upload complete";
+    if (state.status === 'error') return "Upload failed";
+    return null;
+  };
 
   return (
     <FormWrapper
@@ -260,7 +290,6 @@ export const SubmitPage = ({
                 {song.title !== null ? "Upload your song" : "Upload your cover"}
               </Text>
               <MediaUploader
-                key={`audio-${audioResetKey}`}
                 bucket={BUCKETS.AUDIO_SUBMISSIONS}
                 accept="audio/*"
                 maxSizeMB={audioConfig.maxSizeMB ?? 50}
@@ -268,49 +297,53 @@ export const SubmitPage = ({
                 buttonText="Choose Audio File"
                 showPreview={true}
                 onFilesSelected={(files) => {
-                  // Clear any previous upload state when new file is selected
                   if (files.length > 0) {
-                    setAudioUpload(null);
-                    setUploadError(null);
+                    // Track that upload is starting
+                    dispatchAudio({ type: 'SELECT_FILE', file: files[0] });
+                    dispatchAudio({ type: 'UPLOAD_START' });
                   }
                 }}
                 onFilesRemoved={() => {
-                  // Clear upload state and reset component when file is removed
-                  setAudioUpload(null);
-                  form.setValue("audioFileUrl", "");
-                  form.setValue("audioFilePath", "");
-                  form.setValue("audioFileSize", undefined);
-                  form.setValue("audioDuration", undefined);
-                  setAudioResetKey(prev => prev + 1);
+                  dispatchAudio({ type: 'CLEAR' });
                 }}
                 onUploadComplete={(results) => {
                   if (results.length > 0) {
-                    setAudioUpload(results[0]);
-                    setUploadError(null);
-
+                    const result = results[0];
                     // Extract audio duration from metadata if available
-                    const audioDuration = results[0].metadata?.audio
-                      ? (results[0].metadata.audio as { duration?: number }).duration
+                    const audioDuration = result.metadata?.audio
+                      ? (result.metadata.audio as { duration?: number }).duration
                       : undefined;
-
-                    // Update form values (shouldValidate: false to avoid showing errors before submit)
-                    form.setValue("audioFileUrl", results[0].url);
-                    form.setValue("audioFilePath", results[0].path);
-                    if (results[0].fileSize) {
-                      form.setValue("audioFileSize", results[0].fileSize);
-                    }
-                    if (audioDuration) {
-                      form.setValue("audioDuration", audioDuration);
-                    }
+                    dispatchAudio({
+                      type: 'UPLOAD_SUCCESS',
+                      result: {
+                        url: result.url,
+                        path: result.path,
+                        fileSize: result.fileSize,
+                        metadata: audioDuration ? { audio: { duration: audioDuration } } : undefined,
+                      },
+                    });
                   }
                 }}
                 onUploadError={(error) => {
-                  setUploadError(error.message);
-                  setAudioUpload(null);
+                  dispatchAudio({ type: 'UPLOAD_ERROR', error: error.message });
+                  toast({
+                    variant: "destructive",
+                    title: "Audio Upload Error",
+                    description: error.message,
+                  });
                 }}
               />
-              {uploadError && (
-                <Text size="sm" color="destructive">{uploadError}</Text>
+              {/* Upload status feedback */}
+              {audioState.status !== 'idle' && (
+                <Text
+                  size="sm"
+                  color={audioState.status === 'complete' ? undefined : audioState.status === 'error' ? "destructive" : "muted"}
+                >
+                  {getUploadStatusText(audioState)}
+                </Text>
+              )}
+              {audioState.status === 'error' && audioState.error && (
+                <Text size="sm" color="destructive">{audioState.error}</Text>
               )}
             </div>
           )}
@@ -330,36 +363,55 @@ export const SubmitPage = ({
                 {coverImageConfig.description || "Upload cover art for your submission (will use your profile picture if not provided)"}
               </Text>
               <MediaUploader
-                key={`cover-${coverResetKey}`}
                 bucket={BUCKETS.SUBMISSION_IMAGES}
                 accept="image/*"
                 maxSizeMB={coverImageConfig.maxSizeMB ?? 5}
-                enableCrop={coverImageConfig.enableCrop ?? true}
+                enableCrop={false} // TODO: implement upload-then-crop flow
                 variant="button"
                 buttonText="Choose Cover Image"
                 showPreview={true}
                 onFilesSelected={(files) => {
-                  // Clear any previous upload state when new file is selected
                   if (files.length > 0) {
-                    setCoverImageUpload(null);
+                    dispatchImage({ type: 'SELECT_FILE', file: files[0] });
+                    dispatchImage({ type: 'UPLOAD_START' });
                   }
                 }}
                 onFilesRemoved={() => {
-                  // Clear upload state and reset component when file is removed
-                  setCoverImageUpload(null);
-                  form.setValue("coverImageUrl", "");
-                  form.setValue("coverImagePath", "");
-                  setCoverResetKey(prev => prev + 1);
+                  dispatchImage({ type: 'CLEAR' });
                 }}
                 onUploadComplete={(results) => {
                   if (results.length > 0) {
-                    setCoverImageUpload(results[0]);
-                    // Update form values
-                    form.setValue("coverImageUrl", results[0].url);
-                    form.setValue("coverImagePath", results[0].path);
+                    const result = results[0];
+                    dispatchImage({
+                      type: 'UPLOAD_SUCCESS',
+                      result: {
+                        url: result.url,
+                        path: result.path,
+                      },
+                    });
                   }
                 }}
+                onUploadError={(error) => {
+                  dispatchImage({ type: 'UPLOAD_ERROR', error: error.message });
+                  toast({
+                    variant: "destructive",
+                    title: "Image Upload Error",
+                    description: error.message,
+                  });
+                }}
               />
+              {/* Upload status feedback */}
+              {imageState.status !== 'idle' && (
+                <Text
+                  size="sm"
+                  color={imageState.status === 'complete' ? undefined : imageState.status === 'error' ? "destructive" : "muted"}
+                >
+                  {getUploadStatusText(imageState)}
+                </Text>
+              )}
+              {imageState.status === 'error' && imageState.error && (
+                <Text size="sm" color="destructive">{imageState.error}</Text>
+              )}
             </div>
           )}
 
@@ -383,7 +435,7 @@ export const SubmitPage = ({
                 {...form.register("lyrics")}
                 placeholder={lyricsConfig.placeholder || "Enter your song lyrics..."}
                 rows={8}
-                disabled={isLoading}
+                disabled={isSubmitting}
                 className="w-full"
               />
             </div>
@@ -392,10 +444,19 @@ export const SubmitPage = ({
           <FormBuilder
             fields={getFormFields(song.title !== null, submissionFormConfig)}
             control={form.control}
-            disabled={isLoading}
+            disabled={isSubmitting}
           />
-          <Button type="submit" disabled={isLoading || !canSubmit} size="full">
-            {isLoading ? submitContent.submittingText : submitButtonText}
+
+          <Button
+            type="submit"
+            disabled={isSubmitting || submitCheck.pending.length > 0}
+            size="full"
+          >
+            {isSubmitting
+              ? submitContent.submittingText
+              : submitCheck.pending.length > 0
+                ? "Waiting for uploads..."
+                : submitContent.submitButtonText}
           </Button>
         </motion.div>
       </Form>

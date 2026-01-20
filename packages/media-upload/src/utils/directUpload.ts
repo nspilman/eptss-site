@@ -59,13 +59,22 @@ export async function uploadWithSignedUrl(
       body: file,
     });
 
+    // Check response - Supabase returns JSON even on success
+    const responseText = await uploadResponse.text().catch(() => '');
+
     if (!uploadResponse.ok) {
-      const errorText = await uploadResponse.text().catch(() => 'Unknown error');
+      console.error('[directUpload] Upload failed:', {
+        status: uploadResponse.status,
+        statusText: uploadResponse.statusText,
+        response: responseText,
+        bucket,
+        path: filePath,
+      });
       return {
         result: null,
         error: {
           code: 'DIRECT_UPLOAD_ERROR',
-          message: `Direct upload failed: ${uploadResponse.status} ${errorText}`,
+          message: `Direct upload failed: ${uploadResponse.status} ${responseText || uploadResponse.statusText}`,
           file,
         },
       };

@@ -26,6 +26,8 @@ export const submitCoverSchema = z.object({
   // Use shared helper for optional positive numbers
   audioDuration: optionalPositiveNumber,
   audioFileSize: optionalPositiveNumber,
+  // Text fields
+  lyrics: z.string().optional(),
   coolThingsLearned: z.string().optional(),
   toolsUsed: z.string().optional(),
   happyAccidents: z.string().optional(),

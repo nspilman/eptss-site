@@ -7,7 +7,7 @@ import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
 import { getAuthUser } from "../utils/supabase/server";
 import { eq, sql } from "drizzle-orm";
-import { submissionFormSchema } from "../schemas/submission";
+import { submitCoverSchema } from "../schemas/actionSchemas";
 import { validateFormData } from "../utils/formDataHelpers";
 import { deleteFile, BUCKETS } from "@eptss/bucket-storage";
 import {
@@ -207,7 +207,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
   try {
     // Validate form data with Zod
-    const validation = validateFormData(formData, submissionFormSchema);
+    const validation = validateFormData(formData, submitCoverSchema);
 
     if (!validation.success) {
       return handleResponse(400, routes.dashboard.root(), validation.error);
