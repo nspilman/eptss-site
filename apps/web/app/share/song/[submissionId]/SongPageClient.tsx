@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { formatDate } from "@eptss/data-access/utils/formatDate";
 import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button } from "@eptss/ui";
@@ -24,21 +23,19 @@ export function SongPageClient({ submission }: SongPageClientProps) {
             <div className="flex flex-col md:flex-row gap-6 items-start">
               {/* Cover Art */}
               {submission.coverImageUrl ? (
-                <div className="relative w-full md:w-48 h-48 flex-shrink-0 rounded-lg overflow-hidden">
-                  <Image
+                <div className="w-full md:w-48 h-48 flex-shrink-0 rounded-lg overflow-hidden">
+                  <img
                     src={submission.coverImageUrl}
                     alt={`Cover art for ${displayName}'s submission`}
-                    fill
-                    className="object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               ) : submission.profilePictureUrl ? (
-                <div className="relative w-full md:w-48 h-48 flex-shrink-0 rounded-lg overflow-hidden">
-                  <Image
+                <div className="w-full md:w-48 h-48 flex-shrink-0 rounded-lg overflow-hidden">
+                  <img
                     src={submission.profilePictureUrl}
                     alt={`${displayName}'s profile picture`}
-                    fill
-                    className="object-cover"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               ) : null}
