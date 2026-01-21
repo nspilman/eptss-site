@@ -218,7 +218,7 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
                           tracks={[track]}
                           showTrackList={false}
                           showControls={false}
-                          layout="compact"
+                          layout="showcase"
                         />
                       </>
                     ) : submission.soundcloudUrl ? (

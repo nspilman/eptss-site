@@ -29,6 +29,9 @@ export type { PlaylistTrackItemProps } from './components/PlaylistTrackItem';
 export { NowPlayingCard } from './components/NowPlayingCard';
 export type { NowPlayingCardProps } from './components/NowPlayingCard';
 
+export { ShowcasePlayer } from './components/ShowcasePlayer';
+export type { ShowcasePlayerProps } from './components/ShowcasePlayer';
+
 export { EqualizerBars } from './components/EqualizerBars';
 export type { EqualizerBarsProps } from './components/EqualizerBars';
 

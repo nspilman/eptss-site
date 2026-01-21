@@ -20,6 +20,7 @@ import {
 } from '@eptss/ui';
 import { NowPlayingCard } from './NowPlayingCard';
 import { PlaylistTrackItem } from './PlaylistTrackItem';
+import { ShowcasePlayer } from './ShowcasePlayer';
 import { usePlaylist, UsePlaylistOptions } from '../hooks/usePlaylist';
 import { formatDuration } from '../utils/formatting';
 import type { Track } from '../types';
@@ -40,7 +41,7 @@ export interface PlaylistProps extends UsePlaylistOptions {
   /** Show waveform in now playing card */
   showWaveform?: boolean;
   /** Layout variant */
-  layout?: 'default' | 'compact' | 'split';
+  layout?: 'default' | 'compact' | 'split' | 'showcase';
   /** Maximum height for track list (enables scrolling) */
   maxTrackListHeight?: number | string;
   /** Liked track IDs */
@@ -92,6 +93,20 @@ export const Playlist: React.FC<PlaylistProps> = ({
 
   const isCompactLayout = layout === 'compact';
   const isSplitLayout = layout === 'split';
+  const isShowcaseLayout = layout === 'showcase';
+
+  // Showcase layout - optimized for single track with prominent cover art
+  if (isShowcaseLayout && playlist.currentTrack) {
+    return (
+      <ShowcasePlayer
+        track={playlist.currentTrack}
+        isPlaying={playlist.isPlaying}
+        onPlayPause={() => playlist.setIsPlaying(!playlist.isPlaying)}
+        onEnded={playlist.handleTrackEnded}
+        className={className}
+      />
+    );
+  }
 
   return (
     <Card
