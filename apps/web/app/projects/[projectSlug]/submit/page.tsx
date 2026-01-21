@@ -67,6 +67,7 @@ const Submit = async ({ params }: Props) => {
 
   return (
     <SubmitPage
+      projectSlug={projectSlug}
       roundId={roundId}
       hasSubmitted={roundDetails?.hasSubmitted || false}
       song={song}

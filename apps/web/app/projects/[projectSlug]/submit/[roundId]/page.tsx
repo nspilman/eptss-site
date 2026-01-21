@@ -32,6 +32,7 @@ export default async function SubmitForRound({ params }: Props) {
 
   return (
     <SubmitPage
+      projectSlug={projectSlug}
       dateStrings={{ listeningPartyLabel, coverClosesLabel }}
       roundId={roundId}
       hasSubmitted={roundDetails?.hasSubmitted || false}

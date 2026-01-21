@@ -125,6 +125,12 @@ export const routes = {
        */
       round: (projectSlug: ProjectSlug, roundId: string, options?: RouteOptions) =>
         buildUrl(`/projects/${projectSlug}/submit/${roundId}`, options),
+
+      /**
+       * Submission success page
+       */
+      success: (projectSlug: ProjectSlug, options?: RouteOptions) =>
+        buildUrl(`/projects/${projectSlug}/submit/success`, options),
     },
 
     /**

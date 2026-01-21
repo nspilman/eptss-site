@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FormWrapper, FormReturn } from "@eptss/forms"
 import { Button, Form, FormLabel, Text, Textarea, toast } from "@eptss/ui"
 import { motion } from "framer-motion"
@@ -20,9 +21,10 @@ import {
   type UploadState,
 } from "@eptss/media-upload";
 import { BUCKETS } from "@eptss/bucket-storage";
-import { useState } from "react";
+import { routes } from "@eptss/routing";
 
 interface Props {
+  projectSlug: string;
   roundId: number;
   hasSubmitted: boolean;
   song: {
@@ -84,6 +86,7 @@ const getFormFields = (isOriginal: boolean, config: SubmissionFormConfig): Field
 };
 
 export const SubmitPage = ({
+  projectSlug,
   roundId,
   hasSubmitted,
   song,
@@ -92,6 +95,7 @@ export const SubmitPage = ({
   submitContent,
   submissionFormConfig,
 }: Props) => {
+  const router = useRouter();
   const { coverClosesLabel, listeningPartyLabel } = dateStrings;
 
   // Validation errors
@@ -129,8 +133,6 @@ export const SubmitPage = ({
       roundId
     },
   })
-
-  const successMessage = submitContent.successMessage;
 
   // Watch lyrics for the audio-or-lyrics validation
   const lyrics = form.watch("lyrics");
@@ -191,12 +193,8 @@ export const SubmitPage = ({
       const result = await submitCover(formData);
 
       if (result.status === "Success") {
-        form.reset();
-        dispatchAudio({ type: 'CLEAR' });
-        dispatchImage({ type: 'CLEAR' });
-        toast({
-          description: successMessage,
-        });
+        // Redirect to success page
+        router.push(routes.projects.submit.success(projectSlug as "cover" | "monthly-original"));
       } else {
         toast({
           variant: "destructive",
