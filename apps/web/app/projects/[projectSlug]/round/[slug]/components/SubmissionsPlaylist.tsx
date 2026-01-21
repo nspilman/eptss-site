@@ -31,15 +31,18 @@ export const SubmissionsPlaylist = ({
   // Convert submissions to Track format for playlist
   const tracks: Track[] = submissionsWithAudio
     .filter((s) => s.audioFileUrl) // Only include direct audio files in playlist
-    .map((submission) => ({
-      id: `${submission.roundId}-${submission.userId}`,
-      src: submission.audioFileUrl!,
-      title: song?.title ? `${song.title} - ${submission.username}` : submission.username,
-      artist: submission.username,
-      duration: submission.audioDuration ? submission.audioDuration / 1000 : undefined,
-      fileSize: submission.audioFileSize || undefined,
-      coverArt: submission.coverImageUrl || undefined,
-    }));
+    .map((submission) => {
+      const displayName = submission.publicDisplayName || submission.username;
+      return {
+        id: `${submission.roundId}-${submission.userId}`,
+        src: submission.audioFileUrl!,
+        title: song?.title ? `${song.title} - ${displayName}` : displayName,
+        artist: displayName,
+        duration: submission.audioDuration ? submission.audioDuration / 1000 : undefined,
+        fileSize: submission.audioFileSize || undefined,
+        coverArt: submission.coverImageUrl || undefined,
+      };
+    });
 
   // Submissions with only SoundCloud links
   const soundcloudSubmissions = submissionsWithAudio.filter(
@@ -92,7 +95,7 @@ export const SubmissionsPlaylist = ({
                       href={`/profile/${submission.username}`}
                       className="text-[var(--color-accent-primary)] hover:underline font-medium"
                     >
-                      {submission.username}
+                      {submission.publicDisplayName || submission.username}
                     </Link>
                   </div>
                   <Button variant="gradient" size="sm" asChild>

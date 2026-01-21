@@ -33,6 +33,7 @@ export const getSubmissions = async (id: number) => {
       audio_file_size: submissions.audioFileSize,
       lyrics: submissions.lyrics,
       username: users.username || "",
+      public_display_name: users.publicDisplayName,
       user_id: submissions.userId,
     })
     .from(submissions)
@@ -51,6 +52,7 @@ export const getSubmissions = async (id: number) => {
     audioFileSize: val.audio_file_size,
     lyrics: val.lyrics,
     username: val.username || "",
+    publicDisplayName: val.public_display_name,
     userId: val.user_id,
   }));
 };

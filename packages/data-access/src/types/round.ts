@@ -30,6 +30,7 @@ export interface AudioFileFields {
 export interface Submission {
   roundId: number;
   username: string;
+  publicDisplayName?: string | null;
   userId: string;
   createdAt: Date;
   // Legacy field for old submissions

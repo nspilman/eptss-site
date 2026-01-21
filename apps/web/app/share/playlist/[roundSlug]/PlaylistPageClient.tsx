@@ -20,15 +20,18 @@ export function PlaylistPageClient({ roundData, roundSlug }: PlaylistPageClientP
   // Convert submissions to Track format for playlist
   const tracks: Track[] = submissionsWithAudio
     .filter((s) => s.audioFileUrl)
-    .map((submission) => ({
-      id: `${submission.roundId}-${submission.userId}`,
-      src: submission.audioFileUrl!,
-      title: `${roundData.song?.title || "Cover"} - ${submission.username}`,
-      artist: submission.username,
-      duration: submission.audioDuration ? submission.audioDuration / 1000 : undefined,
-      fileSize: submission.audioFileSize || undefined,
-      coverArt: submission.coverImageUrl || undefined,
-    }));
+    .map((submission) => {
+      const displayName = submission.publicDisplayName || submission.username;
+      return {
+        id: `${submission.roundId}-${submission.userId}`,
+        src: submission.audioFileUrl!,
+        title: `${roundData.song?.title || "Cover"} - ${displayName}`,
+        artist: displayName,
+        duration: submission.audioDuration ? submission.audioDuration / 1000 : undefined,
+        fileSize: submission.audioFileSize || undefined,
+        coverArt: submission.coverImageUrl || undefined,
+      };
+    });
 
   // Submissions with only SoundCloud links
   const soundcloudSubmissions = submissionsWithAudio.filter(
@@ -88,7 +91,7 @@ export function PlaylistPageClient({ roundData, roundSlug }: PlaylistPageClientP
               {soundcloudSubmissions.map((submission) => (
                 <Card key={`${submission.roundId}-${submission.userId}`}>
                   <CardContent className="flex items-center justify-between py-3">
-                    <Text>{submission.username}</Text>
+                    <Text>{submission.publicDisplayName || submission.username}</Text>
                     <Button variant="gradient" size="sm" asChild>
                       <a
                         href={submission.soundcloudUrl!}
