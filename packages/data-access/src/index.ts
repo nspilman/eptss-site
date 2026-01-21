@@ -53,8 +53,8 @@ export {
 } from './services/profileService';
 export { saveTestRun } from './services/monitoringService';
 export { getSongByTitleAndArtist } from './services/songsService';
-export { getSubmissionById } from './services/submissionService';
-export type { SubmissionDetails } from './services/submissionService';
+export { getSubmissionById, getUserSubmissionForRound } from './services/submissionService';
+export type { SubmissionDetails, ExistingSubmission } from './services/submissionService';
 // Note: addToMailingList and createUser are NOT exported from main index
 // because they import db which uses Node.js modules (net, tls, perf_hooks).
 // Import them directly from their service files in API routes only.

@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug, getUserSubmissionForRound } from "@eptss/data-access";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "../SubmitPage";
 import { getProjectConfig } from "@eptss/project-config";
@@ -30,12 +30,16 @@ export default async function SubmitForRound({ params }: Props) {
 
   const projectConfig = await getProjectConfig(projectSlug as ProjectSlug);
 
+  // Fetch existing submission for pre-populating the form
+  const existingSubmission = await getUserSubmissionForRound(roundId);
+
   return (
     <SubmitPage
       projectSlug={projectSlug}
       dateStrings={{ listeningPartyLabel, coverClosesLabel }}
       roundId={roundId}
       hasSubmitted={roundDetails?.hasSubmitted || false}
+      existingSubmission={existingSubmission}
       song={song}
       submitCover={submitCover}
       submitContent={projectConfig.content.pages.submit}

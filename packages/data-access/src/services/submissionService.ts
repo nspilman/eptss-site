@@ -6,7 +6,7 @@ import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
 import { handleResponse } from "../utils";
 import { getAuthUser } from "../utils/supabase/server";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { submitCoverSchema } from "../schemas/actionSchemas";
 import { validateFormData } from "../utils/formDataHelpers";
 import { deleteFile, BUCKETS } from "@eptss/bucket-storage";
@@ -17,7 +17,7 @@ import {
 } from "./uploadTrackingService";
 import { MAX_AUDIO_DURATION_SECONDS } from "../utils/serverFileValidation";
 import { logger } from "@eptss/logger/server";
-import { secondsToMilliseconds } from "../utils/audioDuration";
+import { secondsToMilliseconds, millisecondsToSeconds } from "../utils/audioDuration";
 
 export const getSubmissions = async (id: number) => {
   const data = await db
@@ -54,6 +54,69 @@ export const getSubmissions = async (id: number) => {
     userId: val.user_id,
   }));
 };
+
+/**
+ * Get the current user's submission for a round (if any)
+ * Used for pre-populating the form when editing
+ */
+export const getUserSubmissionForRound = async (roundId: number) => {
+  const { userId } = await getAuthUser();
+  if (!userId) return null;
+
+  const data = await db
+    .select({
+      id: submissions.id,
+      audioFileUrl: submissions.audioFileUrl,
+      audioFilePath: submissions.audioFilePath,
+      coverImageUrl: submissions.coverImageUrl,
+      coverImagePath: submissions.coverImagePath,
+      audioDuration: submissions.audioDuration,
+      audioFileSize: submissions.audioFileSize,
+      lyrics: submissions.lyrics,
+      additionalComments: submissions.additionalComments,
+    })
+    .from(submissions)
+    .where(and(eq(submissions.roundId, roundId), eq(submissions.userId, userId)))
+    .limit(1);
+
+  if (!data.length) return null;
+
+  const submission = data[0];
+
+  // Parse additional comments JSON
+  let additionalComments: {
+    coolThingsLearned?: string;
+    toolsUsed?: string;
+    happyAccidents?: string;
+    didntWork?: string;
+  } = {};
+
+  try {
+    if (submission.additionalComments) {
+      additionalComments = JSON.parse(submission.additionalComments);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+
+  return {
+    id: submission.id,
+    audioFileUrl: submission.audioFileUrl,
+    audioFilePath: submission.audioFilePath,
+    coverImageUrl: submission.coverImageUrl,
+    coverImagePath: submission.coverImagePath,
+    // Convert milliseconds back to seconds for the form
+    audioDuration: submission.audioDuration ? millisecondsToSeconds(submission.audioDuration) : null,
+    audioFileSize: submission.audioFileSize,
+    lyrics: submission.lyrics,
+    coolThingsLearned: additionalComments.coolThingsLearned || "",
+    toolsUsed: additionalComments.toolsUsed || "",
+    happyAccidents: additionalComments.happyAccidents || "",
+    didntWork: additionalComments.didntWork || "",
+  };
+};
+
+export type ExistingSubmission = NonNullable<Awaited<ReturnType<typeof getUserSubmissionForRound>>>;
 
 /**
  * Get a single submission by ID with full details including user and round info
@@ -233,14 +296,32 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
 
     const projectId = roundResult[0].projectId;
 
-    // Get the next submission ID
-    const lastSubmissionId = await db
-      .select({ id: submissions.id })
+    // Check if user already has a submission for this round (update case)
+    const existingSubmission = await db
+      .select({
+        id: submissions.id,
+        audioFilePath: submissions.audioFilePath,
+        coverImagePath: submissions.coverImagePath,
+      })
       .from(submissions)
-      .orderBy(sql`id desc`)
+      .where(and(eq(submissions.roundId, validData.roundId), eq(submissions.userId, userId || "")))
       .limit(1);
 
-    const nextSubmissionId = (lastSubmissionId[0]?.id || 0) + 1;
+    const isUpdate = existingSubmission.length > 0;
+    const existingSub = existingSubmission[0];
+
+    // Get the submission ID (existing or next available)
+    let submissionId: number;
+    if (isUpdate) {
+      submissionId = existingSub.id;
+    } else {
+      const lastSubmissionId = await db
+        .select({ id: submissions.id })
+        .from(submissions)
+        .orderBy(sql`id desc`)
+        .limit(1);
+      submissionId = (lastSubmissionId[0]?.id || 0) + 1;
+    }
 
     // PHASE 1: Register pending uploads
     // This creates tracking records for uploaded files before DB commit
@@ -250,7 +331,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       fileUrl: validData.audioFileUrl,
       uploadedBy: userId,
       relatedTable: "submissions",
-      relatedId: String(nextSubmissionId),
+      relatedId: String(submissionId),
       metadata: {
         roundId: validData.roundId,
         audioDuration: validData.audioDuration,
@@ -273,7 +354,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         fileUrl: validData.coverImageUrl,
         uploadedBy: userId,
         relatedTable: "submissions",
-        relatedId: String(nextSubmissionId),
+        relatedId: String(submissionId),
         metadata: {
           roundId: validData.roundId,
         },
@@ -310,26 +391,50 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         }
       }
 
-      await db.insert(submissions).values({
-        id: nextSubmissionId,
-        projectId: projectId,
-        roundId: validData.roundId,
+      const submissionData = {
         audioFileUrl: validData.audioFileUrl,
         audioFilePath: validData.audioFilePath,
         coverImageUrl: validData.coverImageUrl || null,
         coverImagePath: validData.coverImagePath || null,
-        // Store audio duration in milliseconds for precision (input is in seconds)
         audioDuration: audioDurationMs,
         audioFileSize: validData.audioFileSize || null,
         lyrics: validData.lyrics || null,
-        userId: userId || "",
         additionalComments: JSON.stringify({
           coolThingsLearned: validData.coolThingsLearned || "",
           toolsUsed: validData.toolsUsed || "",
           happyAccidents: validData.happyAccidents || "",
           didntWork: validData.didntWork || "",
         }),
-      });
+      };
+
+      if (isUpdate) {
+        // Update existing submission
+        await db
+          .update(submissions)
+          .set(submissionData)
+          .where(eq(submissions.id, submissionId));
+
+        // Clean up old files if they were replaced
+        if (existingSub.audioFilePath && existingSub.audioFilePath !== validData.audioFilePath) {
+          await deleteFile(BUCKETS.AUDIO_SUBMISSIONS, existingSub.audioFilePath).catch(() => {});
+        }
+        if (existingSub.coverImagePath && existingSub.coverImagePath !== validData.coverImagePath) {
+          await deleteFile(BUCKETS.SUBMISSION_IMAGES, existingSub.coverImagePath).catch(() => {});
+        }
+
+        logger.info("Submission updated", { userId, roundId: validData.roundId, submissionId });
+      } else {
+        // Insert new submission
+        await db.insert(submissions).values({
+          id: submissionId,
+          projectId: projectId,
+          roundId: validData.roundId,
+          userId: userId || "",
+          ...submissionData,
+        });
+
+        logger.info("Submission created", { userId, roundId: validData.roundId, submissionId });
+      }
 
       // SUCCESS: Mark uploads as committed
       if (audioUploadId) {
@@ -346,7 +451,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       return handleResponse(201, routes.dashboard.root(), "");
     } catch (dbError) {
       // FAILURE: Mark uploads as failed and clean up files
-      console.error("[submitCover] Database insert failed:", dbError);
+      console.error("[submitCover] Database operation failed:", dbError);
 
       if (audioUploadId) {
         await failPendingUpload(audioUploadId).catch(() => {});

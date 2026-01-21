@@ -9,6 +9,7 @@ import { Button, Form, FormLabel, Text, Textarea, toast } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
 import { submissionFormSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
+import type { ExistingSubmission } from "@eptss/data-access"
 import { PageContent, SubmissionFormConfig } from "@eptss/project-config";
 import {
   MediaUploader,
@@ -27,6 +28,7 @@ interface Props {
   projectSlug: string;
   roundId: number;
   hasSubmitted: boolean;
+  existingSubmission: ExistingSubmission | null;
   song: {
     title: string;
     artist: string;
@@ -89,6 +91,7 @@ export const SubmitPage = ({
   projectSlug,
   roundId,
   hasSubmitted,
+  existingSubmission,
   song,
   dateStrings,
   submitCover,
@@ -110,26 +113,57 @@ export const SubmitPage = ({
   // Derive submit config from form config (what's required)
   const submitConfig = deriveSubmitConfig(submissionFormConfig);
 
+  // Compute initial upload states from existing submission
+  const initialAudioState: UploadState = existingSubmission?.audioFileUrl
+    ? {
+        file: null,
+        status: 'complete',
+        progress: 100,
+        result: {
+          url: existingSubmission.audioFileUrl,
+          path: existingSubmission.audioFilePath || '',
+          fileSize: existingSubmission.audioFileSize ?? undefined,
+          metadata: existingSubmission.audioDuration
+            ? { audio: { duration: existingSubmission.audioDuration } }
+            : undefined,
+        },
+        error: null,
+      }
+    : initialUploadState;
+
+  const initialImageState: UploadState = existingSubmission?.coverImageUrl
+    ? {
+        file: null,
+        status: 'complete',
+        progress: 100,
+        result: {
+          url: existingSubmission.coverImageUrl,
+          path: existingSubmission.coverImagePath || '',
+        },
+        error: null,
+      }
+    : initialUploadState;
+
   // Upload state - using reducers for explicit state tracking
   // MediaUploader handles the actual upload, we just track state via callbacks
-  const [audioState, dispatchAudio] = useReducer(uploadReducer, initialUploadState);
-  const [imageState, dispatchImage] = useReducer(uploadReducer, initialUploadState);
+  const [audioState, dispatchAudio] = useReducer(uploadReducer, initialAudioState);
+  const [imageState, dispatchImage] = useReducer(uploadReducer, initialImageState);
 
   // Form for text fields only (what react-hook-form is good at)
   const form = useForm<SubmissionInput>({
     resolver: zodResolver(submissionFormSchema),
     defaultValues: {
-      audioFileUrl: "",
-      audioFilePath: "",
-      coverImageUrl: "",
-      coverImagePath: "",
-      audioDuration: undefined,
-      audioFileSize: undefined,
-      lyrics: "",
-      coolThingsLearned: "",
-      toolsUsed: "",
-      happyAccidents: "",
-      didntWork: "",
+      audioFileUrl: existingSubmission?.audioFileUrl || "",
+      audioFilePath: existingSubmission?.audioFilePath || "",
+      coverImageUrl: existingSubmission?.coverImageUrl || "",
+      coverImagePath: existingSubmission?.coverImagePath || "",
+      audioDuration: existingSubmission?.audioDuration ?? undefined,
+      audioFileSize: existingSubmission?.audioFileSize ?? undefined,
+      lyrics: existingSubmission?.lyrics || "",
+      coolThingsLearned: existingSubmission?.coolThingsLearned || "",
+      toolsUsed: existingSubmission?.toolsUsed || "",
+      happyAccidents: existingSubmission?.happyAccidents || "",
+      didntWork: existingSubmission?.didntWork || "",
       roundId
     },
   })
@@ -285,8 +319,17 @@ export const SubmitPage = ({
                 )}
               </FormLabel>
               <Text size="sm" color="muted">
-                {song.title !== null ? "Upload your song" : "Upload your cover"}
+                {existingSubmission?.audioFileUrl
+                  ? "Replace your existing audio file or keep the current one"
+                  : song.title !== null ? "Upload your song" : "Upload your cover"}
               </Text>
+              {existingSubmission?.audioFileUrl && audioState.status === 'complete' && audioState.result?.url === existingSubmission.audioFileUrl && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <Text size="sm" className="text-green-700 dark:text-green-400">
+                    ✓ Current audio file uploaded
+                  </Text>
+                </div>
+              )}
               <MediaUploader
                 bucket={BUCKETS.AUDIO_SUBMISSIONS}
                 accept="audio/*"
@@ -358,8 +401,17 @@ export const SubmitPage = ({
                 )}
               </FormLabel>
               <Text size="sm" color="muted">
-                {coverImageConfig.description || "Upload cover art for your submission (will use your profile picture if not provided)"}
+                {existingSubmission?.coverImageUrl
+                  ? "Replace your existing cover image or keep the current one"
+                  : coverImageConfig.description || "Upload cover art for your submission (will use your profile picture if not provided)"}
               </Text>
+              {existingSubmission?.coverImageUrl && imageState.status === 'complete' && imageState.result?.url === existingSubmission.coverImageUrl && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <Text size="sm" className="text-green-700 dark:text-green-400">
+                    ✓ Current cover image uploaded
+                  </Text>
+                </div>
+              )}
               <MediaUploader
                 bucket={BUCKETS.SUBMISSION_IMAGES}
                 accept="image/*"
@@ -451,10 +503,10 @@ export const SubmitPage = ({
             size="full"
           >
             {isSubmitting
-              ? submitContent.submittingText
+              ? existingSubmission ? "Updating..." : submitContent.submittingText
               : submitCheck.pending.length > 0
                 ? "Waiting for uploads..."
-                : submitContent.submitButtonText}
+                : existingSubmission ? "Update Submission" : submitContent.submitButtonText}
           </Button>
         </motion.div>
       </Form>
