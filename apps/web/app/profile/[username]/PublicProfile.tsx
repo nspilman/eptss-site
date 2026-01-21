@@ -208,31 +208,37 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
               return (
                 <article key={submission.id} className="group">
                   <div className="relative">
-                    {/* Share button overlay */}
-                    <div className="absolute top-4 right-4 z-10">
-                      <ShareButton submissionId={submission.id} />
-                    </div>
-
                     {track ? (
-                      <Playlist
-                        tracks={[track]}
-                        showTrackList={false}
-                        showControls={false}
-                        layout="compact"
-                      />
+                      <>
+                        {/* Share button overlay - outside Card to avoid overflow:hidden clipping */}
+                        <div className="absolute top-4 right-4 z-20">
+                          <ShareButton submissionId={submission.id} />
+                        </div>
+                        <Playlist
+                          tracks={[track]}
+                          showTrackList={false}
+                          showControls={false}
+                          layout="compact"
+                        />
+                      </>
                     ) : submission.soundcloudUrl ? (
-                      <Card gradient hover="lift">
-                        <CardContent className="flex flex-col gap-4">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <Heading as="h3" size="xs" className="mb-1">
-                                {submission.songTitle}
-                              </Heading>
-                              <Text size="sm" color="tertiary" className="mb-2">
-                                by {submission.songArtist}
-                              </Text>
+                      <>
+                        {/* Share button overlay */}
+                        <div className="absolute top-4 right-4 z-20">
+                          <ShareButton submissionId={submission.id} />
+                        </div>
+                        <Card gradient hover="lift">
+                          <CardContent className="flex flex-col gap-4">
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <Heading as="h3" size="xs" className="mb-1">
+                                  {submission.songTitle}
+                                </Heading>
+                                <Text size="sm" color="tertiary" className="mb-2">
+                                  by {submission.songArtist}
+                                </Text>
+                              </div>
                             </div>
-                          </div>
                           <div className="flex items-center justify-center p-4 bg-[var(--color-background-secondary)] rounded-lg">
                             <a
                               href={submission.soundcloudUrl}
@@ -246,13 +252,14 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
                               Listen on SoundCloud
                             </a>
                           </div>
-                          {submission.createdAt && (
-                            <Text size="xs" color="secondary">
-                              Submitted {formatDate(submission.createdAt)}
-                            </Text>
-                          )}
-                        </CardContent>
-                      </Card>
+                            {submission.createdAt && (
+                              <Text size="xs" color="secondary">
+                                Submitted {formatDate(submission.createdAt)}
+                              </Text>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </>
                     ) : null}
                   </div>
                 </article>
