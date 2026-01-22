@@ -42,7 +42,8 @@ export {
   createUserEmbeddedMedia,
   updateUserEmbeddedMedia,
   deleteUserEmbeddedMedia,
-  updateUserProfilePicture
+  updateUserProfilePicture,
+  getActiveUserEmails
 } from './services/userService';
 export type { PublicProfileData, PublicProfileSubmission } from './services/userService';
 export {

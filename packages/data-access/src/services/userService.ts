@@ -547,3 +547,45 @@ export const updateUserProfilePicture = async (userId: string, profilePictureUrl
   return result[0];
 };
 
+/**
+ * Get emails of active users
+ * Active users are those who:
+ * 1. Signed up within the last 3 months, OR
+ * 2. Have ever submitted a cover, OR
+ * 3. Have updated their display name (publicDisplayName is not null)
+ */
+export const getActiveUserEmails = async (): Promise<string[]> => {
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+  // Get users who signed up in the last 3 months
+  const recentSignups = await db
+    .selectDistinct({ email: users.email })
+    .from(signUps)
+    .innerJoin(users, eq(signUps.userId, users.userid))
+    .where(sql`${signUps.createdAt} >= ${threeMonthsAgo}`);
+
+  // Get users who have ever submitted
+  const submitters = await db
+    .selectDistinct({ email: users.email })
+    .from(submissions)
+    .innerJoin(users, eq(submissions.userId, users.userid));
+
+  // Get users who have updated their display name
+  const displayNameUsers = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(sql`${users.publicDisplayName} IS NOT NULL`);
+
+  // Combine all emails and remove duplicates
+  const allEmails = [
+    ...recentSignups.map(u => u.email),
+    ...submitters.map(u => u.email),
+    ...displayNameUsers.map(u => u.email),
+  ];
+
+  const uniqueEmails = [...new Set(allEmails)].filter((email): email is string => !!email);
+
+  return uniqueEmails.sort();
+};
+

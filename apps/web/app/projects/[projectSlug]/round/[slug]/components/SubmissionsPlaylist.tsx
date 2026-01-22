@@ -33,7 +33,7 @@ export const SubmissionsPlaylist = ({
     .filter((s) => s.audioFileUrl) // Only include direct audio files in playlist
     .map((submission) => {
       const displayName = submission.publicDisplayName || submission.username;
-      const submissionId = submission.id || `${submission.roundId}-${submission.userId}`;
+      const submissionId = `${submission.roundId}-${submission.userId}`;
       return {
         id: submissionId,
         src: submission.audioFileUrl!,

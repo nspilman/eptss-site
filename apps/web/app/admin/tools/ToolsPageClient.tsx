@@ -10,6 +10,7 @@ import {
   TestSendReminderEmailsButton,
   TestAdminNotificationEmailButton,
   ProjectSelector,
+  CopyActiveEmailsButton,
   type Project
 } from "@eptss/admin";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, AlertBox } from "@eptss/ui";
@@ -53,6 +54,19 @@ export function ToolsPageClient({ projects, initialProjectId, roundsByProject, a
         These tools perform direct database operations and send real emails.
         Make sure you understand what each tool does before using it.
       </AlertBox>
+
+      {/* Active User Emails */}
+      <Card variant="glass">
+        <CardHeader>
+          <CardTitle className="text-xl">Active User Mailing List</CardTitle>
+          <CardDescription>
+            Copy emails of active users (signed up in last 3 months, submitted a cover, or updated display name)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CopyActiveEmailsButton />
+        </CardContent>
+      </Card>
 
       {/* Project and Round Selectors */}
       <Card variant="glass">

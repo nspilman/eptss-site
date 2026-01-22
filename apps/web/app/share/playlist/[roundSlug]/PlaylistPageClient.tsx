@@ -22,7 +22,7 @@ export function PlaylistPageClient({ roundData, roundSlug }: PlaylistPageClientP
     .filter((s) => s.audioFileUrl)
     .map((submission) => {
       const displayName = submission.publicDisplayName || submission.username;
-      const submissionId = submission.id || `${submission.roundId}-${submission.userId}`;
+      const submissionId = `${submission.roundId}-${submission.userId}`;
       return {
         id: submissionId,
         src: submission.audioFileUrl!,

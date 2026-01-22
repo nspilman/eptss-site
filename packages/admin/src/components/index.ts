@@ -58,6 +58,7 @@ export { PageTitle } from './PageTitle';
 export { AdminNavLink } from './AdminNavLink';
 export { AdminNav } from './AdminNav';
 export { CopyEmailsButton } from './CopyEmailsButton';
+export { CopyActiveEmailsButton } from './CopyActiveEmailsButton';
 
 // Test buttons
 export { TestEmailButtons } from './TestEmailButton';
