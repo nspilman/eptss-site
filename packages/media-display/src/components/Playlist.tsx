@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Music2, ListMusic, Clock } from 'lucide-react';
+import { Music2, ListMusic, Clock, Share2, Check } from 'lucide-react';
 import {
   Text,
   Card,
@@ -15,15 +15,53 @@ import {
   CardDescription,
   CardContent,
   EmptyState,
-  Separator,
   cn,
 } from '@eptss/ui';
 import { NowPlayingCard } from './NowPlayingCard';
 import { PlaylistTrackItem } from './PlaylistTrackItem';
-import { ShowcasePlayer } from './ShowcasePlayer';
 import { usePlaylist, UsePlaylistOptions } from '../hooks/usePlaylist';
 import { formatDuration } from '../utils/formatting';
 import type { Track } from '../types';
+
+// ShareButton component for copying share links
+function ShareButton({ shareUrl }: { shareUrl: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className="p-2 rounded-lg bg-[var(--color-background-secondary)] hover:bg-[var(--color-gray-700)] transition-colors"
+      title={copied ? "Link copied!" : "Copy share link"}
+    >
+      {copied ? (
+        <Check className="w-4 h-4 text-green-400" />
+      ) : (
+        <Share2 className="w-4 h-4 text-[var(--color-gray-400)]" />
+      )}
+    </button>
+  );
+}
 
 export interface PlaylistProps extends UsePlaylistOptions {
   /** Playlist title */
@@ -41,13 +79,15 @@ export interface PlaylistProps extends UsePlaylistOptions {
   /** Show waveform in now playing card */
   showWaveform?: boolean;
   /** Layout variant */
-  layout?: 'default' | 'compact' | 'split' | 'showcase';
+  layout?: 'default' | 'compact';
   /** Maximum height for track list (enables scrolling) */
   maxTrackListHeight?: number | string;
   /** Liked track IDs */
   likedTrackIds?: Set<string>;
   /** Toggle like callback */
   onToggleLike?: (trackId: string) => void;
+  /** Enable share button (default: true) */
+  showShareButton?: boolean;
 }
 
 export const Playlist: React.FC<PlaylistProps> = ({
@@ -66,6 +106,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
   maxTrackListHeight,
   likedTrackIds,
   onToggleLike,
+  showShareButton = true,
 }) => {
   const playlist = usePlaylist({ tracks, autoPlayNext, onTrackChange, onPlaylistEnd });
   const [trackProgress, setTrackProgress] = useState<Record<string, number>>({});
@@ -92,32 +133,18 @@ export const Playlist: React.FC<PlaylistProps> = ({
   }
 
   const isCompactLayout = layout === 'compact';
-  const isSplitLayout = layout === 'split';
-  const isShowcaseLayout = layout === 'showcase';
-
-  // Showcase layout - optimized for single track with prominent cover art
-  if (isShowcaseLayout && playlist.currentTrack) {
-    return (
-      <ShowcasePlayer
-        track={playlist.currentTrack}
-        isPlaying={playlist.isPlaying}
-        onPlayPause={() => playlist.setIsPlaying(!playlist.isPlaying)}
-        onEnded={playlist.handleTrackEnded}
-        className={className}
-      />
-    );
-  }
 
   return (
-    <Card
-      variant="glass"
-      className={cn(
-        isSplitLayout && 'grid grid-cols-1 lg:grid-cols-2',
-        className
+    <Card variant="glass" className={cn('relative', className)}>
+      {/* Share button overlay */}
+      {showShareButton && playlist.currentTrack?.shareUrl && (
+        <div className="absolute top-4 right-4 z-20">
+          <ShareButton shareUrl={playlist.currentTrack.shareUrl} />
+        </div>
       )}
-    >
+
       {/* Main content */}
-      <div className={cn('flex flex-col', isSplitLayout && 'lg:border-r lg:border-white/10')}>
+      <div className="flex flex-col">
         {/* Playlist header using Card components */}
         {(title || description) && (
           <CardHeader className="pb-2">
@@ -181,7 +208,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
 
       {/* Track List */}
       {showTrackList && (
-        <div className={cn('flex flex-col', isSplitLayout && 'lg:pt-0')}>
+        <div className="flex flex-col">
           {/* Track list header */}
           <div className="flex items-center justify-between px-6 py-3 border-b border-white/10">
             <Text size="sm" weight="medium" color="muted">

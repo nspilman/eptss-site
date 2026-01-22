@@ -95,6 +95,9 @@ export const AudioPreview: React.FC<AudioPreviewProps> = ({
       barRadius: 2,
       cursorWidth: 0,
       normalize: true,
+      fetchParams: {
+        mode: 'cors' as RequestMode,
+      },
     });
 
     wavesurferRef.current = wavesurfer;

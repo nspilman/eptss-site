@@ -22,6 +22,8 @@ export interface Track {
   duration?: number;
   /** Cover art URL (optional) */
   coverArt?: string;
+  /** Share URL for the track (optional) */
+  shareUrl?: string;
 }
 
 /**

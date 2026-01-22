@@ -68,6 +68,9 @@ export const ShowcasePlayer: React.FC<ShowcasePlayerProps> = ({
       barRadius: 3,
       cursorWidth: 0,
       normalize: true,
+      fetchParams: {
+        mode: 'cors' as RequestMode,
+      },
     });
 
     wavesurferRef.current = wavesurfer;

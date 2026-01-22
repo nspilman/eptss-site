@@ -35,7 +35,7 @@ export const RoundSelector = ({ currentRoundSlug, allRoundSlugs }: RoundSelector
         <SelectTrigger className="w-[180px] bg-gray-800/50 border-gray-700/50 text-white">
           <SelectValue placeholder="Select a round" />
         </SelectTrigger>
-        <SelectContent className="max-h-[200px] overflow-y-auto bg-secondary">
+        <SelectContent className="max-h-[300px] overflow-y-auto bg-secondary [&>[data-radix-select-viewport]]:max-h-[300px] [&>[data-radix-select-viewport]]:overflow-y-auto">
           {allRoundSlugs.map(slug => (
             <SelectItem key={slug} value={slug}>
               {slug}

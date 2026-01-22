@@ -203,24 +203,19 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
                 artist: submission.songArtist,
                 coverArt: submission.coverImageUrl || user.profilePictureUrl || undefined,
                 fileSize: submission.audioFileSize || undefined,
+                shareUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/share/song/${submission.id}`,
               } : null;
 
               return (
                 <article key={submission.id} className="group">
                   <div className="relative">
                     {track ? (
-                      <>
-                        {/* Share button overlay - outside Card to avoid overflow:hidden clipping */}
-                        <div className="absolute top-4 right-4 z-20">
-                          <ShareButton submissionId={submission.id} />
-                        </div>
-                        <Playlist
-                          tracks={[track]}
-                          showTrackList={false}
-                          showControls={false}
-                          layout="showcase"
-                        />
-                      </>
+                      <Playlist
+                        tracks={[track]}
+                        showTrackList={false}
+                        showControls={false}
+                        layout="compact"
+                      />
                     ) : submission.soundcloudUrl ? (
                       <>
                         {/* Share button overlay */}

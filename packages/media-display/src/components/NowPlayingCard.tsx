@@ -114,6 +114,9 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
       barRadius: 3,
       cursorWidth: 0,
       normalize: true,
+      fetchParams: {
+        mode: 'cors' as RequestMode,
+      },
     });
 
     wavesurferRef.current = wavesurfer;

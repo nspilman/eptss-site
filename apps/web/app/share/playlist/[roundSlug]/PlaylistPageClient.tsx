@@ -22,14 +22,16 @@ export function PlaylistPageClient({ roundData, roundSlug }: PlaylistPageClientP
     .filter((s) => s.audioFileUrl)
     .map((submission) => {
       const displayName = submission.publicDisplayName || submission.username;
+      const submissionId = submission.id || `${submission.roundId}-${submission.userId}`;
       return {
-        id: `${submission.roundId}-${submission.userId}`,
+        id: submissionId,
         src: submission.audioFileUrl!,
         title: `${roundData.song?.title || "Cover"} - ${displayName}`,
         artist: displayName,
         duration: submission.audioDuration ? submission.audioDuration / 1000 : undefined,
         fileSize: submission.audioFileSize || undefined,
         coverArt: submission.coverImageUrl || undefined,
+        shareUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/share/song/${submissionId}`,
       };
     });
 

@@ -33,14 +33,16 @@ export const SubmissionsPlaylist = ({
     .filter((s) => s.audioFileUrl) // Only include direct audio files in playlist
     .map((submission) => {
       const displayName = submission.publicDisplayName || submission.username;
+      const submissionId = submission.id || `${submission.roundId}-${submission.userId}`;
       return {
-        id: `${submission.roundId}-${submission.userId}`,
+        id: submissionId,
         src: submission.audioFileUrl!,
         title: song?.title ? `${song.title} - ${displayName}` : displayName,
         artist: displayName,
         duration: submission.audioDuration ? submission.audioDuration / 1000 : undefined,
         fileSize: submission.audioFileSize || undefined,
         coverArt: submission.coverImageUrl || undefined,
+        shareUrl: `${typeof window !== 'undefined' ? window.location.origin : ''}/share/song/${submissionId}`,
       };
     });
 

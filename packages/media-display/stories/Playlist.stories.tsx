@@ -89,7 +89,7 @@ const meta: Meta<typeof Playlist> = {
     },
     layout: {
       control: 'select',
-      options: ['default', 'compact', 'split'],
+      options: ['default', 'compact'],
       description: 'Layout variant',
     },
     onTrackChange: {
@@ -156,23 +156,6 @@ export const CompactLayout: Story = {
   },
 };
 
-export const SplitLayout: Story = {
-  args: {
-    layout: 'split',
-  },
-  render: (args) => {
-    return (
-      <div className="w-full sm:w-[400px] md:w-[600px] lg:w-[896px]">
-        <Playlist
-          {...args}
-          tracks={sampleTracks}
-          title="Split View Playlist"
-          description="Player on the left, track list on the right"
-        />
-      </div>
-    );
-  },
-};
 
 export const WithLikes: Story = {
   render: (args) => {
@@ -379,7 +362,7 @@ export const AllLayouts: Story = {
         title="Playlist"
         description="Modern audio playlist with hero player, track list, and rich interactions. Supports multiple layouts and customization options."
       >
-        <div className="space-y-12 w-full md:w-[600px] lg:w-[896px]">
+        <div className="space-y-12 w-full md:w-[600px]">
           <div>
             <Text size="sm" weight="medium" className="mb-4">
               Default Layout
@@ -409,24 +392,6 @@ export const AllLayouts: Story = {
                 autoPlayNext
                 showControls
                 showTrackList
-              />
-            </div>
-          </div>
-
-          <div>
-            <Text size="sm" weight="medium" className="mb-4">
-              Split Layout (Desktop)
-            </Text>
-            <div className="w-full md:w-[600px] lg:w-[896px]">
-              <Playlist
-                tracks={sampleTracks}
-                title="Split View Playlist"
-                description="Player and track list side by side on large screens"
-                layout="split"
-                autoPlayNext
-                showControls
-                showTrackList
-                showTrackNumbers
               />
             </div>
           </div>
