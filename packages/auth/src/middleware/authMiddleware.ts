@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { matchesAnyPath } from '@eptss/routing'
+import { getTestAuthUser, isTestUserAdmin } from './testAuthBypass'
 
 interface AuthMiddlewareConfig {
   protectedPaths?: string[];
@@ -21,12 +22,44 @@ export function createAuthMiddleware(config: AuthMiddlewareConfig = {}) {
 
   return async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    
+
     let response = NextResponse.next({
       request: {
         headers: request.headers,
       },
     })
+
+    // ================================================
+    // TEST MODE: Check for Playwright test auth bypass
+    // ================================================
+    const testUser = getTestAuthUser(request);
+
+    if (testUser) {
+      const isPublic = matchesAnyPath(pathname, publicPaths);
+      const isAdminPath = matchesAnyPath(pathname, adminPaths);
+
+      // Check admin access for test user
+      if (isAdminPath && !isTestUserAdmin(testUser)) {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+
+      // Authenticated on root - redirect to dashboard
+      if (pathname === '/') {
+        return NextResponse.redirect(new URL(redirectToOnAuth, request.url));
+      }
+
+      // Authenticated on public path - redirect to dashboard
+      if (isPublic) {
+        return NextResponse.redirect(new URL(redirectToOnAuth, request.url));
+      }
+
+      // Allow access to protected routes
+      return response;
+    }
+
+    // ================================================
+    // NORMAL MODE: Use Supabase authentication
+    // ================================================
 
     // Check if Supabase env vars are available
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {

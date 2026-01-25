@@ -1,12 +1,13 @@
 /**
  * Centralized Supabase Server Utilities
- * 
+ *
  * This module provides server-side Supabase client creation and auth utilities.
  * Used across the monorepo to avoid duplication.
  */
 
 import { createServerClient } from '@supabase/ssr';
 import { cookies, headers } from 'next/headers';
+import { getTestUserFromCookies } from '../middleware/testAuthServer';
 
 // Type for the database - can be overridden by consumers
 type Database = any;
@@ -49,9 +50,19 @@ export async function createClient<DB = Database>() {
 /**
  * Gets the authenticated user from Supabase
  *
- * Returns userId and email, or empty strings if not authenticated
+ * In test mode, returns test user data from the test auth cookie.
+ * Returns userId and email, or empty strings if not authenticated.
  */
 export async function getAuthUser() {
+  // Check for test mode first
+  const testUser = await getTestUserFromCookies();
+  if (testUser) {
+    return {
+      userId: testUser.id,
+      email: testUser.email,
+    };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -64,9 +75,16 @@ export async function getAuthUser() {
 /**
  * Gets the current authenticated user's username from the database
  *
- * Returns username or null if not authenticated or not found
+ * In test mode, returns the username from the test auth cookie.
+ * Returns username or null if not authenticated or not found.
  */
 export async function getCurrentUsername(): Promise<string | null> {
+  // Check for test mode first
+  const testUser = await getTestUserFromCookies();
+  if (testUser) {
+    return testUser.username || null;
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -96,9 +114,21 @@ export interface HeaderUserProfile {
 /**
  * Gets authenticated user profile data for header display
  *
- * Returns user profile with username and avatar, or null if not authenticated
+ * In test mode, returns mock profile data from the test auth cookie.
+ * Returns user profile with username and avatar, or null if not authenticated.
  */
 export async function getUserProfileForHeader(): Promise<HeaderUserProfile | null> {
+  // Check for test mode first
+  const testUser = await getTestUserFromCookies();
+  if (testUser) {
+    return {
+      userId: testUser.id,
+      email: testUser.email,
+      username: testUser.username || null,
+      profilePictureUrl: null,
+    };
+  }
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
