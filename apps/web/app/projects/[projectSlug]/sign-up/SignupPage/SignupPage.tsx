@@ -4,7 +4,7 @@ import { PageTitle } from "@/components/PageTitle";
 import { ActionSuccessPanel } from "@/components/ActionSuccessPanel";
 import { SignupForm } from "./SignupForm";
 import { useSearchParams } from "next/navigation";
-import { UserSignupData } from "@eptss/data-access/types/signup";
+import { UserSignupData } from "@eptss/core/types/signup";
 import { FormReturn } from "@/types";
 
 interface Props {

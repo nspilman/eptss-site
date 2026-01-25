@@ -15,7 +15,7 @@ import {
   updateEmbeddedMediaAction,
   deleteEmbeddedMediaAction
 } from '@eptss/actions';
-import { profileProvider } from '@eptss/data-access';
+import { profileProvider } from '@eptss/core';
 
 interface PrivacySettings {
   showStats: boolean;

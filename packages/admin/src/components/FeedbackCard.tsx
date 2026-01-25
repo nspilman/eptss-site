@@ -7,7 +7,7 @@ import { DataTable } from "@eptss/ui";
 import { useState } from "react";
 import { updateFeedbackPublicStatus, deleteFeedback } from "@eptss/actions";
 import { useRouter } from "next/navigation";
-import type { Feedback } from "@eptss/data-access";
+import type { Feedback } from "@eptss/core";
 
 type FeedbackCardProps = {
   feedbackList: Feedback[];

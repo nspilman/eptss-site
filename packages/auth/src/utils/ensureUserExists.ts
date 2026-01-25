@@ -7,10 +7,43 @@
 
 import { createClient } from './supabase-server';
 import { User } from '@supabase/supabase-js';
-import { db } from '@eptss/data-access/db';
-import { unverifiedSignups } from '@eptss/data-access/db/schema';
-import { validateReferralCode } from '@eptss/data-access/services/referralService';
-import { eq } from 'drizzle-orm';
+import { db, unverifiedSignups, referralCodes, eq } from '@eptss/db';
+
+/**
+ * Validate a referral code - local implementation to avoid circular dependency
+ */
+async function validateReferralCode(
+  code: string
+): Promise<{ valid: boolean; message: string }> {
+  try {
+    const [referralCode] = await db
+      .select()
+      .from(referralCodes)
+      .where(eq(referralCodes.code, code))
+      .limit(1);
+
+    if (!referralCode) {
+      return { valid: false, message: 'Invalid referral code' };
+    }
+
+    if (!referralCode.isActive) {
+      return { valid: false, message: 'This referral code is no longer active' };
+    }
+
+    if (referralCode.expiresAt && new Date(referralCode.expiresAt) < new Date()) {
+      return { valid: false, message: 'This referral code has expired' };
+    }
+
+    if (referralCode.maxUses !== null && referralCode.usesCount >= referralCode.maxUses) {
+      return { valid: false, message: 'This referral code has reached its maximum uses' };
+    }
+
+    return { valid: true, message: 'Referral code is valid' };
+  } catch (error) {
+    console.error('Error validating referral code:', error);
+    return { valid: false, message: 'Failed to validate referral code' };
+  }
+}
 
 /**
  * Ensures a user record exists in the users table after authentication

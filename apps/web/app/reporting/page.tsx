@@ -1,6 +1,6 @@
 import React from "react";
-import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
-import { reportingProvider } from "@eptss/data-access/providers/reportingProvider";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/core";
+import { reportingProvider } from "@eptss/core/providers/reportingProvider";
 import { Reporting } from "./Reporting";
 
 const ReportingPage = async () => {

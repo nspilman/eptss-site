@@ -8,6 +8,18 @@
       "import": "./src/index.ts",
       "types": "./src/index.ts"
     },
+    "./services": {
+      "import": "./src/services/index.ts",
+      "types": "./src/services/index.ts"
+    },
+    "./providers": {
+      "import": "./src/providers/index.ts",
+      "types": "./src/providers/index.ts"
+    },
+    "./types": {
+      "import": "./src/types/index.ts",
+      "types": "./src/types/index.ts"
+    },
     "./components": {
       "import": "./src/components/index.ts",
       "types": "./src/components/index.ts"
@@ -18,11 +30,12 @@
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
+    "@eptss/db": "workspace:*",
     "@eptss/ui": "workspace:*",
-    "@eptss/data-access": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@date-fns/tz": "^1.2.0",
     "date-fns": "^2.30.0",
+    "drizzle-orm": "^0.38.4",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.546.0",
     "react": "18.3.1",

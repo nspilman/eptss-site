@@ -1,5 +1,5 @@
 import { ClientRoundsDisplay } from "@/app/index/Homepage/RoundsDisplay/ClientRoundsDisplay";
-import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 
 // Enable static generation
 export const dynamic = 'force-static';

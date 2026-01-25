@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@eptss/data-access/utils/supabase/server';
+import { createClient } from '@eptss/core/utils/supabase/server';
 import { ensureUserExists } from '@eptss/auth/server';
 import { validateGoogleOAuthUser } from '@eptss/actions';
 import { TOAST_REDIRECT_KEY } from '@eptss/shared';

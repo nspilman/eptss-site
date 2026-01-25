@@ -1,4 +1,4 @@
-import { getPublicProfileByUsername, getPublicReflectionsByUsername } from "@eptss/data-access";
+import { getPublicProfileByUsername, getPublicReflectionsByUsername } from "@eptss/core";
 import { PublicProfile } from "./PublicProfile";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";

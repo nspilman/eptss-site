@@ -1,4 +1,4 @@
-import { roundProvider, votesProvider } from "@eptss/data-access";
+import { roundProvider, votesProvider } from "@eptss/core";
 import { ReportsTab } from "../ReportsTab";
 
 type ReportsTabServerProps = {

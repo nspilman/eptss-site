@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MarkdownEditor } from '@eptss/rich-text-editor';
-import { updateReflection, deleteReflection } from '@eptss/data-access';
+import { updateReflection, deleteReflection } from '@eptss/core';
 import type { Reflection } from '../../types';
 import { DeleteConfirmationModal } from '../DeleteConfirmationModal';
 import { Button } from '@eptss/ui';

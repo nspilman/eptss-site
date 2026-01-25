@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Badge } from '@eptss/ui';
 import { useRouteParams } from '../projects/[projectSlug]/ProjectContext';
-import type { Reflection } from '@eptss/data-access';
+import type { Reflection } from '@eptss/core';
 
 interface ReflectionsSectionProps {
   reflections: Reflection[];

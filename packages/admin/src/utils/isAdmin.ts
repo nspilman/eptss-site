@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@eptss/data-access/utils/supabase/server"
+import { createClient } from "@eptss/core/utils/supabase/server"
 
 export const isAdmin = async () => {
     try {

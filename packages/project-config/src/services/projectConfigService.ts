@@ -1,7 +1,7 @@
 "use server";
 
-import { db, projects, eq } from "@eptss/data-access/db";
-import { isValidProjectSlug, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { db, projects, eq } from "@eptss/db";
+import { isValidProjectSlug, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import {
   ProjectConfig,
   FeatureFlags,

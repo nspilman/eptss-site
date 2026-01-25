@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { Metadata } from 'next/types';
 import { adminProvider } from "@eptss/admin";
 import { ProjectStatsCard } from "@eptss/admin";
-import { getCurrentRound, COVER_PROJECT_ID } from "@eptss/data-access";
-import { getCurrentPhase } from "@eptss/data-access/services/dateService";
+import { COVER_PROJECT_ID } from "@eptss/core";
+import { getCurrentRound, getCurrentPhase } from "@eptss/rounds/services";
 import { Button, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
 
 export const metadata: Metadata = {

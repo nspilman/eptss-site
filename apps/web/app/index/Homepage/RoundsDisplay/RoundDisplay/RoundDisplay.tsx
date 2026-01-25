@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { RoundDetails } from "@eptss/data-access/types/roundDetails";
+import { RoundDetails } from "@eptss/core/types/roundDetails";
 import Link from "next/link";
 
 import { Text } from "@eptss/ui";

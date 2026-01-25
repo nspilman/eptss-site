@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCommentWithAssociation } from "@eptss/data-access/services/commentService";
+import { getCommentWithAssociation } from "@eptss/comments/services";
 
 export async function GET(
   request: NextRequest,

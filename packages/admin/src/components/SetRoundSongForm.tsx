@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, Button, FormLabel } from "@eptss/ui";
 import { Music } from "lucide-react";
 import { motion } from "framer-motion";
-import { getSignupSongsForRound, setRoundSong } from "@eptss/data-access";
+import { getSignupSongsForRound, setRoundSong } from "@eptss/rounds/services";
 
 type Song = {
   id: number;

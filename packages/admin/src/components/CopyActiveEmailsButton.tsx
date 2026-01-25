@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button, useToast } from "@eptss/ui";
 import { Mail, Loader2 } from "lucide-react";
-import { getActiveUserEmails } from "@eptss/data-access";
+import { getActiveUserEmails } from "@eptss/core";
 
 export function CopyActiveEmailsButton() {
   const { toast } = useToast();

@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
-import { roundProvider, votesProvider, roundsProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
-import { getCurrentPhase } from "@eptss/data-access/services/dateService";
+import { roundProvider, votesProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
+import { roundsProvider } from "@eptss/rounds/providers";
+import { getCurrentPhase } from "@eptss/rounds/services";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 import { RoundParamsProvider } from '../../ProjectContext';

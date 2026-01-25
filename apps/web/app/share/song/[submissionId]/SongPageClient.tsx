@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { formatDate } from "@eptss/data-access/utils/formatDate";
+import { formatDate } from "@eptss/core/utils/formatDate";
 import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
-import type { SubmissionDetails } from "@eptss/data-access";
+import type { SubmissionDetails } from "@eptss/core";
 
 interface SongPageClientProps {
   submission: SubmissionDetails;

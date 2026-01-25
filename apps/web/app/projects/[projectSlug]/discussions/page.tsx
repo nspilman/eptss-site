@@ -1,5 +1,5 @@
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import { CommentSection } from "@eptss/comments";
 import { MessageSquare } from "lucide-react";
 import Link from "next/link";

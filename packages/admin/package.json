@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@eptss/auth": "workspace:*",
-    "@eptss/data-access": "workspace:*",
+    "@eptss/core": "workspace:*",
     "@eptss/email": "workspace:*",
     "@eptss/forms": "workspace:*",
     "@eptss/logger": "workspace:*",

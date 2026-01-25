@@ -28,7 +28,7 @@
     "@eptss/ui": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@eptss/media-display": "workspace:*",
-    "@eptss/data-access": "workspace:*",
+    "@eptss/core": "workspace:*",
     "@radix-ui/react-icons": "^1.3.0",
     "date-fns": "^2.30.0",
     "next": "^14.2.16",

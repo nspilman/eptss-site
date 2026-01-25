@@ -1,8 +1,6 @@
 "use server";
 
-import { db } from "@eptss/data-access/db";
-import { projects } from "@eptss/data-access/db/schema";
-import { eq } from "drizzle-orm";
+import { db, projects, eq } from "@eptss/db";
 import { revalidatePath } from "next/cache";
 import { projectConfigSchema, type ProjectConfig } from "@eptss/project-config";
 

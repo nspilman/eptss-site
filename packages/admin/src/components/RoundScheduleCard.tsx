@@ -2,8 +2,8 @@
 import { motion } from "framer-motion"
 import { Badge, Card, CardContent, CardHeader, CardTitle, DataTable } from "@eptss/ui"
 import { CalendarDays } from "lucide-react"
-import { Phase } from "@eptss/data-access/types/round"
-import { formatDate } from "@eptss/data-access"
+import { type Phase } from "@eptss/rounds/types"
+import { formatDate } from "@eptss/rounds/services"
 
 type DateLabel = {
   opens: string;

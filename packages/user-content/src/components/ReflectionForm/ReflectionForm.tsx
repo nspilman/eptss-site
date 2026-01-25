@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MarkdownEditor } from '@eptss/rich-text-editor';
-import { createReflection } from '@eptss/data-access';
+import { createReflection } from '@eptss/core';
 import { getAvailableReflectionType } from '../../utils/reflectionScheduler';
 import type { Round, ReflectionType } from '../../types';
 

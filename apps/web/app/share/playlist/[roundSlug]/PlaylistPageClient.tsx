@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
-import type { RoundInfo } from "@eptss/data-access/types/round";
+import type { RoundInfo } from "@eptss/core/types/round";
 
 interface PlaylistPageClientProps {
   roundData: RoundInfo;

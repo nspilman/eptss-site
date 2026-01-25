@@ -1,0 +1,1 @@
+ALTER TABLE "round_metadata" ADD COLUMN "roundTypeOverride" varchar;

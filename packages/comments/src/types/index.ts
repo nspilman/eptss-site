@@ -1,9 +1,8 @@
-import type { CommentWithAuthor as ServiceCommentWithAuthor } from "@eptss/data-access/services/commentService";
+// Re-export the type from services for backward compatibility with imports from types
+export type { CommentWithAuthor } from "../services/commentService";
 
-// Re-export the service type
-export type CommentWithAuthor = ServiceCommentWithAuthor;
-
-// Component prop types
+// Component prop types - import for use below
+import type { CommentWithAuthor } from "../services/commentService";
 export interface CommentSectionProps {
   userContentId?: string;
   roundId?: number;

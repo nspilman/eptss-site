@@ -1,4 +1,4 @@
-import { getProjectIdFromSlug, type ProjectSlug, getProjectBySlug } from "@eptss/data-access";
+import { getProjectIdFromSlug, type ProjectSlug, getProjectBySlug } from "@eptss/core";
 import { SharedSignupPageWrapper } from "../SharedSignupPageWrapper";
 import { getProjectSEOMetadata } from "@eptss/project-config";
 import { Metadata } from "next";

@@ -1,7 +1,7 @@
 "use server";
 
-import { createFeedback as createFeedbackService } from "@eptss/data-access/services/feedbackService";
-import type { CreateFeedbackInput } from "@eptss/data-access";
+import { createFeedback as createFeedbackService } from "@eptss/core/services/feedbackService";
+import type { CreateFeedbackInput } from "@eptss/core";
 import { revalidatePath } from "next/cache";
 import { logger } from "@eptss/logger/server";
 

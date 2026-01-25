@@ -12,8 +12,8 @@ import { TestCreateFutureRoundsButton } from "./TestCreateFutureRoundsButton";
 import { TestSendReminderEmailsButton } from "./TestSendReminderEmailsButton";
 import { TestNotificationEmailsButton } from "./TestNotificationEmailsButton";
 import { TestAdminNotificationEmailButton } from "./TestAdminNotificationEmailButton";
-import { UserDetails } from "@eptss/data-access/types/user";
-import { COVER_PROJECT_ID } from "@eptss/data-access";
+import { UserDetails } from "@eptss/core/types/user";
+import { COVER_PROJECT_ID } from "@eptss/core";
 
 import { Text } from "@eptss/ui";
 type ActionsTabProps = {

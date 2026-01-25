@@ -1,4 +1,4 @@
-import { ProjectSlug } from "@eptss/data-access";
+import { ProjectSlug } from "@eptss/core";
 import { getProjectTerminology } from "../services/projectConfigService";
 
 /**

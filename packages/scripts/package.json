@@ -14,7 +14,8 @@
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
-    "@eptss/data-access": "workspace:*",
+    "@eptss/db": "workspace:*",
+    "@eptss/core": "workspace:*",
     "@eptss/email": "workspace:*",
     "@eptss/shared": "workspace:*",
     "@atproto/api": "^0.13.22",

@@ -1,0 +1,2 @@
+ALTER TABLE "round_metadata" DROP CONSTRAINT "round_metadata_slug_unique";--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_round_metadata_project_slug" ON "round_metadata" USING btree ("project_id","slug");

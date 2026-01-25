@@ -1,5 +1,5 @@
-import { roundProvider, userParticipationProvider } from "@eptss/data-access";
-import { submitVotes } from "@eptss/data-access/services/votesService";
+import { roundProvider, userParticipationProvider } from "@eptss/core";
+import { submitVotes } from "@eptss/voting/services";
 import { VotingPage } from "./VotingPage";
 import { notFound } from "next/navigation";
 

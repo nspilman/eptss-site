@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
-import { getAllNotifications, getAllNotificationsCount, type NotificationWithUser } from "@eptss/data-access";
+import { getAllNotifications, getAllNotificationsCount, type NotificationWithUser } from "@eptss/core";
 import { Card, CardHeader, CardTitle, CardContent, Button } from "@eptss/ui";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";

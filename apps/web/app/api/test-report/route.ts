@@ -1,4 +1,4 @@
-import { saveTestRun } from "@eptss/data-access";
+import { saveTestRun } from "@eptss/core";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {

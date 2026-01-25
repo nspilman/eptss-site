@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ActiveUsersCard } from "../ActiveUsersCard";
-import { ActiveUserDetail } from "@eptss/data-access";
+import { ActiveUserDetail } from "@eptss/core";
 
 type UsersTabProps = {
   activeUsers: ActiveUserDetail[];

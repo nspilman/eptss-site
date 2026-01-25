@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
-import { roundProvider, roundsProvider } from "@eptss/data-access";
-import { getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from '@eptss/data-access';
+import { roundProvider } from "@eptss/core";
+import { roundsProvider } from "@eptss/rounds/providers";
+import { getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from '@eptss/core';
 import {
   getProjectPageContent,
   getProjectSEOMetadata,

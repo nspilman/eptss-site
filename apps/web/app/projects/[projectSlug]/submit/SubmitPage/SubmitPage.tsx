@@ -8,8 +8,8 @@ import { FormWrapper, FormReturn } from "@eptss/forms"
 import { Button, Form, FormLabel, Text, Textarea, toast } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
-import { submissionFormSchema, type SubmissionInput } from "@eptss/data-access/schemas/submission"
-import type { ExistingSubmission } from "@eptss/data-access"
+import { submissionFormSchema, type SubmissionInput } from "@eptss/core/schemas/submission"
+import type { ExistingSubmission } from "@eptss/core"
 import { PageContent, SubmissionFormConfig } from "@eptss/project-config";
 import {
   MediaUploader,

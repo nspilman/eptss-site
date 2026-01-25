@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { loginSchema, type LoginInput } from "@eptss/data-access/schemas/user"
+import { loginSchema, type LoginInput } from "@eptss/core/schemas/user"
 import { signInWithOTPAction } from "@eptss/actions"
 import { motion } from "framer-motion"
 import {

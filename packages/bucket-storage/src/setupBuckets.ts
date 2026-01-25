@@ -3,7 +3,7 @@
  * Run this once to create the required storage buckets
  */
 
-import { createClient } from "@eptss/data-access/utils/supabase/server";
+import { createClient } from "@eptss/core/utils/supabase/server";
 import { BUCKETS } from "./storageService";
 
 export async function setupStorageBuckets() {

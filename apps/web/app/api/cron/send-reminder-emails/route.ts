@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getCurrentRound,
   determineRemindersToSend,
   type ReminderEmailType,
   hasReminderBeenSent,
@@ -8,11 +7,11 @@ import {
   getUsersSignedUpForRound,
   hasUserSubmitted,
   getUserInfo,
-  formatDate,
   getAllProjects
-} from '@eptss/data-access';
+} from '@eptss/core';
+import { getCurrentRound, formatDate } from '@eptss/rounds/services';
 import { getProjectAutomation } from '@eptss/project-config';
-import type { ProjectSlug } from '@eptss/data-access';
+import type { ProjectSlug } from '@eptss/core';
 import {
   sendVotingClosesTomorrowEmail,
   sendCoveringHalfwayEmail,

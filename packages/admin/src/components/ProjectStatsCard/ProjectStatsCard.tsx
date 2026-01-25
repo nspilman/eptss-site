@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Users, Calendar, UserCheck, Target } from "lucide-react";
 import { useState } from "react";
-import { UserDetail, RoundDetail, getUserDetails, getRoundDetails } from "@eptss/data-access";
+import { UserDetail, RoundDetail, getUserDetails, getRoundDetails } from "@eptss/core";
 import { RoundStatsComponent } from "./RoundStatsComponent";
 import { StatItem } from "./StatItem";
 import { UserStatsComponent } from "./UserStatsCard";

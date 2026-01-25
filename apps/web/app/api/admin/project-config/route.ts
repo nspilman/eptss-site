@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@eptss/data-access/db";
-import { projects } from "@eptss/data-access/db/schema";
-import { eq } from "drizzle-orm";
+import { db, projects, eq } from "@eptss/db";
 import { revalidatePath } from "next/cache";
 import { projectConfigSchema, type ProjectConfig, safeParseProjectConfig } from "@eptss/project-config";
-import { getProjectIdFromSlug, isValidProjectSlug } from "@eptss/data-access";
+import { getProjectIdFromSlug, isValidProjectSlug } from "@eptss/core";
 
 /**
  * GET /api/admin/project-config?slug=PROJECT_SLUG

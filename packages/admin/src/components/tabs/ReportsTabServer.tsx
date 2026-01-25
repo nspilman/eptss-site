@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
-import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/data-access";
-import { adminProvider } from "@eptss/data-access";
+import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/core";
+import { adminProvider } from "@eptss/core";
 import { ReportsTab } from "../ReportsTab";
 
 import { Text } from "@eptss/ui";

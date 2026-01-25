@@ -1,4 +1,4 @@
-import { roundProvider, userParticipationProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug, getUserSubmissionForRound } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug, getUserSubmissionForRound } from "@eptss/core";
 import { getProjectSEOMetadata, getPageContent, getProjectConfig } from "@eptss/project-config";
 import { submitCover } from "@/actions/userParticipationActions";
 import { SubmitPage } from "./SubmitPage";

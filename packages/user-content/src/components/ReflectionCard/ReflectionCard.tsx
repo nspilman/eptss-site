@@ -1,5 +1,5 @@
-import { getUserReflectionsForRound, roundProvider, COVER_PROJECT_ID, getProjectSlugFromId } from "@eptss/data-access";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { getUserReflectionsForRound, roundProvider, COVER_PROJECT_ID, getProjectSlugFromId } from "@eptss/core";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
 import { ReflectionDisplay } from "./ReflectionDisplay";
 
 interface ReflectionCardProps {

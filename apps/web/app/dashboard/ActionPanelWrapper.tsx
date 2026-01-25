@@ -3,10 +3,10 @@ import { PanelProps } from '@eptss/dashboard';
 import { LateSignupButton } from './LateSignupButton';
 import { InviteScrollButton } from './InviteScrollButton';
 import { ReflectionsSection } from './ReflectionsSection';
-import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { roundProvider, COVER_PROJECT_ID } from '@eptss/data-access';
+import { getAuthUser } from '@eptss/core/utils/supabase/server';
+import { roundProvider, COVER_PROJECT_ID } from '@eptss/core';
 import Link from 'next/link';
-import type { Reflection } from '@eptss/data-access';
+import type { Reflection } from '@eptss/core';
 import { Button, AlertBox, GradientDivider, Badge } from '@eptss/ui';
 
 export interface ActionPanelWrapperData extends ActionPanelData {

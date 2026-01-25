@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { DataTable, Header, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
-import { RoundDetail } from "@eptss/data-access";
+import { RoundDetail } from "@eptss/core";
 
 // Round Stats Component
 type RoundStatsProps = {

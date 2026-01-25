@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, useToast } from "@eptss/ui";
 import { Calendar, Music } from "lucide-react";
 import { motion } from "framer-motion";
-import { createRound } from "@eptss/data-access";
+import { createRound } from "@eptss/rounds/services";
 
 type CreateRoundFormProps = {
   projectId: string; // Required - must be passed from parent

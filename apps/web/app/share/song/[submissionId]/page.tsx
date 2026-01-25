@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSubmissionById } from "@eptss/data-access";
+import { getSubmissionById } from "@eptss/core";
 import { SongPageClient } from "./SongPageClient";
 
 type Props = {

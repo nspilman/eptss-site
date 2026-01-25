@@ -9,10 +9,10 @@ import {
   getCommentsByContentId,
   getCommentById,
   getCommentWithAssociation,
-} from "@eptss/data-access/services/commentService";
-import { createNotification, deleteNotificationsByCommentId } from "@eptss/data-access/services/notificationService";
-import { getUserById } from "@eptss/data-access/services/userService";
-import { getSignupUsersByRound } from "@eptss/data-access/services/signupService";
+} from "../services/commentService";
+import { createNotification, deleteNotificationsByCommentId } from "@eptss/core/services/notificationService";
+import { getUserById } from "@eptss/core/services/userService";
+import { getSignupUsersByRound } from "@eptss/core/services/signupService";
 import { logger } from "@eptss/logger/server";
 import { getAuthUser } from "@eptss/auth/server";
 import { getDisplayName } from "@eptss/shared";

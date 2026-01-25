@@ -2,7 +2,7 @@
 
 import { RoundParticipants } from '@eptss/rounds';
 import type { PanelProps } from '@eptss/dashboard';
-import type { RoundInfo } from '@eptss/data-access/types/round';
+import type { RoundInfo } from '@eptss/core/types/round';
 import { Card, CardContent, CardHeader, CardTitle, SectionHeader } from '@eptss/ui';
 import { Users } from 'lucide-react';
 

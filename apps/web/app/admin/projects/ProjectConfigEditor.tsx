@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllProjects, type ProjectInfo } from "@eptss/data-access/services/projectService";
+import { getAllProjects, type ProjectInfo } from "@eptss/core/services/projectService";
 import { safeParseProjectConfig, type ProjectConfig } from "@eptss/project-config";
 import { updateProjectConfig } from "./actions";
 import { Loader2, Settings, Palette, Shield, Mail, FileText, ToggleLeft, Zap, Globe, BookOpen, MessageSquare, Image, ClipboardList } from "lucide-react";

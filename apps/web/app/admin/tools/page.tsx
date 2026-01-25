@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
-import { getCurrentAndPastRounds, getAllUsers, getAllProjects, COVER_PROJECT_ID } from "@eptss/data-access";
+import { getAllUsers, getAllProjects, COVER_PROJECT_ID } from "@eptss/core";
+import { getCurrentAndPastRounds } from "@eptss/rounds/services";
 import { ToolsPageClient } from "./ToolsPageClient";
 
 export const metadata: Metadata = {

@@ -21,7 +21,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@eptss/data-access": "workspace:*",
+    "@eptss/db": "workspace:*",
+    "@eptss/core": "workspace:*",
     "zod": "^3.23.8",
     "drizzle-orm": "^0.35.3"
   },

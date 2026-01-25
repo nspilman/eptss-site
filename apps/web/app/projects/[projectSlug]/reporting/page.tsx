@@ -1,6 +1,6 @@
 import React from "react";
-import { roundProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
-import { reportingProvider } from "@eptss/data-access/providers/reportingProvider";
+import { roundProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
+import { reportingProvider } from "@eptss/core/providers/reportingProvider";
 import { Reporting } from "./Reporting";
 
 interface Props {

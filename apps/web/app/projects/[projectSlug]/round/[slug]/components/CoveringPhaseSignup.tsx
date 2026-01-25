@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Badge, Button } from "@eptss/ui";
 import { useRouter } from "next/navigation";
-import { signupUserWithoutSong } from "@eptss/data-access";
-import { createClient } from "@eptss/data-access/utils/supabase/client";
+import { signupUserWithoutSong } from "@eptss/core";
+import { createClient } from "@eptss/core/utils/supabase/client";
 import { FormReturn } from "@/types";
 import { routes } from "@eptss/routing";
 import { useToast } from "@eptss/ui";

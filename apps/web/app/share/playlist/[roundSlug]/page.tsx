@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/core";
 import { PlaylistPageClient } from "./PlaylistPageClient";
 
 type Props = {

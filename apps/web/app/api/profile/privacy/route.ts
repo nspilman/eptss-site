@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { createClient } from '@eptss/data-access/utils/supabase/server';
+import { getAuthUser } from '@eptss/core/utils/supabase/server';
+import { createClient } from '@eptss/core/utils/supabase/server';
 import {
   getUserPrivacySettings,
   updateUserPrivacySettings,
-} from '@eptss/data-access';
+} from '@eptss/core';
 
 // GET /api/profile/privacy - Get user's privacy settings
 export async function GET(request: NextRequest) {

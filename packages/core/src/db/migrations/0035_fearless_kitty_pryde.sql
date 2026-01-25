@@ -1,0 +1,2 @@
+ALTER TYPE "public"."notification_type" ADD VALUE 'comment_reply_received' BEFORE 'mention_received';--> statement-breakpoint
+ALTER TYPE "public"."notification_type" ADD VALUE 'comment_upvoted' BEFORE 'mention_received';

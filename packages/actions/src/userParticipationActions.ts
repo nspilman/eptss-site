@@ -5,22 +5,22 @@ import {
   signupWithOTP as signupWithOTPService,
   completeSignupAfterVerification as completeSignupAfterVerificationService,
   verifySignupByEmail as verifySignupByEmailService,
-} from "@eptss/data-access/services/signupService";
-import { submitCover as submitCoverService } from "@eptss/data-access/services/submissionService";
-import { submitVotes as submitVotesService } from "@eptss/data-access/services/votesService";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import type { FormReturn } from "@eptss/data-access/types/index";
+} from "@eptss/core/services/signupService";
+import { submitCover as submitCoverService } from "@eptss/core/services/submissionService";
+import { submitVotes as submitVotesService } from "@eptss/voting/services";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import type { FormReturn } from "@eptss/core/types/index";
 import { revalidatePath } from "next/cache";
-import { signupSchema, FIELD_LABELS } from "@eptss/data-access";
-import { validateFormData } from "@eptss/data-access/utils/formDataHelpers";
-import { submitVotesSchema, submitCoverSchema } from "@eptss/data-access/schemas/actionSchemas";
+import { signupSchema, FIELD_LABELS } from "@eptss/core";
+import { validateFormData } from "@eptss/core/utils/formDataHelpers";
+import { submitVotesSchema, submitCoverSchema } from "@eptss/core/schemas/actionSchemas";
 import { logger } from "@eptss/logger/server";
 import {
   votingRateLimit,
   submissionRateLimit,
   signupRateLimit,
   emailRateLimit
-} from "@eptss/data-access/config/rateLimiters";
+} from "@eptss/core/config/rateLimiters";
 
 /**
  * Server Action: Submit votes for a round

@@ -1,5 +1,5 @@
 import React from "react";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
 import FeedbackPageClient from "./FeedbackPageClient";
 
 

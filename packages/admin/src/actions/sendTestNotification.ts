@@ -1,7 +1,7 @@
 "use server";
 
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { createNotification } from "@eptss/data-access/services/notificationService";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { createNotification } from "@eptss/core/services/notificationService";
 
 export async function sendTestNotification() {
   try {

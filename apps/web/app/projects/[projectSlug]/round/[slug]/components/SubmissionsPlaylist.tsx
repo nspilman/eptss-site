@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, SectionHeader, Button } from "@eptss/ui";
 import { Play } from "lucide-react";
-import type { Submission } from "@eptss/data-access/types/round";
+import type { Submission } from "@eptss/core/types/round";
 
 interface SubmissionsPlaylistProps {
   submissions: Submission[];

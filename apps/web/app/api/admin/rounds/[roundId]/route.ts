@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@eptss/data-access/db";
-import { roundMetadata } from "@eptss/data-access/db/schema";
-import { eq } from "drizzle-orm";
+import { db, roundMetadata, eq } from "@eptss/db";
 
 /**
  * PATCH /api/admin/rounds/[roundId]

@@ -1,7 +1,7 @@
 import { Dashboard } from '@eptss/dashboard';
 import { eptssDeboardConfig } from '@/app/dashboard/dashboard-config';
-import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { getUserById, getProjectIdFromSlug, isValidProjectSlug } from '@eptss/data-access';
+import { getAuthUser } from '@eptss/core/utils/supabase/server';
+import { getUserById, getProjectIdFromSlug, isValidProjectSlug } from '@eptss/core';
 import { notFound, redirect } from 'next/navigation';
 import {
   fetchHeroData,

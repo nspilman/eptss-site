@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation';
 import { getAuthUser } from '@eptss/auth/server';
 import { PageTitle } from "@/components/PageTitle";
 import { ReflectionForm } from '@eptss/user-content';
-import { getRoundBySlug, getUserInitialReflectionForRound, getProjectIdFromSlug, type ProjectSlug } from '@eptss/data-access';
+import { getUserInitialReflectionForRound, getProjectIdFromSlug, type ProjectSlug } from '@eptss/core';
+import { getRoundBySlug } from '@eptss/rounds/services';
 import { Metadata } from 'next';
 
 type Props = {

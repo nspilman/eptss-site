@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import React from "react";
-import { RoundInfo } from "@eptss/data-access/types/round";
+import { RoundInfo } from "@eptss/core/types/round";
 import { UserAvatar } from "@eptss/ui";
 import { getDisplayName } from "@eptss/shared";
 

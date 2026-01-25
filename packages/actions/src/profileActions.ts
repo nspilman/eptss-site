@@ -10,7 +10,7 @@ import {
   updateUserProfilePicture,
   getUserPrivacySettings,
   updateUserPrivacySettings,
-} from "@eptss/data-access";
+} from "@eptss/core";
 import { uploadFile, deleteFile, generateProfilePicturePath, BUCKETS } from "@eptss/bucket-storage";
 import { revalidatePath } from "next/cache";
 import { routes } from "@eptss/routing";

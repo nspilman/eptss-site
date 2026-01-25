@@ -1,4 +1,4 @@
-import { getAllFeedback } from "@eptss/data-access";
+import { getAllFeedback } from "@eptss/core";
 import { FeedbackTab } from "./FeedbackTab";
 
 export async function FeedbackTabServer() {

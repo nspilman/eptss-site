@@ -1,6 +1,6 @@
 'use client';
 
-import { formatDate } from '@eptss/data-access/utils/formatDate';
+import { formatDate } from '@eptss/core/utils/formatDate';
 import { Card, CardContent, Text, Heading } from '@eptss/ui';
 import { AudioPreview, AudioPreviewErrorBoundary } from '@eptss/media-display';
 import type { Submission } from '../types';

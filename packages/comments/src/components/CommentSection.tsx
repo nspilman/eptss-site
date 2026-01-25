@@ -13,7 +13,7 @@ import { CommentList } from "./CommentList";
 import { getCommentsAction } from "../actions";
 import { CommentProvider } from "../context/CommentContext";
 import type { CommentSectionProps, CommentWithAuthor } from "../types";
-import { getSignupsByRound } from "@eptss/data-access/services/signupService";
+import { getSignupsByRound } from "@eptss/core/services/signupService";
 
 export function CommentSection({
   userContentId,

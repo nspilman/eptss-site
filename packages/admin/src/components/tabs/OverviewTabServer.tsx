@@ -1,5 +1,5 @@
 import { unstable_cache } from 'next/cache';
-import { adminProvider } from "@eptss/data-access";
+import { adminProvider } from "@eptss/core";
 import { OverviewTab } from "../OverviewTab";
 
 import { Text } from "@eptss/ui";

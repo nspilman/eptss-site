@@ -3,9 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { usernamePasswordLoginSchema, usernamePasswordRegisterSchema } from "@eptss/data-access/schemas/auth"
-import type { UsernamePasswordLoginInput, UsernamePasswordRegisterInput } from "@eptss/data-access/schemas/auth"
-import { userSessionProvider } from "@eptss/data-access"
+import { usernamePasswordLoginSchema, usernamePasswordRegisterSchema } from "@eptss/core/schemas/auth"
+import type { UsernamePasswordLoginInput, UsernamePasswordRegisterInput } from "@eptss/core/schemas/auth"
+import { userSessionProvider } from "@eptss/core"
 import { motion } from "framer-motion"
 import { useState } from "react"
 import {

@@ -14,8 +14,7 @@ import type { BotAttemptData } from '../types';
 export async function logBotAttempt(data: BotAttemptData): Promise<void> {
   try {
     // Import dynamically to avoid circular dependencies
-    const { db } = await import('@eptss/data-access/db');
-    const { botAttempts } = await import('@eptss/data-access/db/schema');
+    const { db, botAttempts } = await import('@eptss/db');
 
     await db.insert(botAttempts).values({
       ipAddress: data.ipAddress,

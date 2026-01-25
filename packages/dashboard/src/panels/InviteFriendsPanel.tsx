@@ -1,7 +1,7 @@
 'use client';
 
 import { PanelProps } from '../types';
-import { InviteFriendsCard } from '@eptss/referrals';
+import { InviteFriendsCard } from '@eptss/referrals/components';
 
 interface InviteFriendsData {
   userId: string;

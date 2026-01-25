@@ -4,7 +4,7 @@ import { useState } from "react";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 import { toast } from "@eptss/ui";
 import { FormReturn } from "../types";
-import { getFieldLabel } from "@eptss/data-access";
+import { getFieldLabel } from "@eptss/core";
 
 interface UseFormSubmissionProps<T extends FieldValues> {
   onSubmit: (data: FormData) => Promise<FormReturn>;

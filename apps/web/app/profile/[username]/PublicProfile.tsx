@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { formatDate } from "@eptss/data-access/utils/formatDate";
-import { Reflection, PublicProfileSubmission } from "@eptss/data-access";
+import { formatDate } from "@eptss/core/utils/formatDate";
+import { Reflection, PublicProfileSubmission } from "@eptss/core";
 import { Card, CardContent, SectionHeader, EmptyState, Display, Text, Heading } from "@eptss/ui";
 import { Playlist, Track } from "@eptss/media-display";
 import { Share2, Check } from "lucide-react";

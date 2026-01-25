@@ -1,11 +1,11 @@
 "use server";
 
-import { signupUserWithoutSong } from "@eptss/data-access/services/signupService";
-import { FormReturn } from "@eptss/data-access/types/index";
+import { signupUserWithoutSong } from "@eptss/core/services/signupService";
+import { FormReturn } from "@eptss/core/types/index";
 import { revalidatePath } from "next/cache";
 import { routes } from "@eptss/routing";
-import { signupForRoundSchema } from "@eptss/data-access/schemas/actionSchemas";
-import { signupRateLimit } from "@eptss/data-access/utils/ratelimit";
+import { signupForRoundSchema } from "@eptss/core/schemas/actionSchemas";
+import { signupRateLimit } from "@eptss/core/utils/ratelimit";
 import { logger } from "@eptss/logger/server";
 
 /**

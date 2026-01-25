@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FeedbackCard } from "../FeedbackCard";
-import type { Feedback } from "@eptss/data-access";
+import type { Feedback } from "@eptss/core";
 
 type FeedbackTabProps = {
   feedbackList: Feedback[];

@@ -6,9 +6,7 @@
  * Run with: bun scripts/populate-round-slugs.ts
  */
 
-import { db } from "@eptss/data-access/db";
-import { roundMetadata } from "@eptss/data-access/db/schema";
-import { eq } from "drizzle-orm";
+import { db, roundMetadata, eq } from "@eptss/db";
 
 async function populateRoundSlugs() {
   console.log("Starting round slug population...");

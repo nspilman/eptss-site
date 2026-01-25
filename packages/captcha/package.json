@@ -20,7 +20,7 @@
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "@eptss/data-access": "*",
+    "@eptss/db": "*",
     "react": "^18.2.0"
   }
 }

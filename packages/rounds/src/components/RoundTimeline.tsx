@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Button } from "@eptss/ui";
-import { RoundInfo } from "@eptss/data-access/types/round";
+import { RoundInfo } from "@eptss/core/types/round";
 import { useState, ComponentType, ReactNode } from "react";
 
 interface RoundTimelineProps {

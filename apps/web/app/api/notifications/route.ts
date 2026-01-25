@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
 import {
   getUserNotifications,
   markAllAsRead,
-} from "@eptss/data-access/services/notificationService";
+} from "@eptss/core/services/notificationService";
 
 export const dynamic = "force-dynamic";
 

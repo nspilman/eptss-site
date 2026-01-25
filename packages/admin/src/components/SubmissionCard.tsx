@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@eptss/ui"
 import { Music } from "lucide-react"
 import { DataTable } from "@eptss/ui"
 import Link from "next/link"
-import type { Submission } from "@eptss/data-access/types/round"
+import type { Submission } from "@eptss/core/types/round"
 
 type SubmissionsCardProps = {
   submissions: Submission[]

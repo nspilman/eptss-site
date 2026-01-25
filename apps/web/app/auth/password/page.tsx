@@ -4,7 +4,7 @@ import { PasswordAuthForm } from "@eptss/auth/components";
 import { Card } from "@eptss/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createClient } from "@eptss/data-access/utils/supabase/client";
+import { createClient } from "@eptss/core/utils/supabase/client";
 import { routes } from "@eptss/routing";
 
 export default function PasswordAuthPage() {

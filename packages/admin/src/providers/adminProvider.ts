@@ -1,8 +1,8 @@
 "use server";
 
-import { getCurrentAndPastRounds, getCurrentRound } from "@eptss/data-access/services/roundService";
-import { COVER_PROJECT_ID } from "@eptss/data-access";
-import { getUserCount, getAllUsers as getAllUsersService, getActiveUsersCount, getUserDetails as getUserDetailsService, getActiveUsers as getActiveUsersService } from "@eptss/data-access/services/userService";
+import { getCurrentAndPastRounds, getCurrentRound } from "@eptss/core/services/roundService";
+import { COVER_PROJECT_ID } from "@eptss/core";
+import { getUserCount, getAllUsers as getAllUsersService, getActiveUsersCount, getUserDetails as getUserDetailsService, getActiveUsers as getActiveUsersService } from "@eptss/core/services/userService";
 
 export type AdminStats = {
   totalUsers: number;

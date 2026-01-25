@@ -1,6 +1,6 @@
 import { unstable_cache } from 'next/cache';
-import { getAllUsers as getAllUsersService } from "@eptss/data-access";
-import { roundsProvider, roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { getAllUsers as getAllUsersService, roundProvider, COVER_PROJECT_ID } from "@eptss/core";
+import { roundsProvider } from "@eptss/rounds/providers";
 import { ActionsTab } from "../ActionsTab";
 
 import { Text } from "@eptss/ui";

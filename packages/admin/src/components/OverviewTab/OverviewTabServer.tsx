@@ -1,4 +1,4 @@
-import { adminProvider } from "@eptss/data-access";
+import { adminProvider } from "@eptss/core";
 import { OverviewTab } from "../OverviewTab";
 
 export async function OverviewTabServer() {

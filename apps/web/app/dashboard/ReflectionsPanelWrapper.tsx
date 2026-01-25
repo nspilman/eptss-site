@@ -1,6 +1,6 @@
 import type { PanelProps } from "@eptss/dashboard";
 import { FileText } from "lucide-react";
-import { getReflectionsByRound } from "@eptss/data-access";
+import { getReflectionsByRound } from "@eptss/core";
 import { ReflectionsPanelClient } from "./ReflectionsPanelClient";
 
 interface ReflectionsPanelData {

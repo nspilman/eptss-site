@@ -1,6 +1,6 @@
 "use server";
 
-import { addToMailingList } from "@eptss/data-access/services/mailingListService";
+import { addToMailingList } from "@eptss/core/services/mailingListService";
 import { logger } from "@eptss/logger/server";
 
 type WaitlistInput = {

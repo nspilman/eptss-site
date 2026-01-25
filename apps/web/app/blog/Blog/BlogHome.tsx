@@ -1,7 +1,7 @@
 import { BlogPost } from "types/BlogPost";
-import { Reflection } from "@eptss/data-access";
+import { Reflection } from "@eptss/core";
 import Link from "next/link";
-import { formatDate } from "@eptss/data-access/utils/formatDate";
+import { formatDate } from "@eptss/core/utils/formatDate";
 import { Card, CardContent } from "@eptss/ui";
 
 export const BlogHome = ({ posts, reflections }: { posts: BlogPost[]; reflections: Reflection[] }) => {

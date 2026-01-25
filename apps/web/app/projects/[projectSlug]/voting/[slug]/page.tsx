@@ -1,4 +1,4 @@
-import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import VotingPageWrapper from "../VotingPageWrapper";
 import { RoundParamsProvider } from '../../ProjectContext';
 

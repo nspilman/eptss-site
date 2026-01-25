@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getAuthUser } from '@eptss/auth/server';
-import { getUserById, getUserSignups, getUserSubmissions, getUserVotes } from '@eptss/data-access';
-import { getUserReferralCodes, getUserReferrals, getReferralStats } from '@eptss/data-access/services/referralService';
+import { getUserById, getUserSignups, getUserSubmissions, getUserVotes } from '@eptss/core';
+import { getUserReferralCodes, getUserReferrals, getReferralStats } from '@eptss/referrals/services';
 import { ProfileHeader, ProfileTabs, ReferralsTab } from '@eptss/profile';
 
 export default async function ReferralsPage() {

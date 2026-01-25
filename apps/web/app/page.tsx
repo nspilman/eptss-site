@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { StaticHero } from "./StaticHero";
 import { RoundInfoDisplay } from "@eptss/rounds";
 import { ClientRoundsDisplay } from "./index/Homepage/RoundsDisplay/ClientRoundsDisplay";
-import { roundProvider, getAllProjects } from "@eptss/data-access";
+import { roundProvider, getAllProjects } from "@eptss/core";
 import Link from "next/link";
 
 import { Text } from "@eptss/ui";

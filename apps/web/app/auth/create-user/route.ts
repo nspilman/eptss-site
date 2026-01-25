@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createUser } from "@eptss/data-access/services/userCreationService";
+import { createUser } from "@eptss/core/services/userCreationService";
 
 const SECRET = process.env.NEXT_PUBLIC_SUPABASE_USER_CREATION_TOKEN;
 

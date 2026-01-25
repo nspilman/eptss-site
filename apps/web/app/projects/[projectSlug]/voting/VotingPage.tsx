@@ -6,7 +6,7 @@ import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms";
 import { Button, Form, EmptyState } from "@eptss/ui";
 import { motion } from "framer-motion";
 import { z } from "zod"
-import { VoteOption } from "@eptss/data-access/types/vote"
+import { VoteOption } from "@eptss/core/types/vote"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
 
 interface Props {

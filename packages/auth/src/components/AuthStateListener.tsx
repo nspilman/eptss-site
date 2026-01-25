@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { createClient } from '@eptss/data-access/utils/supabase/client';
+import { createClient } from '@eptss/core/utils/supabase/client';
 
 export function AuthStateListener({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);

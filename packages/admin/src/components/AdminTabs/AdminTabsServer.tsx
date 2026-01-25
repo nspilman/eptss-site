@@ -1,8 +1,9 @@
-import { roundsProvider, roundProvider, votesProvider, adminPageProvider, COVER_PROJECT_ID } from "@eptss/data-access";
-import { getAllFeedback } from "@eptss/data-access";
-import { getAllUsers as getAllUsersService } from "@eptss/data-access";
-import { getActiveUsers } from "@eptss/data-access";
-import { getAllNotifications, getAllNotificationsCount, type NotificationWithUser } from "@eptss/data-access";
+import { roundProvider, votesProvider, adminPageProvider, COVER_PROJECT_ID } from "@eptss/core";
+import { roundsProvider } from "@eptss/rounds/providers";
+import { getAllFeedback } from "@eptss/core";
+import { getAllUsers as getAllUsersService } from "@eptss/core";
+import { getActiveUsers } from "@eptss/core";
+import { getAllNotifications, getAllNotificationsCount, type NotificationWithUser } from "@eptss/core";
 import { AdminTabs } from "./AdminTabs";
 
 type AdminTabsServerProps = {

@@ -2,9 +2,9 @@ import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { TOAST_REDIRECT_KEY } from "@eptss/shared";
-import { createClient } from "@eptss/data-access/utils/supabase/server";
+import { createClient } from "@eptss/core/utils/supabase/server";
 import { ensureUserExists } from "@eptss/auth/server";
-import { verifySignupByEmail } from "@eptss/data-access";
+import { verifySignupByEmail } from "@eptss/core";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

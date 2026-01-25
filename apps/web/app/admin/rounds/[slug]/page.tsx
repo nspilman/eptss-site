@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { DataTable } from "@eptss/ui";
-import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/core";
 import { routes } from "@eptss/routing";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

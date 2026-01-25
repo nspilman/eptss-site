@@ -6,9 +6,10 @@
  * navigation logic.
  */
 
-import type { Notification } from "@eptss/data-access/db/schema";
+import type { Notification } from "@eptss/db";
 import { routes, api } from "@eptss/routing";
-import { getRoundById, getProjectSlugFromId } from "@eptss/data-access";
+import { getProjectSlugFromId } from "@eptss/core";
+import { getRoundById } from "@eptss/rounds/services";
 
 /**
  * Navigation result from a notification handler

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
-import { getAllFeedback } from "@eptss/data-access/services/feedbackService";
+import { getAllFeedback } from "@eptss/core/services/feedbackService";
 import { FeedbackCard } from "@eptss/admin";
 import { Card, CardHeader, CardTitle, CardContent, AlertBox } from "@eptss/ui";
 

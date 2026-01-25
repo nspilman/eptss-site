@@ -5,9 +5,10 @@ import { RoundScheduleCard } from "./RoundScheduleCard";
 import { SignupsCard } from "./SignupsCard";
 import { SubmissionsCard } from "./SubmissionCard";
 import { VotingCard } from "./VotingCard";
-import { Phase, DateLabel, Submission } from "@eptss/data-access/types/round";
-import { VoteOption } from "@eptss/data-access/types/vote";
-import { SignupData } from "@eptss/data-access/types/signup";
+import { type Phase, type DateLabel } from "@eptss/rounds/types";
+import { Submission } from "@eptss/core/types/round";
+import { VoteOption } from "@eptss/core/types/vote";
+import { SignupData } from "@eptss/core/types/signup";
 
 type VoteResult = {
   title: string;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Metadata } from 'next';
-import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import VotingPageWrapper from "./VotingPageWrapper";
 
 export const metadata: Metadata = {

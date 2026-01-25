@@ -24,7 +24,7 @@ import {
   getProjectFAQContent,
   getPageContent,
 } from '@eptss/project-config';
-import type { ProjectSlug } from '@eptss/data-access';
+import type { ProjectSlug } from '@eptss/core';
 
 // ============================================================================
 // SERVER-SIDE CONFIG FETCHERS

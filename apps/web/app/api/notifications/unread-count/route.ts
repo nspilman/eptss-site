@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { getUnreadCount } from "@eptss/data-access/services/notificationService";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { getUnreadCount } from "@eptss/core/services/notificationService";
 
 export const dynamic = "force-dynamic";
 

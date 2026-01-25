@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { runComprehensiveCleanup } from "@eptss/data-access/services/orphanFileCleanupService";
+import { runComprehensiveCleanup } from "@eptss/core/services/orphanFileCleanupService";
 import { logger } from "@eptss/logger/server";
 
 /**
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Optional: Add auth check for monitoring endpoint
-    const { getCleanupStats } = await import("@eptss/data-access/services/orphanFileCleanupService");
+    const { getCleanupStats } = await import("@eptss/core/services/orphanFileCleanupService");
 
     const stats = await getCleanupStats();
 

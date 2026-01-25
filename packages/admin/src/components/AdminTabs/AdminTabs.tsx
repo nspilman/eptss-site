@@ -9,7 +9,7 @@ import { FeedbackTab } from "./FeedbackTab";
 import { ActionsTab } from "../ActionsTab";
 import { NotificationsTab } from "./NotificationsTab";
 import { ReferralsTab } from "./ReferralsTab";
-import type { NotificationWithUser } from "@eptss/data-access";
+import type { NotificationWithUser } from "@eptss/core";
 
 type AdminTabsProps = {
   initialTab: string;

@@ -33,7 +33,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@eptss/data-access": "workspace:*",
+    "@eptss/db": "workspace:*",
+    "@eptss/core": "workspace:*",
     "@eptss/forms": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@eptss/shared": "workspace:*",

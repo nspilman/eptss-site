@@ -1,4 +1,4 @@
-import { getAllUsers as getAllUsersService } from "@eptss/data-access";
+import { getAllUsers as getAllUsersService } from "@eptss/core";
 import { ActionsTab } from "../ActionsTab";
 
 type ActionsTabServerProps = {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processNotificationEmails } from '@eptss/data-access/services/notificationEmailService';
+import { processNotificationEmails } from '@eptss/core/services/notificationEmailService';
 
 /**
  * API route to automatically send notification emails to users

@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getCurrentRound,
-  setRoundSong,
-  getDetailedVoteResults,
   getSongByTitleAndArtist,
   getAllProjects,
   type ProjectSlug
-} from '@eptss/data-access';
+} from '@eptss/core';
+import { getCurrentRound, setRoundSong } from '@eptss/rounds/services';
+import { getDetailedVoteResults } from '@eptss/voting/services';
 import { getProjectAutomation } from '@eptss/project-config';
 import { sendAdminSongAssignmentNotification } from '@eptss/email';
 

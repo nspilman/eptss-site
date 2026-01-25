@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { isValidProjectSlug, getProjectIdFromSlug, type ProjectSlug } from '@eptss/data-access';
+import { isValidProjectSlug, getProjectIdFromSlug, type ProjectSlug } from '@eptss/core';
 import { ProjectProvider } from './ProjectContext';
 
 interface ProjectLayoutProps {

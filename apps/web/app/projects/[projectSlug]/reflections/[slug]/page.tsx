@@ -1,5 +1,5 @@
-import { getReflectionBySlug } from '@eptss/data-access';
-import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
+import { getReflectionBySlug } from '@eptss/core';
+import { getAuthUser } from '@eptss/core/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import Link from 'next/link';

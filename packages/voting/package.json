@@ -1,0 +1,25 @@
+{
+  "name": "@eptss/voting",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./services": "./src/services/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "clean": "rm -rf .turbo node_modules"
+  },
+  "dependencies": {
+    "@eptss/db": "workspace:*",
+    "@eptss/routing": "workspace:*",
+    "@supabase/ssr": "^0.5.1",
+    "drizzle-orm": "^0.38.4",
+    "next": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.3",
+    "eslint": "8.26.0",
+    "typescript": "5.1.3"
+  }
+}

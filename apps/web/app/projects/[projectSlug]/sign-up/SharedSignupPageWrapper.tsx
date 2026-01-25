@@ -1,10 +1,10 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { roundProvider, userParticipationProvider, type ProjectSlug, getProjectBySlug } from "@eptss/data-access";
+import { roundProvider, userParticipationProvider, type ProjectSlug, getProjectBySlug, getUserSignupData } from "@eptss/core";
 import { SignupPage } from "./SignupPage/SignupPage";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { UserSignupData } from "@eptss/data-access/types/signup";
-import { getNextRoundByVotingDate, getUserSignupData } from "@eptss/data-access";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { UserSignupData } from "@eptss/core/types/signup";
+import { getNextRoundByVotingDate } from "@eptss/rounds/services";
 import { signup, signupWithOTP } from "@/actions/userParticipationActions";
 import { getProjectBusinessRules, getPageContent, getProjectMetadata } from "@eptss/project-config";
 

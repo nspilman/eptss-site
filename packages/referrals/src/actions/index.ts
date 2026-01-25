@@ -8,8 +8,8 @@ import {
   deactivateReferralCode,
   reactivateReferralCode,
   getReferralStats,
-} from "@eptss/data-access/services/referralService";
-import { createClient } from "@eptss/data-access/utils/supabase/server";
+} from "../services/referralService";
+import { createClient } from "@eptss/auth/server";
 import { logger } from "@eptss/logger/server";
 
 /**

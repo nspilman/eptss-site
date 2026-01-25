@@ -1,4 +1,4 @@
-import { roundProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { roundProvider, COVER_PROJECT_ID } from "@eptss/core";
 import { NextResponse } from "next/server";
 
 export async function GET() {

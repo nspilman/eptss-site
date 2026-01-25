@@ -11,10 +11,10 @@ import {
   getAllReferralCodes,
   getAllUserReferrals,
   getSystemReferralStats,
-} from "@eptss/data-access/services/referralService";
-import { createClient } from "@eptss/data-access/utils/supabase/server";
+} from "@eptss/referrals/services";
+import { createClient } from "@eptss/core/utils/supabase/server";
 import { logger } from "@eptss/logger/server";
-import { isAdmin } from "@eptss/data-access/utils/isAdmin";
+import { isAdmin } from "@eptss/core/utils/isAdmin";
 
 /**
  * Server Action: Create a new referral code for the current user

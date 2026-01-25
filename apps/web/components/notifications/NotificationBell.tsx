@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { Button, Popover, PopoverTrigger, PopoverContent, Badge } from "@eptss/ui";
 import { NotificationDropdown } from "./NotificationDropdown";
-import type { Notification } from "@eptss/data-access/db/schema";
+import type { Notification } from "@eptss/db";
 import { getNotificationNavigation } from "@/lib/notification-navigation";
 
 export interface NotificationWithUrl extends Notification {

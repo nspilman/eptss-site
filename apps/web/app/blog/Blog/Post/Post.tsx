@@ -1,5 +1,5 @@
 import ReactMarkdown from "react-markdown";
-import { formatDate } from "@eptss/data-access/utils/formatDate";
+import { formatDate } from "@eptss/core/utils/formatDate";
 import { markdownTheme } from "./MarkdownTheme";
 import { BlogPost } from "types/BlogPost";
 import React from "react";

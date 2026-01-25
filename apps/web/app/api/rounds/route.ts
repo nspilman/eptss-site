@@ -1,4 +1,5 @@
-import { getCurrentAndPastRounds, COVER_PROJECT_ID } from "@eptss/data-access";
+import { COVER_PROJECT_ID } from "@eptss/core";
+import { getCurrentAndPastRounds } from "@eptss/rounds/services";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@eptss/data-access/db";
-import { roundMetadata } from "@eptss/data-access/db/schema";
-import { eq } from "drizzle-orm";
-import { getProjectIdFromSlug, isValidProjectSlug } from "@eptss/data-access";
+import { db, roundMetadata, eq } from "@eptss/db";
+import { getProjectIdFromSlug, isValidProjectSlug } from "@eptss/core";
 
 /**
  * GET /api/admin/rounds?projectSlug=PROJECT_SLUG

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@eptss/data-access/db';
-import { userContent, contentTags, tags } from '@eptss/data-access/db/schema';
+import { db, userContent, contentTags, tags } from '@eptss/db';
 import { eq, and } from 'drizzle-orm';
 import { getAuthUser } from '@eptss/auth/server';
 

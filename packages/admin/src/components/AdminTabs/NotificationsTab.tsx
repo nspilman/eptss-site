@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, Button } from "@eptss/ui";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import type { NotificationWithUser } from "@eptss/data-access";
+import type { NotificationWithUser } from "@eptss/core";
 
 type NotificationsTabProps = {
   allNotifications: NotificationWithUser[];

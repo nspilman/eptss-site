@@ -1,4 +1,5 @@
-import { roundsProvider, COVER_PROJECT_ID } from "@eptss/data-access";
+import { COVER_PROJECT_ID } from "@eptss/core";
+import { roundsProvider } from "@eptss/rounds/providers";
 import { RoundSelector } from "./RoundSelector";
 
 type RoundSelectorServerProps = {

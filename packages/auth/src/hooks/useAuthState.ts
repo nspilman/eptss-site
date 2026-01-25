@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@eptss/data-access/utils/supabase/client';
+import { createClient } from '@eptss/core/utils/supabase/client';
 import type { User } from '@supabase/supabase-js';
 
 export function useAuthState() {

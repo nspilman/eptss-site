@@ -1,5 +1,5 @@
-import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { getUserProjects } from '@eptss/data-access';
+import { getAuthUser } from '@eptss/core/utils/supabase/server';
+import { getUserProjects } from '@eptss/core';
 import { redirect } from 'next/navigation';
 import { ProjectDashboardPicker } from './ProjectDashboardPicker';
 import { cookies } from 'next/headers';

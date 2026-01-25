@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Metadata } from 'next/types';
-import { getCurrentAndPastRounds, getAllProjects, COVER_PROJECT_ID } from "@eptss/data-access";
+import { getAllProjects, COVER_PROJECT_ID } from "@eptss/core";
+import { getCurrentAndPastRounds } from "@eptss/rounds/services";
 import { getProjectBusinessRules } from "@eptss/project-config";
 import { RoundsPageClient } from "./RoundsPageClient";
 

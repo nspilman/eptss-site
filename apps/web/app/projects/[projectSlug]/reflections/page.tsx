@@ -1,5 +1,5 @@
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug, getReflectionsByRound } from "@eptss/data-access";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug, getReflectionsByRound } from "@eptss/core";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import { Button, Card, CardHeader, CardContent } from "@eptss/ui";

@@ -3,8 +3,8 @@
 // Note: Email functionality is web-app specific
 // For admin test emails, we'll need to implement admin-specific email templates
 // or import from the web app if needed
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
-import { getCurrentRound, formatDate } from "@eptss/data-access";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { getCurrentRound, formatDate } from "@eptss/rounds/services";
 
 export async function sendTestSignupEmail() {
   // TODO: Implement admin-specific email sending or import from web app

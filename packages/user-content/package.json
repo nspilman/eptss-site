@@ -10,7 +10,7 @@
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
-    "@eptss/data-access": "workspace:*",
+    "@eptss/core": "workspace:*",
     "@eptss/rich-text-editor": "workspace:*",
     "@eptss/shared": "workspace:*",
     "react": "18.3.1",

@@ -7,14 +7,16 @@
     "./components": "./src/components/index.ts",
     "./actions": "./src/actions/index.ts",
     "./hooks": "./src/hooks/index.ts",
-    "./types": "./src/types/index.ts"
+    "./types": "./src/types/index.ts",
+    "./services": "./src/services/index.ts"
   },
   "scripts": {
     "lint": "eslint .",
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
-    "@eptss/data-access": "workspace:*",
+    "@eptss/db": "workspace:*",
+    "@eptss/core": "workspace:*",
     "@eptss/logger": "workspace:*",
     "@eptss/ui": "workspace:*",
     "date-fns": "^2.30.0",

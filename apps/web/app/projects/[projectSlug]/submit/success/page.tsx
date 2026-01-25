@@ -1,4 +1,4 @@
-import { roundProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from "@eptss/data-access";
+import { roundProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug } from "@eptss/core";
 import { getPageContent } from "@eptss/project-config";
 import { Metadata } from 'next';
 import { SuccessPage } from "./SuccessPage";

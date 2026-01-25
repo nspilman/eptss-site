@@ -1,5 +1,5 @@
 import { unstable_cache } from 'next/cache';
-import { getAllFeedback } from "@eptss/data-access";
+import { getAllFeedback } from "@eptss/core";
 import { FeedbackTab } from "../AdminTabs/FeedbackTab";
 
 import { Text } from "@eptss/ui";

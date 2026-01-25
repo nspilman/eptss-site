@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getReflectionsByRound, type Reflection } from '@eptss/data-access/services/reflectionService';
+import { getReflectionsByRound, type Reflection } from '@eptss/core/services/reflectionService';
 import { Card, CardHeader, CardContent } from '@eptss/ui';
 
 interface RoundReflectionsProps {

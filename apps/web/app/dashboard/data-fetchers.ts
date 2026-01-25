@@ -7,22 +7,21 @@
 import {
   roundProvider,
   userParticipationProvider,
-  getNextRoundByVotingDate,
   getUserSignupData,
   getUserReflectionsForRound,
-  getRoundPrompt,
   getProjectBySlug,
   type Reflection,
   type ProjectSlug,
-} from "@eptss/data-access";
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+} from "@eptss/core";
+import { getNextRoundByVotingDate, getRoundPrompt } from "@eptss/rounds/services";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
 import { routes } from "@eptss/routing";
 import { getProjectTerminology, getProjectBusinessRules, getProjectConfig } from "@eptss/project-config";
 import type {
   Phase
 } from "@eptss/dashboard/panels";
 import { getCommentsAction } from "@eptss/comments/actions";
-import { getSignupsByRound } from "@eptss/data-access/services/signupService";
+import { getSignupsByRound } from "@eptss/core/services/signupService";
 
 /**
  * Fetch data for the Hero Panel

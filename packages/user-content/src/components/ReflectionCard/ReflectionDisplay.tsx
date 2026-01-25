@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { deleteReflection } from '@eptss/data-access';
-import type { Reflection } from '@eptss/data-access';
+import { deleteReflection } from '@eptss/core';
+import type { Reflection } from '@eptss/core';
 import { Button } from '@eptss/ui';
 import { getReflectionSchedule } from '../../utils/reflectionScheduler';
 import type { Round } from '../../types';

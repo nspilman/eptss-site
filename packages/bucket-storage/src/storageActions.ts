@@ -1,12 +1,12 @@
 "use server";
 
-import { createClient } from "@eptss/data-access/utils/supabase/server";
+import { createClient } from "@eptss/core/utils/supabase/server";
 import { logger } from "@eptss/logger/server";
 import {
   validateAudioFile,
   validateImageFile,
   type ValidationResult,
-} from "@eptss/data-access/utils/serverFileValidation";
+} from "@eptss/core/utils/serverFileValidation";
 import { BUCKETS, type BucketName } from "./storageService";
 
 /**

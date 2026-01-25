@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FileText } from 'lucide-react';
 import { Button, Card, CardHeader, CardContent } from '@eptss/ui';
-import type { Reflection } from '@eptss/data-access';
+import type { Reflection } from '@eptss/core';
 
 interface ReflectionsPanelClientProps {
   reflections: Reflection[];

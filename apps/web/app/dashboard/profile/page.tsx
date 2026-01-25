@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getAuthUser } from '@eptss/auth/server';
-import { getUserById, getUserParticipationCounts } from '@eptss/data-access';
+import { getUserById, getUserParticipationCounts } from '@eptss/core';
 import { ProfileHeader, ProfileTabs, PersonalInfoTab } from '@eptss/profile';
 
 export default async function ProfilePage() {

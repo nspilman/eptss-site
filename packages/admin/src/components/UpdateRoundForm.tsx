@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, Button, Input, FormLabel, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Textarea, useToast } from "@eptss/ui";
 import { Edit, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { updateRound, getRoundBySlug, getRoundPrompt } from "@eptss/data-access";
+import { updateRound, getRoundBySlug, getRoundPrompt } from "@eptss/rounds/services";
 
 type UpdateRoundFormProps = {
   projectId: string; // Required - must be passed from parent

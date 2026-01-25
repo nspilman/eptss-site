@@ -16,7 +16,7 @@ import {
   uploadProfilePictureAction,
   deleteProfilePictureAction
 } from '@eptss/actions';
-import { profileProvider } from '@eptss/data-access';
+import { profileProvider } from '@eptss/core';
 import { ProfilePictureSection } from './shared/ProfilePictureSection';
 import { DisplayNameField } from './shared/DisplayNameField';
 import { ProfileBioField } from './shared/ProfileBioField';

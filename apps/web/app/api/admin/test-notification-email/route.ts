@@ -1,10 +1,9 @@
 "use server";
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@eptss/data-access/utils/supabase/server';
-import { processNotificationEmails } from '@eptss/data-access';
-import { db } from '@eptss/data-access/db';
-import { users, userPrivacySettings, notifications } from '@eptss/data-access/db/schema';
+import { getAuthUser } from '@eptss/core/utils/supabase/server';
+import { processNotificationEmails } from '@eptss/core';
+import { db, users, userPrivacySettings, notifications } from '@eptss/db';
 import { eq, and } from 'drizzle-orm';
 import { sendNewNotificationsEmail, sendOutstandingNotificationsEmail } from '@eptss/email';
 

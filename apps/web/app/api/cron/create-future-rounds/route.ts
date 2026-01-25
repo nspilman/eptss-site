@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  getCurrentRound,
-  getFutureRounds,
-  createRound,
   getNextQuarterlyRounds,
   getAllProjects,
   type ProjectSlug
-} from '@eptss/data-access';
+} from '@eptss/core';
+import { getCurrentRound, getFutureRounds, createRound } from '@eptss/rounds/services';
 import { getProjectAutomation } from '@eptss/project-config';
 
 /**

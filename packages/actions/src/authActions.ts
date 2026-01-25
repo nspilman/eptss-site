@@ -1,10 +1,9 @@
 "use server";
 
-import { createClient } from "@eptss/data-access/utils/supabase/server";
+import { createClient } from "@eptss/core/utils/supabase/server";
 import { logger } from "@eptss/logger/server";
-import { db } from "@eptss/data-access/db";
-import { unverifiedSignups, users } from "@eptss/data-access/db/schema";
-import { validateReferralCode } from "@eptss/data-access/services/referralService";
+import { db, unverifiedSignups, users } from "@eptss/db";
+import { validateReferralCode } from "@eptss/referrals/services";
 import { eq, sql } from "drizzle-orm";
 
 /**

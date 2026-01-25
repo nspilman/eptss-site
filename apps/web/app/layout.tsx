@@ -38,9 +38,9 @@ export const metadata = {
 
 import "@eptss/ui/styles";
 
-import { getAuthUser } from "@eptss/data-access/utils/supabase/server";
+import { getAuthUser } from "@eptss/core/utils/supabase/server";
 import { isAdmin } from "@eptss/auth";
-import { getUserProjects } from "@eptss/data-access";
+import { getUserProjects } from "@eptss/core";
 
 export default async function RootLayout({
   children,

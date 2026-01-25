@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getContentSlugById } from "@eptss/data-access";
+import { getContentSlugById } from "@eptss/core";
 
 export async function GET(request: NextRequest) {
   try {

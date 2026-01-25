@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Music, Vote, Trophy, Users, Sparkles } from "lucide-react";
-import { getAllProjects } from "@eptss/data-access";
+import { getAllProjects } from "@eptss/core";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Badge, Button, Display } from "@eptss/ui";
 
 const iconMap = {

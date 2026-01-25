@@ -1,7 +1,8 @@
 "use client";
 
 import { DataTable, Header, Card, CardHeader, CardTitle, CardContent } from "@eptss/ui";
-import { UserDetail, formatDate } from "@eptss/data-access";
+import { UserDetail } from "@eptss/core";
+import { formatDate } from "@eptss/rounds/services";
 import { motion } from "framer-motion";
 
 // User Stats Component

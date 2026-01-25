@@ -1,5 +1,5 @@
 import React from "react";
-import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/data-access";
+import { getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import { SharedSignupPageWrapper } from "./SharedSignupPageWrapper";
 
 interface Props {
