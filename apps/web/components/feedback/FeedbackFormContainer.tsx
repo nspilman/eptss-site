@@ -7,7 +7,7 @@ import { submitFeedback } from "@eptss/actions";
 
 import { Text } from "@eptss/ui";
 interface FeedbackFormContainerProps {
-  userId?: string;
+  userId?: string | null;
 }
 
 export function FeedbackFormContainer({

@@ -22,6 +22,14 @@ export async function GET(request: NextRequest) {
 
     const { userId } = await getAuthUser();
 
+    // Honest absence check after session - should not happen but handle gracefully
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     // Get privacy settings
     const privacySettings = await getUserPrivacySettings(userId);
 
@@ -54,6 +62,15 @@ export async function POST(request: NextRequest) {
     }
 
     const { userId } = await getAuthUser();
+
+    // Honest absence check after session - should not happen but handle gracefully
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     // Handle privacy settings update

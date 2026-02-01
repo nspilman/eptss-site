@@ -9,13 +9,10 @@ import { routes } from "@eptss/routing";
 import { useState, useEffect } from "react";
 import { NavLink, Button } from "@eptss/ui";
 
-interface Props {
-  userId: string
-}
+// Header is only rendered for non-authenticated users in the public layout
+// No userId prop needed - we know there's no authenticated user
 
-
-
-export const Header = ({userId}: Props) => {
+export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -70,7 +67,7 @@ export const Header = ({userId}: Props) => {
             </nav>
 
             <div className="pl-2 border-l border-[var(--color-gray-700)]">
-              <SignupButton isLoggedIn={!!userId} />
+              <SignupButton isLoggedIn={false} />
             </div>
           </div>
           
@@ -115,7 +112,7 @@ export const Header = ({userId}: Props) => {
               />
               <div className="mt-4 pt-4 border-t border-[var(--color-gray-800)]">
                 <div className="block md:hidden">
-                  <SignupButton isLoggedIn={!!userId} />
+                  <SignupButton isLoggedIn={false} />
                 </div>
               </div>
             </nav>

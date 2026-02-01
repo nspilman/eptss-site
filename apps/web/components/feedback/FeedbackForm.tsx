@@ -39,7 +39,7 @@ const formSchema = z.object({
 
 // Feedback form props
 interface FeedbackFormProps {
-  userId?: string;
+  userId?: string | null;
   onSuccess?: () => void;
   createFeedback: (input: CreateFeedbackInput) => Promise<any>;
 }

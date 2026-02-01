@@ -21,6 +21,11 @@ export async function ReflectionCard({ projectId = COVER_PROJECT_ID, projectSlug
     return null;
   }
 
+  // Don't show if user is not authenticated
+  if (!userId) {
+    return null;
+  }
+
   // Determine projectSlug if not provided
   const resolvedProjectSlug: string = projectSlug || getProjectSlugFromId(projectId) || 'cover';
 

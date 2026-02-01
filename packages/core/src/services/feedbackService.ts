@@ -18,7 +18,7 @@ export interface Feedback {
 export type CreateFeedbackInput = {
   type: typeof feedbackTypeEnum.enumValues[number];
   content: string;
-  userId?: string;
+  userId?: string | null;
   isPublic?: boolean;
 };
 

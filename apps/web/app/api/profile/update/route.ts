@@ -16,6 +16,15 @@ export async function POST(request: NextRequest) {
     }
 
     const { userId } = await getAuthUser();
+
+    // Honest absence check after session - should not happen but handle gracefully
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { username, publicDisplayName } = body;
 

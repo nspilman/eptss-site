@@ -7,6 +7,11 @@ export async function GET() {
   try {
     const { userId } = await getAuthUser();
 
+    // Honest absence check: userId is null when not authenticated
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // Get all reflections for this user
     const reflections = await db
       .select()

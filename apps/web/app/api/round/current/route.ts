@@ -1,18 +1,15 @@
-import { roundProvider, COVER_PROJECT_ID, CachePatterns, getCacheHeaders } from "@eptss/core";
-import { NextResponse } from "next/server";
+import { createRoundHandler } from "@/app/api/_shared/roundEndpoint";
 
-export async function GET() {
-  try {
-    // Get the current round
-    const round = await roundProvider({ projectId: COVER_PROJECT_ID });
-    return NextResponse.json(round, {
-      headers: getCacheHeaders(CachePatterns.roundPhase),
-    });
-  } catch (error) {
-    console.error('Error fetching current round:', error);
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 500 }
-    );
-  }
-}
+/**
+ * GET /api/round/current
+ *
+ * Returns the current round for the cover project.
+ * This is a convenience endpoint - equivalent to /api/round-info with no slug.
+ *
+ * Uses the unified round endpoint factory for consistent caching and error handling.
+ */
+export const GET = createRoundHandler({
+  // Uses default roundPhase caching
+  // Uses default COVER_PROJECT_ID
+  // No transformation needed
+});

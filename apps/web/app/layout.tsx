@@ -44,11 +44,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   // Single cached call fetches auth, profile, admin status, and projects in parallel
+  // layoutData is null when not authenticated - honest absence
   const layoutData = await getLayoutUserData();
-  const userId = layoutData?.userId ?? '';
-  const userIsAdmin = layoutData?.isAdmin ?? false;
-  const userProfile = layoutData?.profile ?? null;
-  const userProjects = layoutData?.projects ?? [];
+  const isAuthenticated = layoutData !== null;
 
   return (
     <html lang="en">
@@ -62,9 +60,13 @@ export default async function RootLayout({
       </head>
       <body>
         <AuthStateListener>
-          {userId ? (
+          {isAuthenticated ? (
             // Authenticated users get the dashboard layout with sidebar
-            <DashboardLayout isAdmin={userIsAdmin} userProfile={userProfile} userProjects={userProjects}>
+            <DashboardLayout
+              isAdmin={layoutData.isAdmin}
+              userProfile={layoutData.profile}
+              userProjects={layoutData.projects}
+            >
               {children}
               <Toaster />
             </DashboardLayout>
@@ -72,7 +74,7 @@ export default async function RootLayout({
             // Non-authenticated users get the regular layout with header and footer
             <div className="min-h-screen bg-[var(--color-background-primary)] text-[var(--color-primary)] relative overflow-hidden font-sans flex flex-col">
               {/* <BackgroundPattern /> */}
-              <Header userId={userId} />
+              <Header />
               <main className="pt-24 w-screen flex-1 pt-24 px-4 md:px-8 lg:px-12 w-screen">
                 {children}
               </main>

@@ -266,6 +266,11 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
   "use server";
   const { userId } = await getAuthUser();
 
+  // Honest absence check: must be authenticated to submit
+  if (!userId) {
+    return handleResponse(401, routes.dashboard.root(), "You must be logged in to submit a cover");
+  }
+
   // Track pending upload IDs for two-phase commit
   let audioUploadId: string | null = null;
   let imageUploadId: string | null = null;
@@ -306,7 +311,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
         coverImagePath: submissions.coverImagePath,
       })
       .from(submissions)
-      .where(and(eq(submissions.roundId, validData.roundId), eq(submissions.userId, userId || "")))
+      .where(and(eq(submissions.roundId, validData.roundId), eq(submissions.userId, userId)))
       .limit(1);
 
     const isUpdate = existingSubmission.length > 0;

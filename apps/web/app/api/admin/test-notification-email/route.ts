@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
     // Get authenticated user
     const authUser = await getAuthUser();
 
-    if (!authUser) {
+    // Honest absence check: userId is null when not authenticated
+    if (!authUser.userId) {
       return NextResponse.json(
         { error: 'Unauthorized - must be logged in' },
         { status: 401 }

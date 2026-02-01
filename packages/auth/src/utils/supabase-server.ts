@@ -49,10 +49,18 @@ export async function createClient<DB = Database>() {
 }
 
 /**
+ * Auth user data with honest types - null means absent
+ */
+export interface AuthUser {
+  userId: string | null;
+  email: string | null;
+}
+
+/**
  * Internal implementation of getAuthUser
  * Wrapped with React cache() for request-level deduplication
  */
-async function getAuthUserInternal() {
+async function getAuthUserInternal(): Promise<AuthUser> {
   // Check for test mode first
   const testUser = await getTestUserFromCookies();
   if (testUser) {
@@ -65,9 +73,10 @@ async function getAuthUserInternal() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Honest types: null means absent, not empty string
   return {
-    userId: user?.id || '',
-    email: user?.email || ''
+    userId: user?.id ?? null,
+    email: user?.email ?? null
   };
 }
 
@@ -75,7 +84,8 @@ async function getAuthUserInternal() {
  * Gets the authenticated user from Supabase
  *
  * In test mode, returns test user data from the test auth cookie.
- * Returns userId and email, or empty strings if not authenticated.
+ * Returns userId and email, or null for each if not authenticated.
+ * Uses honest types: null means absent, not empty string.
  *
  * This function is wrapped with React cache() for request-level deduplication.
  * Multiple calls within the same request will return the same result without
@@ -135,7 +145,8 @@ export interface HeaderUserProfile {
 async function getUserProfileForHeaderInternal(): Promise<HeaderUserProfile | null> {
   // Reuse cached getAuthUser to avoid duplicate Supabase calls
   const { userId, email } = await getAuthUser();
-  if (!userId) {
+  // Honest absence check: null means no authenticated user
+  if (!userId || !email) {
     return null;
   }
 
@@ -186,6 +197,34 @@ export async function getHeaders() {
 }
 
 /**
+ * Admin Policy
+ *
+ * Determines if a user has admin privileges.
+ * Policy is explicit and evolvable - can be extended to:
+ * - Role-based access (database lookup)
+ * - Permission-based access
+ * - Group membership
+ *
+ * Currently: email match OR development mode
+ * This policy is intentionally visible and separate from mechanism.
+ */
+export async function checkIsAdmin(email: string): Promise<boolean> {
+  // Development mode grants admin access for testing
+  if (process.env.NODE_ENV === 'development') {
+    return true;
+  }
+
+  // Production: specific admin email
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  if (!adminEmail) {
+    // No admin configured - fail closed
+    return false;
+  }
+
+  return email === adminEmail;
+}
+
+/**
  * Combined layout user data for root layout
  * Fetches all user data needed for the layout in parallel
  */
@@ -204,19 +243,18 @@ async function getLayoutUserDataInternal(): Promise<LayoutUserData | null> {
   // Get auth data (cached)
   const { userId, email } = await getAuthUser();
 
-  if (!userId) {
+  // Honest absence check: null means no authenticated user
+  if (!userId || !email) {
     return null;
   }
 
-  // Compute isAdmin inline - no need for separate function call
-  const isAdmin = email === process.env.NEXT_PUBLIC_ADMIN_EMAIL ||
-    process.env.NODE_ENV === 'development';
-
   // Fetch profile and projects in parallel
-  const [profile, userProjects] = await Promise.all([
+  const [profile, userProjects, isAdmin] = await Promise.all([
     getUserProfileForHeader(),
     // Dynamic import to avoid circular dependency
     import('@eptss/core').then(mod => mod.getUserProjects(userId)),
+    // Admin check via dedicated policy function
+    checkIsAdmin(email),
   ]);
 
   return {
