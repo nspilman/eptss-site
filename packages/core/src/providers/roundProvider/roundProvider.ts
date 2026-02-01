@@ -4,7 +4,6 @@ import {
   getRoundBySlug,
   getCurrentPhase,
   getPhaseDates,
-  formatDate,
   type RoundDates,
 } from "@eptss/rounds/services";
 import { type Phase } from "@eptss/rounds/types";
@@ -99,13 +98,13 @@ export const roundProvider = async (params: RoundProviderParams): Promise<RoundI
   const phase = getCurrentPhase(roundDates, votingEnabled);
   const phaseDates = getPhaseDates(roundDates, votingEnabled);
 
-  // Convert dates to human-readable format for display
+  // Store raw ISO strings - formatting happens at display time
   const dateLabels = Object.fromEntries(
     Object.entries(phaseDates).map(([phase, dates]) => [
       phase,
       {
-        opens: formatDate.compact(dates.opens),
-        closes: formatDate.compact(dates.closes),
+        opens: dates.opens.toISOString(),
+        closes: dates.closes.toISOString(),
       },
     ])
   ) as Record<Phase, { opens: string; closes: string }>;

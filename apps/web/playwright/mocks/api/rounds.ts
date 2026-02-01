@@ -74,15 +74,9 @@ export interface MockRound {
 
 /**
  * Create mock date labels for a phase
+ * Returns ISO strings to match production behavior
  */
 function createDateLabels(baseDate: Date): Record<Phase, DateLabel> {
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-
   const signupOpens = new Date(baseDate);
   const votingOpens = new Date(baseDate.getTime() + 7 * 24 * 60 * 60 * 1000); // +7 days
   const coveringBegins = new Date(baseDate.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 days
@@ -91,20 +85,20 @@ function createDateLabels(baseDate: Date): Record<Phase, DateLabel> {
 
   return {
     signups: {
-      opens: formatDate(signupOpens),
-      closes: formatDate(votingOpens),
+      opens: signupOpens.toISOString(),
+      closes: votingOpens.toISOString(),
     },
     voting: {
-      opens: formatDate(votingOpens),
-      closes: formatDate(coveringBegins),
+      opens: votingOpens.toISOString(),
+      closes: coveringBegins.toISOString(),
     },
     covering: {
-      opens: formatDate(coveringBegins),
-      closes: formatDate(coversDue),
+      opens: coveringBegins.toISOString(),
+      closes: coversDue.toISOString(),
     },
     celebration: {
-      opens: formatDate(coversDue),
-      closes: formatDate(listeningParty),
+      opens: coversDue.toISOString(),
+      closes: listeningParty.toISOString(),
     },
   };
 }

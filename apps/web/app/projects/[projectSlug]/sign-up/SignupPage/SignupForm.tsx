@@ -190,7 +190,7 @@ export function SignupForm({
   return (
     <FormWrapper
       title={title}
-      description={`Signups close ${signupsCloseDateLabel}${!isLoggedIn ? ' - Please provide your email to sign up' : ''}`}
+      description={`Signups close ${new Date(signupsCloseDateLabel).toLocaleDateString()}${!isLoggedIn ? ' - Please provide your email to sign up' : ''}`}
       onSubmit={handleSubmit}
     >
       <Form {...form}>
