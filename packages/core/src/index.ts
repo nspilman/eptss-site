@@ -165,3 +165,12 @@ export { COVER_PROJECT_ID, ORIGINAL_PROJECT_ID } from './db/schema';
 
 // Note: db and schema are generally kept internal.
 // For special packages like @eptss/project-config, import from '@eptss/db'
+
+// Cache Pattern Language - meaningful cache durations
+export {
+  CachePatterns,
+  buildCacheHeader,
+  getCacheHeaders,
+  type CachePattern,
+  type CachePatternName,
+} from './cache/patterns';

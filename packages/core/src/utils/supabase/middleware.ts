@@ -41,15 +41,15 @@ export async function updateSession(request: NextRequest) {
   if (user) {
     // Ensure the user exists in our database
     const isAuthCallback = request.nextUrl.pathname.includes('/auth/callback');
-    const isDashboard = request.nextUrl.pathname.includes('/dashboard');
-    
-    // Only try to create the user if we&apos;re coming from an auth callback or if it&apos;s the first request after login
-    if (isAuthCallback || isDashboard || request.cookies.get('just_authenticated')) {
-      console.log('Middleware: Ensuring user exists in database');
+    const justAuthenticated = request.cookies.get('just_authenticated');
+
+    // Only try to create the user on auth callback or immediately after authentication
+    // Remove isDashboard check - users should already exist after auth callback
+    if (isAuthCallback || justAuthenticated) {
       const result = await ensureUserExists(user);
-      
+
       if (result.success) {
-        // If we just created the user, set a cookie to avoid trying again on every request
+        // If we just authenticated, set a short-lived cookie to handle the redirect
         if (isAuthCallback) {
           supabaseResponse.cookies.set('just_authenticated', 'true', {
             path: '/',
@@ -58,6 +58,10 @@ export async function updateSession(request: NextRequest) {
             secure: true,
             sameSite: 'lax'
           });
+        }
+        // Clear the cookie after it's been used
+        if (justAuthenticated) {
+          supabaseResponse.cookies.delete('just_authenticated');
         }
       } else {
         console.error('Middleware: Failed to ensure user exists:', result.error);

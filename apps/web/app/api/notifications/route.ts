@@ -4,6 +4,7 @@ import {
   getUserNotifications,
   markAllAsRead,
 } from "@eptss/core/services/notificationService";
+import { CachePatterns, getCacheHeaders } from "@eptss/core";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +31,10 @@ export async function GET(request: NextRequest) {
       offset,
     });
 
-    return NextResponse.json({ notifications });
+    return NextResponse.json(
+      { notifications },
+      { headers: getCacheHeaders(CachePatterns.userAction) }
+    );
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(

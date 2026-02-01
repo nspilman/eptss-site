@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAuthUser } from "@eptss/core/utils/supabase/server";
 import { getUnreadCount } from "@eptss/core/services/notificationService";
+import { CachePatterns, getCacheHeaders } from "@eptss/core";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,10 @@ export async function GET() {
 
     const count = await getUnreadCount(userId);
 
-    return NextResponse.json({ count });
+    return NextResponse.json(
+      { count },
+      { headers: getCacheHeaders(CachePatterns.userAction) }
+    );
   } catch (error) {
     console.error("Error fetching unread count:", error);
     return NextResponse.json(

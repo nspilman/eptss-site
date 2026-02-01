@@ -2,7 +2,7 @@
 
 import { db } from "../db";
 import { notifications, users, type Notification, type NewNotification, notificationTypeEnum } from "../db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, count } from "drizzle-orm";
 import { logger } from "@eptss/logger/server";
 
 export type NotificationType = typeof notificationTypeEnum.enumValues[number];
@@ -199,8 +199,8 @@ export async function deleteNotification(
 
 export async function getUnreadCount(userId: string): Promise<number> {
   try {
-    const unreadNotifications = await db
-      .select()
+    const [result] = await db
+      .select({ count: count() })
       .from(notifications)
       .where(
         and(
@@ -210,7 +210,7 @@ export async function getUnreadCount(userId: string): Promise<number> {
         )
       );
 
-    return unreadNotifications.length;
+    return result?.count ?? 0;
   } catch (error) {
     logger.error("Failed to get unread count", { error, userId });
     return 0;
@@ -339,12 +339,12 @@ export async function getAllNotificationsCount(unreadOnly: boolean = false): Pro
       conditions.push(eq(notifications.isRead, false));
     }
 
-    const result = await db
-      .select()
+    const [result] = await db
+      .select({ count: count() })
       .from(notifications)
       .where(and(...conditions));
 
-    return result.length;
+    return result?.count ?? 0;
   } catch (error) {
     logger.error("Failed to get all notifications count", { error });
     return 0;

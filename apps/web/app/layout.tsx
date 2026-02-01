@@ -3,7 +3,7 @@ import { Header } from "@/components/Header/Header";
 import { Footer } from "@/components/Footer/Footer";
 import { AuthStateListener } from "@eptss/auth";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
-import { getUserProfileForHeader } from "@eptss/auth/server";
+import { getLayoutUserData } from "@eptss/auth/server";
 
 export const metadata = {
   title: "Everyone Plays the Same Song",
@@ -38,19 +38,18 @@ export const metadata = {
 
 import "@eptss/ui/styles";
 
-import { getAuthUser } from "@eptss/core/utils/supabase/server";
-import { isAdmin } from "@eptss/auth";
-import { getUserProjects } from "@eptss/core";
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await getAuthUser();
-  const userIsAdmin = userId ? await isAdmin() : false;
-  const userProfile = userId ? await getUserProfileForHeader() : null;
-  const userProjects = userId ? await getUserProjects(userId) : [];
+  // Single cached call fetches auth, profile, admin status, and projects in parallel
+  const layoutData = await getLayoutUserData();
+  const userId = layoutData?.userId ?? '';
+  const userIsAdmin = layoutData?.isAdmin ?? false;
+  const userProfile = layoutData?.profile ?? null;
+  const userProjects = layoutData?.projects ?? [];
+
   return (
     <html lang="en">
       <head>

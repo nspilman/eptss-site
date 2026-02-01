@@ -32,16 +32,11 @@ export interface ActionPanelWrapperData extends ActionPanelData {
  * Content-only - PanelCard + DashboardLayout handle sizing/styling
  */
 export async function ActionPanelWrapper({ data, config }: PanelProps<ActionPanelWrapperData>) {
-  console.log('[ActionPanelWrapper] Rendering with data:', JSON.stringify(data, null, 2));
-
   if (!data) {
-    console.log('[ActionPanelWrapper] No data provided');
     return null;
   }
 
   const { reflections = [], roundSlug = '' } = data;
-
-  console.log('[ActionPanelWrapper] phaseName:', data.phaseName, 'phaseMessage:', data.phaseMessage);
 
   // If this is a late signup action, render custom UI
   if (data.isLateSignup) {

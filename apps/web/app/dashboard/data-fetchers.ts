@@ -29,8 +29,6 @@ import { getSignupsByRound } from "@eptss/core/services/signupService";
  * @param projectSlug - Project slug for fetching terminology
  */
 export async function fetchHeroData(projectId: string, projectSlug: string) {
-  console.log('[fetchHeroData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
-
   const [currentRound, { roundDetails }, terminology, businessRules, project, projectConfig] = await Promise.all([
     roundProvider({ projectId }),
     userParticipationProvider({ projectId }),
@@ -40,10 +38,7 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     getProjectConfig(projectSlug as ProjectSlug),
   ]);
 
-  console.log('[fetchHeroData] Fetched terminology:', JSON.stringify(terminology, null, 2));
-
   if (!currentRound) {
-    console.log('[fetchHeroData] No current round found');
     return null;
   }
 
@@ -93,8 +88,6 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     votingEnabled: currentRound.votingEnabled,
   };
 
-  console.log('[fetchHeroData] Returning heroData:', JSON.stringify(heroData, null, 2));
-
   return heroData;
 }
 
@@ -143,8 +136,6 @@ function formatTimeRemaining(phaseCloses: string | undefined): string {
  * @param projectSlug - Project slug for generating project-scoped URLs (e.g., 'cover', 'original')
  */
 export async function fetchActionData(projectId: string, projectSlug: string) {
-  console.log('[fetchActionData] Called with projectId:', projectId, 'projectSlug:', projectSlug);
-
   // Get auth user first to fetch reflections
   const { userId } = await getAuthUser();
 
@@ -157,12 +148,10 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
 
 
   if (!currentRound) {
-    console.log('[fetchActionData] No current round found');
     return null;
   }
 
   const { phase, roundId, slug, dateLabels } = currentRound;
-  console.log('[fetchActionData] Current phase:', phase);
 
   // Fetch reflections for this round
   let reflections: Reflection[] = [];
@@ -200,9 +189,6 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
     covering: terminology.phaseDescriptions.covering,
     celebration: terminology.phaseDescriptions.celebration,
   };
-
-  console.log('[fetchActionData] Phase names:', JSON.stringify(phaseNames, null, 2));
-  console.log('[fetchActionData] Phase messages:', JSON.stringify(phaseMessages, null, 2));
 
   // Generate project-scoped URLs
   const signupUrl = routes.projects.signUp.root(projectSlug);

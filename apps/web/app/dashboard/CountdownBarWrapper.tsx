@@ -25,16 +25,11 @@ interface CountdownBarData {
  * Content-only - PanelCard handles styling
  */
 export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
-  console.log('[CountdownBarWrapper] Rendering with data:', JSON.stringify(data, null, 2));
-
   if (!data) {
-    console.log('[CountdownBarWrapper] No data provided');
     return null;
   }
 
   const { phase, timeRemaining, dueDate, urgencyLevel = 'normal', hasSignedUp, hasVoted, hasSubmitted, terminology } = data;
-
-  console.log('[CountdownBarWrapper] Extracted terminology:', JSON.stringify(terminology, null, 2));
 
   const urgencyStyles = {
     normal: 'text-[var(--color-accent-primary)]',
@@ -65,8 +60,6 @@ export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
       completed: phase === 'celebration'
     },
   ];
-
-  console.log('[CountdownBarWrapper] Progress phases with labels:', progressPhases.map(p => `${p.id}: ${p.label}`).join(', '));
 
   return (
     <div className="flex items-center justify-between py-2">

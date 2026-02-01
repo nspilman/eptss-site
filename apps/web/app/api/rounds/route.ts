@@ -1,4 +1,4 @@
-import { COVER_PROJECT_ID } from "@eptss/core";
+import { COVER_PROJECT_ID, CachePatterns, getCacheHeaders } from "@eptss/core";
 import { getCurrentAndPastRounds } from "@eptss/rounds/services";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -40,9 +40,10 @@ export async function GET(request: NextRequest) {
       return round;
     });
     
-    return NextResponse.json({
-      roundContent: formattedRounds
-    });
+    return NextResponse.json(
+      { roundContent: formattedRounds },
+      { headers: getCacheHeaders(CachePatterns.archival) }
+    );
   } catch (error) {
     console.error('Error fetching rounds:', error);
     return NextResponse.json(

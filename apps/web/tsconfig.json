@@ -50,8 +50,11 @@
   ],
   "exclude": [
     "./cypress.config.ts",
+    "./playwright.config.ts",
+    "./playwright-ct.config.ts",
     "node_modules",
     "cypress",
+    "playwright",
     "**/*.cy.tsx",
     "**/*.cy.ts",
     "__tests__",

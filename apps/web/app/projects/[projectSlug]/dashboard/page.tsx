@@ -23,16 +23,12 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
   const resolvedParams = await params;
   const { projectSlug: slug } = resolvedParams;
 
-  console.log('[ProjectDashboardPage] Loading dashboard for projectSlug:', slug);
-
   // Validate project slug
   if (!isValidProjectSlug(slug)) {
-    console.log('[ProjectDashboardPage] Invalid project slug:', slug);
     notFound();
   }
 
   const projectId = getProjectIdFromSlug(slug);
-  console.log('[ProjectDashboardPage] Project ID:', projectId);
 
   // Require authentication for dashboard
   const { userId } = await getAuthUser();
@@ -40,10 +36,7 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
     redirect(`/login?redirect=/project/${slug}/dashboard`);
   }
 
-  console.log('[ProjectDashboardPage] User ID:', userId);
-
   // Fetch data for all panels in parallel
-  console.log('[ProjectDashboardPage] Fetching panel data...');
   const [heroData, participantsData, userData] =
     await Promise.all([
       fetchHeroData(projectId, slug),
@@ -53,8 +46,6 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
 
   // Fetch discussion data if we have a round
   const discussionData = heroData ? await fetchDiscussionData(heroData.roundId) : null;
-
-  console.log('[ProjectDashboardPage] heroData:', JSON.stringify(heroData, null, 2));
 
   return (
     <>
