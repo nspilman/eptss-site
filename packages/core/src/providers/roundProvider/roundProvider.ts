@@ -11,6 +11,7 @@ import {
   getSignupsByRound,
   getSubmissions,
 } from "../../services";
+import { deduplicateByKey } from "../../utils/seededShuffle";
 import { getRoundOverrideVotes } from "@eptss/voting/services";
 import { getProjectBySlug } from "../../services/projectService";
 import { RoundInfo } from "../../types/round";
@@ -159,7 +160,9 @@ const getVoteOptions = async (roundId: number, typeOverride?: "runner_up") => {
     data?.forEach((record) => resultEntities.push(record));
   }
 
-  return resultEntities?.filter(
+  // Filter out invalid songs, then deduplicate by songId for unique vote options
+  const validOptions = resultEntities?.filter(
     (result) => result.songId && result.songId !== -1
   );
+  return deduplicateByKey(validOptions, item => item.songId);
 };
