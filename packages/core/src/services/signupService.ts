@@ -56,9 +56,10 @@ export const getSignupsByRound = async (roundId: number) => {
 
     const unsortedUrls = data?.map(field => field.youtubeLink) || [];
     const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
+    const deduplicatedData = deduplicateByKey(sortedData, item => item.songId);
 
     // Process the data and throw errors for invalid entries
-    return sortedData.map(val => {
+    return deduplicatedData.map(val => {
       if (!val.userId) {
         throw new Error(`Signup for round ${roundId} has missing userId`);
       }
@@ -240,7 +241,7 @@ export async function checkSignupCap(roundId: number): Promise<{
 
 // Import shared schemas
 import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong } from "../schemas/signupSchemas";
-import { seededShuffle } from "../utils/seededShuffle";
+import { seededShuffle, deduplicateByKey } from "../utils/seededShuffle";
 import { validateFormData } from "../utils/formDataHelpers";
 import { getProjectBusinessRules, getProjectEmailConfig } from "@eptss/project-config";
 import { getProjectSlugFromId, type ProjectSlug } from "../utils/projectUtils";

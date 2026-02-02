@@ -2,7 +2,7 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import readline from 'readline';
-import { seededShuffle } from './utils/seededShuffle.js';
+import { seededShuffle, deduplicateByKey } from '@eptss/core/utils/seededShuffle';
 
 dotenv.config();
 
@@ -107,7 +107,13 @@ async function createPlaylist(client: SpotifyWebApi) {
       .order("created_at");
 
     const sortedData = seededShuffle(data || [], JSON.stringify(data?.map(val => val.youtube_link)));
-    const songs = await sortedData.map((field) => field.song) || [];
+    const deduplicatedData = deduplicateByKey(
+      sortedData,
+      item => `${item.song?.artist}|${item.song?.title}`,
+      [] // No skip values - all songs have artist/title
+    );
+
+    const songs = await deduplicatedData.map((field) => field.song) || [];
     const spotifyUrls = await Promise.all(songs.map((song) => searchTrack(song?.artist || "", song?.title || "")));
     const playlistName = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates 2`;
 

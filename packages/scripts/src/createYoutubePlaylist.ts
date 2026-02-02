@@ -3,7 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import readline from 'readline';
 import * as dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
-import { seededShuffle } from './utils/seededShuffle.js';
+import { seededShuffle, deduplicateByKey } from '@eptss/core/utils/seededShuffle';
 
 dotenv.config();
 
@@ -57,7 +57,9 @@ function getAccessToken(): Promise<string> {
     .order("created_at");
     const unsortedUrls = data?.map(field => field.youtube_link) || [];
     const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
-    const urls = sortedData.map(field => field.youtube_link)
+    const deduplicatedData = deduplicateByKey(sortedData, item => item.song_id);
+
+    const urls = deduplicatedData.map(field => field.youtube_link)
     
     const youtube = google.youtube({ version: 'v3', auth: oauth2Client });
       const title = `Everyone Plays the Same Song - Round ${roundId} Cover Candidates`
