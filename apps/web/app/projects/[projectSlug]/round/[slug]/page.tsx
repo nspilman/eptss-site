@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { PageTitle } from "@/components/PageTitle";
-import { roundProvider, votesProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
+import { roundProvider, votesProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import { roundsProvider } from "@eptss/rounds/providers";
 import { getCurrentPhase } from "@eptss/rounds/services";
 import { RoundSummary } from "./components/RoundSummary";
@@ -8,6 +8,16 @@ import { redirect } from 'next/navigation';
 import { RoundParamsProvider } from '../../ProjectContext';
 
 import { Text } from "@eptss/ui";
+
+// Enable ISR - revalidate every hour
+// Pages are generated on-demand and cached, then revalidated hourly.
+// This provides the same CPU savings as full static generation but without
+// overwhelming the database at build time.
+export const revalidate = 3600;
+
+// Allow dynamic params - pages will be generated on first request
+export const dynamicParams = true;
+
 interface Props {
   params: Promise<{ projectSlug: string; slug: string }>;
 }
@@ -28,15 +38,8 @@ export default async function Round({ params }: Props) {
     // Fetch all data at the page level
     const roundData = await roundProvider({ slug, projectId });
 
-    // Fetch user participation for this round
-    let hasVoted = false;
-    try {
-      const participation = await userParticipationProvider({ roundId: roundData.roundId });
-      hasVoted = participation?.roundDetails?.hasVoted ?? false;
-    } catch (e) {
-      // Not signed in or error, treat as not voted
-      hasVoted = false;
-    }
+    // User-specific state (hasVoted, isUserSignedUp) is now fetched client-side
+    // via UserParticipationProvider to enable static page generation with ISR
 
     // Compute the current phase
     const currentPhase = getCurrentPhase({
@@ -64,7 +67,6 @@ export default async function Round({ params }: Props) {
             roundIds={allRoundSlugs}
             voteBreakdown={voteBreakdown}
             allRounds={roundContent}
-            hasVoted={hasVoted}
           />
         </RoundParamsProvider>
       );
@@ -78,7 +80,6 @@ export default async function Round({ params }: Props) {
           projectSlug={projectSlug}
           roundId={roundData.roundId}
           roundData={roundData}
-          hasVoted={hasVoted}
         />
       </RoundParamsProvider>
     );

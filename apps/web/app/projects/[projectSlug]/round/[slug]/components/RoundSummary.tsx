@@ -1,16 +1,15 @@
 import { VoteBreakdown, VoteResults } from "../types";
 import { RoundInfo } from "@eptss/core/types/round";
-import { RoundInfoHeader } from "./RoundInfoHeader";
 import { PlaylistEmbed } from "./PlaylistEmbed";
-import { VotingAveragesTable } from "./VotingAveragesTable";
 import { CelebrationTables } from "./CelebrationTables";
 import { VotingResultsSection } from "./VotingResultsSection";
-import { SignupsTable } from "./SignupsTable";
 import { RoundNavigationWrapper } from "./RoundNavigationWrapper";
-import { CoveringPhaseSignup } from "./CoveringPhaseSignup";
 import { SubmissionsPlaylist } from "./SubmissionsPlaylist";
 import { RoundReflections } from "@eptss/user-content";
-import { getAuthUser } from "@eptss/core/utils/supabase/server";
+import { UserParticipationProvider } from "./UserParticipationContext";
+import { RoundInfoHeaderWrapper } from "./RoundInfoHeaderWrapper";
+import { VotingPhaseContent } from "./VotingPhaseContent";
+import { CoveringPhaseSignupWrapper } from "./CoveringPhaseSignupWrapper";
 
 // Inline the chart utility function to avoid import issues
 const convertVoteBreakdownToBarchartFormat = (
@@ -82,30 +81,17 @@ interface Props {
     listeningPartyDate?: string;
     endDate?: string;
   }[];
-  hasVoted?: boolean;
+  // hasVoted is now fetched client-side via UserParticipationProvider
 } 
 
-const voteResultsHeaders = [
-  { key: "title", label: "Title" },
-  { key: "artist", label: "Artist" },
-  { key: "average", label: "Average" },
-] as const;
-
-const signupsHeaders = [
-  { key: "title", label: "Title" },
-  { key: "artist", label: "Artist" },
-  { key: "youtubeLink", label: "Youtube Link" },
-] as const;
-
-
 // --- Main Component ---
-export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResults = [], outstandingVoters = [], voteBreakdown = [], allRounds = [], hasVoted = false }: Props) => {
+export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResults = [], outstandingVoters = [], voteBreakdown = [], allRounds = [] }: Props) => {
   try {
     const { phase, song, playlistUrl, submissions, signups, dateLabels } = roundData;
 
-    // Check if the current user is signed up for this round
-    const { userId } = await getAuthUser();
-    const isUserSignedUp = userId ? signups.some(signup => signup.userId === userId) : false;
+    // User-specific state (hasVoted, isUserSignedUp) is now fetched client-side
+    // via UserParticipationProvider to enable static page generation
+
     let previousRound;
     let nextRound;
     if (allRounds && allRounds.length > 0) {
@@ -159,45 +145,50 @@ export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResult
       },
     ];
 
+    // Define voteResultsHeaders for VotingResultsSection (not user-specific)
+    const voteResultsHeaders = [
+      { key: "title", label: "Title" },
+      { key: "artist", label: "Artist" },
+      { key: "average", label: "Average" },
+    ] as const;
+
     return (
-      <div className="flex flex-col items-center">
-        <RoundInfoHeader roundId={roundId} song={song} phase={phase} showVotingResults={phase === "voting" && hasVoted} />
-        <PlaylistEmbed playlistUrl={playlistUrl || ""} />
-        {phase === "voting" && (
-          <>
-          {
-            hasVoted ? (
-              <VotingAveragesTable voteResults={voteResults} outstandingVoters={outstandingVoters} voteResultsHeaders={voteResultsHeaders} />
-            ) : (
-              <SignupsTable signupsHeaders={signupsHeaders} signupDataDisplay={signupDataDisplay} />
-            )
-          }
-          </>
-        )}
-        {phase === "covering" && (
-          <CoveringPhaseSignup roundId={roundId} isSignedUp={isUserSignedUp} />
-        )}
-        {phase === "celebration" && (
-          <>
-            <CelebrationTables roundSummaryHeaders={roundSummaryHeaders} roundSummary={roundSummary} submissionsDisplayHeaders={submissionsDisplayHeaders} submissions={submissions} />
-            <SubmissionsPlaylist
-              submissions={submissions}
-              song={song}
-              roundId={roundId}
-              roundSlug={roundData.slug}
+      <UserParticipationProvider roundId={roundId}>
+        <div className="flex flex-col items-center">
+          <RoundInfoHeaderWrapper roundId={roundId} song={song} phase={phase} />
+          <PlaylistEmbed playlistUrl={playlistUrl || ""} />
+          {phase === "voting" && (
+            <VotingPhaseContent
+              voteResults={voteResults}
+              outstandingVoters={outstandingVoters}
+              signupDataDisplay={signupDataDisplay}
             />
-          </>
-        )}
-        {shouldShowVotingResultsSection && (
-          <VotingResultsSection
-            voteResults={voteResults}
-            voteResultsHeaders={voteResultsHeaders as any}
-            chartData={chartData}
-          />
-        )}
-        <RoundReflections roundId={roundId} projectSlug={projectSlug} />
-        <RoundNavigationWrapper navigation={navigation} />
-      </div>
+          )}
+          {phase === "covering" && (
+            <CoveringPhaseSignupWrapper roundId={roundId} />
+          )}
+          {phase === "celebration" && (
+            <>
+              <CelebrationTables roundSummaryHeaders={roundSummaryHeaders} roundSummary={roundSummary} submissionsDisplayHeaders={submissionsDisplayHeaders} submissions={submissions} />
+              <SubmissionsPlaylist
+                submissions={submissions}
+                song={song}
+                roundId={roundId}
+                roundSlug={roundData.slug}
+              />
+            </>
+          )}
+          {shouldShowVotingResultsSection && (
+            <VotingResultsSection
+              voteResults={voteResults}
+              voteResultsHeaders={voteResultsHeaders as any}
+              chartData={chartData}
+            />
+          )}
+          <RoundReflections roundId={roundId} projectSlug={projectSlug} />
+          <RoundNavigationWrapper navigation={navigation} />
+        </div>
+      </UserParticipationProvider>
     );
   } catch (error) {
     console.error('Error in RoundSummary:', error);
