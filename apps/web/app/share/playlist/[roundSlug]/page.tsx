@@ -1,19 +1,32 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { roundProvider, COVER_PROJECT_ID } from "@eptss/core";
+import { roundProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import { PlaylistPageClient } from "./PlaylistPageClient";
 
 type Props = {
   params: Promise<{
     roundSlug: string;
   }>;
+  searchParams: Promise<{
+    projectSlug?: string;
+  }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { roundSlug } = await params;
+  const { projectSlug = "cover" } = await searchParams;
+
+  const isValidProject = projectSlug === "cover" || projectSlug === "monthly-original";
+  if (!isValidProject) {
+    return {
+      title: "Playlist Not Found | Everyone Plays the Same Song",
+    };
+  }
+
+  const projectId = getProjectIdFromSlug(projectSlug as ProjectSlug);
 
   try {
-    const roundData = await roundProvider({ slug: roundSlug, projectId: COVER_PROJECT_ID });
+    const roundData = await roundProvider({ slug: roundSlug, projectId });
 
     if (!roundData || roundData.roundId === 0) {
       return {
@@ -41,10 +54,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function SharePlaylistPage({ params }: Props) {
+export default async function SharePlaylistPage({ params, searchParams }: Props) {
   const { roundSlug } = await params;
+  const { projectSlug = "cover" } = await searchParams;
 
-  const roundData = await roundProvider({ slug: roundSlug, projectId: COVER_PROJECT_ID }).catch(() => null);
+  const isValidProject = projectSlug === "cover" || projectSlug === "monthly-original";
+  if (!isValidProject) {
+    notFound();
+  }
+
+  const projectId = getProjectIdFromSlug(projectSlug as ProjectSlug);
+  const roundData = await roundProvider({ slug: roundSlug, projectId }).catch(() => null);
 
   if (!roundData || roundData.roundId === 0) {
     notFound();
@@ -54,6 +74,7 @@ export default async function SharePlaylistPage({ params }: Props) {
     <PlaylistPageClient
       roundData={roundData}
       roundSlug={roundSlug}
+      projectSlug={projectSlug}
     />
   );
 }

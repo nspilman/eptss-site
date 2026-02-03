@@ -138,6 +138,10 @@ const nextConfig = {
         source: '/ingest/:path*',
         destination: 'https://us.i.posthog.com/:path*',
       },
+      {
+        source: '/share/playlist/:projectSlug(cover|monthly-original)/:roundSlug',
+        destination: '/share/playlist/:roundSlug?projectSlug=:projectSlug',
+      },
     ];
   },
   // This is required to support PostHog trailing slash API requests

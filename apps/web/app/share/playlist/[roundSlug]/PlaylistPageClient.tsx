@@ -9,9 +9,10 @@ import type { RoundInfo } from "@eptss/core/types/round";
 interface PlaylistPageClientProps {
   roundData: RoundInfo;
   roundSlug: string;
+  projectSlug?: string;
 }
 
-export function PlaylistPageClient({ roundData, roundSlug }: PlaylistPageClientProps) {
+export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover" }: PlaylistPageClientProps) {
   // Filter submissions that have audio
   const submissionsWithAudio = roundData.submissions.filter(
     (s) => s.audioFileUrl || s.soundcloudUrl
@@ -113,7 +114,7 @@ export function PlaylistPageClient({ roundData, roundSlug }: PlaylistPageClientP
         {/* View Round Link */}
         <div className="flex justify-center mt-8 pt-6 border-t border-[var(--color-gray-700)]">
           <Button variant="secondary" asChild>
-            <Link href={`/projects/cover/round/${roundSlug}`}>
+            <Link href={`/projects/${projectSlug}/round/${roundSlug}`}>
               View Full Round Details
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
