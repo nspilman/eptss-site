@@ -8,7 +8,7 @@ import { SignupsCard, SubmissionsCard, AdminSection } from "@eptss/admin";
 
 async function RoundDetailContent({ slug, projectId }: { slug: string; projectId: string }) {
   const { dateLabels, voteOptions, signups, submissions, phase, roundId } = await roundProvider({ slug, projectId });
-  const { voteResults, outstandingVoters } = await votesProvider({ projectId, roundSlug: slug });
+  const { voteResults, outstandingVoters, allVotes } = await votesProvider({ projectId, roundSlug: slug });
 
   const voteResultsHeaderKeys = ["title", "artist", "average", "votesCount"] as const;
   const voteHeaders = voteResultsHeaderKeys.map(key => ({
@@ -39,6 +39,22 @@ async function RoundDetailContent({ slug, projectId }: { slug: string; projectId
     { key: "email", label: "Email", sortable: true }
   ];
 
+  const individualVotesData = allVotes.map(vote => ({
+    email: vote.email || '',
+    title: vote.title || '',
+    artist: vote.artist || '',
+    vote: vote.vote,
+    submittedAt: vote.createdAt ? new Date(vote.createdAt).toLocaleString() : ''
+  }));
+
+  const individualVotesHeaders = [
+    { key: 'email', label: 'Email', sortable: true },
+    { key: 'title', label: 'Song Title', sortable: true },
+    { key: 'artist', label: 'Artist', sortable: true },
+    { key: 'vote', label: 'Vote', sortable: true },
+    { key: 'submittedAt', label: 'Submitted At', sortable: true }
+  ];
+
   return (
     <div className="space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
@@ -66,6 +82,14 @@ async function RoundDetailContent({ slug, projectId }: { slug: string; projectId
 
       <AdminSection title="Vote Options" titleSize="md">
         <DataTable rows={voteOptionsArray} headers={voteOptionHeaders} allowCopy={true} />
+      </AdminSection>
+
+      <AdminSection title="Individual Votes" titleSize="md">
+        {individualVotesData.length === 0 ? (
+          <p className="text-secondary text-center py-4">No votes yet</p>
+        ) : (
+          <DataTable rows={individualVotesData} headers={individualVotesHeaders} allowCopy={true} />
+        )}
       </AdminSection>
 
       <AdminSection title="Outstanding Voters" titleSize="md">
