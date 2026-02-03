@@ -10,6 +10,7 @@ interface SubmissionsPlaylistProps {
   submissions: Submission[];
   song: { title: string; artist: string } | null;
   roundId: number;
+  projectSlug: string;
   roundSlug: string;
 }
 
@@ -17,6 +18,7 @@ export const SubmissionsPlaylist = ({
   submissions,
   song,
   roundId,
+  projectSlug,
   roundSlug
 }: SubmissionsPlaylistProps) => {
   // Filter submissions that have audio
@@ -60,7 +62,7 @@ export const SubmissionsPlaylist = ({
       <div className="flex items-center justify-between mb-6">
         <SectionHeader title="Community Covers" />
         <Link
-          href={`/share/playlist/${roundSlug}`}
+          href={`/share/playlist/${projectSlug}/${roundSlug}`}
           className="text-sm text-[var(--color-accent-primary)] hover:underline"
         >
           Share Playlist

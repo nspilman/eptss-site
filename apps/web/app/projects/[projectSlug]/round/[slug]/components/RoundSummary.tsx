@@ -174,6 +174,7 @@ export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResult
                 submissions={submissions}
                 song={song}
                 roundId={roundId}
+                projectSlug={projectSlug}
                 roundSlug={roundData.slug}
               />
             </>
