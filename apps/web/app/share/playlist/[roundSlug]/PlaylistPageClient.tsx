@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback } from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button, Switch } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
 import type { RoundInfo } from "@eptss/core/types/round";
+
+const AUTOPLAY_PARAM = "autoplay";
+const AUTOPLAY_ON_VALUE = "on";
 
 interface PlaylistPageClientProps {
   roundData: RoundInfo;
@@ -14,7 +18,24 @@ interface PlaylistPageClientProps {
 }
 
 export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover" }: PlaylistPageClientProps) {
-  const [autoPlayNext, setAutoPlayNext] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const autoPlayNext = searchParams.get(AUTOPLAY_PARAM) === AUTOPLAY_ON_VALUE;
+
+  const setAutoPlayNext = useCallback(
+    (next: boolean) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (next) {
+        params.set(AUTOPLAY_PARAM, AUTOPLAY_ON_VALUE);
+      } else {
+        params.delete(AUTOPLAY_PARAM);
+      }
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [router, pathname, searchParams]
+  );
 
   // Filter submissions that have audio
   const submissionsWithAudio = roundData.submissions.filter(
