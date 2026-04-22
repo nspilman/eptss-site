@@ -107,6 +107,15 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
     setContainerElement(node);
   }, []);
 
+  // Keep latest callbacks in refs so wavesurfer event listeners always see
+  // current values without re-creating the wavesurfer instance on every render.
+  const onEndedRef = useRef(onEnded);
+  const onSeekRef = useRef(onSeek);
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+    onSeekRef.current = onSeek;
+  }, [onEnded, onSeek]);
+
   // Initialize WaveSurfer
   useEffect(() => {
     if (!showWaveform || !containerElement) return;
@@ -145,8 +154,8 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
     wavesurfer.on('play', () => {});
     wavesurfer.on('pause', () => {});
     wavesurfer.on('timeupdate', (time) => setCurrentTime(time));
-    wavesurfer.on('seeking', (time) => onSeek?.(time));
-    wavesurfer.on('finish', () => onEnded?.());
+    wavesurfer.on('seeking', (time) => onSeekRef.current?.(time));
+    wavesurfer.on('finish', () => onEndedRef.current?.());
 
     return () => {
       wavesurfer.destroy();
