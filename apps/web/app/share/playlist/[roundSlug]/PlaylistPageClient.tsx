@@ -82,6 +82,7 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
                   checked={autoPlayNext}
                   onCheckedChange={setAutoPlayNext}
                   aria-label="Toggle autoplay"
+                  className="cursor-pointer border border-[var(--color-gray-400)] data-[state=unchecked]:bg-[var(--color-gray-700)] data-[state=checked]:bg-[var(--color-accent-primary)]"
                 />
               </label>
             </div>
