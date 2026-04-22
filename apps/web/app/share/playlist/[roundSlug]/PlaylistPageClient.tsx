@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Playlist, type Track } from "@eptss/media-display";
-import { Card, CardContent, Text, Display, Button } from "@eptss/ui";
+import { Card, CardContent, Text, Display, Button, Switch } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
 import type { RoundInfo } from "@eptss/core/types/round";
 
@@ -13,6 +14,8 @@ interface PlaylistPageClientProps {
 }
 
 export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover" }: PlaylistPageClientProps) {
+  const [autoPlayNext, setAutoPlayNext] = useState(true);
+
   // Filter submissions that have audio
   const submissionsWithAudio = roundData.submissions.filter(
     (s) => s.audioFileUrl || s.soundcloudUrl
@@ -65,15 +68,35 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
 
         {/* Playlist */}
         {tracks.length > 0 ? (
-          <Playlist
-            tracks={tracks}
-            title={`Round ${roundData.roundId} Covers`}
-            description={songInfo}
-            showTrackNumbers
-            showWaveform
-            layout="default"
-            maxTrackListHeight={400}
-          />
+          <>
+            <div className="flex items-center justify-end gap-3 mb-3">
+              <label
+                htmlFor="autoplay-toggle"
+                className="flex items-center gap-2 cursor-pointer select-none"
+              >
+                <Text size="sm" color="secondary">
+                  Autoplay next track
+                </Text>
+                <Switch
+                  id="autoplay-toggle"
+                  checked={autoPlayNext}
+                  onCheckedChange={setAutoPlayNext}
+                  aria-label="Toggle autoplay"
+                />
+              </label>
+            </div>
+            <Playlist
+              tracks={tracks}
+              title={`Round ${roundData.roundId} Covers`}
+              description={songInfo}
+              showTrackNumbers
+              showWaveform
+              autoPlayNext={autoPlayNext}
+              onAutoPlayNextChange={setAutoPlayNext}
+              layout="default"
+              maxTrackListHeight={400}
+            />
+          </>
         ) : (
           <Card>
             <CardContent className="text-center py-8">

@@ -19,6 +19,7 @@ import {
   Repeat1,
   Heart,
   Music2,
+  PlayCircle,
 } from 'lucide-react';
 import WaveSurfer from 'wavesurfer.js';
 import { Button, Tooltip, Text, Skeleton, Progress, Card, cn } from '@eptss/ui';
@@ -45,6 +46,10 @@ export interface NowPlayingCardProps {
   repeat?: 'none' | 'one' | 'all';
   /** Toggle repeat */
   onToggleRepeat?: () => void;
+  /** Auto-play next track when current ends */
+  autoPlayNext?: boolean;
+  /** Toggle auto-play next */
+  onToggleAutoPlayNext?: () => void;
   /** Callback when track ends */
   onEnded?: () => void;
   /** Callback when seeking */
@@ -76,6 +81,8 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
   onToggleShuffle,
   repeat = 'none',
   onToggleRepeat,
+  autoPlayNext = true,
+  onToggleAutoPlayNext,
   onEnded,
   onSeek,
   isLiked = false,
@@ -407,6 +414,21 @@ export const NowPlayingCard: React.FC<NowPlayingCardProps> = ({
                     ) : (
                       <Repeat className="w-5 h-5" />
                     )}
+                  </Button>
+                </Tooltip>
+              )}
+
+              {/* Autoplay */}
+              {onToggleAutoPlayNext && (
+                <Tooltip content={autoPlayNext ? 'Disable autoplay' : 'Enable autoplay'}>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={onToggleAutoPlayNext}
+                    aria-pressed={autoPlayNext}
+                    className={cn('h-10 w-10', autoPlayNext && 'text-[var(--color-accent-primary)]')}
+                  >
+                    <PlayCircle className="w-5 h-5" />
                   </Button>
                 </Tooltip>
               )}

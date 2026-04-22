@@ -88,6 +88,8 @@ export interface PlaylistProps extends UsePlaylistOptions {
   onToggleLike?: (trackId: string) => void;
   /** Enable share button (default: true) */
   showShareButton?: boolean;
+  /** Show an autoplay on/off toggle in the player controls (default: false) */
+  showAutoPlayToggle?: boolean;
 }
 
 export const Playlist: React.FC<PlaylistProps> = ({
@@ -95,6 +97,7 @@ export const Playlist: React.FC<PlaylistProps> = ({
   title,
   description,
   autoPlayNext = true,
+  onAutoPlayNextChange,
   onTrackChange,
   onPlaylistEnd,
   className,
@@ -107,8 +110,9 @@ export const Playlist: React.FC<PlaylistProps> = ({
   likedTrackIds,
   onToggleLike,
   showShareButton = true,
+  showAutoPlayToggle = false,
 }) => {
-  const playlist = usePlaylist({ tracks, autoPlayNext, onTrackChange, onPlaylistEnd });
+  const playlist = usePlaylist({ tracks, autoPlayNext, onAutoPlayNextChange, onTrackChange, onPlaylistEnd });
   const [trackProgress, setTrackProgress] = useState<Record<string, number>>({});
 
   // Calculate total playlist duration
@@ -182,6 +186,8 @@ export const Playlist: React.FC<PlaylistProps> = ({
               onToggleShuffle={tracks.length > 1 ? playlist.toggleShuffle : undefined}
               repeat={playlist.repeat}
               onToggleRepeat={playlist.toggleRepeat}
+              autoPlayNext={playlist.autoPlayNext}
+              onToggleAutoPlayNext={showAutoPlayToggle ? playlist.toggleAutoPlayNext : undefined}
               onEnded={playlist.handleTrackEnded}
               onSeek={(time) => {
                 if (playlist.currentTrack) {

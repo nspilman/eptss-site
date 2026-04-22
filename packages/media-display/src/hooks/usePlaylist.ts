@@ -9,8 +9,14 @@ import type { Track, PlaylistState } from '../types';
 export interface UsePlaylistOptions {
   /** Array of tracks to play */
   tracks: Track[];
-  /** Auto-advance to next track when current track ends */
+  /**
+   * Auto-advance to next track when current track ends.
+   * - If `onAutoPlayNextChange` is also provided, this is a controlled value.
+   * - Otherwise, this is the initial value for internal state.
+   */
   autoPlayNext?: boolean;
+  /** Controlled-mode callback fired when autoplay should toggle. Presence switches the hook into controlled mode. */
+  onAutoPlayNextChange?: (next: boolean) => void;
   /** Callback when track changes */
   onTrackChange?: (track: Track, index: number) => void;
   /** Callback when playlist reaches the end */
@@ -28,6 +34,8 @@ export interface UsePlaylistReturn {
   shuffle: boolean;
   /** Repeat mode */
   repeat: 'none' | 'one' | 'all';
+  /** Auto-advance to next track when current track ends */
+  autoPlayNext: boolean;
   /** Play a specific track by index */
   playTrack: (index: number) => void;
   /** Skip to next track */
@@ -40,19 +48,26 @@ export interface UsePlaylistReturn {
   toggleShuffle: () => void;
   /** Cycle through repeat modes */
   toggleRepeat: () => void;
+  /** Toggle auto-advance to next track */
+  toggleAutoPlayNext: () => void;
   /** Set playing state */
   setIsPlaying: (playing: boolean) => void;
 }
 
 export function usePlaylist(options: UsePlaylistOptions): UsePlaylistReturn {
-  const { tracks, autoPlayNext = true, onTrackChange, onPlaylistEnd } = options;
+  const { tracks, autoPlayNext = true, onAutoPlayNextChange, onTrackChange, onPlaylistEnd } = options;
+
+  const isAutoPlayControlled = onAutoPlayNextChange !== undefined;
 
   const [state, setState] = useState<PlaylistState>({
     currentTrackIndex: 0,
     isPlaying: false,
     shuffle: false,
     repeat: 'none',
+    autoPlayNext,
   });
+
+  const effectiveAutoPlayNext = isAutoPlayControlled ? autoPlayNext : state.autoPlayNext;
 
   const currentTrack = tracks[state.currentTrackIndex] || null;
 
@@ -104,12 +119,12 @@ export function usePlaylist(options: UsePlaylistOptions): UsePlaylistReturn {
       // Replay same track - trigger re-render to restart
       setState((prev) => ({ ...prev, isPlaying: true }));
       onTrackChange?.(tracks[state.currentTrackIndex], state.currentTrackIndex);
-    } else if (autoPlayNext) {
+    } else if (effectiveAutoPlayNext) {
       next();
     } else {
       setState((prev) => ({ ...prev, isPlaying: false }));
     }
-  }, [state.repeat, state.currentTrackIndex, autoPlayNext, next, onTrackChange, tracks]);
+  }, [state.repeat, state.currentTrackIndex, effectiveAutoPlayNext, next, onTrackChange, tracks]);
 
   const toggleShuffle = useCallback(() => {
     setState((prev) => ({ ...prev, shuffle: !prev.shuffle }));
@@ -122,6 +137,14 @@ export function usePlaylist(options: UsePlaylistOptions): UsePlaylistReturn {
     }));
   }, []);
 
+  const toggleAutoPlayNext = useCallback(() => {
+    if (isAutoPlayControlled) {
+      onAutoPlayNextChange!(!effectiveAutoPlayNext);
+    } else {
+      setState((prev) => ({ ...prev, autoPlayNext: !prev.autoPlayNext }));
+    }
+  }, [isAutoPlayControlled, onAutoPlayNextChange, effectiveAutoPlayNext]);
+
   const setIsPlaying = useCallback((playing: boolean) => {
     setState((prev) => ({ ...prev, isPlaying: playing }));
   }, []);
@@ -132,12 +155,14 @@ export function usePlaylist(options: UsePlaylistOptions): UsePlaylistReturn {
     isPlaying: state.isPlaying,
     shuffle: state.shuffle,
     repeat: state.repeat,
+    autoPlayNext: effectiveAutoPlayNext,
     playTrack,
     next,
     previous,
     handleTrackEnded,
     toggleShuffle,
     toggleRepeat,
+    toggleAutoPlayNext,
     setIsPlaying,
   };
 }

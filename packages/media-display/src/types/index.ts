@@ -38,4 +38,6 @@ export interface PlaylistState {
   shuffle: boolean;
   /** Repeat mode: none, one track, or all tracks */
   repeat: 'none' | 'one' | 'all';
+  /** Auto-advance to next track when current track ends */
+  autoPlayNext: boolean;
 }
