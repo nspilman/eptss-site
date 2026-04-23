@@ -28,23 +28,6 @@ export { RoundStatsComponent } from './ProjectStatsCard/RoundStatsComponent';
 export { StatItem } from './ProjectStatsCard/StatItem';
 
 // Tabs
-export { AdminTabsShell } from './AdminTabsShell';
-export { AdminTabsClient } from './AdminTabsClient';
-export { TabsComponent } from './TabsComponent';
-export { TabNavigation } from './TabNavigation';
-
-// Tab Server Components
-export { ActionsTabServer } from './tabs/ActionsTabServer';
-export { OverviewTabServer } from './tabs/OverviewTabServer';
-export { FeedbackTabServer } from './tabs/FeedbackTabServer';
-export { ReportsTabServer } from './tabs/ReportsTabServer';
-export { UsersTabServer } from './tabs/UsersTabServer';
-
-// AdminTabs components
-export { AdminTabs } from './AdminTabs/AdminTabs';
-export { AdminTabsServer } from './AdminTabs/AdminTabsServer';
-export { FeedbackTab } from './AdminTabs/FeedbackTab';
-export { UsersTab } from './AdminTabs/UsersTab';
 export { ReferralsTab } from './AdminTabs/ReferralsTab';
 
 // Selectors
@@ -58,13 +41,9 @@ export { PageTitle } from './PageTitle';
 export { AdminNavLink } from './AdminNavLink';
 export { AdminNav } from './AdminNav';
 export { CopyEmailsButton } from './CopyEmailsButton';
-export { CopyActiveEmailsButton } from './CopyActiveEmailsButton';
 
 // Test buttons
 export { TestEmailButtons } from './TestEmailButton';
 export { TestNotificationButton } from './TestNotificationButton';
-export { TestSendReminderEmailsButton } from './TestSendReminderEmailsButton';
-export { TestNotificationEmailsButton } from './TestNotificationEmailsButton';
-export { TestAdminNotificationEmailButton } from './TestAdminNotificationEmailButton';
-export { TestCreateFutureRoundsButton } from './TestCreateFutureRoundsButton';
-export { TestAssignRoundSongButton } from './TestAssignRoundSongButton';
+export { TestActionButton } from './TestActionButton';
+export type { TestActionButtonProps } from './TestActionButton';

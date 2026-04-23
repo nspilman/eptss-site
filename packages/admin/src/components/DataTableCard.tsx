@@ -13,6 +13,8 @@ export interface DataTableCardProps {
   count?: number
   /** Custom count label (defaults to "total") */
   countLabel?: string
+  /** Optional extra header action (rendered next to the count) */
+  headerAction?: ReactNode
   /** Data rows for the table */
   rows: any[]
   /** Table header configuration */
@@ -63,6 +65,7 @@ export const DataTableCard = ({
   icon,
   count,
   countLabel = "total",
+  headerAction,
   rows,
   headers,
   maxHeight = 400,
@@ -80,10 +83,15 @@ export const DataTableCard = ({
             {icon}
             <span className="ml-2">{title}</span>
           </CardTitle>
-          {count !== undefined && (
-            <span className="text-sm text-gray-400">
-              {count} {countLabel}
-            </span>
+          {(count !== undefined || headerAction) && (
+            <div className="flex items-center gap-3">
+              {count !== undefined && (
+                <span className="text-sm text-gray-400">
+                  {count} {countLabel}
+                </span>
+              )}
+              {headerAction}
+            </div>
           )}
         </div>
       </CardHeader>

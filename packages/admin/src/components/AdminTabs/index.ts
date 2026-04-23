@@ -1,2 +1,1 @@
-export * from "./AdminTabs";
-export * from "./AdminTabsServer";
+export { ReferralsTab } from "./ReferralsTab";

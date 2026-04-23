@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, MessageSquare, Wrench, Music, Bell, Settings } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Wrench, Music, Settings } from "lucide-react";
 
 import { Text } from "@eptss/ui";
 const navItems = [
@@ -10,7 +10,6 @@ const navItems = [
   { href: "/admin/rounds", label: "Rounds", icon: Music },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/feedback", label: "Feedback", icon: MessageSquare },
-  { href: "/admin/notifications", label: "Notifications", icon: Bell },
   { href: "/admin/projects", label: "Projects", icon: Settings },
   { href: "/admin/tools", label: "Tools", icon: Wrench },
 ];

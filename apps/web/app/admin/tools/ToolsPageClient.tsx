@@ -6,14 +6,14 @@ import {
   AdminSubmissionForm,
   TestEmailButtons,
   TestNotificationButton,
-  TestCreateFutureRoundsButton,
-  TestSendReminderEmailsButton,
-  TestAdminNotificationEmailButton,
+  TestActionButton,
   ProjectSelector,
-  CopyActiveEmailsButton,
+  CopyEmailsButton,
   type Project
 } from "@eptss/admin";
+import { getActiveUserEmails } from "@eptss/core";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, AlertBox } from "@eptss/ui";
+import { Bell, Calendar, Mail, Music } from "lucide-react";
 
 type Round = {
   roundId: number;
@@ -64,7 +64,12 @@ export function ToolsPageClient({ projects, initialProjectId, roundsByProject, a
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <CopyActiveEmailsButton />
+          <CopyEmailsButton
+            source={getActiveUserEmails}
+            label="Copy Active User Emails"
+            variant="default"
+            size="md"
+          />
         </CardContent>
       </Card>
 
@@ -143,7 +148,39 @@ export function ToolsPageClient({ projects, initialProjectId, roundsByProject, a
             </div>
             <div>
               <h4 className="text-sm font-medium text-primary mb-2">Notification Emails</h4>
-              <TestAdminNotificationEmailButton />
+              <TestActionButton
+                endpoint="/api/admin/test-notification-email"
+                icon={<Mail className="mr-2" />}
+                title="Test My Notification Email"
+                description="Send a test notification email to your admin account. This will use your actual unread notifications."
+                buttonLabel="Send Test Email to Me"
+                loadingLabel="Sending..."
+                useCronAuth={false}
+                getResult={(data) =>
+                  data.success
+                    ? { type: "success", text: data.message }
+                    : { type: "info", text: data.message || "No notification emails to send" }
+                }
+                renderDetails={(data) => (
+                  <div className="space-y-1 text-secondary">
+                    {data.recipientEmail && (
+                      <div><strong>Sent to:</strong> {data.recipientEmail}</div>
+                    )}
+                    {data.unreadCount !== undefined && (
+                      <div><strong>Unread notifications:</strong> {data.unreadCount}</div>
+                    )}
+                    {data.emailType && (
+                      <div><strong>Email type:</strong> {data.emailType}</div>
+                    )}
+                    {data.error && (
+                      <div className="mt-2">
+                        <strong>Error details:</strong>
+                        <pre className="mt-1">{JSON.stringify(data, null, 2)}</pre>
+                      </div>
+                    )}
+                  </div>
+                )}
+              />
             </div>
           </div>
         </CardContent>
@@ -172,11 +209,87 @@ export function ToolsPageClient({ projects, initialProjectId, roundsByProject, a
           <div className="space-y-3">
             <div>
               <h4 className="text-sm font-medium text-primary mb-2">Create Future Rounds</h4>
-              <TestCreateFutureRoundsButton />
+              <TestActionButton
+                endpoint="/api/cron/create-future-rounds"
+                icon={<Calendar className="mr-2" />}
+                title="Test Create Future Rounds"
+                description="Test the cron job that automatically creates 2 future quarterly rounds."
+                buttonLabel="Test Create Future Rounds"
+                getResult={(data) =>
+                  data.action === "created"
+                    ? {
+                        type: "success",
+                        text: `Created ${data.createdRounds.length} future round(s): ${data.createdRounds.map((r: any) => r.slug).join(", ")}`,
+                      }
+                    : {
+                        type: "info",
+                        text: data.message || "No action taken (expected if 2 future rounds already exist)",
+                      }
+                }
+              />
             </div>
             <div>
               <h4 className="text-sm font-medium text-primary mb-2">Send Reminder Emails</h4>
-              <TestSendReminderEmailsButton />
+              <TestActionButton
+                endpoint="/api/cron/send-reminder-emails"
+                icon={<Mail className="mr-2" />}
+                title="Test Send Reminder Emails"
+                description="Test the cron job that sends reminder emails throughout the round."
+                buttonLabel="Test Send Reminder Emails"
+                getResult={(data) => {
+                  if (data.action === "sent") {
+                    const totalSent =
+                      data.results?.sent?.reduce(
+                        (sum: number, r: any) => sum + r.recipientCount,
+                        0
+                      ) || 0;
+                    return { type: "success", text: `Sent ${totalSent} reminder email(s)` };
+                  }
+                  return { type: "info", text: data.message || "No reminders triggered for today" };
+                }}
+              />
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">Assign Round Song</h4>
+              <TestActionButton
+                endpoint="/api/cron/assign-round-song"
+                icon={<Music className="mr-2" />}
+                title="Test Auto-Assign Round Song"
+                description="Test the cron job that automatically assigns the winning song when voting closes."
+                buttonLabel="Test Assign Round Song"
+                getResult={(data) =>
+                  data.action === "assigned"
+                    ? {
+                        type: "success",
+                        text: `Song assigned: ${data.assignedSong.title} - ${data.assignedSong.artist}`,
+                      }
+                    : {
+                        type: "info",
+                        text: data.message || "No action taken (expected if not in covering phase or song already assigned)",
+                      }
+                }
+              />
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-primary mb-2">Send Notification Emails</h4>
+              <TestActionButton
+                endpoint="/api/cron/send-notification-emails"
+                icon={<Bell className="mr-2" />}
+                title="Test Notification Emails"
+                description="Test the cron job that sends notification emails to users with unread notifications."
+                buttonLabel="Test Notification Emails"
+                getResult={(data) =>
+                  data.emailsSent > 0
+                    ? {
+                        type: "success",
+                        text: `Successfully sent ${data.emailsSent} notification email(s)`,
+                      }
+                    : {
+                        type: "info",
+                        text: data.message || "No notification emails needed to be sent",
+                      }
+                }
+              />
             </div>
           </div>
         </CardContent>
