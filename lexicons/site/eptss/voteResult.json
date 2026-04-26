@@ -1,0 +1,53 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.voteResult",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Aggregate (anonymous) vote result for a single song in a single round. Individual ballots are never published.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["round", "song", "average", "count", "publishedAt"],
+        "properties": {
+          "round": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.round record."
+          },
+          "song": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.song record this result is for."
+          },
+          "average": {
+            "type": "number",
+            "description": "Mean vote score on the round's voting scale (typically 1–10).",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of votes cast for this song in this round.",
+            "minimum": 0
+          },
+          "distribution": {
+            "type": "array",
+            "description": "Vote count by score bucket, indexed from 1. distribution[0] = number of 1-votes, distribution[9] = number of 10-votes.",
+            "minLength": 0,
+            "maxLength": 10,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this aggregate was finalized and published. Should be after the round's votingOpens close."
+          }
+        }
+      }
+    }
+  }
+}

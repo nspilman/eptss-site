@@ -1,0 +1,30 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.song",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A song in the EPTSS catalog. Referenced by rounds (when chosen) and by vote results.",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["title", "artist", "createdAt"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "artist": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this song was added to the catalog."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.project",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "An EPTSS project — a long-running container for rounds (e.g. Cover, Originals).",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["name", "slug", "createdAt"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Human-readable project name (e.g. 'Cover')."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-safe identifier. Conventionally used as the record key.",
+            "maxLength": 64
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether this project is currently accepting rounds."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

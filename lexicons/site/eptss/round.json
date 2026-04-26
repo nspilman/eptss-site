@@ -1,0 +1,66 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.round",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A single round of EPTSS — the lifecycle from signup through listening party for one chosen song.",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["project", "slug", "createdAt"],
+        "properties": {
+          "project": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.project record this round belongs to."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-safe identifier scoped to the project (e.g. round number or theme).",
+            "maxLength": 64
+          },
+          "song": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.song record chosen for this round. Absent until selection completes."
+          },
+          "playlistUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Link to the round's listening-party playlist (e.g. Spotify, YouTube)."
+          },
+          "signupOpens": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When participants can begin nominating songs."
+          },
+          "votingOpens": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When voting on nominated songs begins."
+          },
+          "coveringBegins": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When the chosen song is announced and covering work begins."
+          },
+          "coversDue": {
+            "type": "string",
+            "format": "datetime",
+            "description": "Deadline for submission of finished covers."
+          },
+          "listeningParty": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When all submitted covers are listened to together."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}
