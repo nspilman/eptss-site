@@ -63,11 +63,19 @@ interface PhaseStats {
   failed: number;
 }
 
+const VALID_PHASES: PhaseName[] = ["all", "project", "song", "round", "prompt", "voteResult"];
+
 function parseArgs(argv: string[]): Args {
   const args: Args = { dryRun: false, phase: "all", limit: null };
   for (const a of argv.slice(2)) {
     if (a === "--dry-run") args.dryRun = true;
-    else if (a.startsWith("--phase=")) args.phase = a.split("=")[1] as PhaseName;
+    else if (a.startsWith("--phase=")) {
+      const phase = a.split("=")[1];
+      if (!VALID_PHASES.includes(phase as PhaseName)) {
+        throw new Error(`Invalid --phase=${phase}. Valid: ${VALID_PHASES.join(", ")}`);
+      }
+      args.phase = phase as PhaseName;
+    }
     else if (a.startsWith("--limit=")) args.limit = parseInt(a.split("=")[1], 10);
     else throw new Error(`Unknown arg: ${a}`);
   }
@@ -138,17 +146,23 @@ async function backfillProjects(agent: AtpAgent, did: string, args: Args): Promi
 
 async function backfillSongs(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
   const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
-  const rows = await db.select().from(songs).orderBy(songs.id);
-  const target = args.limit ? rows.slice(0, args.limit) : rows;
+  const target = args.limit
+    ? await db.select().from(songs).orderBy(songs.id).limit(args.limit)
+    : await db.select().from(songs).orderBy(songs.id);
 
   for (const s of target) {
     stats.attempted++;
     const rkey = rkeyFor("song", [s.id]);
+    if (!s.createdAt) {
+      stats.failed++;
+      console.error(`  song/${rkey}  FAILED: createdAt is null in Postgres — fix the row before backfill rather than stamping with today's date`);
+      continue;
+    }
     try {
       await putRecord(agent, did, COLLECTIONS.song, rkey, {
         title: s.title,
         artist: s.artist,
-        createdAt: (s.createdAt ?? new Date()).toISOString(),
+        createdAt: s.createdAt.toISOString(),
       }, args.dryRun);
       stats.written++;
     } catch (err) {
@@ -166,8 +180,9 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
   const projectRows = await db.select().from(projects);
   const projectSlugById = new Map(projectRows.map((p) => [p.id, p.slug]));
 
-  const rows = await db.select().from(roundMetadata).orderBy(roundMetadata.id);
-  const target = args.limit ? rows.slice(0, args.limit) : rows;
+  const target = args.limit
+    ? await db.select().from(roundMetadata).orderBy(roundMetadata.id).limit(args.limit)
+    : await db.select().from(roundMetadata).orderBy(roundMetadata.id);
 
   for (const r of target) {
     stats.attempted++;
@@ -177,11 +192,21 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
       console.error(`  round/${r.id}  FAILED: unknown projectId ${r.projectId}`);
       continue;
     }
+    if (!r.slug) {
+      stats.failed++;
+      console.error(`  round/${r.id}  FAILED: slug is null in Postgres — run populate-round-slugs first rather than coercing to numeric ID`);
+      continue;
+    }
+    if (!r.createdAt) {
+      stats.failed++;
+      console.error(`  round/${r.id}  FAILED: createdAt is null in Postgres — fix the row before backfill`);
+      continue;
+    }
     const rkey = rkeyFor("round", [r.id]);
     const record: Record<string, unknown> = {
       project: uriFor(did, "project", rkeyFor("project", [projectSlug])),
-      slug: r.slug ?? String(r.id),
-      createdAt: (r.createdAt ?? new Date()).toISOString(),
+      slug: r.slug,
+      createdAt: r.createdAt.toISOString(),
     };
     if (r.songId) record.song = uriFor(did, "song", rkeyFor("song", [r.songId]));
     if (r.playlistUrl) record.playlistUrl = r.playlistUrl;
@@ -205,8 +230,9 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
 
 async function backfillPrompts(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
   const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
-  const rows = await db.select().from(roundPrompts).orderBy(roundPrompts.id);
-  const target = args.limit ? rows.slice(0, args.limit) : rows;
+  const target = args.limit
+    ? await db.select().from(roundPrompts).orderBy(roundPrompts.id).limit(args.limit)
+    : await db.select().from(roundPrompts).orderBy(roundPrompts.id);
 
   for (const p of target) {
     stats.attempted++;
@@ -235,21 +261,45 @@ interface VoteAggregateRow extends Record<string, unknown> {
   distribution: number[];
 }
 
+interface VoteRangeRow extends Record<string, unknown> {
+  min: number | null;
+  max: number | null;
+}
+
 async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
   const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
 
+  // Sanity check: histogram is hardcoded to a 1..10 scale. Fail loudly if any
+  // historical vote is outside that range — we'd silently drop those buckets
+  // while still counting them in average/count, producing a misleading record.
+  const rangeRows = await db.execute<VoteRangeRow>(sql`
+    SELECT MIN(vote)::int AS min, MAX(vote)::int AS max FROM song_selection_votes
+  `);
+  const range = (rangeRows as unknown as VoteRangeRow[])[0];
+  if (range && range.min !== null && range.max !== null) {
+    if (range.min < 1 || range.max > 10) {
+      throw new Error(
+        `Vote scale outside 1-10 (got ${range.min}..${range.max}). The histogram only buckets 1..10; aborting to avoid silent data loss.`,
+      );
+    }
+  }
+
   // Only publish aggregates for rounds where voting has closed (coveringBegins in the past).
   // Publishing in-flight tallies could influence the active vote.
+  // We also need coveringBegins as the publishedAt timestamp — using "now" would
+  // rewrite every record on every re-run, breaking semantic idempotency.
   const now = new Date();
   const finishedRounds = await db
-    .select({ id: roundMetadata.id })
+    .select({ id: roundMetadata.id, coveringBegins: roundMetadata.coveringBegins })
     .from(roundMetadata)
     .where(and(
       isNotNull(roundMetadata.coveringBegins),
       lt(roundMetadata.coveringBegins, now),
     ));
-  const finishedIds = new Set(finishedRounds.map((r) => r.id));
-  if (finishedIds.size === 0) {
+  const finishedClosedAt = new Map(
+    finishedRounds.map((r) => [r.id, r.coveringBegins!] as const),
+  );
+  if (finishedClosedAt.size === 0) {
     console.log("  no finished rounds to aggregate");
     return stats;
   }
@@ -279,12 +329,19 @@ async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Pr
     ORDER BY round_id, song_id
   `);
 
-  const filtered = (rows as unknown as VoteAggregateRow[]).filter((r) => finishedIds.has(r.round_id));
+  const filtered = (rows as unknown as VoteAggregateRow[]).filter((r) => finishedClosedAt.has(r.round_id));
   const target = args.limit ? filtered.slice(0, args.limit) : filtered;
 
   for (const r of target) {
     stats.attempted++;
     const rkey = rkeyFor("voteResult", [r.round_id, r.song_id]);
+    const closedAt = finishedClosedAt.get(r.round_id);
+    if (!closedAt) {
+      // Defensive — the filter above guarantees this can't happen.
+      stats.failed++;
+      console.error(`  voteResult/${rkey}  FAILED: no coveringBegins for round ${r.round_id}`);
+      continue;
+    }
     try {
       await putRecord(agent, did, COLLECTIONS.voteResult, rkey, {
         round: uriFor(did, "round", rkeyFor("round", [r.round_id])),
@@ -292,7 +349,7 @@ async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Pr
         average: r.average,
         count: r.count,
         distribution: r.distribution,
-        publishedAt: now.toISOString(),
+        publishedAt: closedAt.toISOString(),
       }, args.dryRun);
       stats.written++;
     } catch (err) {
