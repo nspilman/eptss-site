@@ -8,7 +8,7 @@
       "key": "tid",
       "record": {
         "type": "object",
-        "required": ["round", "song", "average", "count", "publishedAt"],
+        "required": ["round", "song", "average", "count", "scaleMin", "scaleMax", "distribution", "publishedAt"],
         "properties": {
           "round": {
             "type": "string",
@@ -22,20 +22,27 @@
           },
           "average": {
             "type": "number",
-            "description": "Mean vote score on the round's voting scale (typically 1–10).",
-            "minimum": 0,
-            "maximum": 10
+            "description": "Mean vote score on the scale defined by scaleMin/scaleMax.",
+            "minimum": 0
           },
           "count": {
             "type": "integer",
             "description": "Number of votes cast for this song in this round.",
             "minimum": 0
           },
+          "scaleMin": {
+            "type": "integer",
+            "description": "Lowest possible vote value on this round's scale (e.g. 1).",
+            "minimum": 0
+          },
+          "scaleMax": {
+            "type": "integer",
+            "description": "Highest possible vote value on this round's scale (e.g. 5). Length of distribution is (scaleMax - scaleMin + 1)."
+          },
           "distribution": {
             "type": "array",
-            "description": "Vote count by score bucket on a fixed 1-10 scale. distribution[0] = number of 1-votes, distribution[9] = number of 10-votes. Always exactly 10 elements.",
-            "minLength": 10,
-            "maxLength": 10,
+            "description": "Vote count per bucket on the [scaleMin, scaleMax] inclusive range. distribution[0] = count of scaleMin votes; distribution[length-1] = count of scaleMax votes.",
+            "minLength": 1,
             "items": {
               "type": "integer",
               "minimum": 0
@@ -44,7 +51,7 @@
           "publishedAt": {
             "type": "string",
             "format": "datetime",
-            "description": "When this aggregate was finalized and published. Should be after the round's votingOpens close."
+            "description": "When this aggregate was finalized and published. Conventionally the round's coveringBegins (the moment voting closed)."
           }
         }
       }

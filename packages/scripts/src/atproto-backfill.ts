@@ -266,23 +266,31 @@ interface VoteRangeRow extends Record<string, unknown> {
   max: number | null;
 }
 
+const MAX_REASONABLE_SCALE_RANGE = 20;
+
 async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
   const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
 
-  // Sanity check: histogram is hardcoded to a 1..10 scale. Fail loudly if any
-  // historical vote is outside that range — we'd silently drop those buckets
-  // while still counting them in average/count, producing a misleading record.
+  // Discover the actual vote scale rather than hardcoding it. EPTSS currently
+  // uses a 1..5 scale, but the schema doesn't enforce that, and historical
+  // rounds (or future ones) could differ. The published record carries
+  // scaleMin/scaleMax so each aggregate is self-describing.
   const rangeRows = await db.execute<VoteRangeRow>(sql`
     SELECT MIN(vote)::int AS min, MAX(vote)::int AS max FROM song_selection_votes
   `);
   const range = (rangeRows as unknown as VoteRangeRow[])[0];
-  if (range && range.min !== null && range.max !== null) {
-    if (range.min < 1 || range.max > 10) {
-      throw new Error(
-        `Vote scale outside 1-10 (got ${range.min}..${range.max}). The histogram only buckets 1..10; aborting to avoid silent data loss.`,
-      );
-    }
+  if (!range || range.min === null || range.max === null) {
+    console.log("  no votes in song_selection_votes — nothing to publish");
+    return stats;
   }
+  const scaleMin = range.min;
+  const scaleMax = range.max;
+  if (scaleMin < 0 || scaleMax < scaleMin || (scaleMax - scaleMin + 1) > MAX_REASONABLE_SCALE_RANGE) {
+    throw new Error(
+      `Vote scale ${scaleMin}..${scaleMax} fails sanity check (negative, inverted, or wider than ${MAX_REASONABLE_SCALE_RANGE} buckets). Aborting — likely a data corruption issue worth investigating.`,
+    );
+  }
+  console.log(`  vote scale detected: ${scaleMin}..${scaleMax} (${scaleMax - scaleMin + 1} buckets)`);
 
   // Only publish aggregates for rounds where voting has closed (coveringBegins in the past).
   // Publishing in-flight tallies could influence the active vote.
@@ -304,25 +312,20 @@ async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Pr
     return stats;
   }
 
-  // Aggregate per (round, song): average, count, distribution histogram (buckets 1..10).
+  // Build the histogram SQL dynamically over the detected scale range.
+  const bucketExprs = [];
+  for (let v = scaleMin; v <= scaleMax; v++) {
+    bucketExprs.push(sql`COUNT(*) FILTER (WHERE vote = ${v})::int`);
+  }
+  const distributionExpr = sql`ARRAY[${sql.join(bucketExprs, sql.raw(", "))}]`;
+
   const rows = await db.execute<VoteAggregateRow>(sql`
     SELECT
       round_id,
       song_id,
       AVG(vote)::float8 AS average,
       COUNT(*)::int AS count,
-      ARRAY[
-        COUNT(*) FILTER (WHERE vote = 1)::int,
-        COUNT(*) FILTER (WHERE vote = 2)::int,
-        COUNT(*) FILTER (WHERE vote = 3)::int,
-        COUNT(*) FILTER (WHERE vote = 4)::int,
-        COUNT(*) FILTER (WHERE vote = 5)::int,
-        COUNT(*) FILTER (WHERE vote = 6)::int,
-        COUNT(*) FILTER (WHERE vote = 7)::int,
-        COUNT(*) FILTER (WHERE vote = 8)::int,
-        COUNT(*) FILTER (WHERE vote = 9)::int,
-        COUNT(*) FILTER (WHERE vote = 10)::int
-      ] AS distribution
+      ${distributionExpr} AS distribution
     FROM song_selection_votes
     WHERE round_id IS NOT NULL AND song_id IS NOT NULL
     GROUP BY round_id, song_id
@@ -348,6 +351,8 @@ async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Pr
         song: uriFor(did, "song", rkeyFor("song", [r.song_id])),
         average: r.average,
         count: r.count,
+        scaleMin,
+        scaleMax,
         distribution: r.distribution,
         publishedAt: closedAt.toISOString(),
       }, args.dryRun);
