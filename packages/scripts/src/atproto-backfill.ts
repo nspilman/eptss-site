@@ -25,6 +25,9 @@
  *   --limit=<n>           Cap records per phase (useful while iterating)
  */
 
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { AtpAgent } from "@atproto/api";
 import { isNotNull } from "drizzle-orm";
 import {
