@@ -4,11 +4,11 @@
   "defs": {
     "main": {
       "type": "record",
-      "description": "A single round of EPTSS — the lifecycle from signup through listening party for one chosen song.",
+      "description": "A single iteration of a project — one cycle of the community's async-sync rhythm (e.g. one EPTSS round, one book club month, one art-prompt week). Phases describe the round's schedule of named events; communities define their own phase vocabularies.",
       "key": "any",
       "record": {
         "type": "object",
-        "required": ["project", "slug", "createdAt"],
+        "required": ["project", "slug", "phases", "createdAt"],
         "properties": {
           "project": {
             "type": "string",
@@ -17,48 +17,65 @@
           },
           "slug": {
             "type": "string",
-            "description": "URL-safe identifier scoped to the project (e.g. round number or theme).",
+            "description": "URL-safe identifier scoped to the project (e.g. round number, theme name, or month).",
             "maxLength": 64
           },
-          "song": {
+          "subject": {
             "type": "string",
             "format": "at-uri",
-            "description": "AT-URI of the site.eptss.song record chosen for this round. Absent until selection completes."
+            "description": "AT-URI of the site.eptss.subject record chosen for this round. Absent until selection completes."
           },
-          "playlistUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "Link to the round's listening-party playlist (e.g. Spotify, YouTube)."
+          "phases": {
+            "type": "array",
+            "description": "Ordered list of scheduled events that make up the round's lifecycle. Each community defines its own phase vocabulary (e.g. EPTSS uses 'proposalsOpen', 'votingOpens', 'creationBegins', 'submissionsDue', 'gatheringAt'). Generic clients render this as a timeline; specialized clients look up known phase names.",
+            "minLength": 1,
+            "items": { "type": "ref", "ref": "#phase" }
           },
-          "signupOpens": {
-            "type": "string",
-            "format": "datetime",
-            "description": "When participants can begin nominating songs."
-          },
-          "votingOpens": {
-            "type": "string",
-            "format": "datetime",
-            "description": "When voting on nominated songs begins."
-          },
-          "coveringBegins": {
-            "type": "string",
-            "format": "datetime",
-            "description": "When the chosen song is announced and covering work begins."
-          },
-          "coversDue": {
-            "type": "string",
-            "format": "datetime",
-            "description": "Deadline for submission of finished covers."
-          },
-          "listeningParty": {
-            "type": "string",
-            "format": "datetime",
-            "description": "When all submitted covers are listened to together."
+          "links": {
+            "type": "array",
+            "description": "Optional external links associated with the round — e.g. a listening-party playlist, a discussion thread, a gallery view, a release notes page.",
+            "items": { "type": "ref", "ref": "#link" }
           },
           "createdAt": {
             "type": "string",
             "format": "datetime"
           }
+        }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "required": ["name", "at"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Phase name — community-defined (e.g. 'proposalsOpen', 'readingBegins', 'submissionsDue').",
+          "maxLength": 64
+        },
+        "at": {
+          "type": "string",
+          "format": "datetime",
+          "description": "When this phase event occurs."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable note about this phase (e.g. 'Holiday extension — extra week given for covers').",
+          "maxLength": 1024
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "required": ["label", "uri"],
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Human-readable label (e.g. 'Listening Party Playlist').",
+          "maxLength": 128
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
         }
       }
     }

@@ -4,7 +4,7 @@
   "defs": {
     "main": {
       "type": "record",
-      "description": "An EPTSS project — a long-running container for rounds (e.g. Cover, Originals).",
+      "description": "A project — a long-running community that runs recurring rounds, where members independently respond to a shared subject and converge to share. Examples: a song-cover collective (EPTSS Cover), a book club, a recipe challenge, an art-prompt circle.",
       "key": "any",
       "record": {
         "type": "object",
@@ -12,16 +12,22 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "Human-readable project name (e.g. 'Cover')."
+            "description": "Human-readable project name (e.g. 'EPTSS Cover')."
           },
           "slug": {
             "type": "string",
             "description": "URL-safe identifier. Conventionally used as the record key.",
             "maxLength": 64
           },
-          "isActive": {
-            "type": "boolean",
-            "description": "Whether this project is currently accepting rounds."
+          "description": {
+            "type": "string",
+            "description": "What this community is and does, in one paragraph.",
+            "maxLength": 2000
+          },
+          "subjectKind": {
+            "type": "string",
+            "description": "Default kind of subject this project's rounds work with — 'song', 'book', 'recipe', 'theme', etc. Lets clients render appropriate UI without inspecting individual subjects. Free-form to allow new community types.",
+            "maxLength": 64
           },
           "createdAt": {
             "type": "string",

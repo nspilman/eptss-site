@@ -1,19 +1,21 @@
 #!/usr/bin/env bun
 /**
- * Backfill non-user-attributed EPTSS records to the AT Protocol.
- * Publishes under the EPTSS service account (handle: everyoneplaysthesamesong.com).
+ * Backfill non-user-attributed EPTSS records to the AT Protocol under the
+ * site.eptss.* lexicons. Publishes under the EPTSS service account
+ * (handle: everyoneplaysthesamesong.com).
  *
- * Phases run in dependency order:
+ * Stages run in dependency order:
  *   1. project     → site.eptss.project
- *   2. song        → site.eptss.song
- *   3. round       → site.eptss.round
+ *   2. subject     → site.eptss.subject     (Postgres `songs` table)
+ *   3. round       → site.eptss.round       (with inline phases array)
  *   4. prompt      → site.eptss.roundPrompt
  *   5. voteResult  → site.eptss.voteResult  (only for rounds past voting close)
  *
  * Stable rkeys derived from Postgres IDs + putRecord (upsert) make re-runs
- * idempotent — safe to run repeatedly while iterating on lexicons.
+ * idempotent. Script knows the EPTSS-specific mappings from Postgres columns
+ * to the generic site.eptss.* schemas (e.g. signupOpens → proposalsOpen phase).
  *
- * Env:
+ * Env (loaded from packages/scripts/.env):
  *   DATABASE_URL          Postgres connection string (read-only is fine)
  *   ATPROTO_SERVICE       PDS URL (default: https://bsky.social)
  *   ATPROTO_IDENTIFIER    Handle, e.g. everyoneplaysthesamesong.com
@@ -21,8 +23,8 @@
  *
  * Flags:
  *   --dry-run             Read + plan, do not write to PDS
- *   --phase=<name>        Only run one phase (project|song|round|prompt|voteResult|all). Default: all
- *   --limit=<n>           Cap records per phase (useful while iterating)
+ *   --stage=<name>        Only run one stage (project|subject|round|prompt|voteResult|all)
+ *   --limit=<n>           Cap records per stage
  */
 
 import * as dotenv from "dotenv";
@@ -43,38 +45,38 @@ import {
 
 const COLLECTIONS = {
   project: "site.eptss.project",
-  song: "site.eptss.song",
+  subject: "site.eptss.subject",
   round: "site.eptss.round",
   prompt: "site.eptss.roundPrompt",
   voteResult: "site.eptss.voteResult",
 } as const;
 
-type PhaseName = keyof typeof COLLECTIONS | "all";
+type StageName = keyof typeof COLLECTIONS | "all";
 
 interface Args {
   dryRun: boolean;
-  phase: PhaseName;
+  stage: StageName;
   limit: number | null;
 }
 
-interface PhaseStats {
+interface StageStats {
   attempted: number;
   written: number;
   failed: number;
 }
 
-const VALID_PHASES: PhaseName[] = ["all", "project", "song", "round", "prompt", "voteResult"];
+const VALID_STAGES: StageName[] = ["all", "project", "subject", "round", "prompt", "voteResult"];
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { dryRun: false, phase: "all", limit: null };
+  const args: Args = { dryRun: false, stage: "all", limit: null };
   for (const a of argv.slice(2)) {
     if (a === "--dry-run") args.dryRun = true;
-    else if (a.startsWith("--phase=")) {
-      const phase = a.split("=")[1];
-      if (!VALID_PHASES.includes(phase as PhaseName)) {
-        throw new Error(`Invalid --phase=${phase}. Valid: ${VALID_PHASES.join(", ")}`);
+    else if (a.startsWith("--stage=")) {
+      const stage = a.split("=")[1];
+      if (!VALID_STAGES.includes(stage as StageName)) {
+        throw new Error(`Invalid --stage=${stage}. Valid: ${VALID_STAGES.join(", ")}`);
       }
-      args.phase = phase as PhaseName;
+      args.stage = stage as StageName;
     }
     else if (a.startsWith("--limit=")) args.limit = parseInt(a.split("=")[1], 10);
     else throw new Error(`Unknown arg: ${a}`);
@@ -86,10 +88,10 @@ function rkeyFor(kind: keyof typeof COLLECTIONS, parts: (string | number)[]): st
   const tail = parts.join("-");
   switch (kind) {
     case "project": return tail;                    // "cover" | "originals"
-    case "song": return `s-${tail}`;
+    case "subject": return `subj-${tail}`;
     case "round": return `r-${tail}`;
     case "prompt": return `p-${tail}`;
-    case "voteResult": return `vr-${tail}`;         // "vr-{roundId}-{songId}"
+    case "voteResult": return `vr-${tail}`;         // "vr-{roundId}-{subjectId}"
   }
 }
 
@@ -119,8 +121,8 @@ async function putRecord(
   await new Promise((r) => setTimeout(r, 100));
 }
 
-async function backfillProjects(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
-  const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
+async function backfillProjects(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
+  const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
   const rows = await db.select().from(projects);
   const target = args.limit ? rows.slice(0, args.limit) : rows;
 
@@ -128,10 +130,13 @@ async function backfillProjects(agent: AtpAgent, did: string, args: Args): Promi
     stats.attempted++;
     const rkey = rkeyFor("project", [p.slug]);
     try {
+      // Both EPTSS projects today operate on songs as their subject. Other
+      // projects in the future could use different subjectKinds (e.g. "book").
+      // Description is omitted at backfill — enrich later.
       await putRecord(agent, did, COLLECTIONS.project, rkey, {
         name: p.name,
         slug: p.slug,
-        isActive: p.isActive,
+        subjectKind: "song",
         createdAt: p.createdAt.toISOString(),
       }, args.dryRun);
       stats.written++;
@@ -144,38 +149,50 @@ async function backfillProjects(agent: AtpAgent, did: string, args: Args): Promi
   return stats;
 }
 
-async function backfillSongs(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
-  const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
+async function backfillSubjects(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
+  const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
   const target = args.limit
     ? await db.select().from(songs).orderBy(songs.id).limit(args.limit)
     : await db.select().from(songs).orderBy(songs.id);
 
   for (const s of target) {
     stats.attempted++;
-    const rkey = rkeyFor("song", [s.id]);
+    const rkey = rkeyFor("subject", [s.id]);
     if (!s.createdAt) {
       stats.failed++;
-      console.error(`  song/${rkey}  FAILED: createdAt is null in Postgres — fix the row before backfill rather than stamping with today's date`);
+      console.error(`  subject/${rkey}  FAILED: createdAt is null in Postgres — fix the row before backfill rather than stamping with today's date`);
       continue;
     }
     try {
-      await putRecord(agent, did, COLLECTIONS.song, rkey, {
+      await putRecord(agent, did, COLLECTIONS.subject, rkey, {
         title: s.title,
-        artist: s.artist,
+        kind: "song",
+        attribution: s.artist,
         createdAt: s.createdAt.toISOString(),
       }, args.dryRun);
       stats.written++;
     } catch (err) {
       stats.failed++;
-      console.error(`  song/${rkey}  FAILED:`, err);
+      console.error(`  subject/${rkey}  FAILED:`, err);
     }
   }
-  console.log(`  ${stats.written}/${stats.attempted} songs written`);
+  console.log(`  ${stats.written}/${stats.attempted} subjects written`);
   return stats;
 }
 
-async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
-  const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
+// EPTSS-specific mapping from Postgres date columns to the generic
+// site.eptss.round phases vocabulary. Other communities running on these
+// lexicons would emit different phase names from their own date columns.
+const EPTSS_PHASE_NAMES = {
+  signupOpens: "proposalsOpen",
+  votingOpens: "votingOpens",
+  coveringBegins: "creationBegins",
+  coversDue: "submissionsDue",
+  listeningParty: "gatheringAt",
+} as const;
+
+async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
+  const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
   // Need project slugs to build project AT-URI refs.
   const projectRows = await db.select().from(projects);
   const projectSlugById = new Map(projectRows.map((p) => [p.id, p.slug]));
@@ -202,24 +219,39 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
       console.error(`  round/${r.id}  FAILED: createdAt is null in Postgres — fix the row before backfill`);
       continue;
     }
+
+    // Build the inline phases array from whichever date columns are populated.
+    // Order matches the EPTSS lifecycle. Phases without dates are omitted, not
+    // null-stamped — readers can tell which phases this round actually has.
+    const phases: Array<{ name: string; at: string }> = [];
+    if (r.signupOpens) phases.push({ name: EPTSS_PHASE_NAMES.signupOpens, at: r.signupOpens.toISOString() });
+    if (r.votingOpens) phases.push({ name: EPTSS_PHASE_NAMES.votingOpens, at: r.votingOpens.toISOString() });
+    if (r.coveringBegins) phases.push({ name: EPTSS_PHASE_NAMES.coveringBegins, at: r.coveringBegins.toISOString() });
+    if (r.coversDue) phases.push({ name: EPTSS_PHASE_NAMES.coversDue, at: r.coversDue.toISOString() });
+    if (r.listeningParty) phases.push({ name: EPTSS_PHASE_NAMES.listeningParty, at: r.listeningParty.toISOString() });
+
+    if (phases.length === 0) {
+      stats.failed++;
+      console.error(`  round/${r.id}  FAILED: no date columns populated, can't emit a round with empty phases`);
+      continue;
+    }
+
     const rkey = rkeyFor("round", [r.id]);
     const record: Record<string, unknown> = {
       project: uriFor(did, "project", rkeyFor("project", [projectSlug])),
       slug: r.slug,
+      phases,
       createdAt: r.createdAt.toISOString(),
     };
-    if (r.songId) record.song = uriFor(did, "song", rkeyFor("song", [r.songId]));
-    if (r.playlistUrl) record.playlistUrl = r.playlistUrl;
-    if (r.signupOpens) record.signupOpens = r.signupOpens.toISOString();
-    if (r.votingOpens) record.votingOpens = r.votingOpens.toISOString();
-    if (r.coveringBegins) record.coveringBegins = r.coveringBegins.toISOString();
-    if (r.coversDue) record.coversDue = r.coversDue.toISOString();
-    if (r.listeningParty) record.listeningParty = r.listeningParty.toISOString();
+    if (r.songId) record.subject = uriFor(did, "subject", rkeyFor("subject", [r.songId]));
+    if (r.playlistUrl) {
+      record.links = [{ label: "Listening Party Playlist", uri: r.playlistUrl }];
+    }
 
     try {
       await putRecord(agent, did, COLLECTIONS.round, rkey, record, args.dryRun);
       stats.written++;
-      console.log(`  round/${rkey}  (${projectSlug}/${record.slug})`);
+      console.log(`  round/${rkey}  (${projectSlug}/${record.slug}, ${phases.length} phases)`);
     } catch (err) {
       stats.failed++;
       console.error(`  round/${rkey}  FAILED:`, err);
@@ -228,8 +260,8 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
   return stats;
 }
 
-async function backfillPrompts(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
-  const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
+async function backfillPrompts(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
+  const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
   const target = args.limit
     ? await db.select().from(roundPrompts).orderBy(roundPrompts.id).limit(args.limit)
     : await db.select().from(roundPrompts).orderBy(roundPrompts.id);
@@ -268,8 +300,8 @@ interface VoteRangeRow extends Record<string, unknown> {
 
 const MAX_REASONABLE_SCALE_RANGE = 20;
 
-async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Promise<PhaseStats> {
-  const stats: PhaseStats = { attempted: 0, written: 0, failed: 0 };
+async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
+  const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
 
   // Discover the actual vote scale rather than hardcoding it. EPTSS currently
   // uses a 1..5 scale, but the schema doesn't enforce that, and historical
@@ -348,7 +380,7 @@ async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Pr
     try {
       await putRecord(agent, did, COLLECTIONS.voteResult, rkey, {
         round: uriFor(did, "round", rkeyFor("round", [r.round_id])),
-        song: uriFor(did, "song", rkeyFor("song", [r.song_id])),
+        subject: uriFor(did, "subject", rkeyFor("subject", [r.song_id])),
         average: r.average,
         count: r.count,
         scaleMin,
@@ -389,18 +421,18 @@ async function main() {
   console.log(`Logged in. Publishing as ${did}`);
   if (args.dryRun) console.log("DRY RUN — no records will be written.\n");
 
-  const phases: Array<[PhaseName, (a: AtpAgent, d: string, ar: Args) => Promise<PhaseStats>]> = [
+  const stages: Array<[StageName, (a: AtpAgent, d: string, ar: Args) => Promise<StageStats>]> = [
     ["project", backfillProjects],
-    ["song", backfillSongs],
+    ["subject", backfillSubjects],
     ["round", backfillRounds],
     ["prompt", backfillPrompts],
     ["voteResult", backfillVoteResults],
   ];
 
-  const summary: Record<string, PhaseStats> = {};
-  for (const [name, fn] of phases) {
-    if (args.phase !== "all" && args.phase !== name) continue;
-    console.log(`\n— phase: ${name} —`);
+  const summary: Record<string, StageStats> = {};
+  for (const [name, fn] of stages) {
+    if (args.stage !== "all" && args.stage !== name) continue;
+    console.log(`\n— stage: ${name} —`);
     summary[name] = await fn(agent, did, args);
   }
 

@@ -4,21 +4,21 @@
   "defs": {
     "main": {
       "type": "record",
-      "description": "Aggregate (anonymous) vote result for a single song in a single round. Individual ballots are never published.",
-      "key": "tid",
+      "description": "Aggregate (anonymous) vote result for a single subject in a single round. Individual ballots are never published.",
+      "key": "any",
       "record": {
         "type": "object",
-        "required": ["round", "song", "average", "count", "scaleMin", "scaleMax", "distribution", "publishedAt"],
+        "required": ["round", "subject", "average", "count", "scaleMin", "scaleMax", "distribution", "publishedAt"],
         "properties": {
           "round": {
             "type": "string",
             "format": "at-uri",
             "description": "AT-URI of the site.eptss.round record."
           },
-          "song": {
+          "subject": {
             "type": "string",
             "format": "at-uri",
-            "description": "AT-URI of the site.eptss.song record this result is for."
+            "description": "AT-URI of the site.eptss.subject record this result is for."
           },
           "average": {
             "type": "number",
