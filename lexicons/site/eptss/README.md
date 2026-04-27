@@ -44,10 +44,12 @@ two hats.
   list of `{name, at, description?}` events that describe the round's
   schedule. Each community defines its own phase vocabulary.
 
-  EPTSS uses: `proposalsOpen`, `votingOpens`, `creationBegins`,
-  `submissionsDue`, `gatheringAt`. A book club might use:
+  EPTSS uses its own native vocabulary: `signupOpens`, `votingOpens`,
+  `coveringBegins`, `coversDue`, `listeningParty`. A book club might use
   `nominationsOpen`, `votingOpens`, `readingBegins`, `discussionAt`. A code
-  kata might just have `creationBegins` and `submissionsDue`.
+  kata might just have `creationBegins` and `submissionsDue`. The lexicon
+  doesn't constrain names — each community emits whatever its codebase
+  already calls these events.
 
   Phases are inline (not a separate record) because they have no identity
   outside their round, and because ATProto has no joins — separate records

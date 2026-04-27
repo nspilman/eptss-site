@@ -180,17 +180,6 @@ async function backfillSubjects(agent: AtpAgent, did: string, args: Args): Promi
   return stats;
 }
 
-// EPTSS-specific mapping from Postgres date columns to the generic
-// site.eptss.round phases vocabulary. Other communities running on these
-// lexicons would emit different phase names from their own date columns.
-const EPTSS_PHASE_NAMES = {
-  signupOpens: "proposalsOpen",
-  votingOpens: "votingOpens",
-  coveringBegins: "creationBegins",
-  coversDue: "submissionsDue",
-  listeningParty: "gatheringAt",
-} as const;
-
 async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
   const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
   // Need project slugs to build project AT-URI refs.
@@ -221,14 +210,23 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
     }
 
     // Build the inline phases array from whichever date columns are populated.
-    // Order matches the EPTSS lifecycle. Phases without dates are omitted, not
-    // null-stamped — readers can tell which phases this round actually has.
+    // Phase names are EPTSS's native vocabulary — the lexicon doesn't constrain
+    // names, so we emit what the rest of the codebase already calls these
+    // events rather than inventing a translation. Other communities running on
+    // these lexicons would emit their own native vocabulary the same way.
+    // Phases without dates are omitted, not null-stamped — readers can tell
+    // which phases this round actually has.
+    const phaseSources: ReadonlyArray<readonly [string, Date | null]> = [
+      ["signupOpens", r.signupOpens],
+      ["votingOpens", r.votingOpens],
+      ["coveringBegins", r.coveringBegins],
+      ["coversDue", r.coversDue],
+      ["listeningParty", r.listeningParty],
+    ];
     const phases: Array<{ name: string; at: string }> = [];
-    if (r.signupOpens) phases.push({ name: EPTSS_PHASE_NAMES.signupOpens, at: r.signupOpens.toISOString() });
-    if (r.votingOpens) phases.push({ name: EPTSS_PHASE_NAMES.votingOpens, at: r.votingOpens.toISOString() });
-    if (r.coveringBegins) phases.push({ name: EPTSS_PHASE_NAMES.coveringBegins, at: r.coveringBegins.toISOString() });
-    if (r.coversDue) phases.push({ name: EPTSS_PHASE_NAMES.coversDue, at: r.coversDue.toISOString() });
-    if (r.listeningParty) phases.push({ name: EPTSS_PHASE_NAMES.listeningParty, at: r.listeningParty.toISOString() });
+    for (const [name, at] of phaseSources) {
+      if (at) phases.push({ name, at: at.toISOString() });
+    }
 
     if (phases.length === 0) {
       stats.failed++;
