@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>site.eptss.* Lexicons — Pre-publish review</title>
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --bg-dark: #1F2937;
+    --fg: #1F2937;
+    --fg-muted: #6B7280;
+    --fg-faint: #9CA3AF;
+    --accent: #0D7F76;
+    --accent-light: #E0F2EF;
+    --code-bg: #F0EFEA;
+    --border: #E5E5E0;
+    --row-alt: #F4F2EE;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--fg);
+    background: var(--bg);
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  code, .mono { font-family: var(--mono); }
+
+  /* ---- Header ---- */
+  header.hero {
+    background: var(--bg-dark);
+    color: var(--bg);
+    padding: 4rem 1.5rem 3.5rem;
+    text-align: center;
+    position: relative;
+  }
+  header.hero::after {
+    content: "";
+    position: absolute; left: 0; right: 0; bottom: -3px;
+    height: 3px; background: var(--accent);
+  }
+  header.hero h1 {
+    margin: 0 0 0.5rem 0;
+    font-family: var(--mono);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  header.hero .sub {
+    color: var(--accent-light);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  header.hero .tag {
+    color: var(--fg-faint);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+  header.hero .ident {
+    margin-top: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--fg-faint);
+  }
+
+  /* ---- Nav ---- */
+  nav.toc {
+    position: sticky;
+    top: 0;
+    background: rgba(250, 250, 247, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.85rem;
+  }
+  nav.toc .inner {
+    max-width: 920px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+  }
+  nav.toc a {
+    color: var(--fg-muted);
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+  nav.toc a:hover { color: var(--accent); }
+
+  /* ---- Main ---- */
+  main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  section {
+    margin: 3rem 0;
+    border-left: 3px solid var(--accent);
+    padding-left: 1.5rem;
+    scroll-margin-top: 4rem;
+  }
+  section h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  section .nsid {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  section .desc {
+    color: var(--fg-muted);
+    font-style: italic;
+    margin: 0.5rem 0 1.25rem 0;
+    max-width: 70ch;
+  }
+  section p { max-width: 70ch; }
+  section .lead {
+    font-size: 1.15rem;
+    color: var(--fg);
+    max-width: 65ch;
+  }
+
+  /* ---- Tables ---- */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0 0.5rem;
+    font-size: 0.92rem;
+    background: white;
+    border: 1px solid var(--border);
+  }
+  th {
+    background: var(--bg-dark);
+    color: var(--bg);
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  th.center { text-align: center; }
+  td {
+    padding: 0.55rem 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid var(--border);
+  }
+  tr:nth-child(even) td { background: var(--row-alt); }
+  td.field { font-family: var(--mono); font-weight: 600; }
+  td.type { font-family: var(--mono); color: var(--accent); }
+  td.req {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+  }
+  td.req.yes { color: var(--fg); font-weight: 600; }
+  td.req.no { color: var(--fg-faint); }
+  td.notes { color: var(--fg-muted); }
+
+  .rkey {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .rkey .label { color: var(--fg-muted); font-family: var(--mono); }
+  .rkey code { color: var(--fg); }
+
+  .note {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    font-style: italic;
+  }
+
+  /* ---- Records overview list ---- */
+  ol.records {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    counter-reset: rec;
+  }
+  ol.records li {
+    counter-increment: rec;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  ol.records li:last-child { border-bottom: 0; }
+  ol.records li::before {
+    content: counter(rec);
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 50%;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+  ol.records .name {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--fg);
+  }
+  ol.records .blurb {
+    color: var(--fg-muted);
+    font-size: 0.95rem;
+  }
+
+  /* ---- Reference graph ---- */
+  .graph {
+    margin: 1rem 0;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .graph svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+  .graph .legend {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* ---- Worked example ---- */
+  .examples {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  .examples .full { grid-column: 1 / -1; }
+  .code-card {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    overflow-x: auto;
+  }
+  .code-card .label {
+    display: block;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 0.78rem;
+  }
+  .code-card pre {
+    margin: 0;
+    color: var(--fg);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ---- Decisions / outstanding lists ---- */
+  ul.decisions {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+  }
+  ul.decisions li {
+    padding: 0.6rem 0 0.6rem 1.5rem;
+    position: relative;
+    border-bottom: 1px dashed var(--border);
+    max-width: 75ch;
+  }
+  ul.decisions li:last-child { border-bottom: 0; }
+  ul.decisions li::before {
+    content: "▪";
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ---- Plan steps ---- */
+  ol.plan {
+    list-style: none;
+    counter-reset: step;
+    padding: 0;
+    margin: 1rem 0;
+  }
+  ol.plan li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  ol.plan li:last-child { border-bottom: 0; }
+  ol.plan li::before {
+    content: counter(step);
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 50%;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.1rem;
+  }
+
+  /* ---- Footer ---- */
+  footer {
+    background: var(--bg-dark);
+    color: var(--bg);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  footer .row { margin: 0.3rem 0; }
+  footer .label { color: var(--fg-faint); }
+  footer code { color: var(--bg); font-size: 0.8rem; }
+
+  @media (max-width: 640px) {
+    .examples { grid-template-columns: 1fr; }
+    section { padding-left: 1rem; }
+    table { font-size: 0.85rem; }
+    th, td { padding: 0.45rem 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>site.eptss.* Lexicons</h1>
+  <div class="sub">Pre-publish review</div>
+  <div class="tag">AT Protocol records for async-sync community projects</div>
+  <div class="ident">@everyoneplaysthesamesong.com &nbsp;·&nbsp; did:plc:pf6izdjdonyd46isl3txwu4g</div>
+</header>
+
+<nav class="toc">
+  <div class="inner">
+    <a href="#pattern">pattern</a>
+    <a href="#overview">overview</a>
+    <a href="#project">project</a>
+    <a href="#subject">subject</a>
+    <a href="#round">round</a>
+    <a href="#assignment">assignment</a>
+    <a href="#voteResult">voteResult</a>
+    <a href="#graph">refs</a>
+    <a href="#example">example</a>
+    <a href="#decisions">decisions</a>
+    <a href="#outstanding">outstanding</a>
+    <a href="#plan">publish plan</a>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================================================ -->
+<section id="pattern">
+  <h2>What these lexicons describe</h2>
+  <p class="lead">A community of people, on a recurring schedule, independently creating responses to a shared subject, then converging to share what they made.</p>
+  <p style="color: var(--fg-muted)">EPTSS (cover songs) is the originating use case. The schemas are designed to fit the broader pattern: book clubs, recipe challenges, art prompts, writing circles, code katas, photography projects, film clubs.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="overview">
+  <h2>Five records, dependency-ordered</h2>
+  <ol class="records">
+    <li><div><div class="name">site.eptss.project</div><div class="blurb">the community</div></div></li>
+    <li><div><div class="name">site.eptss.subject</div><div class="blurb">the unit being responded to (song / book / recipe…)</div></div></li>
+    <li><div><div class="name">site.eptss.round</div><div class="blurb">one iteration with inline phases</div></div></li>
+    <li><div><div class="name">site.eptss.assignment</div><div class="blurb">prompts, instructions, or constraints attached to a round</div></div></li>
+    <li><div><div class="name">site.eptss.voteResult</div><div class="blurb">anonymous aggregate vote stats per (round, subject)</div></div></li>
+  </ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="project">
+  <h2>project</h2>
+  <div class="nsid">site.eptss.project</div>
+  <p class="desc">A long-running community.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th class="center">Req</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field">name</td><td class="type">string</td><td class="req yes">yes</td><td class="notes">Human-readable</td></tr>
+      <tr><td class="field">slug</td><td class="type">string</td><td class="req yes">yes</td><td class="notes">URL-safe; used as rkey</td></tr>
+      <tr><td class="field">description</td><td class="type">string</td><td class="req no">no</td><td class="notes">One paragraph</td></tr>
+      <tr><td class="field">subjectKind</td><td class="type">string</td><td class="req no">no</td><td class="notes">e.g. "song", "book", "recipe"</td></tr>
+      <tr><td class="field">createdAt</td><td class="type">datetime</td><td class="req yes">yes</td><td class="notes"></td></tr>
+    </tbody>
+  </table>
+  <div class="rkey"><span class="label">rkey:</span> <code>slug</code> (e.g. <code>cover</code>, <code>monthly-original</code>)</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="subject">
+  <h2>subject</h2>
+  <div class="nsid">site.eptss.subject</div>
+  <p class="desc">The thing a community is collectively responding to. Has identity beyond rounds — a song can be re-covered, a book re-read.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th class="center">Req</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field">title</td><td class="type">string</td><td class="req yes">yes</td><td class="notes"></td></tr>
+      <tr><td class="field">kind</td><td class="type">string</td><td class="req no">no</td><td class="notes">"song" / "book" / "recipe" / etc.</td></tr>
+      <tr><td class="field">attribution</td><td class="type">string</td><td class="req no">no</td><td class="notes">Artist / author / chef / source</td></tr>
+      <tr><td class="field">externalRef</td><td class="type">uri</td><td class="req no">no</td><td class="notes">MusicBrainz / ISBN / IMDB URL</td></tr>
+      <tr><td class="field">createdAt</td><td class="type">datetime</td><td class="req yes">yes</td><td class="notes"></td></tr>
+    </tbody>
+  </table>
+  <div class="rkey"><span class="label">rkey:</span> <code>subj-{postgresId}</code></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="round">
+  <h2>round</h2>
+  <div class="nsid">site.eptss.round</div>
+  <p class="desc">One iteration of a project. Inline phases array — each community defines its own phase vocabulary.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th class="center">Req</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field">project</td><td class="type">at-uri</td><td class="req yes">yes</td><td class="notes">→ project record</td></tr>
+      <tr><td class="field">slug</td><td class="type">string</td><td class="req yes">yes</td><td class="notes">e.g. round number</td></tr>
+      <tr><td class="field">subject</td><td class="type">at-uri</td><td class="req no">no</td><td class="notes">→ subject record (set when chosen)</td></tr>
+      <tr><td class="field">phases</td><td class="type">array</td><td class="req yes">yes</td><td class="notes">[{ name, at, description? }] — ordered events</td></tr>
+      <tr><td class="field">links</td><td class="type">array</td><td class="req no">no</td><td class="notes">[{ label, uri }] — playlists, gallery, etc.</td></tr>
+      <tr><td class="field">createdAt</td><td class="type">datetime</td><td class="req yes">yes</td><td class="notes"></td></tr>
+    </tbody>
+  </table>
+  <div class="rkey"><span class="label">rkey:</span> <code>r-{postgresId}</code></div>
+  <div class="note">EPTSS phase names: signupOpens, votingOpens, coveringBegins, coversDue, listeningParty</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="assignment">
+  <h2>assignment</h2>
+  <div class="nsid">site.eptss.assignment</div>
+  <p class="desc">An assignment attached to a round — the prompt, instruction, or constraint that shapes members' creative responses. A round may have many.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th class="center">Req</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field">round</td><td class="type">at-uri</td><td class="req yes">yes</td><td class="notes">→ round record</td></tr>
+      <tr><td class="field">body</td><td class="type">string</td><td class="req yes">yes</td><td class="notes">Up to 5000 chars</td></tr>
+      <tr><td class="field">createdAt</td><td class="type">datetime</td><td class="req yes">yes</td><td class="notes"></td></tr>
+    </tbody>
+  </table>
+  <div class="rkey"><span class="label">rkey:</span> <code>a-{postgresId}</code></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="voteResult">
+  <h2>voteResult</h2>
+  <div class="nsid">site.eptss.voteResult</div>
+  <p class="desc">Anonymous aggregate vote stats for one subject in one round. Individual ballots are <strong>never</strong> published. Scale is self-describing per record.</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th class="center">Req</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="field">round</td><td class="type">at-uri</td><td class="req yes">yes</td><td class="notes">→ round record</td></tr>
+      <tr><td class="field">subject</td><td class="type">at-uri</td><td class="req yes">yes</td><td class="notes">→ subject record</td></tr>
+      <tr><td class="field">average</td><td class="type">number</td><td class="req yes">yes</td><td class="notes">Mean on this round's scale</td></tr>
+      <tr><td class="field">count</td><td class="type">integer</td><td class="req yes">yes</td><td class="notes">Total votes cast</td></tr>
+      <tr><td class="field">scaleMin</td><td class="type">integer</td><td class="req yes">yes</td><td class="notes">Lowest vote (e.g. 1)</td></tr>
+      <tr><td class="field">scaleMax</td><td class="type">integer</td><td class="req yes">yes</td><td class="notes">Highest vote (e.g. 5)</td></tr>
+      <tr><td class="field">distribution</td><td class="type">array</td><td class="req yes">yes</td><td class="notes">Length = scaleMax − scaleMin + 1</td></tr>
+      <tr><td class="field">publishedAt</td><td class="type">datetime</td><td class="req yes">yes</td><td class="notes">= round's coveringBegins</td></tr>
+    </tbody>
+  </table>
+  <div class="rkey"><span class="label">rkey:</span> <code>vr-{roundId}-{subjectId}</code></div>
+  <div class="note">Only published when round's coveringBegins is in the past — no in-flight tally publishing.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="graph">
+  <h2>How records reference each other</h2>
+  <div class="graph">
+    <svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Record reference graph">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#6B7280"/>
+        </marker>
+      </defs>
+      <style>
+        .box { fill: #FFFFFF; stroke: #0D7F76; stroke-width: 1.6; }
+        .label { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; font-weight: 600; fill: #1F2937; }
+        .edge { stroke: #6B7280; stroke-width: 1.4; fill: none; }
+        .edge-label { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11px; fill: #6B7280; }
+      </style>
+
+      <!-- boxes -->
+      <rect class="box" x="40"  y="40"  width="160" height="50" rx="4"/>
+      <text class="label" x="120" y="71" text-anchor="middle">project</text>
+
+      <rect class="box" x="40"  y="270" width="160" height="50" rx="4"/>
+      <text class="label" x="120" y="301" text-anchor="middle">subject</text>
+
+      <rect class="box" x="280" y="155" width="160" height="50" rx="4"/>
+      <text class="label" x="360" y="186" text-anchor="middle">round</text>
+
+      <rect class="box" x="520" y="40"  width="160" height="50" rx="4"/>
+      <text class="label" x="600" y="71" text-anchor="middle">assignment</text>
+
+      <rect class="box" x="520" y="270" width="160" height="50" rx="4"/>
+      <text class="label" x="600" y="301" text-anchor="middle">voteResult</text>
+
+      <!-- edges (round → project, round → subject, prompt → round, vote → round, vote → subject) -->
+      <path class="edge" d="M280,165 C235,135 235,95 200,75" marker-end="url(#arrow)"/>
+      <text class="edge-label" x="225" y="120" text-anchor="middle">required</text>
+
+      <path class="edge" d="M280,195 C235,225 235,265 200,285" marker-end="url(#arrow)"/>
+      <text class="edge-label" x="225" y="245" text-anchor="middle">optional</text>
+
+      <path class="edge" d="M520,75 C485,95 485,135 440,165" marker-end="url(#arrow)"/>
+
+      <path class="edge" d="M520,285 C485,265 485,225 440,195" marker-end="url(#arrow)"/>
+
+      <path class="edge" d="M520,295 C420,335 280,335 200,295" marker-end="url(#arrow)"/>
+    </svg>
+    <div class="legend">All cross-references are at-uri strings (not CIDs) — stable across record updates; no cascading rewrites needed.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="example">
+  <h2>Worked example: round 'cover-25'</h2>
+  <p class="desc">What gets published, in actual record shape.</p>
+  <div class="examples">
+    <div class="code-card">
+      <span class="label">project &nbsp;rkey: cover</span>
+<pre>{
+  name: "Cover Project",
+  slug: "cover",
+  subjectKind: "song",
+  createdAt: "2023-01-01T..."
+}</pre>
+    </div>
+    <div class="code-card">
+      <span class="label">subject &nbsp;rkey: subj-42</span>
+<pre>{
+  title: "Wonderwall",
+  kind: "song",
+  attribution: "Oasis",
+  createdAt: "2024-..."
+}</pre>
+    </div>
+    <div class="code-card full">
+      <span class="label">round &nbsp;rkey: r-25</span>
+<pre>{
+  project: at://did:plc:.../site.eptss.project/cover,
+  slug: "25",
+  subject: at://did:plc:.../site.eptss.subject/subj-42,
+  phases: [
+    { name: "signupOpens",     at: "..." },
+    { name: "votingOpens",     at: "..." },
+    { name: "coveringBegins",  at: "..." },
+    { name: "coversDue",       at: "..." },
+    { name: "listeningParty",  at: "..." }
+  ],
+  links: [{ label: "Listening Party Playlist", uri: "https://..." }],
+  createdAt: "..."
+}</pre>
+    </div>
+    <div class="code-card full">
+      <span class="label">voteResult &nbsp;rkey: vr-25-42</span>
+<pre>{
+  round:        at://.../r-25,
+  subject:      at://.../subj-42,
+  average:      4.2,
+  count:        18,
+  scaleMin:     1,
+  scaleMax:     5,
+  distribution: [0, 2, 3, 7, 6],
+  publishedAt:  "..."
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="decisions">
+  <h2>Design decisions baked in</h2>
+  <ul class="decisions">
+    <li><strong>Phases inline, not a separate record.</strong> ATProto has no joins — separate would force N+1 fetches in every consumer.</li>
+    <li><strong>Subject IS a separate record.</strong> Has identity beyond rounds; re-covered songs share the same subject.</li>
+    <li><strong>Vote scale is per-record</strong> (scaleMin / scaleMax). EPTSS is 1..5 today; lexicon doesn't lock that in.</li>
+    <li><strong>Individual ballots never published</strong> — only aggregates.</li>
+    <li><strong>Vote results gated on coveringBegins in the past.</strong> No in-flight tally publishing.</li>
+    <li><strong>Communities emit native phase vocabulary.</strong> EPTSS uses signupOpens / coveringBegins / etc.; book clubs would use their own. No translation layer.</li>
+    <li><strong>Phase semantics derivable from current time vs. phase events</strong> — no enum field that could go stale.</li>
+    <li><strong>All cross-refs use at-uri strings (not CIDs).</strong> Stable across record updates.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="outstanding">
+  <h2>Not in this first cut</h2>
+  <ul class="decisions">
+    <li><strong>User-attributed records</strong> (submission, reflection, comment, profile) — gated behind cutover at end of current round + per-user <code>can_share_bsky</code> consent.</li>
+    <li><strong>DID ↔ Postgres user-id mapping column</strong> on <code>users</code> table. Needed for user-attributed records.</li>
+    <li><strong>Decision: is ATProto canonical, or a mirror,</strong> for post-cutover user content? Shapes dual-write semantics.</li>
+    <li><strong>Lexicon evolution / versioning strategy.</strong> Not needed yet; flagging.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="plan">
+  <h2>Publish plan</h2>
+  <ol class="plan">
+    <li><div><strong>project stage</strong> — 2 records (cover, monthly-original)</div></li>
+    <li><div>Spot-check on <code>pdsls.dev</code></div></li>
+    <li><div><strong>subject stage</strong> — ~200 song records</div></li>
+    <li><div><strong>round stage</strong> — ~50 rounds, with inline phases + links</div></li>
+    <li><div><strong>assignment stage</strong> — round assignments</div></li>
+    <li><div><strong>voteResult stage</strong> — aggregates per (round, subject), finished rounds only</div></li>
+    <li><div><strong>Full re-run with no flags</strong> as audit pass — should report 0 failures</div></li>
+  </ol>
+</section>
+
+</main>
+
+<footer>
+  <div class="row"><span class="label">Service account</span> &nbsp; <code>@everyoneplaysthesamesong.com</code></div>
+  <div class="row"><span class="label">DID</span> &nbsp; <code>did:plc:pf6izdjdonyd46isl3txwu4g</code></div>
+</footer>
+
+</body>
+</html>

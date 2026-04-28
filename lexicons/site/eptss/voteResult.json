@@ -1,0 +1,60 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.voteResult",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Aggregate (anonymous) vote result for a single subject in a single round. Individual ballots are never published.",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["round", "subject", "average", "count", "scaleMin", "scaleMax", "distribution", "publishedAt"],
+        "properties": {
+          "round": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.round record."
+          },
+          "subject": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.subject record this result is for."
+          },
+          "average": {
+            "type": "number",
+            "description": "Mean vote score on the scale defined by scaleMin/scaleMax.",
+            "minimum": 0
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of votes cast for this song in this round.",
+            "minimum": 0
+          },
+          "scaleMin": {
+            "type": "integer",
+            "description": "Lowest possible vote value on this round's scale (e.g. 1).",
+            "minimum": 0
+          },
+          "scaleMax": {
+            "type": "integer",
+            "description": "Highest possible vote value on this round's scale (e.g. 5). Length of distribution is (scaleMax - scaleMin + 1)."
+          },
+          "distribution": {
+            "type": "array",
+            "description": "Vote count per bucket on the [scaleMin, scaleMax] inclusive range. distribution[0] = count of scaleMin votes; distribution[length-1] = count of scaleMax votes.",
+            "minLength": 1,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this aggregate was finalized and published. Conventionally the round's coveringBegins (the moment voting closed)."
+          }
+        }
+      }
+    }
+  }
+}

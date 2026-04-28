@@ -1,0 +1,42 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.subject",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "A subject — the thing a community is collectively responding to in a round (a song to cover, a book to read, a recipe to cook, a theme to draw). Subjects have identity beyond any single round and may be referenced by multiple rounds over time.",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["title", "createdAt"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The subject's title (song name, book title, theme name, etc.).",
+            "maxLength": 512
+          },
+          "kind": {
+            "type": "string",
+            "description": "What kind of subject this is — e.g. 'song', 'book', 'recipe', 'theme', 'film'. Free-form to allow new community types; clients can specialize on known values.",
+            "maxLength": 64
+          },
+          "attribution": {
+            "type": "string",
+            "description": "Original creator or source — artist for a song, author for a book, chef for a recipe. Optional; some subjects (themes, prompts) have no attribution.",
+            "maxLength": 512
+          },
+          "externalRef": {
+            "type": "string",
+            "format": "uri",
+            "description": "Canonical identifier in an external system (MusicBrainz URI, ISBN URL, IMDB URL, etc.). Useful for cross-community discovery."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime",
+            "description": "When this subject was added to the catalog."
+          }
+        }
+      }
+    }
+  }
+}
