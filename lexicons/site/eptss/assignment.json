@@ -1,0 +1,31 @@
+{
+  "lexicon": 1,
+  "id": "site.eptss.assignment",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "An assignment attached to a round — the prompt, instructions, or constraints that shape members' creative responses. A round may have many.",
+      "key": "any",
+      "record": {
+        "type": "object",
+        "required": ["round", "body", "createdAt"],
+        "properties": {
+          "round": {
+            "type": "string",
+            "format": "at-uri",
+            "description": "AT-URI of the site.eptss.round record this assignment belongs to."
+          },
+          "body": {
+            "type": "string",
+            "description": "The assignment text — typically a prompt, instruction, or constraint.",
+            "maxLength": 5000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

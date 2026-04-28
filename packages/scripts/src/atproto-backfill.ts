@@ -8,7 +8,7 @@
  *   1. project     → site.eptss.project
  *   2. subject     → site.eptss.subject     (Postgres `songs` table)
  *   3. round       → site.eptss.round       (with inline phases array)
- *   4. prompt      → site.eptss.roundPrompt
+ *   4. assignment  → site.eptss.assignment  (Postgres `round_prompts` table)
  *   5. voteResult  → site.eptss.voteResult  (only for rounds past voting close)
  *
  * Stable rkeys derived from Postgres IDs + putRecord (upsert) make re-runs
@@ -23,7 +23,7 @@
  *
  * Flags:
  *   --dry-run             Read + plan, do not write to PDS
- *   --stage=<name>        Only run one stage (project|subject|round|prompt|voteResult|all)
+ *   --stage=<name>        Only run one stage (project|subject|round|assignment|voteResult|all)
  *   --limit=<n>           Cap records per stage
  */
 
@@ -47,7 +47,7 @@ const COLLECTIONS = {
   project: "site.eptss.project",
   subject: "site.eptss.subject",
   round: "site.eptss.round",
-  prompt: "site.eptss.roundPrompt",
+  assignment: "site.eptss.assignment",
   voteResult: "site.eptss.voteResult",
 } as const;
 
@@ -65,7 +65,7 @@ interface StageStats {
   failed: number;
 }
 
-const VALID_STAGES: StageName[] = ["all", "project", "subject", "round", "prompt", "voteResult"];
+const VALID_STAGES: StageName[] = ["all", "project", "subject", "round", "assignment", "voteResult"];
 
 function parseArgs(argv: string[]): Args {
   const args: Args = { dryRun: false, stage: "all", limit: null };
@@ -90,7 +90,7 @@ function rkeyFor(kind: keyof typeof COLLECTIONS, parts: (string | number)[]): st
     case "project": return tail;                    // "cover" | "originals"
     case "subject": return `subj-${tail}`;
     case "round": return `r-${tail}`;
-    case "prompt": return `p-${tail}`;
+    case "assignment": return `a-${tail}`;
     case "voteResult": return `vr-${tail}`;         // "vr-{roundId}-{subjectId}"
   }
 }
@@ -258,7 +258,7 @@ async function backfillRounds(agent: AtpAgent, did: string, args: Args): Promise
   return stats;
 }
 
-async function backfillPrompts(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
+async function backfillAssignments(agent: AtpAgent, did: string, args: Args): Promise<StageStats> {
   const stats: StageStats = { attempted: 0, written: 0, failed: 0 };
   const target = args.limit
     ? await db.select().from(roundPrompts).orderBy(roundPrompts.id).limit(args.limit)
@@ -266,20 +266,20 @@ async function backfillPrompts(agent: AtpAgent, did: string, args: Args): Promis
 
   for (const p of target) {
     stats.attempted++;
-    const rkey = rkeyFor("prompt", [p.id]);
+    const rkey = rkeyFor("assignment", [p.id]);
     try {
-      await putRecord(agent, did, COLLECTIONS.prompt, rkey, {
+      await putRecord(agent, did, COLLECTIONS.assignment, rkey, {
         round: uriFor(did, "round", rkeyFor("round", [p.roundId])),
-        promptText: p.promptText,
+        body: p.promptText,
         createdAt: p.createdAt.toISOString(),
       }, args.dryRun);
       stats.written++;
     } catch (err) {
       stats.failed++;
-      console.error(`  prompt/${rkey}  FAILED:`, err);
+      console.error(`  assignment/${rkey}  FAILED:`, err);
     }
   }
-  console.log(`  ${stats.written}/${stats.attempted} prompts written`);
+  console.log(`  ${stats.written}/${stats.attempted} assignments written`);
   return stats;
 }
 
@@ -423,7 +423,7 @@ async function main() {
     ["project", backfillProjects],
     ["subject", backfillSubjects],
     ["round", backfillRounds],
-    ["prompt", backfillPrompts],
+    ["assignment", backfillAssignments],
     ["voteResult", backfillVoteResults],
   ];
 

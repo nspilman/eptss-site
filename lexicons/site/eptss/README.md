@@ -58,8 +58,9 @@ two hats.
   Also has optional `links: [{label, uri}]` for external artifacts (listening
   party playlist, discussion thread, gallery).
 
-- **`site.eptss.roundPrompt`** — a creative prompt attached to a round. A
-  round may have many. Separate from the round so prompts can be added or
+- **`site.eptss.assignment`** — an assignment attached to a round: a prompt,
+  instruction, or constraint that shapes members' creative responses. A round
+  may have many. Separate from the round so assignments can be added or
   edited without rewriting the round record.
 
 ### Results
