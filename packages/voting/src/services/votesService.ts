@@ -296,6 +296,7 @@ export const submitVotes = async (
       await trx.insert(songSelectionVotes).values(votes);
     });
 
+    revalidatePath("/projects", "layout");
     return handleResponse(201, routes.dashboard.root(), "");
   } catch (error) {
     return handleResponse(500, routes.dashboard.root(), (error as Error).message);

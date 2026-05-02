@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms";
@@ -107,13 +108,16 @@ export function VotingPage({
     return result
   }
 
+  const [submitted, setSubmitted] = useState(false);
+
   const { isLoading, handleSubmit } = useFormSubmission({
     onSubmit,
     form,
     successMessage: "Your votes have been recorded!",
+    onSuccess: () => setSubmitted(true),
   });
 
-  if ((userRoundDetails?.hasVoted || hasVoted) && !showUpdateView) {
+  if ((submitted || userRoundDetails?.hasVoted || hasVoted) && !showUpdateView) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 10 }}

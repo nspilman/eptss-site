@@ -51,7 +51,7 @@ export function FormRadioGroupField({
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
-              value={field.value}
+              value={field.value ?? ""}
               className={orientation === "vertical" ? "flex flex-col gap-4" : "flex flex-row gap-8"}
               disabled={disabled}
             >
