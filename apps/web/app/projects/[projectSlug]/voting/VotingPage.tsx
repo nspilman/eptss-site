@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { z } from "zod"
 import { VoteOption } from "@eptss/core/types/vote"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 interface Props {
   roundId: number;
@@ -124,7 +125,7 @@ export function VotingPage({
           Thanks for voting!
         </h1>
         <div className="space-y-2 text-gray-300">
-          <p>Your votes have been recorded for Round {roundId}.</p>
+          <p>Your votes have been recorded for Round {getDisplayRoundNumber(roundId)}.</p>
           <p>You&apos;ll receive an email soon with the details of which song won.</p>
         </div>
       </motion.div>

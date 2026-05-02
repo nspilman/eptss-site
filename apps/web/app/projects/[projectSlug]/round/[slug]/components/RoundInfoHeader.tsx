@@ -1,4 +1,5 @@
 import React from "react";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 interface RoundInfoHeaderProps {
   roundId: number;
@@ -10,7 +11,7 @@ interface RoundInfoHeaderProps {
 export const RoundInfoHeader = ({ roundId, song, phase, showVotingResults }: RoundInfoHeaderProps) => (
   <div className="pb-4 text-center">
     <h1 className="font-fraunces text-white font-semibold text-lg pb-1">
-      Round {roundId} Info
+      Round {getDisplayRoundNumber(roundId)} Info
     </h1>
     {!(phase === "voting" && showVotingResults) && phase !== "voting" && (
       <h2 className="font-fraunces text-white font-bold text-xl">

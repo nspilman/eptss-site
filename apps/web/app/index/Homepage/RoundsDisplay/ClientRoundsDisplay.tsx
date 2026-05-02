@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Disc, Mic2, Users, Music, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 interface Props {
   rounds: {
@@ -83,7 +84,7 @@ export const ClientRoundsDisplay = ({ rounds, currentRoundId, isVotingPhase }: P
                             <div className="text-[var(--color-gray-400)] flex items-center gap-2 mb-3">
                               <span className="flex items-center gap-1">
                                 <Disc className="h-4 w-4" />
-                                Round {round.roundId}
+                                Round {getDisplayRoundNumber(round.roundId)}
                               </span>
                               {round.startDate && (
                                 <span className="flex items-center gap-1">

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { routes } from "@eptss/routing";
 import { useRouteParams } from "../ProjectContext";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 interface Submission {
   title: string;
@@ -77,7 +78,7 @@ export const SubmissionsGallery = ({ submissions, content }: SubmissionsGalleryP
                   <CardContent className="flex flex-col h-full">
                     <div className="flex items-start justify-between mb-3">
                       <Badge className="bg-[var(--color-accent-primary)]/50 text-white border-[var(--color-accent-primary)]">
-                        Round {submission.roundId}
+                        Round {getDisplayRoundNumber(submission.roundId)}
                       </Badge>
                       {submission.startDate && (
                         <Text size="xs" color="secondary" className="flex items-center gap-1">
