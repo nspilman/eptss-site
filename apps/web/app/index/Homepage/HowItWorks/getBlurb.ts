@@ -1,4 +1,5 @@
 import { Phase } from "@/types";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 export const getBlurb = ({
   phase,
@@ -9,13 +10,14 @@ export const getBlurb = ({
   phaseEndsDatelabel: string;
   roundId: number;
 }) => {
+  const displayRoundNumber = getDisplayRoundNumber(roundId);
   switch (phase) {
     case "signups":
-      return `Signups for round ${roundId} are open! Signups close ${phaseEndsDatelabel}`;
+      return `Signups for round ${displayRoundNumber} are open! Signups close ${phaseEndsDatelabel}`;
     case "voting":
-      return `Round ${roundId} - voting is due ${phaseEndsDatelabel}`;
+      return `Round ${displayRoundNumber} - voting is due ${phaseEndsDatelabel}`;
     case "covering":
-      return `Round ${roundId} - covers are due ${phaseEndsDatelabel}`;
+      return `Round ${displayRoundNumber} - covers are due ${phaseEndsDatelabel}`;
     case "celebration":
     default:
       return `The listening party is on ${phaseEndsDatelabel}, where the winning cover for the next round will be announced!`

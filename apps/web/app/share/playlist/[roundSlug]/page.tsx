@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { roundProvider, getProjectIdFromSlug, type ProjectSlug } from "@eptss/core";
 import { PlaylistPageClient } from "./PlaylistPageClient";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 type Props = {
   params: Promise<{
@@ -34,16 +35,17 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       };
     }
 
+    const displayRoundNumber = getDisplayRoundNumber(roundData.roundId);
     const songInfo = roundData.song?.title && roundData.song?.artist
       ? `${roundData.song.title} by ${roundData.song.artist}`
-      : `Round ${roundData.roundId}`;
+      : `Round ${displayRoundNumber}`;
 
     return {
       title: `${songInfo} Playlist | Everyone Plays the Same Song`,
-      description: `Listen to all the covers from Round ${roundData.roundId} of Everyone Plays the Same Song - ${songInfo}`,
+      description: `Listen to all the covers from Round ${displayRoundNumber} of Everyone Plays the Same Song - ${songInfo}`,
       openGraph: {
         title: `${songInfo} Playlist`,
-        description: `Listen to all the covers from Round ${roundData.roundId} of Everyone Plays the Same Song`,
+        description: `Listen to all the covers from Round ${displayRoundNumber} of Everyone Plays the Same Song`,
         images: [{ url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-image.png`, width: 1200, height: 630, alt: "Everyone Plays the Same Song" }],
       },
     };

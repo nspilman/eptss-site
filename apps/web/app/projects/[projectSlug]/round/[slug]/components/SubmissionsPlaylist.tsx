@@ -5,6 +5,7 @@ import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, SectionHeader, Button } from "@eptss/ui";
 import { Play } from "lucide-react";
 import type { Submission } from "@eptss/core/types/round";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 interface SubmissionsPlaylistProps {
   submissions: Submission[];
@@ -55,7 +56,7 @@ export const SubmissionsPlaylist = ({
 
   const songInfo = song?.title && song?.artist
     ? `${song.title} by ${song.artist}`
-    : `Round ${roundId}`;
+    : `Round ${getDisplayRoundNumber(roundId)}`;
 
   return (
     <section className="w-full max-w-4xl mx-auto my-8 px-4">
@@ -73,7 +74,7 @@ export const SubmissionsPlaylist = ({
       {tracks.length > 0 ? (
         <Playlist
           tracks={tracks}
-          title={`Round ${roundId} Covers`}
+          title={`Round ${getDisplayRoundNumber(roundId)} Covers`}
           description={songInfo}
           showTrackNumbers
           showWaveform

@@ -6,6 +6,7 @@ import { RoundInfo } from "@eptss/core/types/round";
 import { RoundInfoLabels } from "@eptss/project-config";
 import { Card, CardContent, Badge, Heading, Text } from "@eptss/ui";
 import { Sparkles } from "lucide-react";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 interface RoundInfoCardProps {
   roundInfo: RoundInfo | null;
@@ -62,7 +63,7 @@ export const RoundInfoCard = ({ roundInfo, labels }: RoundInfoCardProps) => {
       default:
         return {
           badge: labels.loading.badge,
-          title: `Round ${roundInfo.roundId}`,
+          title: `Round ${getDisplayRoundNumber(roundInfo.roundId)}`,
           subtitle: "",
           info: ""
         };

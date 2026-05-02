@@ -1,6 +1,7 @@
 import { PanelProps } from '../types';
 import { Check, Clock, Send } from 'lucide-react';
 import { Badge, Card, CardContent, Display, Text, Label, Heading, Button } from '@eptss/ui';
+import { getDisplayRoundNumber } from '@eptss/shared';
 
 interface HeroData {
   roundId: number;
@@ -91,9 +92,10 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
 
   // Format round title based on terminology
   const formatRoundTitle = () => {
+    const displayNumber = getDisplayRoundNumber(roundId);
     if (terminology?.useRoundNumber) {
       const prefix = terminology.roundPrefix ? `${terminology.roundPrefix} ` : '';
-      return `${prefix}${roundId}`;
+      return `${prefix}${displayNumber}`;
     }
 
     if (terminology?.roundFormat === 'month' && roundSlug) {
@@ -101,7 +103,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
       if (monthTitle) return monthTitle;
     }
 
-    return terminology?.roundPrefix !== undefined ? terminology.roundPrefix : `Round ${roundId}`;
+    return terminology?.roundPrefix !== undefined ? terminology.roundPrefix : `Round ${displayNumber}`;
   };
 
   const roundTitle = formatRoundTitle();

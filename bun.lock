@@ -296,6 +296,7 @@
       "dependencies": {
         "@eptss/profile": "workspace:*",
         "@eptss/referrals": "workspace:*",
+        "@eptss/shared": "workspace:*",
         "@eptss/ui": "workspace:*",
         "@eptss/user-content": "workspace:*",
         "react": "18.3.1",

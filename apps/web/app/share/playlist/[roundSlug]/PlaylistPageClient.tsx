@@ -7,6 +7,7 @@ import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button, Switch } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
 import type { RoundInfo } from "@eptss/core/types/round";
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 const AUTOPLAY_PARAM = "autoplay";
 const AUTOPLAY_ON_VALUE = "on";
@@ -67,7 +68,7 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
 
   const songInfo = roundData.song?.title && roundData.song?.artist
     ? `${roundData.song.title} by ${roundData.song.artist}`
-    : `Round ${roundData.roundId}`;
+    : `Round ${getDisplayRoundNumber(roundData.roundId)}`;
 
   return (
     <main className="min-h-screen p-4 md:p-8">
@@ -75,7 +76,7 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
         {/* Header */}
         <div className="mb-8 text-center">
           <Display size="md" className="mb-2">
-            {roundData.song?.title || `Round ${roundData.roundId}`}
+            {roundData.song?.title || `Round ${getDisplayRoundNumber(roundData.roundId)}`}
           </Display>
           {roundData.song?.artist && (
             <Text size="lg" color="secondary" className="mb-4">
@@ -109,7 +110,7 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
             </div>
             <Playlist
               tracks={tracks}
-              title={`Round ${roundData.roundId} Covers`}
+              title={`Round ${getDisplayRoundNumber(roundData.roundId)} Covers`}
               description={songInfo}
               showTrackNumbers
               showWaveform

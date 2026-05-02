@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import React from "react";
 import { RoundInfo } from "@eptss/core/types/round";
 import { Card, CardContent } from "@eptss/ui";
+import { getDisplayRoundNumber } from "@eptss/shared";
 
 export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null }) => {
   if (!roundInfo) {
@@ -32,7 +33,7 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
       case "signups":
         return {
           badge: "Signups Open",
-          title: `Round ${roundInfo.roundId} Signups`,
+          title: `Round ${getDisplayRoundNumber(roundInfo.roundId)} Signups`,
           subtitle: "Join our next round",
           info: `Signups close ${roundInfo.dateLabels?.signups?.closes ? new Date(roundInfo.dateLabels.signups.closes).toLocaleDateString() : ''}`
         };
@@ -60,7 +61,7 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
       default:
         return {
           badge: "Round Info",
-          title: `Round ${roundInfo.roundId}`,
+          title: `Round ${getDisplayRoundNumber(roundInfo.roundId)}`,
           subtitle: "",
           info: ""
         };

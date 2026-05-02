@@ -6,6 +6,7 @@ import { getCurrentPhase } from "@eptss/rounds/services";
 import { RoundSummary } from "./components/RoundSummary";
 import { redirect } from 'next/navigation';
 import { RoundParamsProvider } from '../../ProjectContext';
+import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
 import { Text } from "@eptss/ui";
 
@@ -57,7 +58,7 @@ export default async function Round({ params }: Props) {
 
       return (
         <RoundParamsProvider roundSlug={slug}>
-          <PageTitle title={`Round ${roundData.roundId} Overview`} />
+          <PageTitle title={`Round ${getDisplayRoundNumber(roundData.roundId)} Overview`} />
           <RoundSummary
             projectSlug={projectSlug}
             roundId={roundData.roundId}
@@ -75,7 +76,7 @@ export default async function Round({ params }: Props) {
     // For signup phase, we only need the basic round data
     return (
       <RoundParamsProvider roundSlug={slug}>
-        <PageTitle title={`Round ${roundData.roundId} Overview`} />
+        <PageTitle title={`Round ${getDisplayRoundNumber(roundData.roundId)} Overview`} />
         <RoundSummary
           projectSlug={projectSlug}
           roundId={roundData.roundId}
@@ -110,12 +111,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const roundData = await roundProvider({ slug, projectId });
     
-    let title = `Round ${roundData.roundId}`;
+    const displayRoundNumber = getDisplayRoundNumber(roundData.roundId);
+    let title = `Round ${displayRoundNumber}`;
     let description = "Everyone Plays the Same Song round details.";
-    
+
     if (roundData.song?.title && roundData.song?.artist) {
-      title = `${roundData.song.title} by ${roundData.song.artist} | Round ${roundData.roundId}`;
-      description = `Check out Round ${roundData.roundId} of Everyone Plays the Same Song, featuring ${roundData.song.title} by ${roundData.song.artist}.`;
+      title = `${roundData.song.title} by ${roundData.song.artist} | Round ${displayRoundNumber}`;
+      description = `Check out Round ${displayRoundNumber} of Everyone Plays the Same Song, featuring ${roundData.song.title} by ${roundData.song.artist}.`;
     }
     
     return {

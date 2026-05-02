@@ -151,7 +151,7 @@ export function VotingPage({
   
   return (
     <FormWrapper
-      title={`Vote for the songs you want to cover in Round ${roundId}`}
+      title={`Vote for the songs you want to cover in Round ${getDisplayRoundNumber(roundId)}`}
       description={
         <div className="space-y-2">
           <p>Rate each song from 1 to 5, where 5 means you&apos;d love to cover it!</p>
