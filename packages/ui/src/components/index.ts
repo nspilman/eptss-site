@@ -27,6 +27,7 @@ export * from './LoadingSpinner';
 export * from './BackgroundPattern';
 export * from './DataTable';
 export * from './StickyFooter';
+export * from './FormattedDate';
 
 // Re-export utility
 export { cn } from '../lib/utils';

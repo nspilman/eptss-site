@@ -2,7 +2,7 @@ import { monitoringProvider } from "@eptss/core";
 import HealthBars from './HealthBars';
 import { Metadata } from 'next';
 
-import { Text } from "@eptss/ui";
+import { FormattedDate, Text } from "@eptss/ui";
 export const metadata: Metadata = {
   title: "System Health | Everyone Plays the Same Song",
   description: "System health and monitoring dashboard for Everyone Plays the Same Song platform",
@@ -44,7 +44,7 @@ export default async function HealthPage() {
                 >
                   <div className="flex justify-between items-center">
                     <Text as="span" weight="medium">{run.testName}</Text>
-                    <span>{new Date(run.startedAt).toLocaleTimeString()}</span>
+                    <FormattedDate iso={run.startedAt} format="time" />
                   </div>
                 </div>
               ))}

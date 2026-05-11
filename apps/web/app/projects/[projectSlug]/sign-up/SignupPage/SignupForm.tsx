@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useFormSubmission, FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form, SectionHeader, AlertBox } from "@eptss/ui"
+import { Button, Form, FormattedDate, SectionHeader, AlertBox } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui"
 import { signupSchema, signupSchemaNoSong, nonLoggedInSchema, nonLoggedInSchemaNoSong, type SignupFormValues, type NonLoggedInSignupFormValues } from "@eptss/core/schemas/signupSchemas"
@@ -190,7 +190,12 @@ export function SignupForm({
   return (
     <FormWrapper
       title={title}
-      description={`Signups close ${new Date(signupsCloseDateLabel).toLocaleDateString()}${!isLoggedIn ? ' - Please provide your email to sign up' : ''}`}
+      description={
+        <>
+          Signups close <FormattedDate iso={signupsCloseDateLabel} format="full" />
+          {!isLoggedIn && ' - Please provide your email to sign up'}
+        </>
+      }
       onSubmit={handleSubmit}
     >
       <Form {...form}>

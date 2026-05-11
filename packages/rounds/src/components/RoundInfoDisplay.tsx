@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import React from "react";
 import { RoundInfo } from "@eptss/core/types/round";
-import { Card, CardContent } from "@eptss/ui";
+import { Card, CardContent, FormattedDate } from "@eptss/ui";
 import { getDisplayRoundNumber } from "@eptss/shared";
 
 export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null }) => {
@@ -28,42 +28,50 @@ export const RoundInfoDisplay = ({ roundInfo }: { roundInfo: RoundInfo | null })
     );
   }
 
-  const getPhaseContent = () => {
+  const buildInfo = (prefix: string, iso: string | undefined): React.ReactNode =>
+    iso ? <>{prefix} <FormattedDate iso={iso} format="full" /></> : "";
+
+  const getPhaseContent = (): {
+    badge: string;
+    title: string;
+    subtitle: string;
+    info: React.ReactNode;
+  } => {
     switch (roundInfo.phase) {
       case "signups":
         return {
           badge: "Signups Open",
           title: `Round ${getDisplayRoundNumber(roundInfo.roundId)} Signups`,
           subtitle: "Join our next round",
-          info: `Signups close ${roundInfo.dateLabels?.signups?.closes ? new Date(roundInfo.dateLabels.signups.closes).toLocaleDateString() : ''}`
+          info: buildInfo("Signups close", roundInfo.dateLabels?.signups?.closes),
         };
       case "voting":
         return {
           badge: "Voting Open",
           title: "Vote for the Next Song",
           subtitle: "Help choose our next cover",
-          info: `Voting closes ${roundInfo.dateLabels?.voting?.closes ? new Date(roundInfo.dateLabels.voting.closes).toLocaleDateString() : ''}`
+          info: buildInfo("Voting closes", roundInfo.dateLabels?.voting?.closes),
         };
       case "covering":
         return {
           badge: "Now Covering",
           title: roundInfo.song?.title || "Song Selected",
           subtitle: roundInfo.song?.artist ? `by ${roundInfo.song.artist}` : "",
-          info: `Covers due ${roundInfo.dateLabels?.covering?.closes ? new Date(roundInfo.dateLabels.covering.closes).toLocaleDateString() : ''}`
+          info: buildInfo("Covers due", roundInfo.dateLabels?.covering?.closes),
         };
       case "celebration":
         return {
           badge: "Celebration Phase",
           title: roundInfo.song?.title || "Covers Complete",
           subtitle: roundInfo.song?.artist ? `by ${roundInfo.song.artist}` : "",
-          info: `Celebration ends ${roundInfo.dateLabels?.celebration?.closes ? new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString() : ''}`
+          info: buildInfo("Celebration ends", roundInfo.dateLabels?.celebration?.closes),
         };
       default:
         return {
           badge: "Round Info",
           title: `Round ${getDisplayRoundNumber(roundInfo.roundId)}`,
           subtitle: "",
-          info: ""
+          info: "",
         };
     }
   };

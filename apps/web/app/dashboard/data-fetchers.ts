@@ -55,14 +55,8 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
   const phaseCloses = currentRound.dateLabels[currentRound.phase]?.closes;
   const timeRemaining = formatTimeRemaining(phaseCloses);
   const urgencyLevel = calculateUrgencyLevel(phaseCloses);
-  const dueDate = phaseCloses ? new Date(phaseCloses).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }) : undefined;
+  // Pass raw ISO; clients format in user's local timezone via <FormattedDate>.
+  const dueDateIso = phaseCloses || undefined;
 
   const heroData = {
     roundId: currentRound.roundId,
@@ -78,7 +72,7 @@ export async function fetchHeroData(projectId: string, projectSlug: string) {
     submitCtaLabel: projectConfig.content.pages.dashboard.submissionCtaLabel,
     // Countdown/deadline data
     timeRemaining,
-    dueDate,
+    dueDateIso,
     urgencyLevel,
     // User progress
     hasSignedUp: roundDetails?.hasSignedUp || false,
@@ -166,14 +160,8 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
   const phaseCloses = dateLabels[phase]?.closes;
   const timeRemaining = formatTimeRemaining(phaseCloses);
   const urgencyLevel = calculateUrgencyLevel(phaseCloses);
-  const dueDate = phaseCloses ? new Date(phaseCloses).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  }) : undefined;
+  // Pass raw ISO; clients format in user's local timezone via <FormattedDate>.
+  const dueDateIso = phaseCloses || undefined;
 
   // Use project-specific terminology
   const phaseNames: Record<Phase, string> = {
@@ -214,7 +202,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
           timeRemaining,
-          dueDate,
+          dueDateIso,
           urgencyLevel,
           hasSignedUp: roundDetails?.hasSignedUp || false,
           hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -246,7 +234,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
-        dueDate,
+        dueDateIso,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -270,7 +258,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
             phaseName: phaseNames[phase as Phase],
             phaseMessage: phaseMessages[phase as Phase],
             timeRemaining,
-            dueDate,
+            dueDateIso,
             urgencyLevel,
             hasSignedUp: roundDetails?.hasSignedUp || false,
             hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -292,7 +280,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
           timeRemaining,
-          dueDate,
+          dueDateIso,
           urgencyLevel,
           hasSignedUp: roundDetails?.hasSignedUp || false,
           hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -315,7 +303,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
           timeRemaining,
-          dueDate,
+          dueDateIso,
           urgencyLevel,
           hasSignedUp: roundDetails?.hasSignedUp || false,
           hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -336,7 +324,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
-        dueDate,
+        dueDateIso,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -359,7 +347,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
           phaseName: phaseNames[phase as Phase],
           phaseMessage: phaseMessages[phase as Phase],
           timeRemaining,
-          dueDate,
+          dueDateIso,
           urgencyLevel,
           hasSignedUp: roundDetails?.hasSignedUp || false,
           hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -380,7 +368,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
-        dueDate,
+        dueDateIso,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,
@@ -399,7 +387,7 @@ export async function fetchActionData(projectId: string, projectSlug: string) {
         phaseName: phaseNames[phase as Phase],
         phaseMessage: phaseMessages[phase as Phase],
         timeRemaining,
-        dueDate,
+        dueDateIso,
         urgencyLevel,
         hasSignedUp: roundDetails?.hasSignedUp || false,
         hasSubmitted: roundDetails?.hasSubmitted || false,

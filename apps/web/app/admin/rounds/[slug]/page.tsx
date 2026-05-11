@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { DataTable } from "@eptss/ui";
+import { DataTable, FormattedDate } from "@eptss/ui";
 import { roundProvider, votesProvider, COVER_PROJECT_ID } from "@eptss/core";
 import { routes } from "@eptss/routing";
 import { ArrowLeft } from "lucide-react";
@@ -17,8 +17,8 @@ async function RoundDetailContent({ slug, projectId }: { slug: string; projectId
 
   const datesArray = Object.entries(dateLabels)?.map(([key, { opens, closes }]) => ({
     phase: key,
-    opens: new Date(opens).toLocaleString(),
-    closes: new Date(closes).toLocaleString()
+    opens: <FormattedDate iso={opens} format="full" />,
+    closes: <FormattedDate iso={closes} format="full" />,
   }));
   const dateHeaders = [
     { key: 'phase', label: 'Phase', sortable: true },
@@ -44,7 +44,7 @@ async function RoundDetailContent({ slug, projectId }: { slug: string; projectId
     title: vote.title || '',
     artist: vote.artist || '',
     vote: vote.vote,
-    submittedAt: vote.createdAt ? new Date(vote.createdAt).toLocaleString() : ''
+    submittedAt: vote.createdAt ? <FormattedDate iso={vote.createdAt} format="full" /> : ''
   }));
 
   const individualVotesHeaders = [
