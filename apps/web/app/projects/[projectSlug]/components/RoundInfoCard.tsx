@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import React from "react";
 import { RoundInfo } from "@eptss/core/types/round";
 import { RoundInfoLabels } from "@eptss/project-config";
-import { Card, CardContent, Badge, Heading, Text } from "@eptss/ui";
+import { Card, CardContent, Badge, FormattedDate, Heading, Text } from "@eptss/ui";
 import { Sparkles } from "lucide-react";
 import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
@@ -30,42 +30,50 @@ export const RoundInfoCard = ({ roundInfo, labels }: RoundInfoCardProps) => {
     );
   }
 
-  const getPhaseContent = () => {
+  const buildInfo = (prefix: string, iso: string | undefined): React.ReactNode =>
+    iso ? <>{prefix} <FormattedDate iso={iso} format="full" /></> : "";
+
+  const getPhaseContent = (): {
+    badge: string;
+    title: string;
+    subtitle: string;
+    info: React.ReactNode;
+  } => {
     switch (roundInfo.phase) {
       case "signups":
         return {
           badge: labels.signups.badge,
           title: labels.signups.title,
           subtitle: labels.signups.subtitle,
-          info: `${labels.signups.closesPrefix} ${roundInfo.dateLabels?.signups?.closes ? new Date(roundInfo.dateLabels.signups.closes).toLocaleDateString() : ''}`
+          info: buildInfo(labels.signups.closesPrefix, roundInfo.dateLabels?.signups?.closes),
         };
       case "voting":
         return {
           badge: labels.voting.badge,
           title: labels.voting.title,
           subtitle: labels.voting.subtitle,
-          info: `${labels.voting.closesPrefix} ${roundInfo.dateLabels?.voting?.closes ? new Date(roundInfo.dateLabels.voting.closes).toLocaleDateString() : ''}`
+          info: buildInfo(labels.voting.closesPrefix, roundInfo.dateLabels?.voting?.closes),
         };
       case "covering":
         return {
           badge: labels.covering.badge,
           title: roundInfo.song?.title || labels.covering.titleFallback,
           subtitle: labels.covering.subtitle,
-          info: `${labels.covering.closesPrefix} ${roundInfo.dateLabels?.covering?.closes ? new Date(roundInfo.dateLabels.covering.closes).toLocaleDateString() : ''}`
+          info: buildInfo(labels.covering.closesPrefix, roundInfo.dateLabels?.covering?.closes),
         };
       case "celebration":
         return {
           badge: labels.celebration.badge,
           title: roundInfo.song?.title || labels.celebration.titleFallback,
           subtitle: labels.celebration.subtitle,
-          info: `${labels.celebration.closesPrefix} ${roundInfo.dateLabels?.celebration?.closes ? new Date(roundInfo.dateLabels.celebration.closes).toLocaleDateString() : ''}`
+          info: buildInfo(labels.celebration.closesPrefix, roundInfo.dateLabels?.celebration?.closes),
         };
       default:
         return {
           badge: labels.loading.badge,
           title: `Round ${getDisplayRoundNumber(roundInfo.roundId)}`,
           subtitle: "",
-          info: ""
+          info: "",
         };
     }
   };

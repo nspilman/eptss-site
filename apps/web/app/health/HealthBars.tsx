@@ -2,6 +2,7 @@
 
 import { useRef } from 'react';
 import {
+  FormattedDate,
   TooltipRoot,
   TooltipContent,
   TooltipProvider,
@@ -76,7 +77,7 @@ export default function HealthBars({ runs }: Props) {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-400">Time:</span>
-                        <span className="text-white">{new Date(run.startedAt).toLocaleString()}</span>
+                        <span className="text-white"><FormattedDate iso={run.startedAt} format="full" /></span>
                       </div>
                       {run.duration && (
                         <div className="flex justify-between">

@@ -1,10 +1,10 @@
 import type { PanelProps } from "@eptss/dashboard";
 
-import { Text } from "@eptss/ui";
+import { FormattedDate, Text } from "@eptss/ui";
 interface CountdownBarData {
   phase: 'signups' | 'voting' | 'covering' | 'celebration';
   timeRemaining?: string;
-  dueDate?: string;
+  dueDateIso?: string;
   urgencyLevel?: 'normal' | 'warning' | 'urgent';
   hasSignedUp?: boolean;
   hasVoted?: boolean;
@@ -29,7 +29,7 @@ export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
     return null;
   }
 
-  const { phase, timeRemaining, dueDate, urgencyLevel = 'normal', hasSignedUp, hasVoted, hasSubmitted, terminology } = data;
+  const { phase, timeRemaining, dueDateIso, urgencyLevel = 'normal', hasSignedUp, hasVoted, hasSubmitted, terminology } = data;
 
   const urgencyStyles = {
     normal: 'text-[var(--color-accent-primary)]',
@@ -72,10 +72,12 @@ export function CountdownBarWrapper({ data }: PanelProps<CountdownBarData>) {
           <span className={`font-bold ${urgencyStyles[urgencyLevel]}`}>
             {timeRemaining || 'Starting soon'}
           </span>
-          {dueDate && (
+          {dueDateIso && (
             <>
               <Text as="span" className="text-gray-600">·</Text>
-              <Text as="span" className="text-gray-400">Due {dueDate}</Text>
+              <Text as="span" className="text-gray-400">
+                Due <FormattedDate iso={dueDateIso} format="dueDate" />
+              </Text>
             </>
           )}
         </div>

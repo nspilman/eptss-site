@@ -1,6 +1,6 @@
 import { PanelProps } from '../types';
 import { Check, Clock, Send } from 'lucide-react';
-import { Badge, Card, CardContent, Display, Text, Label, Heading, Button } from '@eptss/ui';
+import { Badge, Card, CardContent, Display, Text, Label, Heading, Button, FormattedDate } from '@eptss/ui';
 import { getDisplayRoundNumber } from '@eptss/shared';
 
 interface HeroData {
@@ -32,7 +32,7 @@ interface HeroData {
   projectSlug?: string;
   // Countdown/deadline info
   timeRemaining?: string;
-  dueDate?: string;
+  dueDateIso?: string;
   urgencyLevel?: 'normal' | 'warning' | 'urgent';
   // User progress
   hasSignedUp?: boolean;
@@ -81,7 +81,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
     promptText,
     projectSlug,
     timeRemaining,
-    dueDate,
+    dueDateIso,
     urgencyLevel = 'normal',
     hasSignedUp,
     hasVoted,
@@ -243,7 +243,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
       {/* Bottom Content Group - pushed to bottom */}
       <div className="mt-auto space-y-6">
         {/* Deadline Section */}
-        {timeRemaining && dueDate && (
+        {timeRemaining && dueDateIso && (
           <div className="flex items-start gap-3 p-4 bg-[var(--color-gray-900)]/40 border border-[var(--color-gray-800)] rounded-lg">
             <Clock className="w-5 h-5 text-[var(--color-accent-primary)] mt-0.5" />
             <div>
@@ -251,7 +251,7 @@ export function HeroPanel({ data }: PanelProps<HeroData>) {
                 {getDeadlineLabel()}
               </Text>
               <Label size="xs" color="secondary" as="p">
-                {dueDate}
+                <FormattedDate iso={dueDateIso} format="dueDate" />
               </Label>
             </div>
             <div className="ml-auto text-right">
