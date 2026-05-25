@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { isValidProjectSlug, getProjectIdFromSlug, type ProjectSlug } from '@eptss/core';
+import { isValidProjectSlug, getProjectIdFromSlug, getProjectBySlug, getAllProjects, type ProjectSlug } from '@eptss/core';
 import { ProjectProvider } from './ProjectContext';
 
 interface ProjectLayoutProps {
@@ -17,6 +17,13 @@ export default async function ProjectLayout({ children, params }: ProjectLayoutP
     notFound();
   }
 
+  // 404 archived projects so every nested route under /projects/[slug]/...
+  // is hidden in one place.
+  const project = await getProjectBySlug(projectSlug);
+  if (project?.archivedAt) {
+    notFound();
+  }
+
   // Get project ID from slug
   const projectId = getProjectIdFromSlug(projectSlug as ProjectSlug);
 
@@ -28,11 +35,9 @@ export default async function ProjectLayout({ children, params }: ProjectLayoutP
 }
 
 /**
- * Generate static params for all projects
+ * Generate static params for all non-archived projects
  */
 export async function generateStaticParams() {
-  return [
-    { projectSlug: 'cover' },
-    { projectSlug: 'monthly-original' },
-  ];
+  const projects = await getAllProjects();
+  return projects.map((project) => ({ projectSlug: project.slug }));
 }
