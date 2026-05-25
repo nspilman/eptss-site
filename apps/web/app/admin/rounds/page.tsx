@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 };
 
 async function RoundsContent({ projectId }: { projectId: string }) {
-  // Fetch all projects
-  const projects = await getAllProjects();
+  // Fetch all projects, including archived (admin needs to manage them)
+  const projects = await getAllProjects({ includeArchived: true });
 
   // Fetch rounds and config for each project
   const roundsByProject: Record<string, any[]> = {};
@@ -31,7 +31,7 @@ async function RoundsContent({ projectId }: { projectId: string }) {
 
   return (
     <RoundsPageClient
-      projects={projects.map(p => ({ id: p.id, name: p.name, slug: p.slug }))}
+      projects={projects.map(p => ({ id: p.id, name: p.name, slug: p.slug, archivedAt: p.archivedAt }))}
       initialProjectId={projectId}
       roundsByProject={roundsByProject}
       projectConfigs={projectConfigs}

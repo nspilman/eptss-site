@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 };
 
 async function ToolsContent({ projectId }: { projectId: string }) {
-  // Fetch all projects
-  const projects = await getAllProjects();
+  // Fetch all projects, including archived (admin needs to manage them)
+  const projects = await getAllProjects({ includeArchived: true });
 
   // Fetch rounds for each project
   const roundsByProject: Record<string, any[]> = {};
@@ -26,7 +26,7 @@ async function ToolsContent({ projectId }: { projectId: string }) {
 
   return (
     <ToolsPageClient
-      projects={projects.map(p => ({ id: p.id, name: p.name, slug: p.slug }))}
+      projects={projects.map(p => ({ id: p.id, name: p.name, slug: p.slug, archivedAt: p.archivedAt }))}
       initialProjectId={projectId}
       roundsByProject={roundsByProject}
       allUsers={allUsers}

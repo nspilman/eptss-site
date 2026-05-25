@@ -6,6 +6,7 @@ export type Project = {
   id: string;
   name: string;
   slug: string;
+  archivedAt?: Date | string | null;
 };
 
 type ProjectSelectorProps = {
@@ -33,7 +34,7 @@ export function ProjectSelector({
         <SelectContent>
           {projects.map((project) => (
             <SelectItem key={project.id} value={project.id}>
-              {project.name}
+              {project.name}{project.archivedAt ? " — Archived" : ""}
             </SelectItem>
           ))}
         </SelectContent>

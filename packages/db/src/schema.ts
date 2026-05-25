@@ -454,6 +454,7 @@ export const projects = pgTable("projects", {
   slug: text("slug").notNull().unique(),
   config: jsonb("config").notNull().default(sql`'{}'::jsonb`),
   isActive: boolean("is_active").notNull().default(true),
+  archivedAt: timestamp("archived_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 }, (table) => ({

@@ -39,7 +39,7 @@ export function ProjectConfigEditor() {
   useEffect(() => {
     async function loadProjects() {
       try {
-        const allProjects = await getAllProjects();
+        const allProjects = await getAllProjects({ includeArchived: true });
         setProjects(allProjects);
         if (allProjects.length > 0) {
           setSelectedProject(allProjects[0]);
@@ -166,7 +166,7 @@ export function ProjectConfigEditor() {
         >
           {projects.map((project) => (
             <option key={project.id} value={project.id}>
-              {project.name} ({project.slug})
+              {project.name} ({project.slug}){project.archivedAt ? ' — Archived' : ''}
             </option>
           ))}
         </select>
@@ -174,6 +174,11 @@ export function ProjectConfigEditor() {
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${selectedProject?.isActive ? 'bg-green-500/20 text-green-600' : 'bg-gray-500/20 text-gray-600'}`}>
             {selectedProject?.isActive ? '● Active' : '○ Inactive'}
           </span>
+          {selectedProject?.archivedAt && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-600">
+              ⏸ Archived
+            </span>
+          )}
           <Text as="span" size="sm" color="secondary">
             ID: {selectedProject?.id.slice(0, 8)}...
           </Text>
