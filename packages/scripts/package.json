@@ -4,6 +4,10 @@
   "private": true,
   "scripts": {
     "post-song": "bun src/post-song-to-bsky.ts",
+    "atproto:create-jam": "bun src/atproto/create-eptss-jam.ts",
+    "atproto:create-round": "bun src/atproto/create-eptss-round.ts",
+    "atproto:create-user-signup": "bun src/atproto/create-user-signup.ts",
+    "atproto:backfill-rounds": "bun src/atproto/backfill/backfill-rounds.ts",
     "create-spotify-playlist": "bun src/createSpotifyPlaylist.ts",
     "create-youtube-playlist": "bun src/createYoutubePlaylist.ts",
     "populate-round-slugs": "bun src/populate-round-slugs.ts",

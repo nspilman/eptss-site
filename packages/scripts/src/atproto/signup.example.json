@@ -1,0 +1,10 @@
+{
+  "_comment_round": "Strong-ref to the round you're signing up for. Get uri + cid from the create-eptss-round output.",
+  "round": {
+    "uri": "at://did:plc:pf6izdjdonyd46isl3txwu4g/at.atjam.round/REPLACE_WITH_ROUND_RKEY",
+    "cid": "REPLACE_WITH_ROUND_CID"
+  },
+
+  "_comment_note": "Optional. Whatever you'd say when signing up — what you plan to do, instrumentation, anything. Max 300 graphemes per the lexicon. Omit the field if you don't want one.",
+  "note": "Backfill: I participated in Round 29."
+}

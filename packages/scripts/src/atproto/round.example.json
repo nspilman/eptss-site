@@ -1,0 +1,26 @@
+{
+  "_comment_jam": "AT URI + CID printed by create-eptss-jam.ts. Same values for every round under this jam.",
+  "jam": {
+    "uri": "at://did:plc:REPLACE_ME/at.atjam.jam/REPLACE_ME",
+    "cid": "REPLACE_ME"
+  },
+
+  "name": "Round 27",
+  "assignment": "Record your cover of the chosen song by the submission deadline. Any arrangement, any instrumentation — make it yours.",
+
+  "_comment_song": "Inlined as round.subject. $type lets future readers (atjam.site, EPTSS UI) discriminate.",
+  "song": {
+    "title": "Heart of Glass",
+    "artist": "Blondie"
+  },
+
+  "_comment_milestones": "Labels in kebab-case match at.atjam.round knownValues. Dates in ISO 8601 UTC.",
+  "milestones": [
+    { "label": "signup-deadline",     "date": "2026-06-01T23:59:59.000Z" },
+    { "label": "submission-deadline", "date": "2026-06-22T23:59:59.000Z" },
+    { "label": "closing-event",       "date": "2026-06-29T00:00:00.000Z" }
+  ],
+
+  "_comment_acceptedSubmissionTypes": "Placeholder — audio payload decision is still open (see docs/atproto-migration/README.md decision #7). The field needs >=1 NSID for the record to validate; nothing downstream consumes it until submission flow is built.",
+  "acceptedSubmissionTypes": ["fm.plyr.track"]
+}
