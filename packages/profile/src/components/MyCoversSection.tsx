@@ -1,14 +1,13 @@
 /**
- * "Your covers" — Phase A of the claim flow.
+ * "Your covers" — the claim-flow surface on the profile page.
  *
- * A read-only preview, shown to a linked user, of the covers EPTSS holds on
- * their behalf: the submissions that currently live on the EPTSS admin account
- * and will become claimable into the user's own repo as the flow rolls out.
- * Nothing here writes or moves anything — it just makes ownership legible.
- *
- * Presentational only: the page fetches the data (see apps/web/lib/atproto/claims.ts)
- * and passes it in, so this package stays free of DB/network concerns.
+ * Shows a linked user the covers EPTSS holds on their behalf and lets them claim
+ * each one into their own repo. Presentational only: the page fetches the data
+ * (see apps/web/lib/atproto/claims.ts) and passes both the covers and a
+ * `renderClaimAction` slot, so this package stays free of DB/network/server-action
+ * concerns — the actual claim button is an app-level client component.
  */
+import type { ReactNode } from 'react';
 import {
   Card,
   CardContent,
@@ -26,15 +25,23 @@ export interface CoverItem {
   songArtist: string | null;
   deliverableUrl: string | null;
   createdAt: string | Date | null;
+  /** Non-null once claimed into the user's repo. */
+  claimedAtUri: string | null;
 }
 
 interface MyCoversSectionProps {
   covers: CoverItem[];
-  /** The linked Bluesky handle, for the "claimable to @you" framing. */
+  /** The linked Bluesky handle, for the "claim to @you" framing. */
   handle: string | null;
+  /** App-supplied claim/unclaim control for a cover (kept out of this package). */
+  renderClaimAction?: (cover: CoverItem) => ReactNode;
 }
 
-export function MyCoversSection({ covers, handle }: MyCoversSectionProps) {
+export function MyCoversSection({
+  covers,
+  handle,
+  renderClaimAction,
+}: MyCoversSectionProps) {
   const count = covers.length;
   const plural = count === 1 ? '' : 's';
   const them = count === 1 ? 'it' : 'them';
@@ -46,10 +53,10 @@ export function MyCoversSection({ covers, handle }: MyCoversSectionProps) {
         <CardDescription>
           {count === 0
             ? "We don't have any covers on file for you yet."
-            : `${count} cover${plural} from your EPTSS history. We're moving EPTSS ` +
-              `onto the AT Protocol; as claiming rolls out you'll be able to claim ` +
-              `${them} to your own Bluesky account${handle ? ` (@${handle})` : ''}, ` +
-              `so ${them} live in your repo — owned by you.`}
+            : `${count} cover${plural} from your EPTSS history. Claim ${them} to ` +
+              `move ${them} into your own Bluesky account${handle ? ` (@${handle})` : ''} ` +
+              `— so ${them} live in your repo, owned by you. (Your covers stay safe ` +
+              `with EPTSS either way.)`}
         </CardDescription>
       </CardHeader>
 
@@ -91,9 +98,18 @@ export function MyCoversSection({ covers, handle }: MyCoversSectionProps) {
                     </div>
                   )}
                 </div>
-                <Badge variant="outline" className="shrink-0 text-xs">
-                  Held by EPTSS
-                </Badge>
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  {c.claimedAtUri ? (
+                    <Badge variant="secondary" className="text-xs">
+                      Claimed
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-xs">
+                      Held by EPTSS
+                    </Badge>
+                  )}
+                  {renderClaimAction?.(c)}
+                </div>
               </div>
             );
           })}

@@ -10,6 +10,7 @@ import {
   MyCoversSection,
 } from '@eptss/profile';
 import { getClaimableCovers } from '@/lib/atproto/claims';
+import { ClaimButton } from './ClaimButton';
 
 export default async function ProfilePage({
   searchParams,
@@ -71,7 +72,16 @@ export default async function ProfilePage({
           existingDid={existingDid}
         />
         {identity && (
-          <MyCoversSection covers={covers} handle={identity.handle} />
+          <MyCoversSection
+            covers={covers}
+            handle={identity.handle}
+            renderClaimAction={(cover) => (
+              <ClaimButton
+                submissionId={cover.submissionId}
+                claimed={cover.claimedAtUri != null}
+              />
+            )}
+          />
         )}
       </div>
     </div>

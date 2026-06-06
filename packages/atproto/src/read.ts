@@ -115,3 +115,23 @@ export async function getRound(
   const data = await getEptssData(did);
   return data.rounds.find((r) => r.rkey === rkey) ?? null;
 }
+
+/**
+ * Fetch one `at.atjam.submission` record straight off a repo (the EPTSS admin
+ * scaffold by default). Public read, no auth. Used by the claim flow to copy a
+ * backfilled submission's content into the claimer's own repo. Returns null if
+ * the record doesn't exist (e.g. not backfilled to the network).
+ */
+export async function getSubmissionRecord(
+  rkey: string,
+  did: string = EPTSS_DID,
+): Promise<RecordEnvelope<Submission> | null> {
+  const pds = await resolvePds(did);
+  const url = new URL(`${pds}/xrpc/com.atproto.repo.getRecord`);
+  url.searchParams.set("repo", did);
+  url.searchParams.set("collection", "at.atjam.submission");
+  url.searchParams.set("rkey", rkey);
+  const res = await fetch(url.toString());
+  if (!res.ok) return null;
+  return (await res.json()) as RecordEnvelope<Submission>;
+}

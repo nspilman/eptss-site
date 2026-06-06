@@ -28,6 +28,8 @@ export interface ClaimableCover {
   /** Deliverable: uploaded audio if present, else the legacy SoundCloud link. */
   deliverableUrl: string | null;
   createdAt: Date;
+  /** User-repo URI once claimed; null while still on the EPTSS admin scaffold. */
+  claimedAtUri: string | null;
 }
 
 /**
@@ -47,6 +49,7 @@ export async function getClaimableCovers(
       audioFileUrl: submissions.audioFileUrl,
       soundcloudUrl: submissions.soundcloudUrl,
       createdAt: submissions.createdAt,
+      claimedAtUri: submissions.claimedAtUri,
     })
     .from(submissions)
     .leftJoin(roundMetadata, eq(submissions.roundId, roundMetadata.id))
@@ -62,6 +65,7 @@ export async function getClaimableCovers(
     songArtist: r.songArtist,
     deliverableUrl: r.audioFileUrl ?? r.soundcloudUrl ?? null,
     createdAt: r.createdAt,
+    claimedAtUri: r.claimedAtUri,
   }));
 }
 

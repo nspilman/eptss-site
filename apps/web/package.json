@@ -29,6 +29,7 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
+    "@atproto/api": "^0.13.35",
     "@atproto/oauth-client-node": "^0.4.1",
     "@babel/core": "^7.24.3",
     "@date-fns/tz": "^1.2.0",
