@@ -19,9 +19,16 @@ interface ProfileHeaderProps {
   signupCount: number;
   submissionCount: number;
   voteCount: number;
+  /**
+   * If the user has linked an ATProto identity, the resolved bsky handle.
+   * null when not linked (or when handle resolution failed). Displayed as
+   * a chip next to the join date — small but immediate visible payoff for
+   * the link action.
+   */
+  atprotoHandle?: string | null;
 }
 
-export function ProfileHeader({ user, signupCount, submissionCount, voteCount }: ProfileHeaderProps) {
+export function ProfileHeader({ user, signupCount, submissionCount, voteCount, atprotoHandle }: ProfileHeaderProps) {
   // Get user initials for avatar fallback
   const getInitials = () => {
     if (user.username) {
@@ -79,6 +86,12 @@ export function ProfileHeader({ user, signupCount, submissionCount, voteCount }:
                 <CalendarIcon className="size-4" />
                 <span>Joined {joinDate}</span>
               </div>
+              {atprotoHandle && (
+                <div className="flex items-center gap-2 text-[var(--color-accent-primary)]">
+                  <span aria-hidden>🦋</span>
+                  <span className="break-all">@{atprotoHandle}</span>
+                </div>
+              )}
             </div>
 
             {/* Stats with gradient borders */}

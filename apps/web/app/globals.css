@@ -1,5 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@eptss/atproto/styles";
+
+/* Let Tailwind see the class names used in the @eptss/atproto components. */
+@source "../../../packages/atproto/src";
 
 @custom-variant dark (&:is(.dark *));
 

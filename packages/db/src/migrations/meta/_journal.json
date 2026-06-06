@@ -302,6 +302,20 @@
       "when": 1779740414086,
       "tag": "0056_add_project_archived_at",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1779859815033,
+      "tag": "0057_friendly_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1779861314615,
+      "tag": "0058_furry_tomorrow_man",
+      "breakpoints": true
     }
   ]
 }

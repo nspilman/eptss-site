@@ -2,7 +2,7 @@
 
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@eptss/ui'],
+  transpilePackages: ['@eptss/ui', '@eptss/atproto'],
   images: {
     remotePatterns: [
       {

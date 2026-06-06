@@ -496,3 +496,62 @@ export const pendingUploads = pgTable("pending_uploads", {
 
 export type PendingUpload = typeof pendingUploads.$inferSelect;
 export type NewPendingUpload = typeof pendingUploads.$inferInsert;
+
+// ============================================================================
+// ATPROTO IDENTITY — see docs/atproto-migration/
+// ============================================================================
+//
+// The user's ATProto identity: a link between their EPTSS user_id and their
+// Bluesky DID, plus the OAuth session that lets EPTSS write records on
+// their behalf (signups, submissions). Multiple identities per user is
+// possible in principle (different bsky accounts at different times) — the
+// soft-delete pattern preserves history while ensuring only one active
+// link per (user, DID) pair.
+//
+// OAuth library plumbing (transient state store for the redirect dance)
+// lives in ./atproto-oauth-schema.ts so domain tables and infrastructure
+// don't share visual real estate here.
+
+/**
+ * The user's ATProto identity — the crosswalk between an EPTSS user_id
+ * and a Bluesky DID.
+ *
+ * The OAuth session blob itself does NOT live here. It lives in
+ * `atproto_oauth_sessions` (see atproto-oauth-schema.ts) keyed by DID.
+ * Joining the two gives "who's behind this session" but they're stored
+ * separately because the library only knows about DIDs.
+ *
+ * unlinked_at marks soft-deletion. The partial unique index ensures one
+ * *active* link per (user, DID) pair while preserving link history.
+ */
+export const userAtprotoIdentities = pgTable("user_atproto_identities", {
+  id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
+  userId: uuid("user_id").references(() => users.userid, { onDelete: "cascade" }).notNull(),
+  did: text("did").notNull(),
+  handle: text("handle"), // captured at link time; may go stale if user changes handle on bsky
+  linkedAt: timestamp("linked_at").defaultNow().notNull(),
+  unlinkedAt: timestamp("unlinked_at"),
+}, (table) => ({
+  // One active identity per (user, did) pair. Soft-deleted rows are exempt.
+  uniqueActiveIdentity: uniqueIndex("user_atproto_identities_active_idx")
+    .on(table.userId, table.did)
+    .where(sql`${table.unlinkedAt} IS NULL`),
+  // DID → user lookup (for incoming events from the network).
+  didIdx: index("user_atproto_identities_did_idx").on(table.did),
+  // user → identities lookup (typical query pattern).
+  userIdIdx: index("user_atproto_identities_user_id_idx").on(table.userId),
+}));
+
+export type UserAtprotoIdentity = typeof userAtprotoIdentities.$inferSelect;
+export type NewUserAtprotoIdentity = typeof userAtprotoIdentities.$inferInsert;
+
+// OAuth-library plumbing: re-exported from a separate file so it doesn't
+// share visual space with domain tables.
+export {
+  atprotoOauthState,
+  type AtprotoOauthState,
+  type NewAtprotoOauthState,
+  atprotoOauthSessions,
+  type AtprotoOauthSession,
+  type NewAtprotoOauthSession,
+} from "./atproto-oauth-schema";
