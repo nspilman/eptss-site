@@ -16,7 +16,7 @@
  * rest of the atproto plumbing; follow this dialect for atproto code, not the
  * core-services one used elsewhere in the app.
  */
-import { db, submissions, roundMetadata, songs, eq, desc } from "@eptss/db";
+import { db, submissions, roundMetadata, songs, eq, desc, inArray } from "@eptss/db";
 
 export interface ClaimableCover {
   /** Postgres submissions.id — the stable identity carried across the move. */
@@ -63,4 +63,27 @@ export async function getClaimableCovers(
     deliverableUrl: r.audioFileUrl ?? r.soundcloudUrl ?? null,
     createdAt: r.createdAt,
   }));
+}
+
+/**
+ * The claim "location index": for the given submission ids, which have been
+ * claimed, and to what user-repo URI? Returned as a plain map so the DB-free
+ * read package (`applyClaims`) can re-home claimed records without touching the
+ * database. Submissions still on the admin scaffold (`claimed_at_uri` NULL) are
+ * simply absent from the map.
+ */
+export async function getClaimedSubmissionUris(
+  submissionIds: number[],
+): Promise<Map<number, string>> {
+  if (submissionIds.length === 0) return new Map();
+  const rows = await db
+    .select({ id: submissions.id, claimedAtUri: submissions.claimedAtUri })
+    .from(submissions)
+    .where(inArray(submissions.id, submissionIds));
+
+  const map = new Map<number, string>();
+  for (const r of rows) {
+    if (r.claimedAtUri) map.set(r.id, r.claimedAtUri);
+  }
+  return map;
 }

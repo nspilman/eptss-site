@@ -149,15 +149,30 @@ ALTER TABLE submissions ADD COLUMN claimed_at_uri text;       -- canonical URI o
 ALTER TABLE submissions ADD COLUMN claimed_at     timestamptz;
 ```
 
-The reader (`packages/atproto/src/read.ts`) gets **one** new center — a location
-function answering *"where do this round's submissions live?"*:
+### The claim-aware read boundary (resolved + built)
 
-- **today** → merge admin-repo (unclaimed) + `claimed_at_uri` (claimed), with the
-  dedup rule **prefer the user copy, suppress the admin copy**;
-- **Phase D** → answer from backlinks instead, no caller change.
+The seam is **one pure function** — `applyClaims(submissions, claimMap)` in
+`packages/atproto/src/claim-view.ts` — answering *"where does each submission
+live?"*:
 
-The round still groups by the round strong-ref exactly as today — the strong-ref is
-preserved across the move, so grouping is untouched.
+- **today** → the app sources the claim map from Postgres
+  (`getClaimedSubmissionUris` in `apps/web/lib/atproto/claims.ts`) and passes it
+  in; `applyClaims` swaps each claimed submission's `uri` to its user-repo home.
+- **Phase D** → feed `applyClaims` a backlinks-derived map instead — no caller
+  change.
+
+The decision that made this clean: **the read package stays DB-free.** The map is
+a plain `Map<submissionId, uri>` argument, so the database boundary never crosses
+into the package. And because a claimed record keeps the same rkey and the same
+content, only its *home* changes — so there is no re-fetch from the user's PDS for
+display, and no duplicate to dedupe (the package only ever read the admin copy).
+The round still groups by the round strong-ref exactly as today; the strong-ref is
+preserved across the move.
+
+**Status: built and claim-ready.** With nothing claimed yet, the map is empty and
+`applyClaims` is a pass-through, so `/atproto/round/<rkey>` renders identically off
+the admin scaffold. This read side ships *before* any write, so the first claim can
+never produce a record the reader cannot place. Covered by `claim-view.test.ts`.
 
 ---
 

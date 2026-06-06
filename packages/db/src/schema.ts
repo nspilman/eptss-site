@@ -94,6 +94,13 @@ export const submissions = pgTable("submissions", {
   roundId: bigint("round_id", { mode: "number" }).references(() => roundMetadata.id).notNull(),
   additionalComments: text("additional_comments"),
   userId: uuid("user_id").references(() => users.userid).notNull(),
+  // ATPROTO CLAIM — see docs/atproto-migration/claiming-backfilled-submissions.md.
+  // When a user claims their backfilled cover, the canonical record moves to
+  // their own repo; this is the "location index" recording where it now lives
+  // (DID-based, so it survives handle changes). NULL = still on the EPTSS admin
+  // scaffold. Phase D drops these once reads cut over to backlinks.
+  claimedAtUri: text("claimed_at_uri"),
+  claimedAt: timestamp("claimed_at"),
 });
 
 // User Roles Table

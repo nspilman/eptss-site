@@ -3,6 +3,7 @@ export * from "./state";
 export * from "./format";
 export * from "./read";
 export * from "./eptss-rkey";
+export * from "./claim-view";
 
 export { StatePill } from "./components/StatePill";
 export { TransitLine } from "./components/TransitLine";

@@ -1,5 +1,11 @@
-import { getRound, RoundDetail, eptssSubmissionId } from "@eptss/atproto";
+import {
+  getRound,
+  RoundDetail,
+  eptssSubmissionId,
+  applyClaims,
+} from "@eptss/atproto";
 import { db, submissions, users, eq, inArray } from "@eptss/db";
+import { getClaimedSubmissionUris } from "@/lib/atproto/claims";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +51,18 @@ export default async function RoundPage({
   const data = await getRound(rkey);
   if (!data) notFound();
 
+  // Claim-aware read: re-home any submissions a participant has claimed to their
+  // own repo. With nothing claimed yet, the claim map is empty and applyClaims
+  // is a pass-through — the page renders identically off the admin scaffold.
+  const submissionIds = data.submissions
+    .map((s) => eptssSubmissionId(s.uri))
+    .filter((id): id is number => id != null);
+  const claimedUris = await getClaimedSubmissionUris(submissionIds);
+  const submissions = applyClaims(data.submissions, claimedUris);
+  const roundData = { ...data, submissions };
+
   const submitterNames = await resolveSubmitterNames(
-    data.submissions.map((s) => s.uri),
+    submissions.map((s) => s.uri),
   );
 
   return (
@@ -55,7 +71,7 @@ export default async function RoundPage({
         ← all rounds
       </a>
       <div className="mt-6">
-        <RoundDetail data={data} submitterNames={submitterNames} />
+        <RoundDetail data={roundData} submitterNames={submitterNames} />
       </div>
     </div>
   );
