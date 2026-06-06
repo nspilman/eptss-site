@@ -26,8 +26,14 @@ export function ClaimButton({
   function run(action: () => Promise<ClaimResult>) {
     setError(null);
     startTransition(async () => {
-      const res = await action();
-      if (!res.ok) setError(res.error ?? 'Something went wrong.');
+      try {
+        const res = await action();
+        console.log('[claim] single result', res);
+        if (!res.ok) setError(res.error ?? 'Something went wrong.');
+      } catch (err) {
+        console.error('[claim] single threw', err);
+        setError(err instanceof Error ? err.message : 'request failed');
+      }
     });
   }
 

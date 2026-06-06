@@ -11,6 +11,7 @@ import {
 } from '@eptss/profile';
 import { getClaimableCovers } from '@/lib/atproto/claims';
 import { ClaimButton } from './ClaimButton';
+import { ClaimAllButton } from './ClaimAllButton';
 
 export default async function ProfilePage({
   searchParams,
@@ -39,6 +40,7 @@ export default async function ProfilePage({
   // on their behalf. Only fetched when linked — there's nothing to claim to
   // otherwise, and unlinked users shouldn't pay for the query.
   const covers = identity ? await getClaimableCovers(userId) : [];
+  const unclaimedCount = covers.filter((c) => c.claimedAtUri == null).length;
 
   // Decode atproto link status from the callback redirect params.
   const linkedSuccess = sp.linked === 'success';
@@ -75,6 +77,11 @@ export default async function ProfilePage({
           <MyCoversSection
             covers={covers}
             handle={identity.handle}
+            headerAction={
+              unclaimedCount >= 1 ? (
+                <ClaimAllButton count={unclaimedCount} />
+              ) : undefined
+            }
             renderClaimAction={(cover) => (
               <ClaimButton
                 submissionId={cover.submissionId}

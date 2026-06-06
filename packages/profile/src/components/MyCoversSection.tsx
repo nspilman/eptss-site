@@ -35,12 +35,15 @@ interface MyCoversSectionProps {
   handle: string | null;
   /** App-supplied claim/unclaim control for a cover (kept out of this package). */
   renderClaimAction?: (cover: CoverItem) => ReactNode;
+  /** App-supplied header control, e.g. a "Claim all" button. */
+  headerAction?: ReactNode;
 }
 
 export function MyCoversSection({
   covers,
   handle,
   renderClaimAction,
+  headerAction,
 }: MyCoversSectionProps) {
   const count = covers.length;
   const plural = count === 1 ? '' : 's';
@@ -49,7 +52,10 @@ export function MyCoversSection({
   return (
     <Card className="border-gray-800 bg-gray-900/50">
       <CardHeader>
-        <CardTitle>Your covers</CardTitle>
+        <div className="flex items-start justify-between gap-3">
+          <CardTitle>Your covers</CardTitle>
+          {count > 0 && headerAction}
+        </div>
         <CardDescription>
           {count === 0
             ? "We don't have any covers on file for you yet."
