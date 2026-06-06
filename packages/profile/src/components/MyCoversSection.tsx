@@ -21,7 +21,6 @@ import { formatDate } from '@eptss/core/utils/formatDate';
 
 export interface CoverItem {
   submissionId: number;
-  eptssRkey: string;
   roundSlug: string | null;
   songTitle: string | null;
   songArtist: string | null;
@@ -47,10 +46,10 @@ export function MyCoversSection({ covers, handle }: MyCoversSectionProps) {
         <CardDescription>
           {count === 0
             ? "We don't have any covers on file for you yet."
-            : `These ${count} cover${plural} currently live on the EPTSS account. ` +
-              `As claiming rolls out you'll be able to move ${them} into your own ` +
-              `Bluesky account${handle ? ` (@${handle})` : ''}, so ${them} ` +
-              `live in your repo — owned by you.`}
+            : `${count} cover${plural} from your EPTSS history. We're moving EPTSS ` +
+              `onto the AT Protocol; as claiming rolls out you'll be able to claim ` +
+              `${them} to your own Bluesky account${handle ? ` (@${handle})` : ''}, ` +
+              `so ${them} live in your repo — owned by you.`}
         </CardDescription>
       </CardHeader>
 
@@ -76,8 +75,20 @@ export function MyCoversSection({ covers, handle }: MyCoversSectionProps) {
                       <span className="text-gray-500"> — {c.songArtist}</span>
                     )}
                   </div>
-                  {meta && (
-                    <div className="mt-0.5 text-xs text-gray-500">{meta}</div>
+                  {(meta || c.deliverableUrl) && (
+                    <div className="mt-0.5 flex items-center gap-2 text-xs text-gray-500">
+                      {meta && <span>{meta}</span>}
+                      {c.deliverableUrl && (
+                        <a
+                          href={c.deliverableUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[var(--color-accent-primary)] hover:underline"
+                        >
+                          listen ↗
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
                 <Badge variant="outline" className="shrink-0 text-xs">

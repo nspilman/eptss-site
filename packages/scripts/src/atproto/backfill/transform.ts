@@ -17,6 +17,7 @@
  * rkeys are derived from Postgres IDs so re-running with putRecord upserts
  * rather than duplicating.
  */
+import { eptssRoundRkey, eptssSubmissionRkey } from "@eptss/atproto/rkey";
 import type { RoundExport } from "./extract";
 
 export interface StrongRef {
@@ -65,13 +66,6 @@ const SELECTION_TYPE = "site.eptss.songSelection";
 const LISTENING_PARTY_TYPE = "site.eptss.listeningParty";
 const DEFAULT_ASSIGNMENT =
   "Record your cover of this round's song and submit your recording.";
-
-export function roundRkey(roundId: number): string {
-  return `eptss-r${roundId}`;
-}
-export function submissionRkey(submissionId: number): string {
-  return `eptss-sub${submissionId}`;
-}
 
 /**
  * Map the five EPTSS phase dates to milestones. coversDue uses the standard
@@ -186,7 +180,7 @@ export function transformRound(
       continue;
     }
     submissions.push({
-      rkey: submissionRkey(s.id),
+      rkey: eptssSubmissionRkey(s.id),
       sourceSubmissionId: s.id,
       username: s.username,
       url: s.url,
@@ -216,7 +210,7 @@ export function transformRound(
 
   return {
     roundId: r.id,
-    rkey: roundRkey(r.id),
+    rkey: eptssRoundRkey(r.id),
     record,
     submissions,
     warnings,

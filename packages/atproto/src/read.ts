@@ -70,17 +70,6 @@ function rkeyOf(uri: string): string {
   return uri.split("/").pop() ?? uri;
 }
 
-/**
- * The backfill keys each submission record `eptss-sub<postgres-id>`. Recover
- * that `submissions.id` from a submission AT URI so the app can cross-walk to
- * DB-only data (the submitter's username) that the generic record doesn't
- * carry. Returns null when the rkey isn't a backfilled submission.
- */
-export function eptssSubmissionId(submissionUri: string): number | null {
-  const m = /^eptss-sub(\d+)$/.exec(rkeyOf(submissionUri));
-  return m ? Number(m[1]) : null;
-}
-
 export async function getEptssData(did: string = EPTSS_DID): Promise<EptssData> {
   const pds = await resolvePds(did);
   const [roundRecs, subRecs, jamRecs] = await Promise.all([

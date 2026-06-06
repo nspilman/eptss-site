@@ -2,22 +2,25 @@
  * Phase A of the claim flow — "see yourself in the round."
  * See docs/atproto-migration/claiming-backfilled-submissions.md.
  *
- * Read-only listing of a linked user's EPTSS covers: the submissions that today
- * live on the EPTSS admin PDS and that, as claiming rolls out, will become
- * movable into the user's own repo. This phase makes the existing crosswalk
- * visible and proves the data is right *before* any write trusts it.
+ * Read-only listing of a linked user's EPTSS covers, drawn from the existing
+ * Postgres crosswalk: it makes ownership legible — and proves the data is
+ * right — *before* any write (Phase B) trusts it. Pure Postgres read; no
+ * network, no writes; nothing here encodes an rkey, because Phase A never needs
+ * one. (The backfill writer and the read layer share the one encode/decode home
+ * in @eptss/atproto/rkey; Phase B will import the encoder from there when it
+ * actually writes to the user's repo.)
  *
- * Pure Postgres read — no network, no writes. The rkey each cover is backfilled
- * under (`eptss-sub<id>`) is derived here so every later phase shares one stable
- * identity scheme (matches `eptssSubmissionId` in @eptss/atproto).
+ * Data-access convention: atproto feature reads query @eptss/db directly from
+ * the app/route layer (here, and in app/atproto/...), rather than going through
+ * @eptss/core services. These reads are feature-local and co-located with the
+ * rest of the atproto plumbing; follow this dialect for atproto code, not the
+ * core-services one used elsewhere in the app.
  */
 import { db, submissions, roundMetadata, songs, eq, desc } from "@eptss/db";
 
 export interface ClaimableCover {
   /** Postgres submissions.id — the stable identity carried across the move. */
   submissionId: number;
-  /** The rkey this cover is backfilled under on the admin PDS (and keeps when claimed). */
-  eptssRkey: string;
   roundId: number;
   roundSlug: string | null;
   songTitle: string | null;
@@ -53,7 +56,6 @@ export async function getClaimableCovers(
 
   return rows.map((r) => ({
     submissionId: r.submissionId,
-    eptssRkey: `eptss-sub${r.submissionId}`,
     roundId: r.roundId,
     roundSlug: r.roundSlug,
     songTitle: r.songTitle,
