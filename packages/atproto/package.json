@@ -9,6 +9,7 @@
     "./styles": "./src/styles.css"
   },
   "scripts": {
+    "check-types": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
