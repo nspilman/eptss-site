@@ -1,4 +1,5 @@
-import { getEptssData, RoundList } from "@eptss/atproto";
+import { getEptssData } from "@eptss/atproto";
+import { RoundList } from "./_components";
 
 export const dynamic = "force-dynamic";
 

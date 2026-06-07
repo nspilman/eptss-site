@@ -1,6 +1,5 @@
 import {
   getRound,
-  RoundDetail,
   eptssSubmissionId,
   applyClaims,
   resolvePlyrTrackIds,
@@ -9,6 +8,8 @@ import {
 import { db, submissions, users, eq, inArray } from "@eptss/db";
 import { getClaimedSubmissionUris } from "@/lib/atproto/claims";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { RoundDetail } from "../../_components";
 
 export const dynamic = "force-dynamic";
 
@@ -113,9 +114,12 @@ export default async function RoundPage({
 
   return (
     <div>
-      <a href="/atproto" className="text-sm text-ink-3 hover:underline">
+      <Link
+        href="/atproto"
+        className="text-sm text-[var(--color-accent-primary)] hover:underline"
+      >
         ← all rounds
-      </a>
+      </Link>
       <div className="mt-6">
         <RoundDetail
           data={roundData}

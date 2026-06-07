@@ -3,10 +3,11 @@
 /**
  * The reading room degrades gracefully. Reads go straight to the live AT Protocol
  * network, so a slow or unreachable PDS shouldn't shatter the page — this boundary
- * catches a failed *render* and offers to try again. The records themselves are
- * safe on the network; this is only the view of them.
+ * catches a failed render and offers to try again. The records themselves are safe
+ * on the network; this is only the view of them.
  */
 import { useEffect } from 'react';
+import { Button } from '@eptss/ui';
 
 export default function AtprotoError({
   error,
@@ -20,20 +21,17 @@ export default function AtprotoError({
   }, [error]);
 
   return (
-    <div className="py-8">
-      <h1 className="text-2xl font-semibold tracking-tight text-ink">
-        The reading room is quiet
+    <div className="py-12 text-center">
+      <h1 className="text-2xl font-semibold tracking-tight text-gray-100">
+        Couldn&apos;t reach the network
       </h1>
-      <p className="mt-3 max-w-prose leading-relaxed text-ink-2">
-        We couldn&apos;t reach the network just now. Nothing is lost — the records
-        live on the AT Protocol; this is only the view of them.
+      <p className="mx-auto mt-3 max-w-md leading-relaxed text-gray-400">
+        Nothing is lost — these rounds live as records on the AT Protocol. This is
+        only the view of them.
       </p>
-      <button
-        onClick={reset}
-        className="mt-6 rounded-sharp border border-line px-4 py-2 text-sm text-signal hover:underline"
-      >
+      <Button onClick={reset} variant="outline" className="mt-6">
         Try again
-      </button>
+      </Button>
     </div>
   );
 }

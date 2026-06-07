@@ -6,6 +6,7 @@ export * from "./eptss-rkey";
 export * from "./claim-view";
 export * from "./at-uri";
 export * from "./plyr";
+export * from "./soundcloud";
 
 export { StatePill } from "./components/StatePill";
 export { TransitLine } from "./components/TransitLine";
