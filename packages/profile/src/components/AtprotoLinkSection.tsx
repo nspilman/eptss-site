@@ -46,16 +46,16 @@ export function AtprotoLinkSection({
   const [submitting, setSubmitting] = useState(false);
   const [clientError, setClientError] = useState<string | null>(null);
 
-  async function handleLink(e: React.FormEvent) {
-    e.preventDefault();
-    if (!handle.trim()) return;
+  async function startLink(handleValue: string) {
+    const h = handleValue.trim();
+    if (!h) return;
     setSubmitting(true);
     setClientError(null);
     try {
       const res = await fetch('/api/atproto/link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ handle: handle.trim() }),
+        body: JSON.stringify({ handle: h }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -69,6 +69,11 @@ export function AtprotoLinkSection({
       setClientError(err instanceof Error ? err.message : 'Network error');
       setSubmitting(false);
     }
+  }
+
+  function handleLink(e: React.FormEvent) {
+    e.preventDefault();
+    void startLink(handle);
   }
 
   return (
@@ -97,7 +102,7 @@ export function AtprotoLinkSection({
         )}
 
         {identity ? (
-          <div className="space-y-2 text-sm">
+          <div className="space-y-3 text-sm">
             <div className="flex items-baseline gap-2">
               <span className="text-gray-400">Linked to:</span>
               <span className="font-medium text-[var(--color-accent-primary)]">
@@ -106,6 +111,36 @@ export function AtprotoLinkSection({
             </div>
             <div className="text-xs text-gray-500 break-all">{identity.did}</div>
             {/* Unlink deferred — would call DELETE /api/atproto/unlink. */}
+
+            {/* Re-link refreshes the OAuth session with the app's current scope —
+                needed when new record types are added (e.g. plyr tracks). Re-auth
+                with the same DID just updates the stored session; the link is kept. */}
+            <div className="space-y-2 border-t border-gray-800 pt-3">
+              <p className="text-xs text-gray-400">
+                Re-link to refresh permissions — e.g. to grant new record types
+                like plyr tracks. You&apos;ll re-approve on Bluesky; your linked
+                account stays the same.
+              </p>
+              {!identity.handle && (
+                <Input
+                  type="text"
+                  value={handle}
+                  onChange={(e) => setHandle(e.target.value)}
+                  placeholder="nate.bsky.social"
+                  disabled={submitting}
+                />
+              )}
+              {clientError && (
+                <div className="text-sm text-red-400">{clientError}</div>
+              )}
+              <Button
+                variant="outline"
+                disabled={submitting || (!identity.handle && !handle.trim())}
+                onClick={() => startLink(identity.handle ?? handle)}
+              >
+                {submitting ? 'Redirecting…' : 'Re-link to refresh permissions'}
+              </Button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleLink} className="space-y-3">

@@ -15,13 +15,25 @@ import { stateStore, sessionStore } from "./stores";
 
 const globalForOAuth = globalThis as unknown as {
   oauthClient: NodeOAuthClient | undefined;
+  oauthClientScope: string | undefined;
 };
 
 export function getOAuthClient(): NodeOAuthClient {
-  if (globalForOAuth.oauthClient) return globalForOAuth.oauthClient;
+  const metadata = getClientMetadata();
+  // Key the cache by scope. Without this, the globalThis cache survives HMR, so
+  // editing SCOPE in metadata.ts is silently ignored until a full process
+  // restart — and in dev the scope is baked into the client_id, so a stale
+  // client requests the OLD scope and writes to new collections get a 403
+  // ScopeMissingError. Rebuilding when the scope changes self-heals that.
+  if (
+    globalForOAuth.oauthClient &&
+    globalForOAuth.oauthClientScope === metadata.scope
+  ) {
+    return globalForOAuth.oauthClient;
+  }
 
   const client = new NodeOAuthClient({
-    clientMetadata: getClientMetadata(),
+    clientMetadata: metadata,
     stateStore,
     sessionStore,
   });
@@ -30,6 +42,7 @@ export function getOAuthClient(): NodeOAuthClient {
   // would lose in-memory state and complicate debugging). In production
   // the cache is harmless — one instance per process is what we want.
   globalForOAuth.oauthClient = client;
+  globalForOAuth.oauthClientScope = metadata.scope;
   return client;
 }
 

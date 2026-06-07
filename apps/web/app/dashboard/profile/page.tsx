@@ -10,8 +10,10 @@ import {
   MyCoversSection,
 } from '@eptss/profile';
 import { getClaimableCovers } from '@/lib/atproto/claims';
+import { plyrOwnership } from '@/lib/atproto/plyr-rehome';
 import { ClaimButton } from './ClaimButton';
 import { ClaimAllButton } from './ClaimAllButton';
+import { PlyrRehomeButton } from './PlyrRehomeButton';
 
 export default async function ProfilePage({
   searchParams,
@@ -67,12 +69,14 @@ export default async function ProfilePage({
 
       <div className="space-y-6 mt-6">
         <PersonalInfoTab user={userData} />
-        <AtprotoLinkSection
-          identity={identity ? { did: identity.did, handle: identity.handle } : null}
-          linkedSuccess={linkedSuccess}
-          linkedError={linkedError}
-          existingDid={existingDid}
-        />
+        <div id="atproto-link">
+          <AtprotoLinkSection
+            identity={identity ? { did: identity.did, handle: identity.handle } : null}
+            linkedSuccess={linkedSuccess}
+            linkedError={linkedError}
+            existingDid={existingDid}
+          />
+        </div>
         {identity && (
           <MyCoversSection
             covers={covers}
@@ -88,6 +92,12 @@ export default async function ProfilePage({
                 claimed={cover.claimedAtUri != null}
               />
             )}
+            renderPlyrAction={(cover) => {
+              const st = plyrOwnership(cover.plyrTrackUri ?? null, identity.did);
+              return st === 'none' ? null : (
+                <PlyrRehomeButton submissionId={cover.submissionId} state={st} />
+              );
+            }}
           />
         )}
       </div>

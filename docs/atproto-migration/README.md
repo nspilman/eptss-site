@@ -65,6 +65,12 @@ Claiming backfilled submissions — re-homing legacy covers from the admin PDS t
 | [claiming-the-form.md](./claiming-the-form.md) | **North Star** — the finished system (user-owned records, network-as-index, no leftover machinery). The definition of "done." |
 | [claiming-backfilled-submissions.md](./claiming-backfilled-submissions.md) | **Build Plan** — the safe, staged scaffold that reaches the Form without losing irreplaceable data or making reads fragile. The scaffold comes down in the final phase. |
 
+A re-hosted cover is *also* an `fm.plyr.track`. Moving that track to its maker's own plyr identity turned out to be a clean in-app record re-home — verified working:
+
+| Doc | Role |
+|---|---|
+| [claiming-plyr-tracks.md](./claiming-plyr-tracks.md) | **Resolved** — the in-app OAuth re-home (record duplication) is enough; plyr's firehose indexer re-attributes the track to the user's DID (`audio_storage: r2`) after a short lag — no plyr token, no re-upload. Includes the "what we feared vs. what was true" correction. The only residual case is brand-new uploads (audio never on plyr), which still need a plyr upload token. |
+
 ## Cross-cutting concerns
 
 These touch multiple phases and get their own docs once the per-phase docs settle:

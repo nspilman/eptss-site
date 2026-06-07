@@ -27,6 +27,8 @@ export interface CoverItem {
   createdAt: string | Date | null;
   /** Non-null once claimed into the user's repo. */
   claimedAtUri: string | null;
+  /** This cover's `fm.plyr.track` URI, if re-hosted to plyr — null otherwise. */
+  plyrTrackUri?: string | null;
 }
 
 interface MyCoversSectionProps {
@@ -35,6 +37,8 @@ interface MyCoversSectionProps {
   handle: string | null;
   /** App-supplied claim/unclaim control for a cover (kept out of this package). */
   renderClaimAction?: (cover: CoverItem) => ReactNode;
+  /** App-supplied plyr-track re-home control for a cover (kept out of this package). */
+  renderPlyrAction?: (cover: CoverItem) => ReactNode;
   /** App-supplied header control, e.g. a "Claim all" button. */
   headerAction?: ReactNode;
 }
@@ -43,6 +47,7 @@ export function MyCoversSection({
   covers,
   handle,
   renderClaimAction,
+  renderPlyrAction,
   headerAction,
 }: MyCoversSectionProps) {
   const count = covers.length;
@@ -115,6 +120,7 @@ export function MyCoversSection({
                     </Badge>
                   )}
                   {renderClaimAction?.(c)}
+                  {renderPlyrAction?.(c)}
                 </div>
               </div>
             );

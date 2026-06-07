@@ -7,7 +7,7 @@
  * needed yet; submissions are grouped to their round by the round strong-ref
  * they already carry.
  */
-import type { Jam, RecordEnvelope, Round, Submission } from "./types";
+import type { Jam, PlyrTrack, RecordEnvelope, Round, Submission } from "./types";
 
 /** The EPTSS service account that owns the jam, rounds, and backfilled submissions. */
 export const EPTSS_DID = "did:plc:pf6izdjdonyd46isl3txwu4g";
@@ -134,4 +134,23 @@ export async function getSubmissionRecord(
   const res = await fetch(url.toString());
   if (!res.ok) return null;
   return (await res.json()) as RecordEnvelope<Submission>;
+}
+
+/**
+ * Fetch one `fm.plyr.track` record off a repo (public read, no auth). The in-app
+ * plyr re-home flow reads the admin scaffold's copy so it can duplicate it into
+ * the claimer's own repo. Returns null if the record doesn't exist.
+ */
+export async function getPlyrTrackRecord(
+  did: string,
+  rkey: string,
+): Promise<RecordEnvelope<PlyrTrack> | null> {
+  const pds = await resolvePds(did);
+  const url = new URL(`${pds}/xrpc/com.atproto.repo.getRecord`);
+  url.searchParams.set("repo", did);
+  url.searchParams.set("collection", "fm.plyr.track");
+  url.searchParams.set("rkey", rkey);
+  const res = await fetch(url.toString());
+  if (!res.ok) return null;
+  return (await res.json()) as RecordEnvelope<PlyrTrack>;
 }

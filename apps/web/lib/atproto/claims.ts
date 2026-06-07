@@ -30,6 +30,10 @@ export interface ClaimableCover {
   createdAt: Date;
   /** User-repo URI once claimed; null while still on the EPTSS admin scaffold. */
   claimedAtUri: string | null;
+  /** This cover's `fm.plyr.track` URI, if re-hosted to plyr — null otherwise. The
+   *  URI's DID tells us whether the track is still on the admin scaffold or has
+   *  been re-homed to the user's repo (see lib/atproto/plyr-rehome.ts). */
+  plyrTrackUri: string | null;
 }
 
 /**
@@ -50,6 +54,7 @@ export async function getClaimableCovers(
       soundcloudUrl: submissions.soundcloudUrl,
       createdAt: submissions.createdAt,
       claimedAtUri: submissions.claimedAtUri,
+      plyrTrackUri: submissions.plyrTrackUri,
     })
     .from(submissions)
     .leftJoin(roundMetadata, eq(submissions.roundId, roundMetadata.id))
@@ -66,6 +71,7 @@ export async function getClaimableCovers(
     deliverableUrl: r.audioFileUrl ?? r.soundcloudUrl ?? null,
     createdAt: r.createdAt,
     claimedAtUri: r.claimedAtUri,
+    plyrTrackUri: r.plyrTrackUri ?? null,
   }));
 }
 

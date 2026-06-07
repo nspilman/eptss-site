@@ -85,6 +85,26 @@ export interface Jam {
   createdAt?: string;
 }
 
+/**
+ * A cover re-hosted to plyr.fm (`fm.plyr.track`). The playable audio is
+ * `audioUrl` — plyr's R2 stream — which is independent of which repo holds the
+ * record, so the record can be re-homed between repos without breaking playback.
+ * `audioBlob` is the original file living in the *uploading* repo; it is repo-
+ * scoped and is intentionally not carried when a record is copied across repos.
+ */
+export interface PlyrTrack {
+  $type?: string;
+  title?: string;
+  artist?: string;
+  audioUrl?: string;
+  duration?: number;
+  fileType?: string;
+  imageUrl?: string;
+  audioBlob?: unknown;
+  createdAt?: string;
+  [k: string]: unknown;
+}
+
 /** A record as returned by com.atproto.repo.listRecords. */
 export interface RecordEnvelope<T> {
   uri: string;
