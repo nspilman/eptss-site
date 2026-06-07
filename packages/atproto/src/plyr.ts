@@ -15,6 +15,11 @@ export function plyrTrackEmbedUrl(trackId: number | string): string {
   return `https://plyr.fm/embed/track/${trackId}`;
 }
 
+/** The canonical plyr.fm track page — a full listen page, not the iframe embed. */
+export function plyrTrackPageUrl(trackId: number | string): string {
+  return `https://plyr.fm/track/${trackId}`;
+}
+
 interface PlyrApiTrack {
   id: number;
   atproto_record_uri?: string;

@@ -11,9 +11,43 @@ import {
 } from '@eptss/profile';
 import { getClaimableCovers } from '@/lib/atproto/claims';
 import { plyrOwnership } from '@/lib/atproto/plyr-rehome';
+import { fetchPlyrTrackIndex, plyrTrackPageUrl } from '@eptss/atproto';
 import { ClaimButton } from './ClaimButton';
 import { ClaimAllButton } from './ClaimAllButton';
 import { PlyrRehomeButton } from './PlyrRehomeButton';
+
+/**
+ * Resolve each cover's plyr.fm listen URL (the canonical track page), for covers
+ * re-hosted to plyr. The cover already carries its `fm.plyr.track` AT URI; we ask
+ * plyr's API for the numeric track id behind it (grouped by repo DID) and build the
+ * page URL. Best-effort — covers without a plyr track, or any resolution failure,
+ * fall back to their original deliverable link.
+ */
+async function resolvePlyrListenUrls(
+  covers: { submissionId: number; plyrTrackUri: string | null }[],
+): Promise<Map<number, string>> {
+  const withPlyr = covers.filter((c) => c.plyrTrackUri);
+  if (withPlyr.length === 0) return new Map();
+
+  const dids = new Set<string>();
+  for (const c of withPlyr) {
+    const did = c.plyrTrackUri!.match(/^at:\/\/([^/]+)\//)?.[1];
+    if (did) dids.add(did);
+  }
+  const idByUri = new Map<string, number>();
+  await Promise.all(
+    [...dids].map(async (did) => {
+      for (const [uri, id] of await fetchPlyrTrackIndex(did)) idByUri.set(uri, id);
+    }),
+  );
+
+  const out = new Map<number, string>();
+  for (const c of withPlyr) {
+    const id = idByUri.get(c.plyrTrackUri!);
+    if (id != null) out.set(c.submissionId, plyrTrackPageUrl(id));
+  }
+  return out;
+}
 
 export default async function ProfilePage({
   searchParams,
@@ -43,6 +77,14 @@ export default async function ProfilePage({
   // otherwise, and unlinked users shouldn't pay for the query.
   const covers = identity ? await getClaimableCovers(userId) : [];
   const unclaimedCount = covers.filter((c) => c.claimedAtUri == null).length;
+
+  // Point each cover's "listen" link at its plyr track page when it has one, so it
+  // resolves to the plyr record rather than the raw Supabase/SoundCloud source.
+  const plyrListenUrls = await resolvePlyrListenUrls(covers);
+  const coversView = covers.map((c) => ({
+    ...c,
+    plyrListenUrl: plyrListenUrls.get(c.submissionId) ?? null,
+  }));
 
   // Decode atproto link status from the callback redirect params.
   const linkedSuccess = sp.linked === 'success';
@@ -79,7 +121,7 @@ export default async function ProfilePage({
         </div>
         {identity && (
           <MyCoversSection
-            covers={covers}
+            covers={coversView}
             handle={identity.handle}
             headerAction={
               unclaimedCount >= 1 ? (

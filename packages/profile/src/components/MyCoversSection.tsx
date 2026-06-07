@@ -29,6 +29,10 @@ export interface CoverItem {
   claimedAtUri: string | null;
   /** This cover's `fm.plyr.track` URI, if re-hosted to plyr — null otherwise. */
   plyrTrackUri?: string | null;
+  /** Canonical plyr.fm track page, when this cover has a plyr track. Preferred
+   *  over `deliverableUrl` for the "listen" link so it points at the plyr record,
+   *  not the raw Supabase/SoundCloud source. */
+  plyrListenUrl?: string | null;
 }
 
 interface MyCoversSectionProps {
@@ -93,17 +97,17 @@ export function MyCoversSection({
                       <span className="text-gray-500"> — {c.songArtist}</span>
                     )}
                   </div>
-                  {(meta || c.deliverableUrl) && (
+                  {(meta || c.plyrListenUrl || c.deliverableUrl) && (
                     <div className="mt-0.5 flex items-center gap-2 text-xs text-gray-500">
                       {meta && <span>{meta}</span>}
-                      {c.deliverableUrl && (
+                      {(c.plyrListenUrl ?? c.deliverableUrl) && (
                         <a
-                          href={c.deliverableUrl}
+                          href={(c.plyrListenUrl ?? c.deliverableUrl)!}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[var(--color-accent-primary)] hover:underline"
                         >
-                          listen ↗
+                          {c.plyrListenUrl ? 'listen on plyr ↗' : 'listen ↗'}
                         </a>
                       )}
                     </div>
