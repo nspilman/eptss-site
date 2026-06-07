@@ -3,6 +3,8 @@ import {
   RoundDetail,
   eptssSubmissionId,
   applyClaims,
+  fetchPlyrTrackIndex,
+  plyrTrackEmbedUrl,
 } from "@eptss/atproto";
 import { db, submissions, users, eq, inArray } from "@eptss/db";
 import { getClaimedSubmissionUris } from "@/lib/atproto/claims";
@@ -42,6 +44,57 @@ async function resolveSubmitterNames(
   return out;
 }
 
+/**
+ * Resolve each submission's plyr.fm embed, for covers re-hosted to plyr. The
+ * submission → plyr-track link lives in Postgres (`plyr_track_uri`); we then ask
+ * plyr's API for the numeric track id behind that record URI to build the embed.
+ * Submissions without a plyr track fall through to their original deliverable.
+ */
+async function resolvePlyrEmbeds(
+  submissionUris: string[],
+): Promise<Record<string, string>> {
+  const idByUri = new Map<string, number>();
+  for (const uri of submissionUris) {
+    const id = eptssSubmissionId(uri);
+    if (id != null) idByUri.set(uri, id);
+  }
+  const ids = [...new Set(idByUri.values())];
+  if (ids.length === 0) return {};
+
+  const rows = await db
+    .select({ id: submissions.id, plyrTrackUri: submissions.plyrTrackUri })
+    .from(submissions)
+    .where(inArray(submissions.id, ids));
+  const plyrUriById = new Map(rows.map((r) => [r.id, r.plyrTrackUri]));
+  if (![...plyrUriById.values()].some(Boolean)) return {};
+
+  // plyr embeds are keyed by numeric id; bridge from our AT URIs via plyr's API.
+  // A track may live in the admin repo OR — once re-homed — a participant's own
+  // repo, so resolve each plyr_track_uri against ITS did, not just the admin's.
+  const dids = new Set<string>();
+  for (const uri of plyrUriById.values()) {
+    const did = uri?.match(/^at:\/\/([^/]+)\//)?.[1];
+    if (did) dids.add(did);
+  }
+  const trackIdByUri = new Map<string, number>();
+  await Promise.all(
+    [...dids].map(async (did) => {
+      for (const [u, id] of await fetchPlyrTrackIndex(did)) {
+        trackIdByUri.set(u, id);
+      }
+    }),
+  );
+
+  const out: Record<string, string> = {};
+  for (const [subUri, subId] of idByUri) {
+    const plyrUri = plyrUriById.get(subId);
+    if (!plyrUri) continue;
+    const trackId = trackIdByUri.get(plyrUri);
+    if (trackId != null) out[subUri] = plyrTrackEmbedUrl(trackId);
+  }
+  return out;
+}
+
 export default async function RoundPage({
   params,
 }: {
@@ -61,9 +114,11 @@ export default async function RoundPage({
   const submissions = applyClaims(data.submissions, claimedUris);
   const roundData = { ...data, submissions };
 
-  const submitterNames = await resolveSubmitterNames(
-    submissions.map((s) => s.uri),
-  );
+  const submissionUris = submissions.map((s) => s.uri);
+  const [submitterNames, plyrEmbeds] = await Promise.all([
+    resolveSubmitterNames(submissionUris),
+    resolvePlyrEmbeds(submissionUris),
+  ]);
 
   return (
     <div>
@@ -71,7 +126,11 @@ export default async function RoundPage({
         ← all rounds
       </a>
       <div className="mt-6">
-        <RoundDetail data={roundData} submitterNames={submitterNames} />
+        <RoundDetail
+          data={roundData}
+          submitterNames={submitterNames}
+          plyrEmbeds={plyrEmbeds}
+        />
       </div>
     </div>
   );

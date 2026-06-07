@@ -19,16 +19,32 @@ function hostOf(url: string): string {
 async function SubmissionItem({
   s,
   name,
+  plyrEmbed,
 }: {
   s: RecordEnvelope<Submission>;
   name?: string;
+  /** plyr.fm embed src, when this cover has been re-hosted to plyr. */
+  plyrEmbed?: string;
 }) {
   const url = s.value.url;
 
   let player: ReactNode = null;
   let stale = false;
 
-  if (url) {
+  if (plyrEmbed) {
+    player = (
+      <iframe
+        title="plyr.fm player"
+        width="100%"
+        height="165"
+        frameBorder="0"
+        loading="lazy"
+        allow="autoplay"
+        src={plyrEmbed}
+        className="rounded-sharp"
+      />
+    );
+  } else if (url) {
     if (isAudioFile(url)) {
       player = (
         <audio controls preload="none" src={url} className="w-full max-w-md" />
@@ -103,9 +119,12 @@ async function SubmissionItem({
 export function SubmissionList({
   submissions,
   submitterNames,
+  plyrEmbeds,
 }: {
   submissions: RecordEnvelope<Submission>[];
   submitterNames?: Record<string, string>;
+  /** Submission AT URI → plyr.fm embed src, for covers re-hosted to plyr. */
+  plyrEmbeds?: Record<string, string>;
 }) {
   if (submissions.length === 0) {
     return <p className="text-sm text-ink-3">No submissions yet.</p>;
@@ -113,7 +132,12 @@ export function SubmissionList({
   return (
     <ul className="space-y-6">
       {submissions.map((s) => (
-        <SubmissionItem key={s.uri} s={s} name={submitterNames?.[s.uri]} />
+        <SubmissionItem
+          key={s.uri}
+          s={s}
+          name={submitterNames?.[s.uri]}
+          plyrEmbed={plyrEmbeds?.[s.uri]}
+        />
       ))}
     </ul>
   );

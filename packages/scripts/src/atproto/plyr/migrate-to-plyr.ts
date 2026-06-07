@@ -1,0 +1,392 @@
+/**
+ * Re-host EPTSS Supabase audio onto plyr.fm — via plyr's upload API.
+ *
+ * WHY THE API (not a raw PDS blob): plyr only gives a track a streaming/R2 copy
+ * — and thus a working *embed* (plyr.fm/embed/track/<id>) — when the audio goes
+ * through its upload pipeline. PDS-native records (uploadBlob + createRecord)
+ * stay `audio_storage: pds`, never get an `r2_url`, and the embed shows NaN:NaN.
+ * Uploading through `POST api.plyr.fm/tracks/` transcodes to R2 and (for an
+ * authed atproto account) also writes the `fm.plyr.track` record to the PDS
+ * ("both" storage) — so we keep ownership *and* get a playable embed.
+ *
+ * For each Supabase-hosted cover:
+ *   1. download the audio from Supabase (public URL),
+ *   2. POST it to api.plyr.fm/tracks/ (plyr transcodes to R2 + writes the record),
+ *   3. wait for the async upload to finish, resolve the track,
+ *   4. store the track record's AT URI + CID on the submission (plyr_track_uri/cid).
+ *
+ * SAFE: additive (Supabase audioFileUrl untouched), idempotent + resumable (only
+ * covers without a plyr_track_uri are uploaded).
+ *
+ * Auth:
+ *   - migrate: PLYR_TOKEN  (developer token from plyr.fm/portal, signed in as the
+ *              EPTSS plyr identity — that account owns every uploaded track)
+ *   - --purge: ATPROTO_HANDLE + ATPROTO_APP_PASSWORD  (to delete old records)
+ *
+ * Usage:
+ *   set -a; source ../../apps/web/.env; set +a
+ *   bun src/atproto/plyr/migrate-to-plyr.ts --purge            # wipe old records + DB pointers
+ *   PLYR_TOKEN=... bun src/atproto/plyr/migrate-to-plyr.ts --limit=1 --verbose
+ *   PLYR_TOKEN=... bun src/atproto/plyr/migrate-to-plyr.ts     # full run
+ * Flags: --dry-run, --limit=N, --id=<submissionId>, --verbose, --purge.
+ */
+/// <reference lib="dom" />
+import "dotenv/config";
+import { isNotNull } from "drizzle-orm";
+import {
+  db,
+  submissions,
+  roundMetadata,
+  songs,
+  users,
+  eq,
+  and,
+  isNull,
+  ilike,
+} from "@eptss/db";
+import { loginAtprotoAgent } from "../agent";
+
+const PLYR_API = (process.env.PLYR_API ?? "https://api.plyr.fm").replace(/\/$/, "");
+const PLYR_TOKEN = process.env.PLYR_TOKEN;
+const SUPABASE_AUDIO_MARKER = "/audio-submissions/";
+const PLYR_TRACK_COLLECTION = "fm.plyr.track";
+const MAX_BYTES = 200 * 1024 * 1024;
+
+const args = process.argv.slice(2);
+const dryRun = args.includes("--dry-run");
+const verbose = args.includes("--verbose");
+const purge = args.includes("--purge");
+const limit = numFlag("--limit") ?? Infinity;
+const onlyId = numFlag("--id");
+// Re-host just one participant's covers — used to move YOUR covers off the EPTSS
+// account onto your own plyr identity: run with YOUR personal PLYR_TOKEN, e.g.
+//   PLYR_TOKEN=<personal> bun ...migrate-to-plyr.ts --username=nspilman
+// Each cover is re-uploaded (transcoded fresh, artist_did = you, record in YOUR
+// PDS) and the Postgres pointer is repointed. The old EPTSS copy is left as a
+// backup until a scoped purge removes it.
+const username = strFlag("--username");
+const delayMs = Number(process.env.PLYR_DELAY_MS ?? 750);
+
+function numFlag(name: string): number | undefined {
+  const a = args.find((x) => x.startsWith(`${name}=`));
+  return a ? Number(a.split("=")[1]) : undefined;
+}
+
+function strFlag(name: string): string | undefined {
+  const a = args.find((x) => x.startsWith(`${name}=`));
+  return a ? a.slice(name.length + 1) : undefined;
+}
+
+const authHeaders = () => ({ authorization: `Bearer ${PLYR_TOKEN}` });
+
+// ── PURGE: full rollback — delete every plyr track (plyr's R2 + index), sweep
+//    any leftover fm.plyr.track on the admin repo, and clear the DB pointers. ──
+//
+// Deleting the PDS record alone leaves a ghost in plyr's index/R2, so the
+// authoritative delete is plyr's own DELETE /tracks/{id} (needs PLYR_TOKEN); the
+// PDS sweep then catches any record plyr didn't own/remove.
+async function runPurge(): Promise<void> {
+  const { agent, did, handle } = await loginAtprotoAgent();
+  console.log(`[plyr] purge for ${handle} (${did})`);
+
+  // 1. plyr-side authoritative delete (clears R2 + plyr's index + the record).
+  if (PLYR_TOKEN) {
+    const ids = await fetchPlyrTrackIds(did);
+    console.log(`[plyr] ${ids.length} plyr track(s) via API${dryRun ? " (dry run)" : ""}`);
+    if (!dryRun) {
+      for (const id of ids) {
+        const res = await fetch(`${PLYR_API}/tracks/${id}`, {
+          method: "DELETE",
+          headers: authHeaders(),
+        });
+        if (res.ok) {
+          if (verbose) console.log(`  plyr deleted track ${id}`);
+        } else {
+          console.warn(`  DELETE /tracks/${id} -> ${res.status}: ${await res.text()}`);
+        }
+      }
+    }
+  } else {
+    console.warn(
+      "[plyr] no PLYR_TOKEN — skipping plyr-side deletes (set it to also clear plyr's R2/index)",
+    );
+  }
+
+  // 2. sweep any fm.plyr.track records still on the PDS.
+  const rkeys: string[] = [];
+  let cursor: string | undefined;
+  do {
+    const res = await agent.com.atproto.repo.listRecords({
+      repo: did,
+      collection: PLYR_TRACK_COLLECTION,
+      limit: 100,
+      cursor,
+    });
+    for (const r of res.data.records) rkeys.push(r.uri.split("/").pop()!);
+    cursor = res.data.cursor;
+  } while (cursor);
+  console.log(`[plyr] ${rkeys.length} PDS record(s) remaining${dryRun ? " (dry run)" : ""}`);
+  if (!dryRun) {
+    for (const rkey of rkeys) {
+      await agent.com.atproto.repo.deleteRecord({
+        repo: did,
+        collection: PLYR_TRACK_COLLECTION,
+        rkey,
+      });
+      if (verbose) console.log(`  deleted PDS record ${rkey}`);
+    }
+  }
+
+  // 3. clear the Postgres pointers.
+  if (!dryRun) {
+    await db
+      .update(submissions)
+      .set({ plyrTrackUri: null, plyrTrackCid: null })
+      .where(isNotNull(submissions.plyrTrackUri));
+  }
+  console.log("[plyr] purge done");
+}
+
+/** All plyr numeric track ids for a repo (its plyr profile), paginated. */
+async function fetchPlyrTrackIds(did: string): Promise<number[]> {
+  const ids: number[] = [];
+  let cursor: string | undefined;
+  do {
+    const url = new URL(`${PLYR_API}/tracks/`);
+    url.searchParams.set("artist_did", did);
+    url.searchParams.set("limit", "100");
+    if (cursor) url.searchParams.set("cursor", cursor);
+    const res = await fetch(url.toString());
+    if (!res.ok) break;
+    const data = (await res.json()) as {
+      tracks?: { id: number }[];
+      next_cursor?: string | null;
+    };
+    for (const t of data.tracks ?? []) ids.push(t.id);
+    cursor = data.next_cursor ?? undefined;
+  } while (cursor);
+  return ids;
+}
+
+// ── MIGRATE: upload each Supabase cover through plyr's API ──
+interface Candidate {
+  id: number;
+  audioFileUrl: string | null;
+  coverImageUrl: string | null;
+  songTitle: string | null;
+  username: string | null;
+  publicDisplayName: string | null;
+}
+
+async function loadCandidates(): Promise<Candidate[]> {
+  // --id / --username re-process already-migrated covers (re-host / overwrite);
+  // a plain run only touches covers that don't have a plyr track yet.
+  const reprocess = onlyId != null || username != null;
+  const conds = [ilike(submissions.audioFileUrl, `%${SUPABASE_AUDIO_MARKER}%`)];
+  if (!reprocess) conds.push(isNull(submissions.plyrTrackUri));
+  if (username) conds.push(eq(users.username, username));
+  const where = and(...conds);
+  const rows = await db
+    .select({
+      id: submissions.id,
+      audioFileUrl: submissions.audioFileUrl,
+      coverImageUrl: submissions.coverImageUrl,
+      songTitle: songs.title,
+      username: users.username,
+      publicDisplayName: users.publicDisplayName,
+    })
+    .from(submissions)
+    .leftJoin(roundMetadata, eq(submissions.roundId, roundMetadata.id))
+    .leftJoin(songs, eq(roundMetadata.songId, songs.id))
+    .leftJoin(users, eq(submissions.userId, users.userid))
+    .where(where);
+  return rows.filter((r) => onlyId == null || r.id === onlyId);
+}
+
+async function download(
+  url: string,
+): Promise<{ bytes: Uint8Array; mimeType: string; filename: string }> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`download ${res.status} for ${url}`);
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  if (bytes.byteLength > MAX_BYTES) {
+    throw new Error(`audio is ${(bytes.byteLength / 1e6).toFixed(1)}MB — over guard`);
+  }
+  const filename = decodeURIComponent(url.split("/").pop()?.split("?")[0] ?? "cover.mp3");
+  const ext = filename.split(".").pop()?.toLowerCase();
+  const mimeType =
+    res.headers.get("content-type") ?? (ext === "wav" ? "audio/wav" : "audio/mpeg");
+  return { bytes, mimeType, filename };
+}
+
+type DownloadedFile = { bytes: Uint8Array; mimeType: string; filename: string };
+
+/** POST the file (+ optional artwork) to plyr; returns the upload id to monitor. */
+async function startUpload(
+  file: DownloadedFile,
+  title: string,
+  image?: DownloadedFile,
+): Promise<string> {
+  const form = new FormData();
+  form.append("file", new Blob([file.bytes], { type: file.mimeType }), file.filename);
+  form.append("title", title);
+  if (image) {
+    form.append(
+      "image",
+      new Blob([image.bytes], { type: image.mimeType }),
+      image.filename,
+    );
+  }
+  const res = await fetch(`${PLYR_API}/tracks/`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: form,
+  });
+  if (!res.ok) throw new Error(`POST /tracks/ ${res.status}: ${await res.text()}`);
+  const data = (await res.json()) as Record<string, unknown>;
+  if (verbose) console.log(`  start: ${JSON.stringify(data)}`);
+  const uploadId = data.upload_id ?? data.uploadId ?? data.id;
+  if (!uploadId) throw new Error(`no upload_id: ${JSON.stringify(data)}`);
+  return String(uploadId);
+}
+
+/**
+ * Consume the SSE progress stream until the upload completes. The exact event
+ * shape isn't documented, so this scans every event for a track id / uri / cid
+ * and surfaces errors; `--verbose` prints each raw `data:` line, so the first
+ * run reveals the real shape if this needs adjusting.
+ */
+async function waitForCompletion(
+  uploadId: string,
+): Promise<{ trackId?: string; uri?: string; cid?: string }> {
+  const res = await fetch(`${PLYR_API}/tracks/uploads/${uploadId}/progress`, {
+    headers: { ...authHeaders(), accept: "text/event-stream" },
+  });
+  if (!res.ok || !res.body) throw new Error(`progress ${res.status} for ${uploadId}`);
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  const found: { trackId?: string; uri?: string; cid?: string } = {};
+  let buf = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const events = buf.split("\n\n");
+    buf = events.pop() ?? "";
+    for (const ev of events) {
+      const data = ev
+        .split("\n")
+        .filter((l) => l.startsWith("data:"))
+        .map((l) => l.slice(5).trim())
+        .join("\n");
+      if (!data) continue;
+      if (verbose) console.log(`  sse: ${data}`);
+      let p: Record<string, unknown>;
+      try {
+        p = JSON.parse(data) as Record<string, unknown>;
+      } catch {
+        continue;
+      }
+      if (p.error) throw new Error(`plyr error: ${JSON.stringify(p)}`);
+      const tid = p.track_id ?? p.trackId ?? p.id;
+      if (tid) found.trackId = String(tid);
+      if (p.atproto_record_uri) found.uri = String(p.atproto_record_uri);
+      if (p.atproto_record_cid) found.cid = String(p.atproto_record_cid);
+    }
+  }
+  if (!found.trackId && !found.uri) {
+    throw new Error("progress ended without a track id/uri (re-run with --verbose)");
+  }
+  return found;
+}
+
+/** Resolve the created track's fm.plyr.track AT URI + CID. */
+async function fetchTrack(trackId: string): Promise<{ uri: string; cid: string }> {
+  const res = await fetch(`${PLYR_API}/tracks/${trackId}`, { headers: authHeaders() });
+  if (!res.ok) throw new Error(`GET /tracks/${trackId} ${res.status}: ${await res.text()}`);
+  const t = (await res.json()) as Record<string, unknown>;
+  if (verbose) console.log(`  track: ${JSON.stringify(t)}`);
+  const uri = (t.atproto_record_uri ?? t.uri) as string | undefined;
+  const cid = (t.atproto_record_cid ?? t.cid) as string | undefined;
+  if (!uri || !cid) throw new Error(`track missing atproto uri/cid: ${JSON.stringify(t)}`);
+  return { uri, cid };
+}
+
+async function migrateOne(c: Candidate): Promise<void> {
+  const title = c.songTitle ?? `EPTSS cover #${c.id}`;
+  const artist = c.publicDisplayName ?? c.username ?? "EPTSS";
+  console.log(`[plyr] #${c.id} "${title}" — ${artist}`);
+  if (!c.audioFileUrl) {
+    console.log("  no audioFileUrl — skip");
+    return;
+  }
+  if (dryRun) {
+    console.log(`  would upload: ${c.audioFileUrl}`);
+    return;
+  }
+
+  const file = await download(c.audioFileUrl);
+  if (verbose) console.log(`  downloaded ${file.bytes.byteLength} bytes (${file.mimeType})`);
+
+  // Pull the cover art too, when the submission has one — plyr accepts it as
+  // the track's `image`. Non-fatal: a broken/missing image shouldn't block the
+  // audio upload.
+  let image: DownloadedFile | undefined;
+  if (c.coverImageUrl) {
+    try {
+      image = await download(c.coverImageUrl);
+      if (verbose) console.log(`  cover art ${image.bytes.byteLength} bytes (${image.mimeType})`);
+    } catch (err) {
+      console.warn(`  cover art download failed: ${err instanceof Error ? err.message : err}`);
+    }
+  }
+
+  const uploadId = await startUpload(file, title, image);
+  const progress = await waitForCompletion(uploadId);
+  const { uri, cid } =
+    progress.uri && progress.cid
+      ? { uri: progress.uri, cid: progress.cid }
+      : await fetchTrack(progress.trackId!);
+
+  await db
+    .update(submissions)
+    .set({ plyrTrackUri: uri, plyrTrackCid: cid })
+    .where(eq(submissions.id, c.id));
+  console.log(`  ✓ ${uri}`);
+}
+
+async function runMigrate(): Promise<void> {
+  if (!dryRun && !PLYR_TOKEN) {
+    console.error(
+      "PLYR_TOKEN not set. Get a developer token from plyr.fm/portal (signed in as the EPTSS plyr identity).",
+    );
+    process.exit(1);
+  }
+  const candidates = await loadCandidates();
+  console.log(
+    `[plyr] ${candidates.length} Supabase cover(s) to migrate${dryRun ? " (dry run)" : ""}`,
+  );
+
+  let migrated = 0;
+  let failed = 0;
+  let processed = 0;
+  for (const c of candidates) {
+    if (processed >= limit) break;
+    processed++;
+    try {
+      await migrateOne(c);
+      if (!dryRun) migrated++;
+    } catch (err) {
+      failed++;
+      console.error(`  ✗ #${c.id} failed:`, err instanceof Error ? err.message : err);
+    }
+    if (!dryRun && delayMs) await new Promise((r) => setTimeout(r, delayMs));
+  }
+  console.log(`[plyr] done: ${migrated} migrated, ${failed} failed`);
+  process.exit(failed > 0 ? 1 : 0);
+}
+
+(purge ? runPurge() : runMigrate()).catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

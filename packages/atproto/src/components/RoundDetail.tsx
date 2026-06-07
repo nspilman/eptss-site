@@ -10,10 +10,13 @@ import { SubmissionList } from "./SubmissionList";
 export function RoundDetail({
   data,
   submitterNames,
+  plyrEmbeds,
 }: {
   data: RoundWithSubmissions;
   /** Submission AT URI → submitter display name (resolved from the EPTSS DB). */
   submitterNames?: Record<string, string>;
+  /** Submission AT URI → plyr.fm embed src, for covers re-hosted to plyr. */
+  plyrEmbeds?: Record<string, string>;
 }) {
   const { round } = data;
   const state = deriveState(round);
@@ -61,6 +64,7 @@ export function RoundDetail({
         <SubmissionList
           submissions={data.submissions}
           submitterNames={submitterNames}
+          plyrEmbeds={plyrEmbeds}
         />
       </section>
 

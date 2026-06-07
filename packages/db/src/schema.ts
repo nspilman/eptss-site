@@ -101,6 +101,11 @@ export const submissions = pgTable("submissions", {
   // scaffold. Phase D drops these once reads cut over to backlinks.
   claimedAtUri: text("claimed_at_uri"),
   claimedAt: timestamp("claimed_at"),
+  // PLYR.FM MIGRATION — the fm.plyr.track record this cover was re-hosted to.
+  // Additive: the Supabase audioFileUrl is kept untouched as backup. See
+  // packages/scripts/src/atproto/plyr/migrate-to-plyr.ts.
+  plyrTrackUri: text("plyr_track_uri"),
+  plyrTrackCid: text("plyr_track_cid"),
 });
 
 // User Roles Table

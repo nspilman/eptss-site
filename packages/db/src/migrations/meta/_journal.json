@@ -323,6 +323,13 @@
       "when": 1780778223153,
       "tag": "0059_keen_ken_ellis",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1780790912302,
+      "tag": "0060_furry_iceman",
+      "breakpoints": true
     }
   ]
 }
