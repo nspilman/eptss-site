@@ -5,20 +5,14 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./rkey": "./src/eptss-rkey.ts",
-    "./styles": "./src/styles.css"
+    "./rkey": "./src/eptss-rkey.ts"
   },
   "scripts": {
     "check-types": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "peerDependencies": {
-    "react": "^18",
-    "react-dom": "^18"
-  },
   "devDependencies": {
-    "@types/react": "18",
     "typescript": "5.1.3",
     "vitest": "^4.0.17"
   }
