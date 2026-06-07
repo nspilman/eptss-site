@@ -8,6 +8,8 @@
  * which exposes both `id` and `atproto_record_uri` per track.
  */
 
+import { atUriDid } from "./at-uri";
+
 const PLYR_API = "https://api.plyr.fm";
 
 /** The iframe src for a plyr.fm track player. */
@@ -57,6 +59,35 @@ export async function fetchPlyrTrackIndex(
     } while (cursor);
   } catch {
     // best-effort
+  }
+  return out;
+}
+
+/**
+ * Resolve a set of `fm.plyr.track` record URIs to their plyr numeric ids — the
+ * bridge both the round embed and the profile listen-link need. Groups by repo
+ * DID so each repo's track listing is page-walked once. Best-effort: URIs plyr
+ * doesn't know are simply absent from the returned map.
+ */
+export async function resolvePlyrTrackIds(
+  uris: Iterable<string>,
+): Promise<Map<string, number>> {
+  const want = [...uris];
+  const dids = new Set<string>();
+  for (const u of want) {
+    const did = atUriDid(u);
+    if (did) dids.add(did);
+  }
+  const byUri = new Map<string, number>();
+  await Promise.all(
+    [...dids].map(async (did) => {
+      for (const [u, id] of await fetchPlyrTrackIndex(did)) byUri.set(u, id);
+    }),
+  );
+  const out = new Map<string, number>();
+  for (const u of want) {
+    const id = byUri.get(u);
+    if (id != null) out.set(u, id);
   }
   return out;
 }

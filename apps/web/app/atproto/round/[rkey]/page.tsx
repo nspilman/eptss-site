@@ -3,7 +3,7 @@ import {
   RoundDetail,
   eptssSubmissionId,
   applyClaims,
-  fetchPlyrTrackIndex,
+  resolvePlyrTrackIds,
   plyrTrackEmbedUrl,
 } from "@eptss/atproto";
 import { db, submissions, users, eq, inArray } from "@eptss/db";
@@ -66,24 +66,15 @@ async function resolvePlyrEmbeds(
     .from(submissions)
     .where(inArray(submissions.id, ids));
   const plyrUriById = new Map(rows.map((r) => [r.id, r.plyrTrackUri]));
-  if (![...plyrUriById.values()].some(Boolean)) return {};
 
-  // plyr embeds are keyed by numeric id; bridge from our AT URIs via plyr's API.
-  // A track may live in the admin repo OR — once re-homed — a participant's own
-  // repo, so resolve each plyr_track_uri against ITS did, not just the admin's.
-  const dids = new Set<string>();
-  for (const uri of plyrUriById.values()) {
-    const did = uri?.match(/^at:\/\/([^/]+)\//)?.[1];
-    if (did) dids.add(did);
-  }
-  const trackIdByUri = new Map<string, number>();
-  await Promise.all(
-    [...dids].map(async (did) => {
-      for (const [u, id] of await fetchPlyrTrackIndex(did)) {
-        trackIdByUri.set(u, id);
-      }
-    }),
+  // Bridge each plyr_track_uri to its numeric embed id. A track may live in the
+  // admin repo OR — once re-homed — a participant's own, and resolvePlyrTrackIds
+  // groups by repo DID so either resolves.
+  const plyrUris = [...plyrUriById.values()].filter(
+    (u): u is string => Boolean(u),
   );
+  if (plyrUris.length === 0) return {};
+  const trackIdByUri = await resolvePlyrTrackIds(plyrUris);
 
   const out: Record<string, string> = {};
   for (const [subUri, subId] of idByUri) {

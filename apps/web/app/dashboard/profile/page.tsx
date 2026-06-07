@@ -11,7 +11,7 @@ import {
 } from '@eptss/profile';
 import { getClaimableCovers } from '@/lib/atproto/claims';
 import { plyrOwnership } from '@/lib/atproto/plyr-rehome';
-import { fetchPlyrTrackIndex, plyrTrackPageUrl } from '@eptss/atproto';
+import { resolvePlyrTrackIds, plyrTrackPageUrl } from '@eptss/atproto';
 import { ClaimButton } from './ClaimButton';
 import { ClaimAllButton } from './ClaimAllButton';
 import { PlyrRehomeButton } from './PlyrRehomeButton';
@@ -29,16 +29,8 @@ async function resolvePlyrListenUrls(
   const withPlyr = covers.filter((c) => c.plyrTrackUri);
   if (withPlyr.length === 0) return new Map();
 
-  const dids = new Set<string>();
-  for (const c of withPlyr) {
-    const did = c.plyrTrackUri!.match(/^at:\/\/([^/]+)\//)?.[1];
-    if (did) dids.add(did);
-  }
-  const idByUri = new Map<string, number>();
-  await Promise.all(
-    [...dids].map(async (did) => {
-      for (const [uri, id] of await fetchPlyrTrackIndex(did)) idByUri.set(uri, id);
-    }),
+  const idByUri = await resolvePlyrTrackIds(
+    withPlyr.map((c) => c.plyrTrackUri!),
   );
 
   const out = new Map<number, string>();

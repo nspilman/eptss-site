@@ -27,13 +27,12 @@ import { revalidatePath } from "next/cache";
 import { getAuthUser } from "@eptss/auth/server";
 import { loadIdentity } from "@eptss/auth/atproto";
 import { db, submissions, eq, and } from "@eptss/db";
-import { EPTSS_DID, getPlyrTrackRecord } from "@eptss/atproto";
+import { EPTSS_DID, atUriRkey, getPlyrTrackRecord } from "@eptss/atproto";
 import { getUserAgent } from "./agent";
 import {
   PLYR_TRACK_COLLECTION,
   adminPlyrUri,
   plyrOwnership,
-  rkeyOfUri,
 } from "./plyr-rehome";
 
 export interface PlyrRehomeResult {
@@ -103,7 +102,7 @@ export async function rehomePlyrTrack(
       return { ok: true, uri: owned.plyrTrackUri ?? undefined }; // already moved
     }
 
-    const rkey = rkeyOfUri(owned.plyrTrackUri!);
+    const rkey = atUriRkey(owned.plyrTrackUri!);
     const source = await getPlyrTrackRecord(EPTSS_DID, rkey);
     if (!source) {
       return { ok: false, error: "The EPTSS plyr track record wasn't found." };
@@ -219,7 +218,7 @@ export async function undoRehomePlyrTrack(
       return { ok: true, uri: owned.plyrTrackUri ?? undefined }; // nothing to undo
     }
 
-    const rkey = rkeyOfUri(owned.plyrTrackUri!);
+    const rkey = atUriRkey(owned.plyrTrackUri!);
     const adminUri = adminPlyrUri(rkey);
     // Restore the pointer to the admin copy (re-read it to restore its cid too).
     const adminRec = await getPlyrTrackRecord(EPTSS_DID, rkey);

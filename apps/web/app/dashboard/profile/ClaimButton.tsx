@@ -5,13 +5,13 @@
  * Calls the server actions in lib/atproto/claim-actions; on success they
  * revalidate /dashboard/profile, so the list re-renders with the new state.
  */
-import { useState, useTransition } from 'react';
 import { Button } from '@eptss/ui';
 import {
   claimSubmission,
   unclaimSubmission,
   type ClaimResult,
 } from '@/lib/atproto/claim-actions';
+import { useServerAction } from './useServerAction';
 
 export function ClaimButton({
   submissionId,
@@ -20,22 +20,7 @@ export function ClaimButton({
   submissionId: number;
   claimed: boolean;
 }) {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-
-  function run(action: () => Promise<ClaimResult>) {
-    setError(null);
-    startTransition(async () => {
-      try {
-        const res = await action();
-        console.log('[claim] single result', res);
-        if (!res.ok) setError(res.error ?? 'Something went wrong.');
-      } catch (err) {
-        console.error('[claim] single threw', err);
-        setError(err instanceof Error ? err.message : 'request failed');
-      }
-    });
-  }
+  const { pending, error, run } = useServerAction<ClaimResult>();
 
   return (
     <div className="flex flex-col items-end gap-1">

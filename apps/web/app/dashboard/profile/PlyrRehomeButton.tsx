@@ -9,13 +9,13 @@
  * EPTSS scaffold (offer Move), "mine" = already on the user's repo (offer Undo).
  * Covers with no plyr track render nothing (the page passes null).
  */
-import { useState, useTransition } from 'react';
 import { Button } from '@eptss/ui';
 import {
   rehomePlyrTrack,
   undoRehomePlyrTrack,
   type PlyrRehomeResult,
 } from '@/lib/atproto/plyr-actions';
+import { useServerAction } from './useServerAction';
 
 export function PlyrRehomeButton({
   submissionId,
@@ -24,27 +24,8 @@ export function PlyrRehomeButton({
   submissionId: number;
   state: 'eptss' | 'mine';
 }) {
-  const [pending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const [needsRelink, setNeedsRelink] = useState(false);
-
-  function run(action: () => Promise<PlyrRehomeResult>) {
-    setError(null);
-    setNeedsRelink(false);
-    startTransition(async () => {
-      try {
-        const res = await action();
-        console.log('[plyr-rehome] result', res);
-        if (!res.ok) {
-          setError(res.error ?? 'Something went wrong.');
-          setNeedsRelink(Boolean(res.needsRelink));
-        }
-      } catch (err) {
-        console.error('[plyr-rehome] threw', err);
-        setError(err instanceof Error ? err.message : 'request failed');
-      }
-    });
-  }
+  const { pending, error, result, run } = useServerAction<PlyrRehomeResult>();
+  const needsRelink = Boolean(result && !result.ok && result.needsRelink);
 
   return (
     <div className="flex flex-col items-end gap-1">

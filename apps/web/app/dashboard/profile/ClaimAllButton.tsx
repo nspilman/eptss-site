@@ -2,60 +2,44 @@
 
 /**
  * "Claim all" — claims every not-yet-claimed cover in one pass (Phase C).
- * Always surfaces a result (summary + per-cover details), and catches a thrown
- * action so failures can never be silent. Also logs to the browser console.
+ * Always surfaces a result: a summary + per-cover details on success, the error
+ * on failure (a thrown action is caught by the hook, so failures are never silent).
  */
-import { useState, useTransition } from 'react';
 import { Button } from '@eptss/ui';
-import { claimAllMine } from '@/lib/atproto/claim-actions';
+import { claimAllMine, type ClaimAllResult } from '@/lib/atproto/claim-actions';
+import { useServerAction } from './useServerAction';
 
 export function ClaimAllButton({ count }: { count: number }) {
-  const [pending, startTransition] = useTransition();
-  const [summary, setSummary] = useState<string | null>(null);
-  const [details, setDetails] = useState<string[]>([]);
-  const [isError, setIsError] = useState(false);
+  const { pending, error, result, run } = useServerAction<ClaimAllResult>();
+
+  const summary =
+    result?.ok
+      ? [
+          `${result.claimed} claimed`,
+          result.skipped ? `${result.skipped} not on the network yet` : null,
+          result.failed ? `${result.failed} failed` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : null;
+  const details = result?.ok ? result.details ?? [] : [];
 
   return (
     <div className="flex flex-col items-end gap-1">
       <Button
         disabled={pending}
-        onClick={() => {
-          setSummary(null);
-          setDetails([]);
-          setIsError(false);
-          startTransition(async () => {
-            try {
-              const r = await claimAllMine();
-              console.log('[claim] claimAllMine result', r);
-              if (!r.ok) {
-                setIsError(true);
-                setSummary(r.error ?? 'Something went wrong.');
-                return;
-              }
-              const parts = [`${r.claimed} claimed`];
-              if (r.skipped) parts.push(`${r.skipped} not on the network yet`);
-              if (r.failed) parts.push(`${r.failed} failed`);
-              setSummary(parts.join(' · '));
-              setDetails(r.details ?? []);
-            } catch (err) {
-              console.error('[claim] claimAllMine threw', err);
-              setIsError(true);
-              setSummary(
-                `Error: ${err instanceof Error ? err.message : 'request failed'}`,
-              );
-            }
-          });
-        }}
+        onClick={() => run(() => claimAllMine())}
         className="h-7 px-3 text-xs"
       >
         {pending ? 'Claiming…' : `Claim all (${count})`}
       </Button>
+      {error && (
+        <span className="max-w-[18rem] text-right text-xs text-red-400">
+          {error}
+        </span>
+      )}
       {summary && (
-        <span
-          className={`max-w-[18rem] text-right text-xs ${
-            isError ? 'text-red-400' : 'text-gray-300'
-          }`}
-        >
+        <span className="max-w-[18rem] text-right text-xs text-gray-300">
           {summary}
         </span>
       )}
