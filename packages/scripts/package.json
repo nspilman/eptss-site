@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "post-song": "bun src/post-song-to-bsky.ts",
+    "atproto-backfill": "bun src/atproto-backfill.ts",
     "create-spotify-playlist": "bun src/createSpotifyPlaylist.ts",
     "create-youtube-playlist": "bun src/createYoutubePlaylist.ts",
     "populate-round-slugs": "bun src/populate-round-slugs.ts",
