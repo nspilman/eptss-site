@@ -1,4 +1,4 @@
-import { format, subDays, isBefore, parseISO, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
+import { format, isBefore, parseISO, differenceInDays, differenceInHours, differenceInMinutes } from "date-fns";
 import { TZDate } from "@date-fns/tz";
 import { Phase } from "../types/round";
 
@@ -182,7 +182,7 @@ export const getPhaseDates = (dates: RoundDates, votingEnabled: boolean = true) 
       },
       covering: {
         opens: dates.votingOpens, // Start covering immediately after signups
-        closes: subDays(dates.coversDue, 1),
+        closes: dates.coversDue,
       },
       celebration: {
         opens: dates.coversDue,
@@ -198,11 +198,11 @@ export const getPhaseDates = (dates: RoundDates, votingEnabled: boolean = true) 
     },
     voting: {
       opens: dates.votingOpens,
-      closes: subDays(dates.coveringBegins, 1),
+      closes: dates.coveringBegins,
     },
     covering: {
       opens: dates.coveringBegins,
-      closes: subDays(dates.coversDue, 1),
+      closes: dates.coversDue,
     },
     celebration: {
       opens: dates.coversDue,

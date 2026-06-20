@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Round } from "@eptss/core/services/roundService";
-import { format, subMilliseconds } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import {
   Button,
+  FormattedDate,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -87,10 +87,7 @@ export const RoundDatesDisplayPopup = ({ current, next }: Props) => {
               <TableRow key={name}>
                 <TableCell className="text-sm text-gray-300">{name}</TableCell>
                 <TableCell className="text-sm text-gray-300">
-                  {format(
-                    subMilliseconds(new Date(date), 1),
-                    "EEEE, MMMM do, yyyy"
-                  )}
+                  <FormattedDate iso={date} format="longDate" />
                 </TableCell>
               </TableRow>
             ))}
