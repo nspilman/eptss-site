@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, SectionHeader, Button } from "@eptss/ui";
 import { Play } from "lucide-react";
+import { getDisplayName } from "@eptss/shared";
 import type { Submission } from "@eptss/core/types/round";
 import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
@@ -35,7 +36,7 @@ export const SubmissionsPlaylist = ({
   const tracks: Track[] = submissionsWithAudio
     .filter((s) => s.audioFileUrl) // Only include direct audio files in playlist
     .map((submission) => {
-      const displayName = submission.publicDisplayName || submission.username;
+      const displayName = getDisplayName(submission);
       const submissionId = `${submission.roundId}-${submission.userId}`;
       return {
         id: submissionId,
@@ -100,7 +101,7 @@ export const SubmissionsPlaylist = ({
                       href={`/profile/${submission.username}`}
                       className="text-[var(--color-accent-primary)] hover:underline font-medium"
                     >
-                      {submission.publicDisplayName || submission.username}
+                      {getDisplayName(submission)}
                     </Link>
                   </div>
                   <Button variant="gradient" size="sm" asChild>

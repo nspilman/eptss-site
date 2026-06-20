@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSubmissionById } from "@eptss/core";
+import { getDisplayName } from "@eptss/shared";
 import { SongPageClient } from "./SongPageClient";
 
 type Props = {
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const displayName = submission.publicDisplayName || submission.username;
+  const displayName = getDisplayName(submission);
   const songInfo = submission.songTitle && submission.songArtist
     ? `${submission.songTitle} by ${submission.songArtist}`
     : "a cover";

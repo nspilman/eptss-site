@@ -16,5 +16,8 @@ export { db } from "./connection";
 // Re-export all schema tables and types
 export * from "./schema";
 
+// Re-export ATProto identity read helpers (handle lookups for display)
+export * from "./atproto-identities";
+
 // Re-export commonly used drizzle-orm operators
 export { eq, and, or, desc, asc, sql, isNull, ne, gt, gte, lt, lte, like, ilike, inArray, notInArray } from "drizzle-orm";

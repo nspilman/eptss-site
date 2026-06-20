@@ -27,6 +27,10 @@
     "./server": {
       "import": "./src/utils/supabase-server.ts",
       "types": "./src/utils/supabase-server.ts"
+    },
+    "./atproto": {
+      "import": "./src/atproto/session-store.ts",
+      "types": "./src/atproto/session-store.ts"
     }
   },
   "scripts": {

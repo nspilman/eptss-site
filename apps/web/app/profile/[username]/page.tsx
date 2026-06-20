@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  // displayName already reflects a linked Atmosphere handle (resolved at source).
   const displayName = profileData.user.displayName;
 
   return {

@@ -15,6 +15,7 @@ export interface UserProfile {
   email: string;
   username: string | null;
   profilePictureUrl: string | null;
+  atprotoHandle?: string | null;
 }
 
 interface ProjectInfo {
@@ -96,6 +97,7 @@ const DashboardHeader = ({
                 email={userProfile.email}
                 username={userProfile.username}
                 profilePictureUrl={userProfile.profilePictureUrl}
+                atprotoHandle={userProfile.atprotoHandle}
               />
             )}
           </div>

@@ -72,6 +72,8 @@ interface PublicProfileProps {
     publicDisplayName: string | null;
     profilePictureUrl?: string | null;
     displayName: string;
+    /** Active Atmosphere handle; when set, displayName is already `@handle`. */
+    atprotoHandle?: string | null;
     bio: string | null;
     showEmail: boolean;
   };
@@ -111,9 +113,11 @@ export const PublicProfile = ({ user, submissions, reflections, socialLinks, emb
               <Display size="md" className="mb-2">
                 {user.displayName}
               </Display>
-              <Text size="lg" color="secondary">
-                @{user.username}
-              </Text>
+              {!user.atprotoHandle && (
+                <Text size="lg" color="secondary">
+                  @{user.username}
+                </Text>
+              )}
             </div>
             {isOwnProfile && (
               <Link

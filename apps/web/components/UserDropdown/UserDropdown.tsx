@@ -15,15 +15,17 @@ import {
   DropdownMenuTrigger,
 } from "@eptss/ui";
 import { ChevronDown, LogOut, User, Settings } from "lucide-react";
+import { getDisplayName } from "@eptss/shared";
 import Link from "next/link";
 
 export interface UserDropdownProps {
   email: string;
   username: string | null;
   profilePictureUrl: string | null;
+  atprotoHandle?: string | null;
 }
 
-export function UserDropdown({ email, username, profilePictureUrl }: UserDropdownProps) {
+export function UserDropdown({ email, username, profilePictureUrl, atprotoHandle }: UserDropdownProps) {
   // Get user initials for avatar fallback
   const getInitials = () => {
     if (username) {
@@ -39,7 +41,7 @@ export function UserDropdown({ email, username, profilePictureUrl }: UserDropdow
     await signout();
   };
 
-  const displayName = username || email.split("@")[0];
+  const displayName = getDisplayName({ atprotoHandle, username, email });
 
   return (
     <DropdownMenu>

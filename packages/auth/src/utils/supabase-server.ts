@@ -8,6 +8,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { headers } from 'next/headers';
 import { cache } from 'react';
+import { loadActiveHandles } from '@eptss/db';
 import { getTestUserFromCookies } from '../middleware/testAuthServer';
 
 // Type for the database - can be overridden by consumers
@@ -137,6 +138,8 @@ export interface HeaderUserProfile {
   email: string;
   username: string | null;
   profilePictureUrl: string | null;
+  /** Active Atmosphere handle; when set it replaces the username in display. */
+  atprotoHandle: string | null;
 }
 
 /**
@@ -158,6 +161,7 @@ async function getUserProfileForHeaderInternal(): Promise<HeaderUserProfile | nu
       email: testUser.email,
       username: testUser.username || null,
       profilePictureUrl: null,
+      atprotoHandle: null,
     };
   }
 
@@ -168,11 +172,15 @@ async function getUserProfileForHeaderInternal(): Promise<HeaderUserProfile | nu
     .eq('userid', userId)
     .single();
 
+  // A linked Atmosphere handle replaces the EPTSS username in the header menu.
+  const atprotoHandle = (await loadActiveHandles([userId])).get(userId) ?? null;
+
   return {
     userId,
     email,
     username: userData?.username || null,
     profilePictureUrl: userData?.profile_picture_url || null,
+    atprotoHandle,
   };
 }
 

@@ -12,5 +12,8 @@ export { SignupsTab } from './SignupsTab';
 export { SubmissionsTab } from './SubmissionsTab';
 export { VotesTab } from './VotesTab';
 export { ReferralsTab } from './ReferralsTab';
+export { AtprotoLinkSection } from './AtprotoLinkSection';
+export { MyCoversSection } from './MyCoversSection';
 
 export type { User } from './ProfileHeader';
+export type { CoverItem } from './MyCoversSection';

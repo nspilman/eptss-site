@@ -1,0 +1,25 @@
+{
+  "_comment": "Backfill of EPTSS Round 29 — 'Right Back To It' by Waxahatchee ft. MJ Lenderman. Dates sourced from roundMetadata row id=526, slug=2026-01-01. covers_due and listening_party are identical in the DB; collapsed into a single closing-event milestone. Note: without a submission-deadline milestone, atjam's generic deriveState will report this round as perpetually open; EPTSS UI uses its own derivation.",
+
+  "jam": {
+    "uri": "at://did:plc:pf6izdjdonyd46isl3txwu4g/at.atjam.jam/3mmspfnfda32z",
+    "cid": "bafyreiapael63auvkotlrzwqnh3sgo7ea533vfdgow3vepfjmobenb6hoe"
+  },
+
+  "name": "Round 29",
+  "assignment": "Record your cover of 'Right Back To It' by Waxahatchee (ft. MJ Lenderman) by the submission deadline. Any arrangement, any instrumentation — make it yours.",
+
+  "song": {
+    "title": "Right Back To It",
+    "artist": "Waxahatchee ft. MJ Lenderman"
+  },
+
+  "milestones": [
+    { "label": "signup-opens",    "date": "2025-10-05T03:12:00.000Z" },
+    { "label": "voting-opens",    "date": "2026-02-02T08:00:00.000Z" },
+    { "label": "covering-begins", "date": "2026-02-09T08:00:00.000Z" },
+    { "label": "closing-event",   "date": "2026-04-23T06:59:00.000Z" }
+  ],
+
+  "acceptedSubmissionTypes": ["fm.plyr.track"]
+}

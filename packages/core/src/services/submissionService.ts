@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "../db";
+import { loadActiveHandles } from "@eptss/db";
 import { submissions, users, roundMetadata, songs } from "../db/schema";
 import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
@@ -40,6 +41,13 @@ export const getSubmissions = async (id: number) => {
     .leftJoin(users, eq(submissions.userId, users.userid))
     .where(eq(submissions.roundId, id));
 
+  // A member's display identity (username, publicDisplayName, and a linked
+  // Atmosphere handle) travels together. The handle wins at render via
+  // getDisplayName; here we just attach it.
+  const handles = await loadActiveHandles(
+    data.map((val) => val.user_id).filter((id): id is string => Boolean(id)),
+  );
+
   return data.map((val) => ({
     createdAt: val.created_at,
     roundId: val.round_id,
@@ -53,6 +61,7 @@ export const getSubmissions = async (id: number) => {
     lyrics: val.lyrics,
     username: val.username || "",
     publicDisplayName: val.public_display_name,
+    atprotoHandle: val.user_id ? handles.get(val.user_id) ?? null : null,
     userId: val.user_id,
   }));
 };
@@ -156,6 +165,9 @@ export const getSubmissionById = async (submissionId: number) => {
   }
 
   const val = data[0];
+  const atprotoHandle = val.userId
+    ? (await loadActiveHandles([val.userId])).get(val.userId) ?? null
+    : null;
   return {
     id: val.id,
     createdAt: val.createdAt,
@@ -170,6 +182,7 @@ export const getSubmissionById = async (submissionId: number) => {
     userId: val.userId,
     username: val.username || "",
     publicDisplayName: val.publicDisplayName,
+    atprotoHandle,
     profilePictureUrl: val.profilePictureUrl,
     roundSlug: val.roundSlug,
     songTitle: val.songTitle,

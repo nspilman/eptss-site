@@ -5,6 +5,7 @@ import { formatDate } from "@eptss/core/utils/formatDate";
 import { AudioPreview, AudioPreviewErrorBoundary } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
+import { getDisplayName } from "@eptss/shared";
 import type { SubmissionDetails } from "@eptss/core";
 
 interface SongPageClientProps {
@@ -12,7 +13,7 @@ interface SongPageClientProps {
 }
 
 export function SongPageClient({ submission }: SongPageClientProps) {
-  const displayName = submission.publicDisplayName || submission.username;
+  const displayName = getDisplayName(submission);
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4">

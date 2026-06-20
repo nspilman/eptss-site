@@ -2,7 +2,7 @@
 
 import { getCurrentAndPastRounds, getCurrentRound } from "@eptss/core/services/roundService";
 import { COVER_PROJECT_ID } from "@eptss/core";
-import { getUserCount, getAllUsers as getAllUsersService, getActiveUsersCount, getUserDetails as getUserDetailsService, getActiveUsers as getActiveUsersService } from "@eptss/core/services/userService";
+import { getUserCount, getAllUsers as getAllUsersService, getActiveUsersCount, getUserDetails as getUserDetailsService, getActiveUsers as getActiveUsersService, getMigrationStatus as getMigrationStatusService, type MigrationStatus } from "@eptss/core/services/userService";
 
 export type AdminStats = {
   totalUsers: number;
@@ -100,6 +100,12 @@ export const getActiveUsers = async (): Promise<ActiveUserDetail[]> => {
   // Use service layer
   return getActiveUsersService();
 };
+
+/** Per-user Bluesky link + record-migration status, for the admin tracker. */
+export const getMigrationStatus = async (): Promise<MigrationStatus> => {
+  return getMigrationStatusService();
+};
+export type { MigrationStatus, MigrationUserRow } from "@eptss/core/services/userService";
 
 /**
  * @deprecated Use individual tab server components with caching instead

@@ -3,6 +3,7 @@ export {
   getUserDetails,
   getRoundDetails,
   getActiveUsers,
+  getMigrationStatus,
   adminPageProvider
 } from './adminProvider';
 
@@ -11,5 +12,7 @@ export type {
   AdminPageData,
   UserDetail,
   RoundDetail,
-  ActiveUserDetail
+  ActiveUserDetail,
+  MigrationStatus,
+  MigrationUserRow
 } from './adminProvider';

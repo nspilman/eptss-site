@@ -11,6 +11,7 @@ import {
   desc,
   asc,
   sql,
+  loadActiveHandles,
   type Comment,
 } from "@eptss/db";
 import { logger } from "@eptss/logger/server";
@@ -21,6 +22,8 @@ export interface CommentWithAuthor extends Comment {
     username: string;
     publicDisplayName: string | null;
     profilePictureUrl: string | null;
+    /** Active Atmosphere handle; when set it replaces the username in display. */
+    atprotoHandle?: string | null;
   };
   upvoteCount: number;
   hasUserUpvoted?: boolean;
@@ -28,6 +31,7 @@ export interface CommentWithAuthor extends Comment {
     userid: string;
     username: string;
     publicDisplayName: string | null;
+    atprotoHandle?: string | null;
   }>;
   replies?: CommentWithAuthor[];
 }
@@ -177,11 +181,19 @@ export async function getCommentsByContentId(
         .where(sql`${commentUpvotes.commentId} IN ${commentIds}`);
     }
 
+    // A linked Atmosphere handle replaces the EPTSS name for authors AND
+    // upvoters. One batched lookup over every user id we're about to show.
+    const handles = await loadActiveHandles([
+      ...commentsWithData.map(row => row.author?.userid),
+      ...upvotersData.map(row => row.userid),
+    ].filter((id): id is string => Boolean(id)));
+
     // Group upvoters by comment ID
     const upvotersByComment = new Map<string, Array<{
       userid: string;
       username: string;
       publicDisplayName: string | null;
+      atprotoHandle?: string | null;
     }>>();
 
     upvotersData.forEach(row => {
@@ -196,6 +208,7 @@ export async function getCommentsByContentId(
         userid: row.userid,
         username: row.username,
         publicDisplayName: row.publicDisplayName,
+        atprotoHandle: handles.get(row.userid) ?? null,
       });
     });
 
@@ -204,7 +217,10 @@ export async function getCommentsByContentId(
       .filter(row => row.author !== null)
       .map(row => ({
         ...row.comment,
-        author: row.author!,
+        author: {
+          ...row.author!,
+          atprotoHandle: handles.get(row.author!.userid) ?? null,
+        },
         upvoteCount: row.upvoteCount,
         hasUserUpvoted: currentUserId ? userUpvotes.has(row.comment.id) : false,
         upvoters: upvotersByComment.get(row.comment.id) || [],
