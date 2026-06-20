@@ -479,6 +479,11 @@ export type NewProject = typeof projects.$inferInsert;
 // Project IDs - fixed UUIDs for consistency across migrations
 export const COVER_PROJECT_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 export const ORIGINAL_PROJECT_ID = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
+// Isolated sandbox project for end-to-end testing of the bsky-native submit flow.
+// It has its own "current round" (round selection is projectId-scoped), so a test
+// round here runs fully in parallel without touching the live cover round. Seeded
+// by packages/scripts/src/create-test-project-round.ts.
+export const TEST_PROJECT_ID = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
 
 // ============================================================================
 // PENDING UPLOADS TABLE - Track file uploads for cleanup

@@ -2,9 +2,9 @@
  * Project utility functions (non-async, can be used in client or server)
  */
 
-import { COVER_PROJECT_ID, ORIGINAL_PROJECT_ID } from "../db/schema";
+import { COVER_PROJECT_ID, ORIGINAL_PROJECT_ID, TEST_PROJECT_ID } from "../db/schema";
 
-export type ProjectSlug = 'cover' | 'monthly-original';
+export type ProjectSlug = 'cover' | 'monthly-original' | 'atmosphere-test-project';
 
 /**
  * Map of project slugs to their fixed UUIDs
@@ -12,6 +12,7 @@ export type ProjectSlug = 'cover' | 'monthly-original';
 export const PROJECT_SLUG_TO_ID: Record<ProjectSlug, string> = {
   cover: COVER_PROJECT_ID,
   'monthly-original': ORIGINAL_PROJECT_ID,
+  'atmosphere-test-project': TEST_PROJECT_ID,
 };
 
 /**
@@ -20,13 +21,14 @@ export const PROJECT_SLUG_TO_ID: Record<ProjectSlug, string> = {
 export const PROJECT_ID_TO_SLUG: Record<string, ProjectSlug> = {
   [COVER_PROJECT_ID]: 'cover',
   [ORIGINAL_PROJECT_ID]: 'monthly-original',
+  [TEST_PROJECT_ID]: 'atmosphere-test-project',
 };
 
 /**
  * Validate if a slug is a valid project slug
  */
 export function isValidProjectSlug(slug: string): slug is ProjectSlug {
-  return slug === 'cover' || slug === 'monthly-original';
+  return slug === 'cover' || slug === 'monthly-original' || slug === 'atmosphere-test-project';
 }
 
 /**
