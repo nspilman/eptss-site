@@ -11,6 +11,7 @@ export { SubmissionsCard } from './SubmissionCard';
 export { VotingCard } from './VotingCard';
 export { FeedbackCard } from './FeedbackCard';
 export { ActiveUsersCard } from './ActiveUsersCard';
+export { BlueskyMigrationCard } from './BlueskyMigrationCard';
 export { RoundScheduleCard } from './RoundScheduleCard';
 
 // Reusable Card Components
