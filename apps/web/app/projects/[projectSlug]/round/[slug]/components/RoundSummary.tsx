@@ -136,7 +136,7 @@ export const RoundSummary = async ({ projectSlug, roundId, roundData, voteResult
     ];
     const submissionsDisplayHeaders = [
       {
-        label: "Username",
+        label: "Member",
         key: "username",
       },
       {

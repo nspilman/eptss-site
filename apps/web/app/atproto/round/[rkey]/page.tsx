@@ -5,7 +5,8 @@ import {
   resolvePlyrTrackIds,
   plyrTrackEmbedUrl,
 } from "@eptss/atproto";
-import { db, submissions, users, eq, inArray } from "@eptss/db";
+import { db, submissions, users, eq, inArray, loadActiveHandles } from "@eptss/db";
+import { getDisplayName } from "@eptss/shared";
 import { getClaimedSubmissionUris } from "@/lib/atproto/claims";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -14,10 +15,11 @@ import { RoundDetail } from "../../_components";
 export const dynamic = "force-dynamic";
 
 /**
- * Resolve each backfilled submission's submitter username from the EPTSS DB.
+ * Resolve each backfilled submission's submitter name from the EPTSS DB.
  * The generic at.atjam.submission record doesn't carry the author (it's the
  * admin DID until claimed), but the record's rkey encodes the Postgres
- * submission id, so we cross-walk id → user → username here.
+ * submission id, so we cross-walk id → user here. A linked Atmosphere handle
+ * replaces the EPTSS username.
  */
 async function resolveSubmitterNames(
   submissionUris: string[],
@@ -31,15 +33,30 @@ async function resolveSubmitterNames(
   if (ids.length === 0) return {};
 
   const rows = await db
-    .select({ id: submissions.id, username: users.username })
+    .select({
+      id: submissions.id,
+      userId: users.userid,
+      username: users.username,
+      publicDisplayName: users.publicDisplayName,
+    })
     .from(submissions)
     .leftJoin(users, eq(submissions.userId, users.userid))
     .where(inArray(submissions.id, ids));
-  const nameById = new Map(rows.map((r) => [r.id, r.username]));
+
+  const handles = await loadActiveHandles(
+    rows.map((r) => r.userId).filter((id): id is string => Boolean(id)),
+  );
+  const infoById = new Map(rows.map((r) => [r.id, r]));
 
   const out: Record<string, string> = {};
   for (const [uri, id] of idByUri) {
-    const name = nameById.get(id);
+    const info = infoById.get(id);
+    if (!info) continue;
+    const name = getDisplayName({
+      atprotoHandle: info.userId ? handles.get(info.userId) : null,
+      publicDisplayName: info.publicDisplayName,
+      username: info.username,
+    });
     if (name) out[uri] = name;
   }
   return out;

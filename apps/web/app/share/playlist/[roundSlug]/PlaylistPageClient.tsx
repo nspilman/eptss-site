@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Playlist, type Track } from "@eptss/media-display";
 import { Card, CardContent, Text, Display, Button, Switch } from "@eptss/ui";
 import { ArrowRight } from "lucide-react";
+import { getDisplayName } from "@eptss/shared";
 import type { RoundInfo } from "@eptss/core/types/round";
 import { getDisplayRoundNumber } from "@/lib/roundDisplay";
 
@@ -47,7 +48,7 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
   const tracks: Track[] = submissionsWithAudio
     .filter((s) => s.audioFileUrl)
     .map((submission) => {
-      const displayName = submission.publicDisplayName || submission.username;
+      const displayName = getDisplayName(submission);
       const submissionId = `${submission.roundId}-${submission.userId}`;
       return {
         id: submissionId,
@@ -140,7 +141,7 @@ export function PlaylistPageClient({ roundData, roundSlug, projectSlug = "cover"
               {soundcloudSubmissions.map((submission) => (
                 <Card key={`${submission.roundId}-${submission.userId}`}>
                   <CardContent className="flex items-center justify-between py-3">
-                    <Text>{submission.publicDisplayName || submission.username}</Text>
+                    <Text>{getDisplayName(submission)}</Text>
                     <Button variant="gradient" size="sm" asChild>
                       <a
                         href={submission.soundcloudUrl!}

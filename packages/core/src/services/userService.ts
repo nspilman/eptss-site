@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "../db";
+import { loadActiveHandles, loadActiveIdentities } from "@eptss/db";
 import { users, signUps, submissions, roundMetadata, songs, userPrivacySettings, userSocialLinks, userEmbeddedMedia } from "../db/schema";
 import { count, eq, and, asc, desc, gte, isNotNull } from "drizzle-orm";
 import { sql } from "drizzle-orm/sql";
@@ -72,6 +73,115 @@ export const getUserDetails = async (): Promise<Array<{
     lastSubmitted: toISOString(user.lastSubmitted),
     lastSignup: toISOString(user.lastSignup),
   }));
+};
+
+/**
+ * Per-user Bluesky migration status — for the admin tracker.
+ *
+ * `linked` means the user has authorized an ATProto identity (the only way
+ * EPTSS can write a record into their repo). `claimedSubmissions` is how many of
+ * their covers have actually moved to that DID; `fullyMigrated` means all of them
+ * have. Unlinked users can't have claimed covers — they haven't granted the
+ * write — so they show as not-linked with claimed = 0.
+ */
+export type MigrationUserRow = {
+  userId: string;
+  email: string;
+  username: string | null;
+  handle: string | null; // Atmosphere handle, null if unlinked or unresolved
+  did: string | null; // the repo their records move to, null if unlinked
+  linked: boolean;
+  totalSubmissions: number;
+  claimedSubmissions: number;
+  fullyMigrated: boolean;
+};
+
+export type MigrationStatus = {
+  summary: {
+    participants: number; // users with at least one submission
+    linked: number; // of those, how many linked a bsky identity
+    fullyMigrated: number; // linked AND every cover claimed
+    totalSubmissions: number;
+    claimedSubmissions: number;
+    coversOnAdmin: number; // total - claimed: covers still on the EPTSS scaffold
+    coversOnAdminLinked: number; // claimable NOW (user linked, just hasn't claimed)
+    coversOnAdminUnlinked: number; // blocked — the user must link before these can move
+  };
+  /** Linked users with their per-user claim progress (the tracked set). */
+  linkedUsers: MigrationUserRow[];
+  /** Participants without a link — the outreach list; all their covers sit on admin. */
+  unlinkedUsers: MigrationUserRow[];
+};
+
+export const getMigrationStatus = async (): Promise<MigrationStatus> => {
+  // One grouped pass: per submitter, total covers and how many are claimed.
+  // COUNT(claimed_at_uri) counts only the non-null (claimed) rows.
+  const perUser = await db
+    .select({
+      userId: submissions.userId,
+      email: users.email,
+      username: users.username,
+      total: sql<number>`COUNT(*)::int`,
+      claimed: sql<number>`COUNT(${submissions.claimedAtUri})::int`,
+    })
+    .from(submissions)
+    .leftJoin(users, eq(submissions.userId, users.userid))
+    .groupBy(submissions.userId, users.email, users.username);
+
+  const identities = await loadActiveIdentities(perUser.map((u) => u.userId));
+
+  const rows: MigrationUserRow[] = perUser.map((u) => {
+    const id = identities.get(u.userId);
+    const total = Number(u.total) || 0;
+    const claimed = Number(u.claimed) || 0;
+    return {
+      userId: u.userId,
+      email: u.email ?? "",
+      username: u.username ?? null,
+      handle: id?.handle ?? null,
+      did: id?.did ?? null,
+      linked: Boolean(id),
+      totalSubmissions: total,
+      claimedSubmissions: claimed,
+      fullyMigrated: Boolean(id) && total > 0 && claimed === total,
+    };
+  });
+
+  const linkedUsers = rows
+    .filter((r) => r.linked)
+    .sort((a, b) => {
+      // Surface the unfinished first: not-yet-migrated, then most covers still owed.
+      if (a.fullyMigrated !== b.fullyMigrated) return a.fullyMigrated ? 1 : -1;
+      const remainingA = a.totalSubmissions - a.claimedSubmissions;
+      const remainingB = b.totalSubmissions - b.claimedSubmissions;
+      if (remainingB !== remainingA) return remainingB - remainingA;
+      return (a.handle ?? a.email).localeCompare(b.handle ?? b.email);
+    });
+
+  const unlinkedUsers = rows
+    .filter((r) => !r.linked)
+    .sort(
+      (a, b) =>
+        b.totalSubmissions - a.totalSubmissions || a.email.localeCompare(b.email),
+    );
+
+  // Covers still living on the admin scaffold = the unclaimed remainder per user.
+  const onAdmin = (r: MigrationUserRow) => r.totalSubmissions - r.claimedSubmissions;
+
+  return {
+    summary: {
+      participants: rows.length,
+      linked: linkedUsers.length,
+      fullyMigrated: rows.filter((r) => r.fullyMigrated).length,
+      totalSubmissions: rows.reduce((s, r) => s + r.totalSubmissions, 0),
+      claimedSubmissions: rows.reduce((s, r) => s + r.claimedSubmissions, 0),
+      coversOnAdmin: rows.reduce((s, r) => s + onAdmin(r), 0),
+      coversOnAdminLinked: linkedUsers.reduce((s, r) => s + onAdmin(r), 0),
+      coversOnAdminUnlinked: unlinkedUsers.reduce((s, r) => s + onAdmin(r), 0),
+    },
+    linkedUsers,
+    unlinkedUsers,
+  };
 };
 
 /**
@@ -243,8 +353,11 @@ export const getPublicProfileByUsername = async (username: string) => {
   // All submissions are now either shown or hidden based on the user's showSubmissions preference
   const filteredSubmissions = privacy.showSubmissions ? userSubmissions : [];
 
-  // Determine display name (fallback to username if not set)
-  const displayName = getDisplayName(user);
+  // A linked Atmosphere handle is part of the member's display identity and
+  // replaces the EPTSS name. Resolve it alongside the name so the whole
+  // identity travels together.
+  const atprotoHandle = (await loadActiveHandles([user.userid])).get(user.userid) ?? null;
+  const displayName = getDisplayName({ ...user, atprotoHandle });
 
   // Get social links and embedded media
   const [socialLinks, embeddedMedia] = await Promise.all([
@@ -263,6 +376,7 @@ export const getPublicProfileByUsername = async (username: string) => {
       publicDisplayName: user.publicDisplayName,
       profilePictureUrl: user.profilePictureUrl,
       displayName,
+      atprotoHandle,
       bio: privacy.profileBio,
       showEmail: privacy.showEmail,
     },

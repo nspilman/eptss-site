@@ -3,21 +3,36 @@
  */
 
 export interface UserDisplayData {
+  /**
+   * Active Atmosphere (ATProto) handle. When a member has linked their network
+   * identity, the handle REPLACES the EPTSS name entirely — rendered as
+   * `@handle`. This is display-only; URLs and lookups still key off `username`.
+   */
+  atprotoHandle?: string | null;
   publicDisplayName?: string | null;
   username?: string | null;
   email?: string;
 }
 
+/** Normalize a handle to exactly one leading `@` for display. */
+export function formatHandle(handle: string): string {
+  return `@${handle.replace(/^@+/, "")}`;
+}
+
 /**
  * Get the display name for a user with fallback chain:
- * publicDisplayName -> username -> email username -> fallback
+ * atprotoHandle -> publicDisplayName -> username -> email username -> fallback
  *
- * @param user - User data with display name, username, and optionally email
+ * A linked Atmosphere handle wins over everything: a migrated account is shown
+ * by its network identity (`@handle`), not the EPTSS username.
+ *
+ * @param user - User data with optional handle, display name, username, email
  * @param fallback - Fallback value if nothing else is available (default: "Someone")
  * @returns The display name to show
  *
  * @example
  * ```ts
+ * getDisplayName({ atprotoHandle: "nate.com" }) // "@nate.com"
  * getDisplayName({ publicDisplayName: "John Doe" }) // "John Doe"
  * getDisplayName({ username: "johndoe" }) // "johndoe"
  * getDisplayName({ email: "john@example.com" }) // "john"
@@ -28,6 +43,10 @@ export function getDisplayName(
   user: UserDisplayData,
   fallback: string = "Someone"
 ): string {
+  if (user.atprotoHandle) {
+    return formatHandle(user.atprotoHandle);
+  }
+
   if (user.publicDisplayName) {
     return user.publicDisplayName;
   }

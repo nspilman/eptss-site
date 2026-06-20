@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "../db";
+import { loadActiveHandles } from "@eptss/db";
 import { signUps, songs, users, unverifiedSignups, roundMetadata } from "../db/schema";
 import { routes } from "@eptss/routing";
 import { FormReturn } from "../types";
@@ -57,6 +58,14 @@ export const getSignupsByRound = async (roundId: number) => {
     const unsortedUrls = data?.map(field => field.youtubeLink) || [];
     const sortedData = seededShuffle(data || [], JSON.stringify(unsortedUrls));
 
+    // A linked Atmosphere handle replaces the EPTSS name wherever a participant
+    // is shown (round participants, @mention suggestions). One batched lookup.
+    const handles = await loadActiveHandles(
+      (data || [])
+        .map(d => d.userId)
+        .filter((id): id is string => Boolean(id)),
+    );
+
     // Process the data and throw errors for invalid entries
     // Note: No deduplication here - all signups are returned
     // Deduplication by songId happens in getVoteOptions for the voting ballot
@@ -75,6 +84,7 @@ export const getSignupsByRound = async (roundId: number) => {
         email: val.email,
         username: val.username || undefined,
         publicDisplayName: val.publicDisplayName || undefined,
+        atprotoHandle: handles.get(val.userId) ?? null,
         profilePictureUrl: val.profilePictureUrl || undefined,
         additionalComments: val.additionalComments || undefined,
         song: {

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Badge, Avatar, AvatarFallback, AvatarImage, Button } from "@eptss/ui"
+import { getDisplayName } from '@eptss/shared';
 import { CalendarIcon, EnvelopeClosedIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
 import { format } from 'date-fns';
 
@@ -69,7 +70,14 @@ export function ProfileHeader({ user, signupCount, submissionCount, voteCount, a
           <div className="flex-1 space-y-3">
             <div className="flex flex-col gap-3 md:flex-row md:items-center">
               <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-primary)]">
-                {user.username || 'Music Lover'}
+                {getDisplayName(
+                  {
+                    atprotoHandle,
+                    publicDisplayName: user.publicDisplayName,
+                    username: user.username,
+                  },
+                  'Music Lover',
+                )}
               </h1>
               <Badge className="w-fit bg-[var(--color-accent-primary)]/20 text-[var(--color-accent-primary)] border border-[var(--color-accent-primary)]/30 hover:bg-[var(--color-accent-primary)]/30">
                 EPTSS Member
@@ -89,7 +97,7 @@ export function ProfileHeader({ user, signupCount, submissionCount, voteCount, a
               {atprotoHandle && (
                 <div className="flex items-center gap-2 text-[var(--color-accent-primary)]">
                   <span aria-hidden>🦋</span>
-                  <span className="break-all">@{atprotoHandle}</span>
+                  <span>on the Atmosphere</span>
                 </div>
               )}
             </div>

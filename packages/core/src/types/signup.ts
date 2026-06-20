@@ -23,6 +23,8 @@ export interface SignupData {
   // User profile fields
   username?: string;
   publicDisplayName?: string | null;
+  /** Active Atmosphere handle; when set it replaces the name in display. */
+  atprotoHandle?: string | null;
   profilePictureUrl?: string | null;
 }
 
