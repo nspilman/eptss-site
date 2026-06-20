@@ -35,16 +35,6 @@ export interface ClaimResult {
   skipped?: boolean;
 }
 
-export interface ClaimAllResult {
-  ok: boolean;
-  error?: string;
-  claimed: number;
-  skipped: number;
-  failed: number;
-  /** Per-cover notes (why each was skipped/failed), for visible diagnostics. */
-  details?: string[];
-}
-
 /** Confirm the submission belongs to this user and report its claim state. */
 async function loadOwnedSubmission(
   submissionId: number,
@@ -59,12 +49,16 @@ async function loadOwnedSubmission(
 }
 
 /**
- * Claim one backfilled cover into the signed-in user's repo. Idempotent:
- * re-claiming an already-claimed cover is a no-op success.
+ * The per-record claim core: copy the admin scaffold record into the user's repo,
+ * read it back to prove the new home resolves, then record the new location.
+ *
+ * Deliberately free of revalidation so callers control when the page refreshes:
+ * `claimSubmission` refreshes immediately (a manual single claim), while the
+ * guided link→migrate loop drives many of these and refreshes once at the end —
+ * N covers should not mean N page rebuilds. Idempotent: re-claiming an
+ * already-claimed cover is a no-op success.
  */
-export async function claimSubmission(
-  submissionId: number,
-): Promise<ClaimResult> {
+async function claimOne(submissionId: number): Promise<ClaimResult> {
   try {
     const { userId } = await getAuthUser();
     if (!userId) return { ok: false, error: "Not signed in." };
@@ -124,7 +118,6 @@ export async function claimSubmission(
       .set({ claimedAtUri: put.data.uri, claimedAt: new Date() })
       .where(eq(submissions.id, submissionId));
 
-    revalidatePath("/dashboard/profile");
     console.log(`[claim] #${submissionId} claimed OK`);
     return { ok: true, claimedAtUri: put.data.uri };
   } catch (err) {
@@ -132,6 +125,26 @@ export async function claimSubmission(
     console.error(`[claim] #${submissionId} FAILED:`, err);
     return { ok: false, error: `Claim failed: ${message}` };
   }
+}
+
+/** Claim one cover and refresh the profile immediately (manual single claim). */
+export async function claimSubmission(
+  submissionId: number,
+): Promise<ClaimResult> {
+  const res = await claimOne(submissionId);
+  if (res.ok) revalidatePath("/dashboard/profile");
+  return res;
+}
+
+/**
+ * Claim one cover as a step in the guided link→migrate flow. Identical move to
+ * `claimSubmission`, but the client drives the loop and calls `router.refresh()`
+ * once it finishes — so this skips the per-record revalidate. See CoverMigration.
+ */
+export async function migrateOneCover(
+  submissionId: number,
+): Promise<ClaimResult> {
+  return claimOne(submissionId);
 }
 
 /**
@@ -172,69 +185,4 @@ export async function unclaimSubmission(
 
   revalidatePath("/dashboard/profile");
   return { ok: true };
-}
-
-/**
- * Claim a user's whole backfilled history in one pass. Reuses the verified
- * single-claim path per submission, so it inherits its safety (read-back before
- * the pointer is set, admin copy kept as backup). Idempotent + resumable: only
- * not-yet-claimed covers are attempted, so a partial run can simply be re-run.
- * Covers not on the network yet are skipped, not failed.
- */
-export async function claimAllMine(): Promise<ClaimAllResult> {
-  const empty = { claimed: 0, skipped: 0, failed: 0 };
-  console.log("[claim] claimAllMine start");
-  try {
-    const { userId } = await getAuthUser();
-    if (!userId) return { ok: false, error: "Not signed in.", ...empty };
-
-    const identity = await loadIdentity(userId);
-    if (!identity) {
-      return { ok: false, error: "Link your Bluesky account first.", ...empty };
-    }
-
-    const rows = await db
-      .select({ id: submissions.id, claimedAtUri: submissions.claimedAtUri })
-      .from(submissions)
-      .where(eq(submissions.userId, userId));
-    const todo = rows.filter((r) => !r.claimedAtUri).map((r) => r.id);
-    console.log(
-      `[claim] claimAllMine: ${rows.length} cover(s) total, ${todo.length} to claim`,
-      todo,
-    );
-    if (todo.length === 0) {
-      return {
-        ok: true,
-        ...empty,
-        details: ["Nothing to claim — all your covers are already claimed."],
-      };
-    }
-
-    let claimed = 0;
-    let skipped = 0;
-    let failed = 0;
-    const details: string[] = [];
-    for (const id of todo) {
-      const res = await claimSubmission(id);
-      if (res.ok) {
-        claimed++;
-      } else if (res.skipped) {
-        skipped++;
-        details.push(`#${id}: not on the network yet`);
-      } else {
-        failed++;
-        details.push(`#${id}: ${res.error ?? "failed"}`);
-      }
-    }
-
-    revalidatePath("/dashboard/profile");
-    console.log(
-      `[claim] claimAllMine done: ${claimed} claimed, ${skipped} skipped, ${failed} failed`,
-    );
-    return { ok: true, claimed, skipped, failed, details };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown error";
-    console.error("[claim] claimAllMine FAILED:", err);
-    return { ok: false, error: `Claim all failed: ${message}`, ...empty };
-  }
 }

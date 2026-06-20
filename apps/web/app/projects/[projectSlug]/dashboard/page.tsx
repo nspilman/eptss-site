@@ -1,6 +1,7 @@
 import { Dashboard } from '@eptss/dashboard';
 import { eptssDeboardConfig } from '@/app/dashboard/dashboard-config';
 import { getAuthUser } from '@eptss/core/utils/supabase/server';
+import { loadIdentity } from '@eptss/auth/atproto';
 import { getUserById, getProjectIdFromSlug, isValidProjectSlug } from '@eptss/core';
 import { notFound, redirect } from 'next/navigation';
 import {
@@ -9,6 +10,7 @@ import {
   fetchDiscussionData,
 } from '@/app/dashboard/data-fetchers';
 import { StickyDiscussionFooterWrapper } from '@/app/dashboard/StickyDiscussionFooterWrapper';
+import { LinkBlueskyCallout } from '@/app/dashboard/LinkBlueskyCallout';
 import { ProjectCookieSetter } from './ProjectCookieSetter';
 
 // Force dynamic rendering for authenticated content
@@ -37,11 +39,12 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
   }
 
   // Fetch data for all panels in parallel
-  const [heroData, participantsData, userData] =
+  const [heroData, participantsData, userData, identity] =
     await Promise.all([
       fetchHeroData(projectId, slug),
       fetchParticipantsData(projectId),
       getUserById(userId),
+      loadIdentity(userId),
     ]);
 
   // Fetch discussion data if we have a round
@@ -50,6 +53,10 @@ export default async function ProjectDashboardPage({ params }: ProjectDashboardP
   return (
     <>
       <ProjectCookieSetter projectSlug={slug} />
+      {/* Linking is the prerequisite for cover submission (covers write to the
+          member's own repo). Nudge unlinked members up top; it disappears once
+          they've linked. */}
+      {!identity && <LinkBlueskyCallout />}
       <Dashboard
         config={eptssDeboardConfig}
         user={{ id: userId, role: 'user' }}

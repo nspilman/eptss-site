@@ -9,6 +9,7 @@
     "atproto:create-user-signup": "bun src/atproto/create-user-signup.ts",
     "atproto:backfill-rounds": "bun src/atproto/backfill/backfill-rounds.ts",
     "atproto:migrate-plyr": "bun src/atproto/plyr/migrate-to-plyr.ts",
+    "atproto:reset-migration-for-user": "bun src/atproto/reset-migration-for-user.ts",
     "create-spotify-playlist": "bun src/createSpotifyPlaylist.ts",
     "create-youtube-playlist": "bun src/createYoutubePlaylist.ts",
     "populate-round-slugs": "bun src/populate-round-slugs.ts",
