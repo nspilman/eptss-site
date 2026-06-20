@@ -13,7 +13,7 @@ import { getClaimableCovers } from '@/lib/atproto/claims';
 import { plyrOwnership } from '@/lib/atproto/plyr-rehome';
 import { resolvePlyrTrackIds, plyrTrackPageUrl } from '@eptss/atproto';
 import { ClaimButton } from './ClaimButton';
-import { ClaimAllButton } from './ClaimAllButton';
+import { CoverMigration } from './CoverMigration';
 import { PlyrRehomeButton } from './PlyrRehomeButton';
 
 /**
@@ -111,15 +111,26 @@ export default async function ProfilePage({
             existingDid={existingDid}
           />
         </div>
+        {/* The link→migrate bridge: when there are covers still on the EPTSS
+            scaffold, offer to move them home — and auto-run the moment the user
+            lands here straight from linking (?linked=success). */}
+        {identity && unclaimedCount >= 1 && (
+          <CoverMigration
+            handle={identity.handle}
+            autoStart={linkedSuccess}
+            covers={coversView
+              .filter((c) => c.claimedAtUri == null)
+              .map((c) => ({
+                submissionId: c.submissionId,
+                songTitle: c.songTitle,
+                songArtist: c.songArtist,
+              }))}
+          />
+        )}
         {identity && (
           <MyCoversSection
             covers={coversView}
             handle={identity.handle}
-            headerAction={
-              unclaimedCount >= 1 ? (
-                <ClaimAllButton count={unclaimedCount} />
-              ) : undefined
-            }
             renderClaimAction={(cover) => (
               <ClaimButton
                 submissionId={cover.submissionId}
