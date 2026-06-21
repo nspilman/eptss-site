@@ -45,12 +45,12 @@ import {
   ilike,
 } from "@eptss/db";
 import { loginAtprotoAgent } from "../agent";
+import { downloadMedia, uploadAudioToPlyr } from "@eptss/atproto";
 
 const PLYR_API = (process.env.PLYR_API ?? "https://api.plyr.fm").replace(/\/$/, "");
 const PLYR_TOKEN = process.env.PLYR_TOKEN;
 const SUPABASE_AUDIO_MARKER = "/audio-submissions/";
 const PLYR_TRACK_COLLECTION = "fm.plyr.track";
-const MAX_BYTES = 200 * 1024 * 1024;
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
@@ -203,115 +203,6 @@ async function loadCandidates(): Promise<Candidate[]> {
   return rows.filter((r) => onlyId == null || r.id === onlyId);
 }
 
-async function download(
-  url: string,
-): Promise<{ bytes: Uint8Array; mimeType: string; filename: string }> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`download ${res.status} for ${url}`);
-  const bytes = new Uint8Array(await res.arrayBuffer());
-  if (bytes.byteLength > MAX_BYTES) {
-    throw new Error(`audio is ${(bytes.byteLength / 1e6).toFixed(1)}MB — over guard`);
-  }
-  const filename = decodeURIComponent(url.split("/").pop()?.split("?")[0] ?? "cover.mp3");
-  const ext = filename.split(".").pop()?.toLowerCase();
-  const mimeType =
-    res.headers.get("content-type") ?? (ext === "wav" ? "audio/wav" : "audio/mpeg");
-  return { bytes, mimeType, filename };
-}
-
-type DownloadedFile = { bytes: Uint8Array; mimeType: string; filename: string };
-
-/** POST the file (+ optional artwork) to plyr; returns the upload id to monitor. */
-async function startUpload(
-  file: DownloadedFile,
-  title: string,
-  image?: DownloadedFile,
-): Promise<string> {
-  const form = new FormData();
-  form.append("file", new Blob([file.bytes], { type: file.mimeType }), file.filename);
-  form.append("title", title);
-  if (image) {
-    form.append(
-      "image",
-      new Blob([image.bytes], { type: image.mimeType }),
-      image.filename,
-    );
-  }
-  const res = await fetch(`${PLYR_API}/tracks/`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: form,
-  });
-  if (!res.ok) throw new Error(`POST /tracks/ ${res.status}: ${await res.text()}`);
-  const data = (await res.json()) as Record<string, unknown>;
-  if (verbose) console.log(`  start: ${JSON.stringify(data)}`);
-  const uploadId = data.upload_id ?? data.uploadId ?? data.id;
-  if (!uploadId) throw new Error(`no upload_id: ${JSON.stringify(data)}`);
-  return String(uploadId);
-}
-
-/**
- * Consume the SSE progress stream until the upload completes. The exact event
- * shape isn't documented, so this scans every event for a track id / uri / cid
- * and surfaces errors; `--verbose` prints each raw `data:` line, so the first
- * run reveals the real shape if this needs adjusting.
- */
-async function waitForCompletion(
-  uploadId: string,
-): Promise<{ trackId?: string; uri?: string; cid?: string }> {
-  const res = await fetch(`${PLYR_API}/tracks/uploads/${uploadId}/progress`, {
-    headers: { ...authHeaders(), accept: "text/event-stream" },
-  });
-  if (!res.ok || !res.body) throw new Error(`progress ${res.status} for ${uploadId}`);
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  const found: { trackId?: string; uri?: string; cid?: string } = {};
-  let buf = "";
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    const events = buf.split("\n\n");
-    buf = events.pop() ?? "";
-    for (const ev of events) {
-      const data = ev
-        .split("\n")
-        .filter((l) => l.startsWith("data:"))
-        .map((l) => l.slice(5).trim())
-        .join("\n");
-      if (!data) continue;
-      if (verbose) console.log(`  sse: ${data}`);
-      let p: Record<string, unknown>;
-      try {
-        p = JSON.parse(data) as Record<string, unknown>;
-      } catch {
-        continue;
-      }
-      if (p.error) throw new Error(`plyr error: ${JSON.stringify(p)}`);
-      const tid = p.track_id ?? p.trackId ?? p.id;
-      if (tid) found.trackId = String(tid);
-      if (p.atproto_record_uri) found.uri = String(p.atproto_record_uri);
-      if (p.atproto_record_cid) found.cid = String(p.atproto_record_cid);
-    }
-  }
-  if (!found.trackId && !found.uri) {
-    throw new Error("progress ended without a track id/uri (re-run with --verbose)");
-  }
-  return found;
-}
-
-/** Resolve the created track's fm.plyr.track AT URI + CID. */
-async function fetchTrack(trackId: string): Promise<{ uri: string; cid: string }> {
-  const res = await fetch(`${PLYR_API}/tracks/${trackId}`, { headers: authHeaders() });
-  if (!res.ok) throw new Error(`GET /tracks/${trackId} ${res.status}: ${await res.text()}`);
-  const t = (await res.json()) as Record<string, unknown>;
-  if (verbose) console.log(`  track: ${JSON.stringify(t)}`);
-  const uri = (t.atproto_record_uri ?? t.uri) as string | undefined;
-  const cid = (t.atproto_record_cid ?? t.cid) as string | undefined;
-  if (!uri || !cid) throw new Error(`track missing atproto uri/cid: ${JSON.stringify(t)}`);
-  return { uri, cid };
-}
-
 async function migrateOne(c: Candidate): Promise<void> {
   const title = c.songTitle ?? `EPTSS cover #${c.id}`;
   const artist = c.publicDisplayName ?? c.username ?? "EPTSS";
@@ -325,28 +216,29 @@ async function migrateOne(c: Candidate): Promise<void> {
     return;
   }
 
-  const file = await download(c.audioFileUrl);
+  const file = await downloadMedia(c.audioFileUrl);
   if (verbose) console.log(`  downloaded ${file.bytes.byteLength} bytes (${file.mimeType})`);
 
   // Pull the cover art too, when the submission has one — plyr accepts it as
   // the track's `image`. Non-fatal: a broken/missing image shouldn't block the
   // audio upload.
-  let image: DownloadedFile | undefined;
+  let image;
   if (c.coverImageUrl) {
     try {
-      image = await download(c.coverImageUrl);
+      image = await downloadMedia(c.coverImageUrl);
       if (verbose) console.log(`  cover art ${image.bytes.byteLength} bytes (${image.mimeType})`);
     } catch (err) {
       console.warn(`  cover art download failed: ${err instanceof Error ? err.message : err}`);
     }
   }
 
-  const uploadId = await startUpload(file, title, image);
-  const progress = await waitForCompletion(uploadId);
-  const { uri, cid } =
-    progress.uri && progress.cid
-      ? { uri: progress.uri, cid: progress.cid }
-      : await fetchTrack(progress.trackId!);
+  const { uri, cid } = await uploadAudioToPlyr({
+    token: PLYR_TOKEN!,
+    file,
+    title,
+    image,
+    onProgress: verbose ? (e) => console.log(`  sse: ${JSON.stringify(e)}`) : undefined,
+  });
 
   await db
     .update(submissions)

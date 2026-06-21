@@ -1,15 +1,14 @@
 /**
  * test-plyr-upload.ts — upload ONE audio file to plyr.fm, end to end, for testing.
  *
- * This is the SAME proven upload path as migrate-to-plyr.ts (POST /tracks/ →
- * transcode to R2 → fm.plyr.track record written to the token-holder's PDS),
- * isolated so you can test uploading a single song without the Supabase-submission
- * plumbing. It reports the resulting track so you can confirm ownership
- * (artist_did) and a playable embed.
+ * A thin CLI around the shared plyr upload client (@eptss/atproto's uploadAudioToPlyr)
+ * — the SAME pipeline the in-app migration and migrate-to-plyr use — so you can sanity-
+ * check a single upload in isolation (confirm ownership via the resulting at:// uri and
+ * a playable embed) without the Supabase-submission plumbing.
  *
- * Auth: PLYR_TOKEN — a developer token from plyr.fm/portal. The track is owned by
- * the atproto identity the token belongs to, so run it with YOUR token to get a
- * user-owned track in YOUR PDS.
+ * Auth: PLYR_TOKEN — a developer token from plyr.fm/portal. The track is owned by the
+ * atproto identity the token belongs to, so run it with YOUR token to get a user-owned
+ * track in YOUR PDS.
  *
  * Usage (from packages/scripts):
  *   set -a; source ../../apps/web/.env; set +a        # or: export PLYR_TOKEN=...
@@ -23,16 +22,19 @@
  *   --title=<text>     track title (default: the file name)
  *   --image=<path|url> optional cover art
  *   --dry-run          validate + print the plan, upload nothing
- *   --verbose          print raw plyr responses (SSE events, track JSON)
+ *   --verbose          print raw plyr SSE progress events
  */
-/// <reference lib="dom" />
 import "dotenv/config";
 import { readFile } from "node:fs/promises";
 import { basename } from "node:path";
+import {
+  downloadMedia,
+  plyrMimeFor,
+  uploadAudioToPlyr,
+  type LoadedMedia,
+} from "@eptss/atproto";
 
-const PLYR_API = (process.env.PLYR_API ?? "https://api.plyr.fm").replace(/\/$/, "");
 const PLYR_TOKEN = process.env.PLYR_TOKEN;
-const MAX_BYTES = 200 * 1024 * 1024;
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
@@ -47,146 +49,25 @@ function strFlag(name: string): string | undefined {
   return a ? a.slice(name.length + 1) : undefined;
 }
 
-const authHeaders = () => ({ authorization: `Bearer ${PLYR_TOKEN}` });
-
-type LoadedFile = { bytes: Uint8Array; mimeType: string; filename: string };
-
-function mimeFor(filename: string, fallback = "audio/mpeg"): string {
-  switch (filename.split(".").pop()?.toLowerCase()) {
-    case "wav":
-      return "audio/wav";
-    case "mp3":
-      return "audio/mpeg";
-    case "m4a":
-    case "mp4":
-      return "audio/mp4";
-    case "flac":
-      return "audio/flac";
-    case "ogg":
-      return "audio/ogg";
-    case "png":
-      return "image/png";
-    case "jpg":
-    case "jpeg":
-      return "image/jpeg";
-    case "webp":
-      return "image/webp";
-    default:
-      return fallback;
-  }
-}
-
-async function loadFromPath(path: string): Promise<LoadedFile> {
+async function loadFromPath(path: string): Promise<LoadedMedia> {
   const bytes = new Uint8Array(await readFile(path));
-  if (bytes.byteLength > MAX_BYTES) {
-    throw new Error(`file is ${(bytes.byteLength / 1e6).toFixed(1)}MB — over guard`);
-  }
   const filename = basename(path);
-  return { bytes, mimeType: mimeFor(filename), filename };
+  return { bytes, mimeType: plyrMimeFor(filename), filename };
 }
 
-async function loadFromUrl(u: string): Promise<LoadedFile> {
-  const res = await fetch(u);
-  if (!res.ok) throw new Error(`download ${res.status} for ${u}`);
-  const bytes = new Uint8Array(await res.arrayBuffer());
-  if (bytes.byteLength > MAX_BYTES) {
-    throw new Error(`audio is ${(bytes.byteLength / 1e6).toFixed(1)}MB — over guard`);
-  }
-  const filename = decodeURIComponent(u.split("/").pop()?.split("?")[0] ?? "cover.mp3");
-  const mimeType = res.headers.get("content-type") ?? mimeFor(filename);
-  return { bytes, mimeType, filename };
-}
-
-function loadEither(path?: string, u?: string): Promise<LoadedFile> {
+function loadEither(path?: string, u?: string): Promise<LoadedMedia> {
   if (path) return loadFromPath(path);
-  if (u) return loadFromUrl(u);
+  if (u) return downloadMedia(u);
   throw new Error("provide --file=<path> or --url=<audioUrl>");
-}
-
-/** POST the file (+ optional artwork) to plyr; returns the upload id to monitor. */
-async function startUpload(
-  file: LoadedFile,
-  trackTitle: string,
-  image?: LoadedFile,
-): Promise<string> {
-  const form = new FormData();
-  form.append("file", new Blob([file.bytes], { type: file.mimeType }), file.filename);
-  form.append("title", trackTitle);
-  if (image) {
-    form.append("image", new Blob([image.bytes], { type: image.mimeType }), image.filename);
-  }
-  const res = await fetch(`${PLYR_API}/tracks/`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: form,
-  });
-  if (!res.ok) throw new Error(`POST /tracks/ ${res.status}: ${await res.text()}`);
-  const data = (await res.json()) as Record<string, unknown>;
-  if (verbose) console.log(`  start: ${JSON.stringify(data)}`);
-  const uploadId = data.upload_id ?? data.uploadId ?? data.id;
-  if (!uploadId) throw new Error(`no upload_id in response: ${JSON.stringify(data)}`);
-  return String(uploadId);
-}
-
-/** Consume the SSE progress stream until the track resolves (or errors). */
-async function waitForCompletion(
-  uploadId: string,
-): Promise<{ trackId?: string; uri?: string; cid?: string }> {
-  const res = await fetch(`${PLYR_API}/tracks/uploads/${uploadId}/progress`, {
-    headers: { ...authHeaders(), accept: "text/event-stream" },
-  });
-  if (!res.ok || !res.body) throw new Error(`progress ${res.status} for ${uploadId}`);
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  const found: { trackId?: string; uri?: string; cid?: string } = {};
-  let buf = "";
-  for (;;) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-    const events = buf.split("\n\n");
-    buf = events.pop() ?? "";
-    for (const ev of events) {
-      const data = ev
-        .split("\n")
-        .filter((l) => l.startsWith("data:"))
-        .map((l) => l.slice(5).trim())
-        .join("\n");
-      if (!data) continue;
-      if (verbose) console.log(`  sse: ${data}`);
-      let p: Record<string, unknown>;
-      try {
-        p = JSON.parse(data) as Record<string, unknown>;
-      } catch {
-        continue;
-      }
-      if (p.error) throw new Error(`plyr error: ${JSON.stringify(p)}`);
-      const tid = p.track_id ?? p.trackId ?? p.id;
-      if (tid) found.trackId = String(tid);
-      if (p.atproto_record_uri) found.uri = String(p.atproto_record_uri);
-      if (p.atproto_record_cid) found.cid = String(p.atproto_record_cid);
-    }
-  }
-  if (!found.trackId && !found.uri) {
-    throw new Error("progress ended without a track id/uri (re-run with --verbose)");
-  }
-  return found;
-}
-
-/** Resolve the created track's full record (artist_did, atproto uri/cid, …). */
-async function fetchTrack(trackId: string): Promise<Record<string, unknown>> {
-  const res = await fetch(`${PLYR_API}/tracks/${trackId}`, { headers: authHeaders() });
-  if (!res.ok) throw new Error(`GET /tracks/${trackId} ${res.status}: ${await res.text()}`);
-  return (await res.json()) as Record<string, unknown>;
 }
 
 async function main(): Promise<void> {
   const file = await loadEither(filePath, url);
   const trackTitle = title ?? file.filename.replace(/\.[^.]+$/, "");
-  let image: LoadedFile | undefined;
+  let image: LoadedMedia | undefined;
   if (imageArg) {
     image = imageArg.startsWith("http")
-      ? await loadFromUrl(imageArg)
+      ? await downloadMedia(imageArg)
       : await loadFromPath(imageArg);
   }
 
@@ -201,7 +82,7 @@ async function main(): Promise<void> {
   }
 
   if (dryRun) {
-    console.log(`[plyr-test] dry run — would POST to ${PLYR_API}/tracks/ (nothing uploaded)`);
+    console.log("[plyr-test] dry run — would upload to plyr (nothing sent)");
     return;
   }
   if (!PLYR_TOKEN) {
@@ -212,33 +93,23 @@ async function main(): Promise<void> {
   }
 
   console.log("[plyr-test] uploading…");
-  const uploadId = await startUpload(file, trackTitle, image);
-  console.log(`[plyr-test] upload_id=${uploadId} — waiting for transcode…`);
-  const progress = await waitForCompletion(uploadId);
+  const { trackId, uri, cid } = await uploadAudioToPlyr({
+    token: PLYR_TOKEN,
+    file,
+    title: trackTitle,
+    image,
+    onProgress: verbose ? (e) => console.log(`  sse: ${JSON.stringify(e)}`) : undefined,
+  });
 
-  const track = progress.trackId ? await fetchTrack(progress.trackId) : {};
-  if (verbose) console.log(`  track: ${JSON.stringify(track)}`);
-
-  const trackId = progress.trackId ?? String(track.id ?? "");
-  const uri =
-    progress.uri ??
-    (track.atproto_record_uri as string | undefined) ??
-    (track.uri as string | undefined);
-  const cid =
-    progress.cid ??
-    (track.atproto_record_cid as string | undefined) ??
-    (track.cid as string | undefined);
-  const artistDid = (track.artist_did ?? track.artistDid) as string | undefined;
-
+  // The artist DID is the authority segment of the record uri (at://<did>/…).
+  const artistDid = uri.split("/")[2] ?? "(unknown)";
   console.log("\n[plyr-test] ✓ uploaded");
   console.log(`  track id   : ${trackId}`);
-  console.log(`  artist_did : ${artistDid ?? "(see --verbose track JSON)"}`);
-  console.log(`  record uri : ${uri ?? "(pending index)"}`);
-  console.log(`  record cid : ${cid ?? "(pending index)"}`);
-  if (trackId) {
-    console.log(`  embed      : https://plyr.fm/embed/track/${trackId}`);
-    console.log(`  page       : https://plyr.fm/track/${trackId}`);
-  }
+  console.log(`  artist_did : ${artistDid}`);
+  console.log(`  record uri : ${uri}`);
+  console.log(`  record cid : ${cid}`);
+  console.log(`  embed      : https://plyr.fm/embed/track/${trackId}`);
+  console.log(`  page       : https://plyr.fm/track/${trackId}`);
 }
 
 main().catch((e) => {
