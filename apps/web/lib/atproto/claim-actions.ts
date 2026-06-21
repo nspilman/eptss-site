@@ -34,6 +34,7 @@ import {
   ensurePlyrTrackOwned,
   writeOwnedSubmission,
 } from "./migrate-core";
+import { ensurePlyrTrackForCover } from "./plyr-upload";
 
 export interface ClaimResult {
   ok: boolean;
@@ -112,15 +113,29 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
       return { ok: false, error: "Your Bluesky session expired — re-link to claim." };
     }
 
-    // 1. Bring the cover's plyr track home (best-effort full ownership). A cover
+    // 1. Make sure the cover HAS a plyr track. If it was never uploaded, create it
+    //    now by running its audio through plyr (as EPTSS) — that lands a track on the
+    //    EPTSS scaffold, which step 2 then re-homes. Best-effort: no PLYR_TOKEN / no
+    //    uploadable audio leaves the pointer null and the submission keeps its `url`.
+    let plyrTrackUri = owned.plyrTrackUri;
+    let plyrTrackCid = owned.plyrTrackCid;
+    if (!plyrTrackUri) {
+      const uploaded = await ensurePlyrTrackForCover(submissionId, userId);
+      if (uploaded) {
+        plyrTrackUri = uploaded.uri;
+        plyrTrackCid = uploaded.cid;
+      }
+    }
+
+    // 2. Bring the cover's plyr track home (best-effort full ownership). A cover
     //    with no plyr track yields a null ref and the submission keeps its `url`.
     const plyrRef = await ensurePlyrTrackOwned({
       agent,
       did: identity.did,
       handle: identity.handle,
       submissionId,
-      plyrTrackUri: owned.plyrTrackUri,
-      plyrTrackCid: owned.plyrTrackCid,
+      plyrTrackUri,
+      plyrTrackCid,
     });
 
     // 2. Write the submission into the user's repo with the plyr ref as its
