@@ -21,12 +21,15 @@
  */
 import type { OAuthClientMetadataInput } from "@atproto/oauth-types";
 
-// `fm.plyr.track` is granted so a user can re-home a cover's plyr track into
-// their own repo (the in-app plyr re-home flow, see lib/atproto/plyr-actions.ts).
-// Broadening this scope means existing links must re-consent (re-link) before the
-// new collection write is permitted — the flow detects the denial and prompts it.
+// `fm.plyr.track` lets the migration write a cover's plyr track into the user's own
+// repo (createRecord); `blob:*/*` lets it uploadBlob the audio there. uploadBlob needs
+// an explicit blob grant — it is NOT covered by the repo record-write scope (confirmed
+// against atproto-learn's oauth.ts, which grants `blob` for audio/image uploads, and
+// plyr's own docs: "uploads require blob:*/* OAuth scope").
+// Broadening this scope means existing links must re-consent (re-link) before the new
+// permission is granted — the flow detects the denial and prompts it.
 const SCOPE =
-  "atproto repo?collection=at.atjam.signup&collection=at.atjam.submission&collection=fm.plyr.track";
+  "atproto repo?collection=at.atjam.signup&collection=at.atjam.submission&collection=fm.plyr.track blob:*/*";
 
 function getProdBaseUrl(): string {
   const explicit = process.env.ATPROTO_PUBLIC_BASE_URL;
