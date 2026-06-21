@@ -9,11 +9,12 @@ import {
   AtprotoLinkSection,
   MyCoversSection,
 } from '@eptss/profile';
-import { getClaimableCovers } from '@/lib/atproto/claims';
+import { getClaimableCovers, getClaimableSignups } from '@/lib/atproto/claims';
 import { plyrOwnership } from '@/lib/atproto/plyr-rehome';
 import { resolvePlyrTrackIds, plyrTrackPageUrl } from '@eptss/atproto';
+import { formatDate } from '@eptss/core/utils/formatDate';
 import { ClaimButton } from './ClaimButton';
-import { CoverMigration } from './CoverMigration';
+import { RecordMigration, type MigratableItem } from './RecordMigration';
 import { PlyrRehomeButton } from './PlyrRehomeButton';
 
 /**
@@ -64,11 +65,11 @@ export default async function ProfilePage({
     redirect('/login?redirect=/dashboard/profile');
   }
 
-  // Phase A of the claim flow: a linked user can preview the covers EPTSS holds
-  // on their behalf. Only fetched when linked — there's nothing to claim to
-  // otherwise, and unlinked users shouldn't pay for the query.
+  // Phase A of the claim flow: a linked user can preview the covers + signups
+  // EPTSS holds for them. Only fetched when linked — there's nothing to migrate to
+  // otherwise, and unlinked users shouldn't pay for the queries.
   const covers = identity ? await getClaimableCovers(userId) : [];
-  const unclaimedCount = covers.filter((c) => c.claimedAtUri == null).length;
+  const signups = identity ? await getClaimableSignups(userId, identity.did) : [];
 
   // Point each cover's "listen" link at its plyr track page when it has one, so it
   // resolves to the plyr record rather than the raw Supabase/SoundCloud source.
@@ -77,6 +78,26 @@ export default async function ProfilePage({
     ...c,
     plyrListenUrl: plyrListenUrls.get(c.submissionId) ?? null,
   }));
+
+  // The records still only in Postgres (claimed_at_uri NULL), covers + signups, as
+  // one list the migration card walks. Covers name their song; signups name only
+  // their round — the nominated song is private and never travels.
+  const migrationItems: MigratableItem[] = [
+    ...coversView
+      .filter((c) => c.claimedAtUri == null)
+      .map((c) => ({
+        kind: 'cover' as const,
+        id: c.submissionId,
+        title: c.songTitle ?? 'Unknown song',
+        subtitle: c.songArtist,
+      })),
+    ...signups.map((s) => ({
+      kind: 'signup' as const,
+      id: s.signupId,
+      title: `Round ${s.roundSlug ?? s.roundId}`,
+      subtitle: formatDate(s.createdAt),
+    })),
+  ];
 
   // Decode atproto link status from the callback redirect params.
   const linkedSuccess = sp.linked === 'success';
@@ -111,20 +132,14 @@ export default async function ProfilePage({
             existingDid={existingDid}
           />
         </div>
-        {/* The link→migrate bridge: when there are covers still on the EPTSS
-            scaffold, offer to move them home — and auto-run the moment the user
-            lands here straight from linking (?linked=success). */}
-        {identity && unclaimedCount >= 1 && (
-          <CoverMigration
+        {/* The link→migrate bridge: when there are records still only in Postgres,
+            offer to move them home — and auto-run the moment the user lands here
+            straight from linking (?linked=success). */}
+        {identity && migrationItems.length > 0 && (
+          <RecordMigration
             handle={identity.handle}
             autoStart={linkedSuccess}
-            covers={coversView
-              .filter((c) => c.claimedAtUri == null)
-              .map((c) => ({
-                submissionId: c.submissionId,
-                songTitle: c.songTitle,
-                songArtist: c.songArtist,
-              }))}
+            items={migrationItems}
           />
         )}
         {identity && (

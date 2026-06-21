@@ -52,6 +52,20 @@ async function listRecords<T>(
   return out;
 }
 
+/**
+ * Every rkey in a collection on a repo (public read, no auth). Used as a "what's
+ * already here" probe — e.g. which signups a user has already migrated — so the
+ * repo itself is the source of truth and no DB pointer has to be kept in sync.
+ */
+export async function listRecordRkeys(
+  did: string,
+  collection: string,
+): Promise<string[]> {
+  const pds = await resolvePds(did);
+  const recs = await listRecords<unknown>(pds, did, collection);
+  return recs.map((r) => r.uri.split("/").pop() ?? r.uri);
+}
+
 export interface RoundWithSubmissions {
   uri: string;
   cid: string;
@@ -134,6 +148,26 @@ export async function getSubmissionRecord(
   const res = await fetch(url.toString());
   if (!res.ok) return null;
   return (await res.json()) as RecordEnvelope<Submission>;
+}
+
+/**
+ * Fetch one `at.atjam.round` record off a repo (the EPTSS admin scaffold by
+ * default). Public read, no auth. The signup migration reads this to get the
+ * round's { uri, cid } strong-ref for the signup record it writes into the user's
+ * repo. Returns null if the round isn't on the network.
+ */
+export async function getRoundRecord(
+  rkey: string,
+  did: string = EPTSS_DID,
+): Promise<RecordEnvelope<Round> | null> {
+  const pds = await resolvePds(did);
+  const url = new URL(`${pds}/xrpc/com.atproto.repo.getRecord`);
+  url.searchParams.set("repo", did);
+  url.searchParams.set("collection", "at.atjam.round");
+  url.searchParams.set("rkey", rkey);
+  const res = await fetch(url.toString());
+  if (!res.ok) return null;
+  return (await res.json()) as RecordEnvelope<Round>;
 }
 
 /**

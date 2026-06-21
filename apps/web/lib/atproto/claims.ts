@@ -16,7 +16,8 @@
  * rest of the atproto plumbing; follow this dialect for atproto code, not the
  * core-services one used elsewhere in the app.
  */
-import { db, submissions, roundMetadata, songs, eq, desc, inArray } from "@eptss/db";
+import { db, submissions, signUps, roundMetadata, songs, eq, desc, inArray } from "@eptss/db";
+import { listRecordRkeys, eptssSignupId } from "@eptss/atproto";
 
 export interface ClaimableCover {
   /** Postgres submissions.id — the stable identity carried across the move. */
@@ -73,6 +74,66 @@ export async function getClaimableCovers(
     claimedAtUri: r.claimedAtUri,
     plyrTrackUri: r.plyrTrackUri ?? null,
   }));
+}
+
+export interface ClaimableSignup {
+  /** Postgres sign_ups.id — the stable identity carried across the move. */
+  signupId: number;
+  roundId: number;
+  roundSlug: string | null;
+  /** Free-text "additional info" — the only signup field that travels as a note. */
+  note: string | null;
+  createdAt: Date;
+}
+
+/**
+ * This user's signups that are NOT yet in their repo. Deliberately song-free: the
+ * nominated song (`song_id` / `youtube_link`) is private and never leaves Postgres,
+ * so it is not selected here — only the round, timestamp, and free-text note travel.
+ *
+ * "Already migrated" is read from the repo itself (the `eptss-sig<id>` records the
+ * user owns), not from a DB pointer: the repo is the source of truth, so there is
+ * no derived state to keep in sync, and a reset that deletes the records makes them
+ * eligible again for free. Best-effort — if the repo can't be listed, we fall back
+ * to offering all of them (re-migration is an idempotent upsert).
+ */
+export async function getClaimableSignups(
+  userId: string,
+  did: string,
+): Promise<ClaimableSignup[]> {
+  const rows = await db
+    .select({
+      signupId: signUps.id,
+      roundId: signUps.roundId,
+      roundSlug: roundMetadata.slug,
+      note: signUps.additionalComments,
+      createdAt: signUps.createdAt,
+    })
+    .from(signUps)
+    .leftJoin(roundMetadata, eq(signUps.roundId, roundMetadata.id))
+    .where(eq(signUps.userId, userId))
+    .orderBy(desc(signUps.createdAt));
+
+  let migrated = new Set<number>();
+  try {
+    const rkeys = await listRecordRkeys(did, "at.atjam.signup");
+    for (const rk of rkeys) {
+      const id = eptssSignupId(rk);
+      if (id != null) migrated.add(id);
+    }
+  } catch {
+    // Couldn't list the repo — offer all; re-migration upserts, so this is safe.
+  }
+
+  return rows
+    .filter((r) => !migrated.has(r.signupId))
+    .map((r) => ({
+      signupId: r.signupId,
+      roundId: r.roundId,
+      roundSlug: r.roundSlug,
+      note: r.note,
+      createdAt: r.createdAt ?? new Date(0),
+    }));
 }
 
 /**

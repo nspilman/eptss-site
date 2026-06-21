@@ -2,20 +2,24 @@
 
 /**
  * The link→migrate bridge. Linking an Atmosphere account is only half the promise;
- * the other half is that the covers EPTSS holds on your behalf actually move into
- * *your* repo. This makes that one continuous moment: when you return from OAuth
- * (`?linked=success`), this card auto-runs and you watch each cover land.
+ * the other half is that the records EPTSS holds for you actually move into *your*
+ * repo. This makes that one continuous moment: when you return from OAuth
+ * (`?linked=success`), this card auto-runs and you watch each record land.
  *
- * Why the client drives the loop (instead of one atomic batch action on the server):
- * progress is the point. Each `migrateOneCover` await is exactly one record landing
- * in your PDS, so the bar advances on real events, not a guess. The per-record path
- * is already verified + idempotent (read-back before the pointer is set), so a
- * partial run is safe to re-run — the "Retry" below just re-attempts what's left.
+ * It brings home two kinds of record — your COVERS (`at.atjam.submission`) and your
+ * SIGNUPS (`at.atjam.signup`) — dispatching each item to its own migrate action.
+ * Signups are song-free by construction (the nominated song stays in Postgres); a
+ * signup row shows only its round.
  *
- * Sequential, not parallel: every cover writes to the same repo, and concurrent
+ * Why the client drives the loop (instead of one atomic batch action on the
+ * server): progress is the point. Each await is exactly one record landing in your
+ * PDS, so the bar advances on real events, not a guess. Each per-record path is
+ * verified + idempotent (read-back before the pointer is set), so a partial run is
+ * safe to re-run — the "Retry" below just re-attempts what's left.
+ *
+ * Sequential, not parallel: every record writes to the same repo, and concurrent
  * commits to one repo race. One at a time is both correct and the better story to
- * watch. When the run settles we `router.refresh()` once, flipping the durable
- * "Your covers" list to its claimed state.
+ * watch. When the run settles we `router.refresh()` once.
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -29,12 +33,11 @@ import {
   CardTitle,
 } from '@eptss/ui';
 import { migrateOneCover } from '@/lib/atproto/claim-actions';
+import { migrateOneSignup } from '@/lib/atproto/signup-actions';
 
-export interface MigratableCover {
-  submissionId: number;
-  songTitle: string | null;
-  songArtist: string | null;
-}
+export type MigratableItem =
+  | { kind: 'cover'; id: number; title: string; subtitle: string | null }
+  | { kind: 'signup'; id: number; title: string; subtitle: string | null };
 
 type Status = 'pending' | 'migrating' | 'done' | 'skipped' | 'failed';
 type Phase = 'idle' | 'running' | 'done';
@@ -53,39 +56,42 @@ const STATUS: Record<
 
 const isSettled = (s: Status) => s === 'done' || s === 'skipped' || s === 'failed';
 const plural = (n: number) => (n === 1 ? '' : 's');
+const keyOf = (it: MigratableItem) => `${it.kind}-${it.id}`;
 
-interface CoverMigrationProps {
-  /** The covers still held on the admin scaffold (claimed_at_uri IS NULL). */
-  covers: MigratableCover[];
+interface RecordMigrationProps {
+  /** The records still held in Postgres (claimed_at_uri IS NULL), covers + signups. */
+  items: MigratableItem[];
   /** The linked handle, for the "into @you" framing. */
   handle: string | null;
   /** True on the post-OAuth landing (?linked=success) — begin migrating at once. */
   autoStart: boolean;
 }
 
-export function CoverMigration({ covers, handle, autoStart }: CoverMigrationProps) {
+export function RecordMigration({ items, handle, autoStart }: RecordMigrationProps) {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>('idle');
-  const [statuses, setStatuses] = useState<Record<number, Status>>(() =>
-    Object.fromEntries(covers.map((c) => [c.submissionId, 'pending' as Status])),
+  const [statuses, setStatuses] = useState<Record<string, Status>>(() =>
+    Object.fromEntries(items.map((it) => [keyOf(it), 'pending' as Status])),
   );
   // Guards the auto-start effect against React's double-invoke in dev/StrictMode.
   const startedRef = useRef(false);
 
   const statusOf = useCallback(
-    (id: number): Status => statuses[id] ?? 'pending',
+    (key: string): Status => statuses[key] ?? 'pending',
     [statuses],
   );
 
-  const setStatus = useCallback((id: number, s: Status) => {
-    setStatuses((prev) => ({ ...prev, [id]: s }));
+  const setStatus = useCallback((key: string, s: Status) => {
+    setStatuses((prev) => ({ ...prev, [key]: s }));
   }, []);
 
   // One walk of the list, one tally — every count the UI needs.
-  const total = covers.length;
-  const count = covers.reduce(
-    (acc, c) => {
-      const s = statusOf(c.submissionId);
+  const total = items.length;
+  const coverCount = items.filter((it) => it.kind === 'cover').length;
+  const signupCount = total - coverCount;
+  const count = items.reduce(
+    (acc, it) => {
+      const s = statusOf(keyOf(it));
       if (isSettled(s)) acc.settled++;
       if (s === 'done') acc.done++;
       else if (s === 'skipped') acc.skipped++;
@@ -96,25 +102,28 @@ export function CoverMigration({ covers, handle, autoStart }: CoverMigrationProp
   );
   const pct = total === 0 ? 0 : Math.round((count.settled / total) * 100);
 
-  /** Walk the given covers one at a time, reflecting each result as it lands. */
+  /** Walk the given records one at a time, reflecting each result as it lands. */
   const migrate = useCallback(
-    async (todo: MigratableCover[]) => {
+    async (todo: MigratableItem[]) => {
       if (todo.length === 0) return;
       setPhase('running');
-      for (const c of todo) {
-        setStatus(c.submissionId, 'migrating');
+      for (const it of todo) {
+        setStatus(keyOf(it), 'migrating');
         try {
-          const res = await migrateOneCover(c.submissionId);
+          const res =
+            it.kind === 'cover'
+              ? await migrateOneCover(it.id)
+              : await migrateOneSignup(it.id);
           setStatus(
-            c.submissionId,
+            keyOf(it),
             res.ok ? 'done' : res.skipped ? 'skipped' : 'failed',
           );
         } catch {
-          setStatus(c.submissionId, 'failed');
+          setStatus(keyOf(it), 'failed');
         }
       }
       setPhase('done');
-      // Settle the durable "Your covers" list to its claimed state in one pass.
+      // Settle the durable views to their migrated state in one pass.
       router.refresh();
     },
     [router, setStatus],
@@ -122,39 +131,45 @@ export function CoverMigration({ covers, handle, autoStart }: CoverMigrationProp
 
   // Linking is the consent; on return from OAuth we begin without a second click.
   useEffect(() => {
-    if (autoStart && !startedRef.current && covers.length > 0) {
+    if (autoStart && !startedRef.current && items.length > 0) {
       startedRef.current = true;
-      void migrate(covers);
+      void migrate(items);
     }
-  }, [autoStart, covers, migrate]);
+  }, [autoStart, items, migrate]);
 
   const retryFailed = () =>
-    void migrate(covers.filter((c) => statusOf(c.submissionId) === 'failed'));
+    void migrate(items.filter((it) => statusOf(keyOf(it)) === 'failed'));
 
   // Each phase says one plain sentence. `home` is the "(@you)" the eye returns to.
   const home = handle ? ` (@${handle})` : '';
+  const mix =
+    coverCount > 0 && signupCount > 0
+      ? `${coverCount} cover${plural(coverCount)} + ${signupCount} signup${plural(signupCount)}`
+      : coverCount > 0
+        ? `${coverCount} cover${plural(coverCount)}`
+        : `${signupCount} signup${plural(signupCount)}`;
   const description =
     phase === 'idle'
-      ? `${total} cover${plural(total)} from your EPTSS history can move into your repo${home}, owned by you. (They stay safe with EPTSS either way.)`
+      ? `${mix} from your EPTSS history can move into your repo${home}, owned by you. (Your data stays safe with EPTSS either way.)`
       : phase === 'running'
-        ? `Moving ${total} cover${plural(total)} into your repo${home}…`
+        ? `Moving ${mix} into your repo${home}…`
         : count.failed > 0
-          ? `${count.done} cover${plural(count.done)} moved into your repo. ${count.failed} didn't make it — retry below.`
+          ? `${count.done} record${plural(count.done)} moved into your repo. ${count.failed} didn't make it — retry below.`
           : count.skipped > 0
-            ? `${count.done} now live in your repo${home}. ${count.skipped} aren't on the network yet — they'll be claimable once backfilled.`
-            : `All ${count.done} cover${plural(count.done)} are now in your repo${home}. 🎉`;
+            ? `${count.done} now live in your repo${home}. ${count.skipped} aren't on the network yet.`
+            : `All ${count.done} record${plural(count.done)} are now in your repo${home}. 🎉`;
 
   return (
-    <Card className="border-gray-800 bg-gray-900/50">
+    <Card className="mb-6 border-gray-800 bg-gray-900/50">
       <CardHeader>
-        <CardTitle>Bring your covers home</CardTitle>
+        <CardTitle>Bring your records home</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
         {phase === 'idle' ? (
-          <Button onClick={() => void migrate(covers)}>
-            Bring {total} cover{plural(total)} home
+          <Button onClick={() => void migrate(items)}>
+            Bring {total} record{plural(total)} home
           </Button>
         ) : (
           <>
@@ -174,16 +189,13 @@ export function CoverMigration({ covers, handle, autoStart }: CoverMigrationProp
               </div>
             </div>
 
-            {/* Per-cover live status. */}
+            {/* Per-record live status. */}
             <ul className="space-y-1.5">
-              {covers.map((c) => {
-                const s = statusOf(c.submissionId);
+              {items.map((it) => {
+                const s = statusOf(keyOf(it));
                 const st = STATUS[s];
                 return (
-                  <li
-                    key={c.submissionId}
-                    className="flex items-center gap-2.5 text-sm"
-                  >
+                  <li key={keyOf(it)} className="flex items-center gap-2.5 text-sm">
                     <span className={`inline-flex w-4 shrink-0 justify-center ${st.color}`}>
                       {st.spin ? (
                         <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-gray-700 border-t-[var(--color-accent-primary)]" />
@@ -191,12 +203,15 @@ export function CoverMigration({ covers, handle, autoStart }: CoverMigrationProp
                         st.glyph
                       )}
                     </span>
+                    <span className="shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-gray-400">
+                      {it.kind}
+                    </span>
                     <span
                       className={`min-w-0 truncate ${s === 'pending' ? 'text-gray-500' : 'text-gray-200'}`}
                     >
-                      {c.songTitle ?? 'Unknown song'}
-                      {c.songArtist && (
-                        <span className="text-gray-500"> — {c.songArtist}</span>
+                      {it.title}
+                      {it.subtitle && (
+                        <span className="text-gray-500"> — {it.subtitle}</span>
                       )}
                     </span>
                     {st.note && (

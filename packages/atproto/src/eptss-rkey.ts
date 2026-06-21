@@ -6,6 +6,7 @@
  *
  *   round      → at.atjam.round/eptss-r<id>
  *   submission → at.atjam.submission/eptss-sub<id>
+ *   signup     → at.atjam.signup/eptss-sig<id>
  *
  * The writer (backfill), the reader (off-network reads), and the claim flow all
  * import these helpers, so the encode and decode cannot drift apart. If they
@@ -22,6 +23,11 @@ export function eptssSubmissionRkey(submissionId: number): string {
 /** rkey a backfilled round is stored under, from its Postgres round_metadata.id. */
 export function eptssRoundRkey(roundId: number): string {
   return `eptss-r${roundId}`;
+}
+
+/** rkey a migrated signup is stored under, from its Postgres sign_ups.id. */
+export function eptssSignupRkey(signupId: number): string {
+  return `eptss-sig${signupId}`;
 }
 
 /** Last path segment of an AT URI, or the input unchanged if it has no slash. */
@@ -44,5 +50,14 @@ export function eptssSubmissionId(submissionUriOrRkey: string): number | null {
  */
 export function eptssRoundId(roundUriOrRkey: string): number | null {
   const m = /^eptss-r(\d+)$/.exec(rkeyOf(roundUriOrRkey));
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * Recover the Postgres sign_ups.id from a migrated signup's rkey or full AT URI.
+ * Returns null when it isn't a migrated signup key.
+ */
+export function eptssSignupId(signupUriOrRkey: string): number | null {
+  const m = /^eptss-sig(\d+)$/.exec(rkeyOf(signupUriOrRkey));
   return m ? Number(m[1]) : null;
 }
