@@ -44,12 +44,9 @@ export interface ClaimResult {
 async function loadOwnedSubmission(
   submissionId: number,
   userId: string,
-): Promise<{ claimedAtUri: string | null; plyrTrackUri: string | null } | null> {
+): Promise<{ claimedAtUri: string | null } | null> {
   const rows = await db
-    .select({
-      claimedAtUri: submissions.claimedAtUri,
-      plyrTrackUri: submissions.plyrTrackUri,
-    })
+    .select({ claimedAtUri: submissions.claimedAtUri })
     .from(submissions)
     .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)))
     .limit(1);
@@ -105,15 +102,14 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
     }
 
     // 1. Land the cover's plyr track in the user's own repo — audio uploadBlob'd (user-
-    //    owned), cover art carried from the scaffold. Null when there's no uploadable
-    //    audio, in which case the submission keeps its `url`.
+    //    owned), the plyr-hosted cover art carried from plyr_cover_image_url. Null when
+    //    there's no uploadable audio, in which case the submission keeps its `url`.
     const plyrRef = await ensurePlyrTrackForCover({
       agent,
       did: identity.did,
       handle: identity.handle,
       submissionId,
       userId,
-      plyrTrackUri: owned.plyrTrackUri,
     });
 
     // 2. Write the submission into the user's repo with the plyr ref as its

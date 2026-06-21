@@ -45,7 +45,13 @@ import {
   ilike,
 } from "@eptss/db";
 import { loginAtprotoAgent } from "../agent";
-import { downloadMedia, uploadAudioToPlyr } from "@eptss/atproto";
+import {
+  EPTSS_DID,
+  atUriRkey,
+  downloadMedia,
+  getPlyrTrackRecord,
+  uploadAudioToPlyr,
+} from "@eptss/atproto";
 
 const PLYR_API = (process.env.PLYR_API ?? "https://api.plyr.fm").replace(/\/$/, "");
 const PLYR_TOKEN = process.env.PLYR_TOKEN;
@@ -141,7 +147,7 @@ async function runPurge(): Promise<void> {
   if (!dryRun) {
     await db
       .update(submissions)
-      .set({ plyrTrackUri: null, plyrTrackCid: null })
+      .set({ plyrTrackUri: null, plyrTrackCid: null, plyrCoverImageUrl: null })
       .where(isNotNull(submissions.plyrTrackUri));
   }
   console.log("[plyr] purge done");
@@ -240,11 +246,23 @@ async function migrateOne(c: Candidate): Promise<void> {
     onProgress: verbose ? (e) => console.log(`  sse: ${JSON.stringify(e)}`) : undefined,
   });
 
+  // The trusted, plyr-hosted cover URL (images.plyr.fm) plyr just minted on this track —
+  // the only image origin its ingester trusts. Persist it on the submission so the in-app
+  // claim can carry it onto the user's OWN track without reading plyr_track_uri's record
+  // (which the claim overwrites). Best-effort: a failed read-back just leaves it null.
+  let plyrCoverImageUrl: string | null = null;
+  try {
+    const rec = await getPlyrTrackRecord(EPTSS_DID, atUriRkey(uri));
+    plyrCoverImageUrl = rec?.value.imageUrl ?? null;
+  } catch (err) {
+    console.warn(`  cover URL read-back failed: ${err instanceof Error ? err.message : err}`);
+  }
+
   await db
     .update(submissions)
-    .set({ plyrTrackUri: uri, plyrTrackCid: cid })
+    .set({ plyrTrackUri: uri, plyrTrackCid: cid, plyrCoverImageUrl })
     .where(eq(submissions.id, c.id));
-  console.log(`  ✓ ${uri}`);
+  console.log(`  ✓ ${uri}${plyrCoverImageUrl ? " (+cover)" : ""}`);
 }
 
 async function runMigrate(): Promise<void> {

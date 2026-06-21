@@ -106,6 +106,12 @@ export const submissions = pgTable("submissions", {
   // packages/scripts/src/atproto/plyr/migrate-to-plyr.ts.
   plyrTrackUri: text("plyr_track_uri"),
   plyrTrackCid: text("plyr_track_cid"),
+  // The plyr-hosted (images.plyr.fm) cover art for this cover — the ONLY image origin
+  // plyr's ingester trusts. Minted by migrate-to-plyr's upload API and kept here, NOT
+  // read live off plyr_track_uri's record, because the in-app claim overwrites that
+  // pointer to the user's own track. This column is the stable art-source the claim
+  // carries onto the user's track, so the cover image survives re-claims and resets.
+  plyrCoverImageUrl: text("plyr_cover_image_url"),
 });
 
 // User Roles Table

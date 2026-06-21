@@ -330,6 +330,13 @@
       "when": 1780790912302,
       "tag": "0060_furry_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1782068990251,
+      "tag": "0061_narrow_captain_universe",
+      "breakpoints": true
     }
   ]
 }

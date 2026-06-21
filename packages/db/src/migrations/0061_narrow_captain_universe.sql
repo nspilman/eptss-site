@@ -1,0 +1,1 @@
+ALTER TABLE "submissions" ADD COLUMN "plyr_cover_image_url" text;

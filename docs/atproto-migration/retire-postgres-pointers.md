@@ -65,3 +65,14 @@ The in-app upload now writes `fm.plyr.track` straight into the user's repo (uplo
 + createRecord, no scaffold), so the whole "scaffold vs mine" re-home machinery —
 `plyr_track_uri`'s biggest remaining job — is legacy-only for net-new covers. That
 makes step 2 the high-value first move.
+
+## Not on this list: `plyr_cover_image_url`
+
+`plyr_cover_image_url` is **not** a derived pointer to retire — keep it. plyr's ingester
+trusts an `imageUrl` only from its own host (`images.plyr.fm`), and only plyr's upload
+API can mint one. So the trusted cover URL is a genuine fact with no atproto-native home
+on the user's side; the in-app claim copies it onto the user's track. We store it in its
+own column (rather than reading it live off `plyr_track_uri`'s record) precisely because
+the claim overwrites that pointer — keeping the art-source there would lose it on the
+first re-claim or reset. It's a **rebuildable cache** (re-run migrate-to-plyr repopulates
+it), which is the framing step 4 reserves for any column worth keeping.
