@@ -9,6 +9,7 @@ import {
 } from "@eptss/db";
 import { isNotNull } from "drizzle-orm";
 import type { AtpAgent } from "@atproto/api";
+import { atUriDid, atUriRkey } from "@eptss/atproto";
 import { loginAtprotoAgent } from "./agent";
 
 /**
@@ -27,9 +28,14 @@ import { loginAtprotoAgent } from "./agent";
  *   1. Delete `at.atjam.submission` records whose rkey starts with `eptss-sub`
  *      (the EPTSS-written copies; a future native submission with a TID rkey is
  *      spared). With --include-signups, also delete every `at.atjam.signup` record.
+ *      With --include-plyr, also delete the `fm.plyr.track` records that live in YOUR
+ *      OWN repo (the ones `plyr_track_uri` points at your DID — native plyr uploads
+ *      and the EPTSS scaffold copies are left alone).
  *   2. Clear the Postgres pointers (`claimed_at_uri` / `claimed_at`). This is the
  *      bit the migration card keys on — once null, the cover reads as "held by
- *      EPTSS" again and is eligible to re-migrate.
+ *      EPTSS" again and is eligible to re-migrate. With --include-plyr, also clear
+ *      `plyr_track_uri` / `plyr_track_cid`, so a cover with no plyr track re-uploads
+ *      from scratch instead of re-pointing at a deleted track.
  *   3. Soft-unlink the identity (`unlinked_at = now()`), so the profile shows the
  *      unlinked first-timer Link form rather than the re-link state.
  *
@@ -55,6 +61,9 @@ import { loginAtprotoAgent } from "./agent";
  *   --user-id=<uuid>     … or by their EPTSS user id (one of the two is required).
  *   --include-signups    also delete every at.atjam.signup record (default: only
  *                        submissions). They won't return on link — see above.
+ *   --include-plyr       also delete your own fm.plyr.track records + clear the
+ *                        plyr_track_uri/cid pointers, so covers re-upload to plyr
+ *                        from scratch on the next link (full E2E replay).
  *   --keep-link          delete repo records + clear pointers but stay linked.
  *   --no-delete          skip repo deletes entirely (pointer-only reset; recreate
  *                        upserts over the existing records). Needs no app password.
@@ -68,6 +77,7 @@ import { loginAtprotoAgent } from "./agent";
 
 const SUBMISSION_COLLECTION = "at.atjam.submission";
 const SIGNUP_COLLECTION = "at.atjam.signup";
+const PLYR_TRACK_COLLECTION = "fm.plyr.track";
 const SUBMISSION_RKEY_PREFIX = "eptss-sub";
 
 const args = process.argv.slice(2);
@@ -75,6 +85,7 @@ const apply = args.includes("--apply");
 const keepLink = args.includes("--keep-link");
 const noDelete = args.includes("--no-delete");
 const includeSignups = args.includes("--include-signups");
+const includePlyr = args.includes("--include-plyr");
 const verbose = args.includes("--verbose");
 const flag = (name: string) =>
   args.find((a) => a.startsWith(`${name}=`))?.slice(name.length + 1);
@@ -198,8 +209,28 @@ async function main() {
     }
   }
 
+  // Plyr tracks: read the user's plyr pointers so we can clear them, and delete the
+  // records that live in the user's OWN repo — identified precisely via the pointer's
+  // DID, so native plyr uploads and the EPTSS scaffold copies are spared.
+  let plyrPointerCount = 0;
+  if (includePlyr) {
+    const plyrRows = await db
+      .select({ plyrTrackUri: submissions.plyrTrackUri })
+      .from(submissions)
+      .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.plyrTrackUri)));
+    plyrPointerCount = plyrRows.length;
+    if (agent) {
+      for (const r of plyrRows) {
+        if (r.plyrTrackUri && atUriDid(r.plyrTrackUri) === target.did) {
+          toDelete.push({ collection: PLYR_TRACK_COLLECTION, rkey: atUriRkey(r.plyrTrackUri) });
+        }
+      }
+    }
+  }
+
   const subCount = toDelete.filter((r) => r.collection === SUBMISSION_COLLECTION).length;
   const sigCount = toDelete.filter((r) => r.collection === SIGNUP_COLLECTION).length;
+  const plyrRecCount = toDelete.filter((r) => r.collection === PLYR_TRACK_COLLECTION).length;
 
   // ---- Plan ----
   const banner = apply ? "APPLY" : "DRY RUN";
@@ -213,8 +244,14 @@ async function main() {
     console.log(
       `  signups to delete:     ${includeSignups ? `${sigCount} (all of ${SIGNUP_COLLECTION})` : "0 (pass --include-signups)"}`,
     );
+    console.log(
+      `  plyr tracks to delete: ${includePlyr ? `${plyrRecCount} (your-repo records in ${PLYR_TRACK_COLLECTION})` : "0 (pass --include-plyr)"}`,
+    );
   }
   console.log(`  clear claimed pointers: ${claimedCount} cover(s)`);
+  console.log(
+    `  clear plyr pointers:    ${includePlyr ? `${plyrPointerCount} cover(s)` : "0 (pass --include-plyr)"}`,
+  );
   console.log(
     `  unlink identity:        ${keepLink ? "no (--keep-link)" : target.alreadyUnlinked ? "already unlinked" : "yes"}`,
   );
@@ -257,6 +294,15 @@ async function main() {
     .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.claimedAtUri)));
   console.log(`[reset] cleared claimed pointers on ${claimedCount} cover(s)`);
 
+  // ---- 2b. Clear the plyr pointers, so covers re-upload from scratch (--include-plyr). ----
+  if (includePlyr) {
+    await db
+      .update(submissions)
+      .set({ plyrTrackUri: null, plyrTrackCid: null })
+      .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.plyrTrackUri)));
+    console.log(`[reset] cleared plyr pointers on ${plyrPointerCount} cover(s)`);
+  }
+
   // ---- 3. Soft-unlink the identity (skip if already unlinked). ----
   if (!keepLink && !target.alreadyUnlinked) {
     await db
@@ -277,6 +323,7 @@ async function main() {
     "\n[reset] done. Now sign in, open /dashboard/profile, " +
       (keepLink ? "re-link to refresh permissions" : "link your Bluesky account") +
       ", and watch the covers re-migrate." +
+      (includePlyr ? " (Covers now have no plyr track, so they re-upload to plyr on link.)" : "") +
       (includeSignups
         ? " (Signups won't return on link — re-run the signup backfill to restore them.)"
         : "") +
