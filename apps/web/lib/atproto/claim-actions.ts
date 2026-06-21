@@ -27,14 +27,7 @@ import { revalidatePath } from "next/cache";
 import { getAuthUser } from "@eptss/auth/server";
 import { loadIdentity } from "@eptss/auth/atproto";
 import { db, submissions, eq, and } from "@eptss/db";
-import {
-  EPTSS_DID,
-  atUriDid,
-  atUriRkey,
-  eptssSubmissionRkey,
-  getPlyrTrackRecord,
-  getSubmissionRecord,
-} from "@eptss/atproto";
+import { eptssSubmissionRkey, getSubmissionRecord } from "@eptss/atproto";
 import { getUserAgent } from "./agent";
 import { SUBMISSION_COLLECTION, writeOwnedSubmission } from "./migrate-core";
 import { ensurePlyrTrackForCover } from "./plyr-upload";
@@ -51,16 +44,11 @@ export interface ClaimResult {
 async function loadOwnedSubmission(
   submissionId: number,
   userId: string,
-): Promise<{
-  claimedAtUri: string | null;
-  plyrTrackUri: string | null;
-  plyrTrackCid: string | null;
-} | null> {
+): Promise<{ claimedAtUri: string | null; plyrTrackUri: string | null } | null> {
   const rows = await db
     .select({
       claimedAtUri: submissions.claimedAtUri,
       plyrTrackUri: submissions.plyrTrackUri,
-      plyrTrackCid: submissions.plyrTrackCid,
     })
     .from(submissions)
     .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)))
@@ -116,32 +104,17 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
       return { ok: false, error: "Your Bluesky session expired — re-link to claim." };
     }
 
-    // 1. Land the cover's plyr track in the user's OWN repo. If it's already there,
-    //    reuse it (idempotent); otherwise upload the audio (uploadBlob — user-owned, no
-    //    token) and carry the cover art by reusing the plyr-hosted `imageUrl` that
-    //    migrate-to-plyr already put on the EPTSS scaffold track. `images.plyr.fm` is the
-    //    one origin plyr's firehose trusts, so a scaffold image is the only one it keeps;
-    //    any other URL would be stripped, so we only pass it when the scaffold has one.
-    //    A cover with no uploadable audio yields null and the submission keeps its `url`.
-    const trackDid = atUriDid(owned.plyrTrackUri);
-    let plyrRef: { uri: string; cid: string } | null;
-    if (owned.plyrTrackUri && trackDid === identity.did) {
-      plyrRef = { uri: owned.plyrTrackUri, cid: owned.plyrTrackCid ?? "" };
-    } else {
-      const imageUrl =
-        owned.plyrTrackUri && trackDid === EPTSS_DID
-          ? (await getPlyrTrackRecord(EPTSS_DID, atUriRkey(owned.plyrTrackUri)))?.value
-              .imageUrl ?? null
-          : null;
-      plyrRef = await ensurePlyrTrackForCover({
-        agent,
-        did: identity.did,
-        handle: identity.handle,
-        submissionId,
-        userId,
-        imageUrl,
-      });
-    }
+    // 1. Land the cover's plyr track in the user's own repo — audio uploadBlob'd (user-
+    //    owned), cover art carried from the scaffold. Null when there's no uploadable
+    //    audio, in which case the submission keeps its `url`.
+    const plyrRef = await ensurePlyrTrackForCover({
+      agent,
+      did: identity.did,
+      handle: identity.handle,
+      submissionId,
+      userId,
+      plyrTrackUri: owned.plyrTrackUri,
+    });
 
     // 2. Write the submission into the user's repo with the plyr ref as its
     //    deliverable (`payload`), reading it back to prove the new home resolves.

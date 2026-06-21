@@ -14,13 +14,37 @@
  */
 import type { Agent } from "@atproto/api";
 import { db, submissions, roundMetadata, songs, eq, and } from "@eptss/db";
-import { downloadMedia } from "@eptss/atproto";
+import {
+  EPTSS_DID,
+  atUriDid,
+  atUriRkey,
+  downloadMedia,
+  getPlyrTrackRecord,
+} from "@eptss/atproto";
 
 const PLYR_TRACK_COLLECTION = "fm.plyr.track";
 
 interface PlyrRef {
   uri: string;
   cid: string;
+}
+
+/**
+ * The plyr-hosted cover art to carry onto the user's track, drawn from the EPTSS
+ * scaffold copy migrate-to-plyr created. plyr's firehose keeps an `imageUrl` only when
+ * its origin is plyr's own image host (`images.plyr.fm`), so the scaffold's hosted URL
+ * is the one we can reuse — a user-repo or absent pointer has nothing to offer, and any
+ * other origin would be stripped on ingest. Best-effort: a scaffold read failure just
+ * means no art, never a failed migration.
+ */
+async function scaffoldCoverArt(plyrTrackUri: string | null): Promise<string | null> {
+  if (!plyrTrackUri || atUriDid(plyrTrackUri) !== EPTSS_DID) return null;
+  try {
+    const track = await getPlyrTrackRecord(EPTSS_DID, atUriRkey(plyrTrackUri));
+    return track?.value.imageUrl ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /** The cover's uploadable audio + the metadata the track record needs, or null. */
@@ -50,10 +74,11 @@ function fileTypeOf(url: string): string {
 }
 
 /**
- * Ensure a cover that has no plyr track gets one, written straight into the user's own
- * repo via their OAuth session: uploadBlob the audio, then createRecord the
- * `fm.plyr.track` that references it. Records the pointer and returns the ref. Null when
- * there's nothing to upload or the write couldn't be made — the cover then keeps its `url`.
+ * Land a cover's plyr track in the user's own repo: uploadBlob the audio over their
+ * OAuth session, then createRecord the `fm.plyr.track` that references it — carrying the
+ * cover art plyr already hosts on the EPTSS scaffold (`plyrTrackUri`), when there is one.
+ * Records the pointer at the new track and returns its ref. Null when there's no
+ * uploadable audio or the write fails — the cover then keeps its `url`.
  */
 export async function ensurePlyrTrackForCover(opts: {
   agent: Agent;
@@ -61,18 +86,15 @@ export async function ensurePlyrTrackForCover(opts: {
   handle: string | null;
   submissionId: number;
   userId: string;
-  /**
-   * A plyr-hosted cover-art URL (images.plyr.fm) to carry onto the record. plyr's
-   * firehose only keeps an `imageUrl` whose origin is plyr's own image host, so this
-   * must be a URL plyr already hosts — typically the one migrate-to-plyr put on the
-   * EPTSS scaffold track. Any other origin would be stripped on ingest, so we omit it.
-   */
-  imageUrl?: string | null;
+  /** The cover's current plyr pointer; its EPTSS-scaffold copy is the cover-art source. */
+  plyrTrackUri: string | null;
 }): Promise<PlyrRef | null> {
-  const { agent, did, handle, submissionId, userId, imageUrl } = opts;
+  const { agent, did, handle, submissionId, userId, plyrTrackUri } = opts;
 
   const info = await loadCoverAudio(submissionId, userId);
   if (!info) return null;
+
+  const imageUrl = await scaffoldCoverArt(plyrTrackUri);
 
   let ref: PlyrRef;
   try {
@@ -106,6 +128,11 @@ export async function ensurePlyrTrackForCover(opts: {
     return null;
   }
 
+  // Point at the new user-repo track. NOTE the fracture this creates: `plyr_track_uri`
+  // is now overwritten away from the EPTSS scaffold, so the cover-art source (above)
+  // survives only until the first migration. The real fix is task #174 — read the
+  // deliverable from the submission's `payload` so this column can be purely the
+  // art-source. Until then, re-tests need migrate-to-plyr to re-point it at the scaffold.
   await db
     .update(submissions)
     .set({ plyrTrackUri: ref.uri, plyrTrackCid: ref.cid })
