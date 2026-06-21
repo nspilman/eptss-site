@@ -27,13 +27,47 @@ import { revalidatePath } from "next/cache";
 import { getAuthUser } from "@eptss/auth/server";
 import { loadIdentity } from "@eptss/auth/atproto";
 import { db, submissions, eq, and } from "@eptss/db";
-import { EPTSS_DID, atUriRkey, getPlyrTrackRecord } from "@eptss/atproto";
+import {
+  EPTSS_DID,
+  atUriRkey,
+  eptssSubmissionRkey,
+  getPlyrTrackRecord,
+  getSubmissionRecord,
+} from "@eptss/atproto";
 import { getUserAgent } from "./agent";
 import {
   PLYR_TRACK_COLLECTION,
   adminPlyrUri,
   plyrOwnership,
+  buildRehomedTrackRecord,
 } from "./plyr-rehome";
+import { looksLikeScopeError, writeOwnedSubmission } from "./migrate-core";
+
+/**
+ * Keep a cover's submission pointing at its current plyr track. Re-homing the track
+ * (or undoing it) moves where the `fm.plyr.track` lives, so the `at.atjam.submission`
+ * that strong-refs it must follow — otherwise its `payload` dangles at a deleted
+ * record. Only meaningful once the submission is in the user's repo (claimed); until
+ * then the migration will set the payload when it writes the submission. Best-effort:
+ * the track move is the headline action and shouldn't fail on a payload re-stamp.
+ */
+async function syncSubmissionPayload(opts: {
+  agent: Awaited<ReturnType<typeof getUserAgent>>;
+  did: string;
+  submissionId: number;
+  claimedAtUri: string | null;
+  plyrRef: { uri: string; cid: string };
+}): Promise<void> {
+  const { agent, did, submissionId, claimedAtUri, plyrRef } = opts;
+  if (!claimedAtUri) return;
+  try {
+    const source = await getSubmissionRecord(eptssSubmissionRkey(submissionId));
+    if (!source) return;
+    await writeOwnedSubmission({ agent, did, submissionId, source: source.value, plyrRef });
+  } catch (err) {
+    console.warn(`[plyr-rehome] #${submissionId} submission payload sync skipped`, err);
+  }
+}
 
 export interface PlyrRehomeResult {
   ok: boolean;
@@ -58,23 +92,20 @@ function isDryRun(): boolean {
   return v === "1" || v === "true";
 }
 
-/** Confirm the cover belongs to this user and return its current plyr pointer. */
+/** Confirm the cover belongs to this user and return its current plyr + claim state. */
 async function loadOwnedTrack(
   submissionId: number,
   userId: string,
-): Promise<{ plyrTrackUri: string | null } | null> {
+): Promise<{ plyrTrackUri: string | null; claimedAtUri: string | null } | null> {
   const rows = await db
-    .select({ plyrTrackUri: submissions.plyrTrackUri })
+    .select({
+      plyrTrackUri: submissions.plyrTrackUri,
+      claimedAtUri: submissions.claimedAtUri,
+    })
     .from(submissions)
     .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)))
     .limit(1);
   return rows[0] ?? null;
-}
-
-/** Heuristic: does this look like the PDS rejecting the write for lack of scope? */
-function looksLikeScopeError(err: unknown): boolean {
-  const m = err instanceof Error ? err.message : String(err);
-  return /scope|forbidden|insufficient|not permitted|invalidtoken|bad token/i.test(m);
 }
 
 /**
@@ -108,22 +139,9 @@ export async function rehomePlyrTrack(
       return { ok: false, error: "The EPTSS plyr track record wasn't found." };
     }
 
-    // Build the user's copy: R2 `audioUrl` + metadata, `artist` re-stamped to the
-    // claimer, `audioBlob` dropped (repo-scoped; see file header).
-    const v = source.value;
-    const record: Record<string, unknown> = {
-      $type: PLYR_TRACK_COLLECTION,
-      title: v.title,
-      artist: identity.handle ?? v.artist,
-      audioUrl: v.audioUrl,
-      duration: v.duration,
-      fileType: v.fileType,
-      imageUrl: v.imageUrl,
-      createdAt: v.createdAt ?? new Date().toISOString(),
-    };
-    for (const k of Object.keys(record)) {
-      if (record[k] === undefined) delete record[k];
-    }
+    // The user's copy: R2 `audioUrl` + metadata, `artist` re-stamped, repo-scoped
+    // blob dropped — one definition, shared with the cover migration (plyr-rehome.ts).
+    const record = buildRehomedTrackRecord(source.value, identity.handle);
 
     let agent;
     try {
@@ -185,6 +203,16 @@ export async function rehomePlyrTrack(
       .set({ plyrTrackUri: put.data.uri, plyrTrackCid: put.data.cid })
       .where(eq(submissions.id, submissionId));
 
+    // Point the submission at the track's new home, so its `payload` follows the
+    // move (no-op until the cover is claimed — the migration sets it then).
+    await syncSubmissionPayload({
+      agent,
+      did: identity.did,
+      submissionId,
+      claimedAtUri: owned.claimedAtUri,
+      plyrRef: { uri: put.data.uri, cid: put.data.cid },
+    });
+
     revalidatePath("/dashboard/profile");
     console.log(`[plyr-rehome] #${submissionId} -> ${put.data.uri}`);
     return { ok: true, uri: put.data.uri };
@@ -227,14 +255,35 @@ export async function undoRehomePlyrTrack(
       .set({ plyrTrackUri: adminUri, plyrTrackCid: adminRec?.cid ?? null })
       .where(eq(submissions.id, submissionId));
 
-    // Best-effort cleanup of the user-repo copy; the pointer is already reverted.
+    // Move the submission's `payload` back to the admin track FIRST, then delete the
+    // user-repo copy — never in the other order, or the submission would point at a
+    // record we just removed. If the admin copy is gone (no cid to point at), keep the
+    // user copy rather than strand the submission. Both steps are best-effort: the
+    // pointer is already reverted, and a leftover user copy is harmless.
     try {
       const agent = await getUserAgent(identity.did);
-      await agent.com.atproto.repo.deleteRecord({
-        repo: identity.did,
-        collection: PLYR_TRACK_COLLECTION,
-        rkey,
-      });
+      const canRepoint = !owned.claimedAtUri || Boolean(adminRec?.cid);
+      if (owned.claimedAtUri && adminRec?.cid) {
+        await syncSubmissionPayload({
+          agent,
+          did: identity.did,
+          submissionId,
+          claimedAtUri: owned.claimedAtUri,
+          plyrRef: { uri: adminUri, cid: adminRec.cid },
+        });
+      }
+      if (canRepoint) {
+        await agent.com.atproto.repo.deleteRecord({
+          repo: identity.did,
+          collection: PLYR_TRACK_COLLECTION,
+          rkey,
+        });
+      } else {
+        console.warn(
+          `[plyr-rehome] #${submissionId} undo: admin track copy missing — kept the ` +
+            `user copy so the submission's payload doesn't dangle`,
+        );
+      }
     } catch (err) {
       console.warn(`[plyr-rehome] #${submissionId} undo cleanup skipped`, err);
     }

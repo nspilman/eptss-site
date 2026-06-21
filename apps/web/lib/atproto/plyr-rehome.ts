@@ -10,9 +10,37 @@
  *
  * See docs/atproto-migration/claiming-plyr-tracks.md.
  */
-import { EPTSS_DID, atUriDid } from "@eptss/atproto";
+import { EPTSS_DID, atUriDid, type PlyrTrack } from "@eptss/atproto";
 
 export const PLYR_TRACK_COLLECTION = "fm.plyr.track";
+
+/**
+ * The shape of a plyr track *copied into a claimer's repo*: plyr's R2 `audioUrl`
+ * (repo-independent — it streams the same whoever holds the record) plus metadata,
+ * with `artist` re-stamped to the claimer. The original `audioBlob` is intentionally
+ * dropped — it's repo-scoped, and carrying it would need a broader (blob) OAuth grant
+ * for no gain, since the R2 url is the playable source. One definition, so the in-app
+ * re-home and the cover migration can't drift on what a re-homed track is.
+ */
+export function buildRehomedTrackRecord(
+  source: PlyrTrack,
+  claimerHandle: string | null,
+): Record<string, unknown> {
+  const record: Record<string, unknown> = {
+    $type: PLYR_TRACK_COLLECTION,
+    title: source.title,
+    artist: claimerHandle ?? source.artist,
+    audioUrl: source.audioUrl,
+    duration: source.duration,
+    fileType: source.fileType,
+    imageUrl: source.imageUrl,
+    createdAt: source.createdAt ?? new Date().toISOString(),
+  };
+  for (const k of Object.keys(record)) {
+    if (record[k] === undefined) delete record[k];
+  }
+  return record;
+}
 
 export type PlyrOwnership = "none" | "eptss" | "mine";
 

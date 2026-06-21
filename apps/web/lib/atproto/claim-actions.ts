@@ -4,12 +4,17 @@
  * Phase B write path — claiming backfilled covers.
  * See docs/atproto-migration/claiming-backfilled-submissions.md.
  *
- * Claiming copies a cover's at.atjam.submission record from the EPTSS admin
- * scaffold into the signed-in user's own repo (same rkey + content), reads it
- * back to prove the new home resolves, then records the new location in Postgres
- * (`claimed_at_uri`). The admin copy is left intact as a backup — the claim is
- * "tombstoned" by the pointer, not deleted; the hard delete is Phase D. The
- * claim-aware read seam (applyClaims) then sources the user copy.
+ * Claiming brings a cover *fully* into the signed-in user's own repo, in one move:
+ *   1. its `fm.plyr.track` is re-homed into the user's repo (ensurePlyrTrackOwned),
+ *   2. its `at.atjam.submission` is written into the user's repo with `payload` →
+ *      that owned plyr track (writeOwnedSubmission) — same rkey, round/note/createdAt
+ *      carried from the admin scaffold, deliverable upgraded from the raw Supabase
+ *      `url` to a strong-ref. A cover with no plyr track keeps its `url`.
+ * It reads each write back to prove the new home resolves, then records the
+ * submission's new location in Postgres (`claimed_at_uri`). The admin copies are
+ * left intact as a backup — the claim is "tombstoned" by the pointer, not deleted;
+ * the hard delete is Phase D. The claim-aware read seam (applyClaims) sources the
+ * user copy.
  *
  * Self-verifying, no curation gate: EPTSS's own DB confirms the submission is
  * this user's, and OAuth has proven they control the DID.
@@ -22,10 +27,13 @@ import { revalidatePath } from "next/cache";
 import { getAuthUser } from "@eptss/auth/server";
 import { loadIdentity } from "@eptss/auth/atproto";
 import { db, submissions, eq, and } from "@eptss/db";
-import { EPTSS_DID, eptssSubmissionRkey, getSubmissionRecord } from "@eptss/atproto";
+import { eptssSubmissionRkey, getSubmissionRecord } from "@eptss/atproto";
 import { getUserAgent } from "./agent";
-
-const SUBMISSION_COLLECTION = "at.atjam.submission";
+import {
+  SUBMISSION_COLLECTION,
+  ensurePlyrTrackOwned,
+  writeOwnedSubmission,
+} from "./migrate-core";
 
 export interface ClaimResult {
   ok: boolean;
@@ -35,13 +43,21 @@ export interface ClaimResult {
   skipped?: boolean;
 }
 
-/** Confirm the submission belongs to this user and report its claim state. */
+/** Confirm the submission belongs to this user, with the state the migration needs. */
 async function loadOwnedSubmission(
   submissionId: number,
   userId: string,
-): Promise<{ claimedAtUri: string | null } | null> {
+): Promise<{
+  claimedAtUri: string | null;
+  plyrTrackUri: string | null;
+  plyrTrackCid: string | null;
+} | null> {
   const rows = await db
-    .select({ claimedAtUri: submissions.claimedAtUri })
+    .select({
+      claimedAtUri: submissions.claimedAtUri,
+      plyrTrackUri: submissions.plyrTrackUri,
+      plyrTrackCid: submissions.plyrTrackCid,
+    })
     .from(submissions)
     .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)))
     .limit(1);
@@ -49,8 +65,8 @@ async function loadOwnedSubmission(
 }
 
 /**
- * The per-record claim core: copy the admin scaffold record into the user's repo,
- * read it back to prove the new home resolves, then record the new location.
+ * The per-record claim core: bring a cover's plyr track + submission home, read
+ * each back to prove it resolves, then record the submission's new location.
  *
  * Deliberately free of revalidation so callers control when the page refreshes:
  * `claimSubmission` refreshes immediately (a manual single claim), while the
@@ -96,30 +112,37 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
       return { ok: false, error: "Your Bluesky session expired — re-link to claim." };
     }
 
-    // Write an identical copy into the user's own repo (same rkey, same value).
-    const put = await agent.com.atproto.repo.putRecord({
-      repo: identity.did,
-      collection: SUBMISSION_COLLECTION,
-      rkey,
-      record: source.value as unknown as Record<string, unknown>,
-    });
-    console.log(`[claim] #${submissionId} putRecord -> ${put.data.uri}`);
-
-    // Prove the new home resolves BEFORE we treat it as canonical.
-    await agent.com.atproto.repo.getRecord({
-      repo: identity.did,
-      collection: SUBMISSION_COLLECTION,
-      rkey,
+    // 1. Bring the cover's plyr track home (best-effort full ownership). A cover
+    //    with no plyr track yields a null ref and the submission keeps its `url`.
+    const plyrRef = await ensurePlyrTrackOwned({
+      agent,
+      did: identity.did,
+      handle: identity.handle,
+      submissionId,
+      plyrTrackUri: owned.plyrTrackUri,
+      plyrTrackCid: owned.plyrTrackCid,
     });
 
-    // Record the new location (the tombstone signal). Admin copy stays as backup.
+    // 2. Write the submission into the user's repo with the plyr ref as its
+    //    deliverable (`payload`), reading it back to prove the new home resolves.
+    const written = await writeOwnedSubmission({
+      agent,
+      did: identity.did,
+      submissionId,
+      source: source.value,
+      plyrRef,
+    });
+
+    // 3. Record the new location (the tombstone signal). Admin copy stays a backup.
     await db
       .update(submissions)
-      .set({ claimedAtUri: put.data.uri, claimedAt: new Date() })
+      .set({ claimedAtUri: written.uri, claimedAt: new Date() })
       .where(eq(submissions.id, submissionId));
 
-    console.log(`[claim] #${submissionId} claimed OK`);
-    return { ok: true, claimedAtUri: put.data.uri };
+    console.log(
+      `[claim] #${submissionId} claimed -> ${written.uri} (${plyrRef ? "plyr payload" : "url"})`,
+    );
+    return { ok: true, claimedAtUri: written.uri };
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown error";
     console.error(`[claim] #${submissionId} FAILED:`, err);
