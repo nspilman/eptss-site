@@ -113,14 +113,21 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
       return { ok: false, error: "Your Bluesky session expired — re-link to claim." };
     }
 
-    // 1. Make sure the cover HAS a plyr track. If it was never uploaded, create it
-    //    now by running its audio through plyr (as EPTSS) — that lands a track on the
-    //    EPTSS scaffold, which step 2 then re-homes. Best-effort: no PLYR_TOKEN / no
-    //    uploadable audio leaves the pointer null and the submission keeps its `url`.
+    // 1. Make sure the cover HAS a plyr track. If it was never uploaded, create it now
+    //    by uploadBlob + createRecord straight into the user's own repo (OAuth only, no
+    //    plyr token) — owned from the start, so step 2 is a no-op for it. A cover already
+    //    on the EPTSS scaffold skips this and is re-homed in step 2 instead. Best-effort:
+    //    no uploadable audio file leaves the pointer null and the submission keeps its `url`.
     let plyrTrackUri = owned.plyrTrackUri;
     let plyrTrackCid = owned.plyrTrackCid;
     if (!plyrTrackUri) {
-      const uploaded = await ensurePlyrTrackForCover(submissionId, userId);
+      const uploaded = await ensurePlyrTrackForCover({
+        agent,
+        did: identity.did,
+        handle: identity.handle,
+        submissionId,
+        userId,
+      });
       if (uploaded) {
         plyrTrackUri = uploaded.uri;
         plyrTrackCid = uploaded.cid;

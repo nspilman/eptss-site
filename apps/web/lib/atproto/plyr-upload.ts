@@ -1,33 +1,36 @@
 /**
- * Create a cover's plyr track from the web app — the "upload when it doesn't exist
- * yet" half of the migration. This is the EPTSS-specific glue around the shared plyr
- * upload client (@eptss/atproto): it finds the cover's audio, runs it through plyr as
- * EPTSS (the server-side PLYR_TOKEN), and records the resulting scaffold pointer so the
- * migration's next step (ensurePlyrTrackOwned) can re-home it into the user's repo.
+ * Create a cover's plyr track from the web app — OAuth only, the way plyr is meant to
+ * be fed (mirrors Nate's atproto-learn /track route): `uploadBlob` the audio into the
+ * USER's own PDS, then `createRecord` an `fm.plyr.track` that references it. plyr's
+ * firehose indexer discovers the record, downloads the blob, transcodes it, and renders
+ * it — we never call plyr's API and need no plyr token. The track is the user's from the
+ * moment it's written, so there's nothing to re-home.
  *
- * plyr exposes no third-party relying-party OAuth, so the upload is authored by EPTSS;
- * the track lands on the EPTSS repo and is re-homed — the same shape the migrate-to-plyr
- * script produced. Best-effort: no PLYR_TOKEN, no uploadable audio file, or any plyr
- * error returns null and the caller keeps the cover's raw `url`. Not a "use server"
- * module — an internal helper the claim server action composes.
+ * Authority is the user's own atproto OAuth session (getUserAgent), under the
+ * `fm.plyr.track` repo scope the link already grants — uploadBlob + createRecord to
+ * one's own repo need nothing more. Best-effort: a cover with no uploadable audio file,
+ * or any write failure, returns null and the caller keeps the cover's raw `url`. Not a
+ * "use server" module — an internal helper the claim server action composes.
  */
+import type { Agent } from "@atproto/api";
 import { db, submissions, roundMetadata, songs, eq, and } from "@eptss/db";
-import { downloadMedia, uploadAudioToPlyr } from "@eptss/atproto";
+import { downloadMedia } from "@eptss/atproto";
+
+const PLYR_TRACK_COLLECTION = "fm.plyr.track";
 
 interface PlyrRef {
   uri: string;
   cid: string;
 }
 
-/** The cover's uploadable audio + the metadata plyr needs, or null if there's no file. */
+/** The cover's uploadable audio + the metadata the track record needs, or null. */
 async function loadCoverAudio(
   submissionId: number,
   userId: string,
-): Promise<{ audioUrl: string; title: string; imageUrl: string | null } | null> {
+): Promise<{ audioUrl: string; title: string } | null> {
   const rows = await db
     .select({
       audioFileUrl: submissions.audioFileUrl,
-      coverImageUrl: submissions.coverImageUrl,
       songTitle: songs.title,
     })
     .from(submissions)
@@ -38,28 +41,28 @@ async function loadCoverAudio(
   const r = rows[0];
   // Only an uploaded audio FILE is re-hostable; a SoundCloud link isn't a media file.
   if (!r?.audioFileUrl) return null;
-  return {
-    audioUrl: r.audioFileUrl,
-    title: r.songTitle ?? `EPTSS cover #${submissionId}`,
-    imageUrl: r.coverImageUrl,
-  };
+  return { audioUrl: r.audioFileUrl, title: r.songTitle ?? `EPTSS cover #${submissionId}` };
+}
+
+/** The track's fileType, from the audio URL's extension (e.g. "mp3"). */
+function fileTypeOf(url: string): string {
+  return url.split("/").pop()?.split("?")[0]?.split(".").pop()?.toLowerCase() || "mp3";
 }
 
 /**
- * Ensure a cover that has no plyr track gets one: upload its audio to plyr (as EPTSS),
- * record the resulting scaffold pointer on the submission, and return the ref so the
- * caller can re-home it into the user's repo. Null when there's nothing to upload or
- * the upload couldn't be made — the cover then migrates with its raw `url`.
+ * Ensure a cover that has no plyr track gets one, written straight into the user's own
+ * repo via their OAuth session: uploadBlob the audio, then createRecord the
+ * `fm.plyr.track` that references it. Records the pointer and returns the ref. Null when
+ * there's nothing to upload or the write couldn't be made — the cover then keeps its `url`.
  */
-export async function ensurePlyrTrackForCover(
-  submissionId: number,
-  userId: string,
-): Promise<PlyrRef | null> {
-  const token = process.env.PLYR_TOKEN;
-  if (!token) {
-    console.warn("[plyr-upload] PLYR_TOKEN not set — cannot create a plyr track");
-    return null;
-  }
+export async function ensurePlyrTrackForCover(opts: {
+  agent: Agent;
+  did: string;
+  handle: string | null;
+  submissionId: number;
+  userId: string;
+}): Promise<PlyrRef | null> {
+  const { agent, did, handle, submissionId, userId } = opts;
 
   const info = await loadCoverAudio(submissionId, userId);
   if (!info) return null;
@@ -67,23 +70,33 @@ export async function ensurePlyrTrackForCover(
   let ref: PlyrRef;
   try {
     const file = await downloadMedia(info.audioUrl);
-    // A broken/missing cover image is non-fatal — the audio still uploads.
-    let image;
-    if (info.imageUrl) {
-      try {
-        image = await downloadMedia(info.imageUrl);
-      } catch (err) {
-        console.warn("[plyr-upload] cover art download failed (continuing)", err);
-      }
-    }
-    ref = await uploadAudioToPlyr({ token, file, title: info.title, image });
+
+    // 1. The audio lives in the user's repo as an unreferenced blob until a record
+    //    points at it (the PDS GCs it otherwise).
+    const uploaded = await agent.com.atproto.repo.uploadBlob(file.bytes, {
+      encoding: file.mimeType,
+    });
+
+    // 2. The fm.plyr.track record references the blob; plyr's firehose does the rest.
+    const record: Record<string, unknown> = {
+      $type: PLYR_TRACK_COLLECTION,
+      title: info.title,
+      artist: handle ?? "EPTSS",
+      audioBlob: uploaded.data.blob,
+      fileType: fileTypeOf(info.audioUrl),
+      createdAt: new Date().toISOString(),
+    };
+    const created = await agent.com.atproto.repo.createRecord({
+      repo: did,
+      collection: PLYR_TRACK_COLLECTION,
+      record,
+    });
+    ref = { uri: created.data.uri, cid: created.data.cid };
   } catch (err) {
     console.error(`[plyr-upload] #${submissionId} upload failed`, err);
     return null;
   }
 
-  // The track is on the EPTSS scaffold (uploaded as EPTSS); record the pointer so the
-  // re-home step (ensurePlyrTrackOwned) moves it into the user's repo next.
   await db
     .update(submissions)
     .set({ plyrTrackUri: ref.uri, plyrTrackCid: ref.cid })
