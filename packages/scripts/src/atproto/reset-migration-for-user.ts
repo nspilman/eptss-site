@@ -33,9 +33,9 @@ import { loginAtprotoAgent } from "./agent";
  *      and the EPTSS scaffold copies are left alone).
  *   2. Clear the Postgres pointers (`claimed_at_uri` / `claimed_at`). This is the
  *      bit the migration card keys on — once null, the cover reads as "held by
- *      EPTSS" again and is eligible to re-migrate. With --include-plyr, also clear
- *      `plyr_track_uri` / `plyr_track_cid`, so a cover with no plyr track re-uploads
- *      from scratch instead of re-pointing at a deleted track.
+ *      EPTSS" again and is eligible to re-migrate. (The `plyr_track_uri` pointer is
+ *      left intact even with --include-plyr — when it points at the EPTSS scaffold it's
+ *      the cover-art source the migration reuses.)
  *   3. Soft-unlink the identity (`unlinked_at = now()`), so the profile shows the
  *      unlinked first-timer Link form rather than the re-link state.
  *
@@ -61,9 +61,9 @@ import { loginAtprotoAgent } from "./agent";
  *   --user-id=<uuid>     … or by their EPTSS user id (one of the two is required).
  *   --include-signups    also delete every at.atjam.signup record (default: only
  *                        submissions). They won't return on link — see above.
- *   --include-plyr       also delete your own fm.plyr.track records + clear the
- *                        plyr_track_uri/cid pointers, so covers re-upload to plyr
- *                        from scratch on the next link (full E2E replay).
+ *   --include-plyr       also delete your own fm.plyr.track records, so covers re-upload
+ *                        to plyr on the next link. The plyr_track_uri pointer is LEFT
+ *                        intact (it's the cover-art source — see above).
  *   --keep-link          delete repo records + clear pointers but stay linked.
  *   --no-delete          skip repo deletes entirely (pointer-only reset; recreate
  *                        upserts over the existing records). Needs no app password.
@@ -209,21 +209,19 @@ async function main() {
     }
   }
 
-  // Plyr tracks: read the user's plyr pointers so we can clear them, and delete the
-  // records that live in the user's OWN repo — identified precisely via the pointer's
-  // DID, so native plyr uploads and the EPTSS scaffold copies are spared.
-  let plyrPointerCount = 0;
-  if (includePlyr) {
+  // Plyr tracks: delete the records that live in the user's OWN repo — identified via
+  // the pointer's DID, so native plyr uploads and the EPTSS scaffold copies are spared.
+  // The `plyr_track_uri` POINTER is left intact on purpose: when it points at the EPTSS
+  // scaffold, it's the cover-art source the migration reuses (images.plyr.fm is the only
+  // origin plyr trusts), so clearing it would strip the image on re-migration.
+  if (includePlyr && agent) {
     const plyrRows = await db
       .select({ plyrTrackUri: submissions.plyrTrackUri })
       .from(submissions)
       .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.plyrTrackUri)));
-    plyrPointerCount = plyrRows.length;
-    if (agent) {
-      for (const r of plyrRows) {
-        if (r.plyrTrackUri && atUriDid(r.plyrTrackUri) === target.did) {
-          toDelete.push({ collection: PLYR_TRACK_COLLECTION, rkey: atUriRkey(r.plyrTrackUri) });
-        }
+    for (const r of plyrRows) {
+      if (r.plyrTrackUri && atUriDid(r.plyrTrackUri) === target.did) {
+        toDelete.push({ collection: PLYR_TRACK_COLLECTION, rkey: atUriRkey(r.plyrTrackUri) });
       }
     }
   }
@@ -249,9 +247,7 @@ async function main() {
     );
   }
   console.log(`  clear claimed pointers: ${claimedCount} cover(s)`);
-  console.log(
-    `  clear plyr pointers:    ${includePlyr ? `${plyrPointerCount} cover(s)` : "0 (pass --include-plyr)"}`,
-  );
+  console.log("  plyr pointers:          left intact (cover-art source)");
   console.log(
     `  unlink identity:        ${keepLink ? "no (--keep-link)" : target.alreadyUnlinked ? "already unlinked" : "yes"}`,
   );
@@ -293,15 +289,6 @@ async function main() {
     .set({ claimedAtUri: null, claimedAt: null })
     .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.claimedAtUri)));
   console.log(`[reset] cleared claimed pointers on ${claimedCount} cover(s)`);
-
-  // ---- 2b. Clear the plyr pointers, so covers re-upload from scratch (--include-plyr). ----
-  if (includePlyr) {
-    await db
-      .update(submissions)
-      .set({ plyrTrackUri: null, plyrTrackCid: null })
-      .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.plyrTrackUri)));
-    console.log(`[reset] cleared plyr pointers on ${plyrPointerCount} cover(s)`);
-  }
 
   // ---- 3. Soft-unlink the identity (skip if already unlinked). ----
   if (!keepLink && !target.alreadyUnlinked) {

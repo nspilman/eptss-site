@@ -61,8 +61,15 @@ export async function ensurePlyrTrackForCover(opts: {
   handle: string | null;
   submissionId: number;
   userId: string;
+  /**
+   * A plyr-hosted cover-art URL (images.plyr.fm) to carry onto the record. plyr's
+   * firehose only keeps an `imageUrl` whose origin is plyr's own image host, so this
+   * must be a URL plyr already hosts — typically the one migrate-to-plyr put on the
+   * EPTSS scaffold track. Any other origin would be stripped on ingest, so we omit it.
+   */
+  imageUrl?: string | null;
 }): Promise<PlyrRef | null> {
-  const { agent, did, handle, submissionId, userId } = opts;
+  const { agent, did, handle, submissionId, userId, imageUrl } = opts;
 
   const info = await loadCoverAudio(submissionId, userId);
   if (!info) return null;
@@ -86,6 +93,8 @@ export async function ensurePlyrTrackForCover(opts: {
       fileType: fileTypeOf(info.audioUrl),
       createdAt: new Date().toISOString(),
     };
+    // Carry the cover art when plyr already hosts it (anything else is stripped).
+    if (imageUrl) record.imageUrl = imageUrl;
     const created = await agent.com.atproto.repo.createRecord({
       repo: did,
       collection: PLYR_TRACK_COLLECTION,
