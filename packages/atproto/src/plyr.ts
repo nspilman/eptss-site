@@ -27,6 +27,101 @@ interface PlyrApiTrack {
   atproto_record_uri?: string;
 }
 
+/** A plyr track resolved from a user-pasted URL — the strong-ref plus the bits a
+ *  submission needs (owner DID for the ownership guard, hosted cover + audio). */
+export interface ResolvedPlyrTrack {
+  trackId: number;
+  /** The fm.plyr.track record's AT URI — the submission `payload` strong-ref uri. */
+  uri: string;
+  /** The record CID — the strong-ref cid. */
+  cid: string;
+  /** The track owner's DID; callers must confirm it matches the submitter. */
+  artistDid: string;
+  title: string | null;
+  /** plyr-hosted cover (images.plyr.fm) — already a trusted, renderable URL. */
+  imageUrl: string | null;
+  /** plyr-hosted streaming audio (R2). */
+  audioUrl: string | null;
+}
+
+/** Thrown when a pasted plyr URL can't become a submission deliverable. The
+ *  `reason` is a stable code so the submit flow can map it to user-facing copy. */
+export class PlyrResolveError extends Error {
+  constructor(
+    readonly reason: "unparseable" | "not-found" | "not-indexed",
+    message: string,
+  ) {
+    super(message);
+    this.name = "PlyrResolveError";
+  }
+}
+
+/**
+ * Pull the numeric track id out of a plyr URL the user pasted. Mirrors plyr's own
+ * oEmbed parser (`/track/(\d+)`), so it accepts the track page
+ * (`plyr.fm/track/123`) and the embed (`plyr.fm/embed/track/123`) alike; a bare
+ * numeric id is allowed too, for the paste-the-number case. Returns null when no
+ * track id is present — album/playlist URLs (`/album/{handle}/{slug}`) don't match.
+ */
+export function parsePlyrTrackId(input: string): number | null {
+  const trimmed = input.trim();
+  if (/^\d+$/.test(trimmed)) return Number(trimmed);
+  const m = trimmed.match(/\/track\/(\d+)/);
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * Resolve a pasted plyr track URL to the `fm.plyr.track` it points at — the inverse
+ * of the migration. plyr already hosts the audio, cover, and record (the user
+ * uploaded there directly), so we only read its public `/tracks/{id}` API and hand
+ * back the strong-ref plus metadata. The caller must still confirm `artistDid` is the
+ * submitting user before assigning it as their deliverable. Throws `PlyrResolveError`
+ * with a stable reason on a bad URL, an unknown track, or a track not yet carrying an
+ * atproto record.
+ */
+export async function resolvePlyrUrlToRecord(
+  input: string,
+  opts: { apiBase?: string } = {},
+): Promise<ResolvedPlyrTrack> {
+  const trackId = parsePlyrTrackId(input);
+  if (trackId == null) {
+    throw new PlyrResolveError("unparseable", "That doesn't look like a plyr track link.");
+  }
+  const apiBase = (opts.apiBase ?? PLYR_API).replace(/\/$/, "");
+  const res = await fetch(`${apiBase}/tracks/${trackId}`);
+  if (res.status === 404) {
+    throw new PlyrResolveError("not-found", `No plyr track found at id ${trackId}.`);
+  }
+  if (!res.ok) {
+    throw new PlyrResolveError("not-found", `Couldn't reach plyr for track ${trackId} (${res.status}).`);
+  }
+  const t = (await res.json()) as {
+    id?: number;
+    title?: string | null;
+    atproto_record_uri?: string | null;
+    atproto_record_cid?: string | null;
+    artist_did?: string | null;
+    image_url?: string | null;
+    r2_url?: string | null;
+  };
+  if (!t.atproto_record_uri || !t.atproto_record_cid || !t.artist_did) {
+    // plyr indexes the row at upload, but the on-network record may lag a beat.
+    throw new PlyrResolveError(
+      "not-indexed",
+      "That track isn't on the network yet — give plyr a moment after uploading, then retry.",
+    );
+  }
+  return {
+    trackId,
+    uri: t.atproto_record_uri,
+    cid: t.atproto_record_cid,
+    artistDid: t.artist_did,
+    title: t.title ?? null,
+    imageUrl: t.image_url ?? null,
+    audioUrl: t.r2_url ?? null,
+  };
+}
+
 /**
  * Index a repo's plyr tracks by AT URI → plyr numeric id, so we can turn an
  * `fm.plyr.track` record URI into an embeddable player. Paginates plyr's public

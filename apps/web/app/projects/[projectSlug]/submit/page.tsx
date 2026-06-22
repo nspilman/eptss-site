@@ -1,6 +1,6 @@
 import { roundProvider, userParticipationProvider, getProjectIdFromSlug, isValidProjectSlug, type ProjectSlug, getUserSubmissionForRound } from "@eptss/core";
 import { getProjectSEOMetadata, getPageContent, getProjectConfig } from "@eptss/project-config";
-import { submitCover } from "@/actions/userParticipationActions";
+import { submitPlyrCover } from "@/lib/atproto/submit-actions";
 import { SubmitPage } from "./SubmitPage";
 import { Metadata } from 'next';
 
@@ -79,7 +79,7 @@ const Submit = async ({ params }: Props) => {
         coverClosesLabel,
         listeningPartyLabel,
       }}
-      submitCover={submitCover}
+      submitCover={submitPlyrCover}
       submitContent={submitContent}
       submissionFormConfig={projectConfig.submissionForm}
     />

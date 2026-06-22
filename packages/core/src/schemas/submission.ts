@@ -1,17 +1,15 @@
 import { z } from "zod";
-import { optionalPositiveNumber } from "./zodHelpers";
 
-// Form schema for client-side validation (text fields only)
-// Media fields are validated by canSubmit() using reducer state
-// This avoids async timing issues with form.setValue()
+// Client-side form schema for the submission form. Every submission is a plyr track:
+// the user pastes a plyr.fm track link (resolved server-side to the fm.plyr.track in
+// their repo) plus a short public caption; the rest is narrative text kept in Postgres.
 export const submissionFormSchema = z.object({
-  // Media fields are optional here - validated separately via canSubmit()
-  audioFileUrl: z.string().optional(),
-  audioFilePath: z.string().optional(),
-  coverImageUrl: z.string().optional(),
-  coverImagePath: z.string().optional(),
-  audioDuration: optionalPositiveNumber,
-  audioFileSize: optionalPositiveNumber,
+  // The deliverable: a plyr.fm track URL. The server resolves it to the fm.plyr.track
+  // in the user's repo and writes the at.atjam.submission with that record as payload.
+  plyrTrackUrl: z.string().optional(),
+  // Short public caption written onto the at.atjam.submission record (≤300 graphemes).
+  // The long-form reflection prompts below stay in Postgres.
+  note: z.string().optional(),
   // Text fields
   lyrics: z.string().optional(),
   coolThingsLearned: z.string().optional(),
