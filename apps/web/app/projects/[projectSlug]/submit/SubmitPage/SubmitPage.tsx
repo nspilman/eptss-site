@@ -2,26 +2,15 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormWrapper, FormReturn } from "@eptss/forms"
-import { Button, Form, FormLabel, Text, Textarea, toast } from "@eptss/ui"
+import { Button, Form, FormLabel, Input, Text, Textarea, toast } from "@eptss/ui"
 import { motion } from "framer-motion"
 import { FormBuilder, FieldConfig } from "@eptss/ui";
 import { submissionFormSchema, type SubmissionInput } from "@eptss/core/schemas/submission"
 import type { ExistingSubmission } from "@eptss/core"
 import { PageContent, SubmissionFormConfig } from "@eptss/project-config";
-import {
-  MediaUploader,
-  uploadReducer,
-  initialUploadState,
-  canSubmit,
-  deriveSubmitConfig,
-  buildPayload,
-  payloadToFormData,
-  type UploadState,
-} from "@eptss/media-upload";
-import { BUCKETS } from "@eptss/bucket-storage";
 import { routes } from "@eptss/routing";
 
 interface Props {
@@ -87,6 +76,14 @@ const getFormFields = (isOriginal: boolean, config: SubmissionFormConfig): Field
   return fields;
 };
 
+/**
+ * The submission form. Going forward every submission is a plyr track: the user uploads
+ * their song to plyr.fm directly and pastes the track link here. The server
+ * (submitPlyrCover) resolves it to the fm.plyr.track in their own repo and writes the
+ * at.atjam.submission with that record as the deliverable — there is no upload here.
+ * (Past audio is re-hosted separately by migrate-to-plyr; that path doesn't touch this
+ * form.)
+ */
 export const SubmitPage = ({
   projectSlug,
   roundId,
@@ -101,95 +98,38 @@ export const SubmitPage = ({
   const router = useRouter();
   const { coverClosesLabel, listeningPartyLabel } = dateStrings;
 
-  // Validation errors
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get field configs for easier access
-  const audioConfig = submissionFormConfig.fields.audioFile;
-  const coverImageConfig = submissionFormConfig.fields.coverImage;
   const lyricsConfig = submissionFormConfig.fields.lyrics;
 
-  // Derive submit config from form config (what's required)
-  const submitConfig = deriveSubmitConfig(submissionFormConfig);
-
-  // Compute initial upload states from existing submission
-  const initialAudioState: UploadState = existingSubmission?.audioFileUrl
-    ? {
-        file: null,
-        status: 'complete',
-        progress: 100,
-        result: {
-          url: existingSubmission.audioFileUrl,
-          path: existingSubmission.audioFilePath || '',
-          fileSize: existingSubmission.audioFileSize ?? undefined,
-          metadata: existingSubmission.audioDuration
-            ? { audio: { duration: existingSubmission.audioDuration } }
-            : undefined,
-        },
-        error: null,
-      }
-    : initialUploadState;
-
-  const initialImageState: UploadState = existingSubmission?.coverImageUrl
-    ? {
-        file: null,
-        status: 'complete',
-        progress: 100,
-        result: {
-          url: existingSubmission.coverImageUrl,
-          path: existingSubmission.coverImagePath || '',
-        },
-        error: null,
-      }
-    : initialUploadState;
-
-  // Upload state - using reducers for explicit state tracking
-  // MediaUploader handles the actual upload, we just track state via callbacks
-  const [audioState, dispatchAudio] = useReducer(uploadReducer, initialAudioState);
-  const [imageState, dispatchImage] = useReducer(uploadReducer, initialImageState);
-
-  // Form for text fields only (what react-hook-form is good at)
   const form = useForm<SubmissionInput>({
     resolver: zodResolver(submissionFormSchema),
     defaultValues: {
-      audioFileUrl: existingSubmission?.audioFileUrl || "",
-      audioFilePath: existingSubmission?.audioFilePath || "",
-      coverImageUrl: existingSubmission?.coverImageUrl || "",
-      coverImagePath: existingSubmission?.coverImagePath || "",
-      audioDuration: existingSubmission?.audioDuration ?? undefined,
-      audioFileSize: existingSubmission?.audioFileSize ?? undefined,
+      // The track link + caption are re-entered each time (we store the resolved
+      // record, not the pasted URL); the reflections come back from Postgres.
+      plyrTrackUrl: "",
+      note: "",
       lyrics: existingSubmission?.lyrics || "",
       coolThingsLearned: existingSubmission?.coolThingsLearned || "",
       toolsUsed: existingSubmission?.toolsUsed || "",
       happyAccidents: existingSubmission?.happyAccidents || "",
       didntWork: existingSubmission?.didntWork || "",
-      roundId
+      roundId,
     },
   })
 
-  // Watch lyrics for the audio-or-lyrics validation
-  const lyrics = form.watch("lyrics");
-  const hasLyrics = Boolean(lyrics?.trim());
-
-  // Check if form can be submitted using pure function
-  const submitCheck = canSubmit(
-    { audio: audioState, image: imageState },
-    submitConfig,
-    hasLyrics
-  );
+  const hasPlyrUrl = Boolean(form.watch("plyrTrackUrl")?.trim());
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Check upload status first
-    if (!submitCheck.allowed) {
-      setValidationErrors(submitCheck.errors);
+    if (!hasPlyrUrl) {
+      setValidationErrors(["Paste your plyr track link."]);
       return;
     }
     setValidationErrors([]);
 
-    // Validate text fields with react-hook-form
     const isValid = await form.trigger();
     if (!isValid) {
       const errorMessages = Object.values(form.formState.errors)
@@ -204,30 +144,20 @@ export const SubmitPage = ({
     }
 
     setIsSubmitting(true);
-
     try {
-      // Build payload from upload states + text fields
-      const textFields = form.getValues();
-      const payload = buildPayload(
-        roundId,
-        { audio: audioState, image: imageState },
-        {
-          lyrics: textFields.lyrics,
-          coolThingsLearned: textFields.coolThingsLearned,
-          toolsUsed: textFields.toolsUsed,
-          happyAccidents: textFields.happyAccidents,
-          didntWork: textFields.didntWork,
-        }
-      );
+      const v = form.getValues();
+      const formData = new FormData();
+      formData.set("roundId", String(roundId));
+      formData.set("plyrTrackUrl", (v.plyrTrackUrl ?? "").trim());
+      if (v.note?.trim()) formData.set("note", v.note.trim());
+      if (v.lyrics?.trim()) formData.set("lyrics", v.lyrics);
+      for (const k of ["coolThingsLearned", "toolsUsed", "happyAccidents", "didntWork"] as const) {
+        const val = v[k];
+        if (val?.trim()) formData.set(k, val);
+      }
 
-      // Convert to FormData for server action
-      const formData = payloadToFormData(payload);
-
-      // Submit
       const result = await submitCover(formData);
-
       if (result.status === "Success") {
-        // Redirect to success page
         router.push(routes.projects.submit.success(projectSlug as "cover" | "monthly-original"));
       } else {
         toast({
@@ -271,17 +201,6 @@ export const SubmitPage = ({
 
   const formDescription = `${submitContent.formDescriptionPrefix} ${coverClosesLabel}`;
 
-  // Determine if audio is required based on config
-  const isAudioRequired = audioConfig.required || (audioConfig.requiredGroup && !lyricsConfig.enabled);
-
-  // Get upload status text
-  const getUploadStatusText = (state: UploadState) => {
-    if (state.status === 'uploading') return "Uploading...";
-    if (state.status === 'complete') return "Upload complete";
-    if (state.status === 'error') return "Upload failed";
-    return null;
-  };
-
   return (
     <FormWrapper
       title={formTitle}
@@ -295,8 +214,6 @@ export const SubmitPage = ({
           transition={{ duration: 0.5, delay: 0.2 }}
           className="space-y-6"
         >
-          <input type="hidden" name="roundId" value={roundId} />
-
           {/* Validation Errors */}
           {validationErrors.length > 0 && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
@@ -308,162 +225,39 @@ export const SubmitPage = ({
             </div>
           )}
 
-          {/* Audio Upload - only show if enabled */}
-          {audioConfig.enabled && (
-            <div className="space-y-2">
-              <FormLabel htmlFor="audio-upload">
-                {audioConfig.label || "Audio File"}{" "}
-                {isAudioRequired && <span className="text-red-500">*</span>}
-                {audioConfig.requiredGroup && !audioConfig.required && (
-                  <Text as="span" size="sm" color="muted"> (or provide lyrics)</Text>
-                )}
-              </FormLabel>
-              <Text size="sm" color="muted">
-                {existingSubmission?.audioFileUrl
-                  ? "Replace your existing audio file or keep the current one"
-                  : song.title !== null ? "Upload your song" : "Upload your cover"}
-              </Text>
-              {existingSubmission?.audioFileUrl && audioState.status === 'complete' && audioState.result?.url === existingSubmission.audioFileUrl && (
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                  <Text size="sm" className="text-green-700 dark:text-green-400">
-                    ✓ Current audio file uploaded
-                  </Text>
-                </div>
-              )}
-              <MediaUploader
-                bucket={BUCKETS.AUDIO_SUBMISSIONS}
-                accept="audio/*"
-                maxSizeMB={audioConfig.maxSizeMB ?? 50}
-                variant="button"
-                buttonText="Choose Audio File"
-                showPreview={true}
-                onFilesSelected={(files) => {
-                  if (files.length > 0) {
-                    // Track that upload is starting
-                    dispatchAudio({ type: 'SELECT_FILE', file: files[0] });
-                    dispatchAudio({ type: 'UPLOAD_START' });
-                  }
-                }}
-                onFilesRemoved={() => {
-                  dispatchAudio({ type: 'CLEAR' });
-                }}
-                onUploadComplete={(results) => {
-                  if (results.length > 0) {
-                    const result = results[0];
-                    // Extract audio duration from metadata if available
-                    const audioDuration = result.metadata?.audio
-                      ? (result.metadata.audio as { duration?: number }).duration
-                      : undefined;
-                    dispatchAudio({
-                      type: 'UPLOAD_SUCCESS',
-                      result: {
-                        url: result.url,
-                        path: result.path,
-                        fileSize: result.fileSize,
-                        metadata: audioDuration ? { audio: { duration: audioDuration } } : undefined,
-                      },
-                    });
-                  }
-                }}
-                onUploadError={(error) => {
-                  dispatchAudio({ type: 'UPLOAD_ERROR', error: error.message });
-                  toast({
-                    variant: "destructive",
-                    title: "Audio Upload Error",
-                    description: error.message,
-                  });
-                }}
-              />
-              {/* Upload status feedback */}
-              {audioState.status !== 'idle' && (
-                <Text
-                  size="sm"
-                  color={audioState.status === 'complete' ? undefined : audioState.status === 'error' ? "destructive" : "muted"}
-                >
-                  {getUploadStatusText(audioState)}
-                </Text>
-              )}
-              {audioState.status === 'error' && audioState.error && (
-                <Text size="sm" color="destructive">{audioState.error}</Text>
-              )}
-            </div>
-          )}
+          {/* plyr track link — the deliverable */}
+          <div className="space-y-2">
+            <FormLabel htmlFor="plyrTrackUrl">
+              plyr track link <span className="text-red-500">*</span>
+            </FormLabel>
+            <Text size="sm" color="muted">
+              Upload your song to plyr.fm, then paste the track link here (e.g.
+              https://plyr.fm/track/123). We&apos;ll attach your plyr track — audio and
+              cover and all — to this round.
+            </Text>
+            <Input
+              id="plyrTrackUrl"
+              type="url"
+              inputMode="url"
+              placeholder="https://plyr.fm/track/…"
+              disabled={isSubmitting}
+              {...form.register("plyrTrackUrl")}
+            />
 
-          {/* Cover Image Upload - only show if enabled */}
-          {coverImageConfig.enabled && (
-            <div className="space-y-2">
-              <FormLabel htmlFor="cover-image-upload">
-                {coverImageConfig.label || "Cover Art"}{" "}
-                {coverImageConfig.required ? (
-                  <span className="text-red-500">*</span>
-                ) : (
-                  <Text as="span" size="sm" color="muted">(Optional)</Text>
-                )}
-              </FormLabel>
-              <Text size="sm" color="muted">
-                {existingSubmission?.coverImageUrl
-                  ? "Replace your existing cover image or keep the current one"
-                  : coverImageConfig.description || "Upload cover art for your submission (will use your profile picture if not provided)"}
-              </Text>
-              {existingSubmission?.coverImageUrl && imageState.status === 'complete' && imageState.result?.url === existingSubmission.coverImageUrl && (
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                  <Text size="sm" className="text-green-700 dark:text-green-400">
-                    ✓ Current cover image uploaded
-                  </Text>
-                </div>
-              )}
-              <MediaUploader
-                bucket={BUCKETS.SUBMISSION_IMAGES}
-                accept="image/*"
-                maxSizeMB={coverImageConfig.maxSizeMB ?? 5}
-                enableCrop={false} // TODO: implement upload-then-crop flow
-                variant="button"
-                buttonText="Choose Cover Image"
-                showPreview={true}
-                onFilesSelected={(files) => {
-                  if (files.length > 0) {
-                    dispatchImage({ type: 'SELECT_FILE', file: files[0] });
-                    dispatchImage({ type: 'UPLOAD_START' });
-                  }
-                }}
-                onFilesRemoved={() => {
-                  dispatchImage({ type: 'CLEAR' });
-                }}
-                onUploadComplete={(results) => {
-                  if (results.length > 0) {
-                    const result = results[0];
-                    dispatchImage({
-                      type: 'UPLOAD_SUCCESS',
-                      result: {
-                        url: result.url,
-                        path: result.path,
-                      },
-                    });
-                  }
-                }}
-                onUploadError={(error) => {
-                  dispatchImage({ type: 'UPLOAD_ERROR', error: error.message });
-                  toast({
-                    variant: "destructive",
-                    title: "Image Upload Error",
-                    description: error.message,
-                  });
-                }}
-              />
-              {/* Upload status feedback */}
-              {imageState.status !== 'idle' && (
-                <Text
-                  size="sm"
-                  color={imageState.status === 'complete' ? undefined : imageState.status === 'error' ? "destructive" : "muted"}
-                >
-                  {getUploadStatusText(imageState)}
-                </Text>
-              )}
-              {imageState.status === 'error' && imageState.error && (
-                <Text size="sm" color="destructive">{imageState.error}</Text>
-              )}
-            </div>
-          )}
+            <FormLabel htmlFor="note" className="pt-2">
+              Caption{" "}
+              <Text as="span" size="sm" color="muted">(optional, shown publicly)</Text>
+            </FormLabel>
+            <Textarea
+              id="note"
+              {...form.register("note")}
+              placeholder="A short note about your cover (a sentence or two)…"
+              rows={2}
+              maxLength={1500}
+              disabled={isSubmitting}
+              className="w-full"
+            />
+          </div>
 
           {/* Lyrics Field - only show if enabled */}
           {lyricsConfig.enabled && (
@@ -471,9 +265,6 @@ export const SubmitPage = ({
               <FormLabel htmlFor="lyrics">
                 {lyricsConfig.label || "Lyrics"}{" "}
                 {lyricsConfig.required && <span className="text-red-500">*</span>}
-                {lyricsConfig.requiredGroup && !lyricsConfig.required && (
-                  <Text as="span" size="sm" color="muted"> (or provide audio)</Text>
-                )}
               </FormLabel>
               {lyricsConfig.description && (
                 <Text size="sm" color="muted">
@@ -497,16 +288,10 @@ export const SubmitPage = ({
             disabled={isSubmitting}
           />
 
-          <Button
-            type="submit"
-            disabled={isSubmitting || submitCheck.pending.length > 0}
-            size="full"
-          >
+          <Button type="submit" disabled={isSubmitting} size="full">
             {isSubmitting
               ? existingSubmission ? "Updating..." : submitContent.submittingText
-              : submitCheck.pending.length > 0
-                ? "Waiting for uploads..."
-                : existingSubmission ? "Update Submission" : submitContent.submitButtonText}
+              : existingSubmission ? "Update Submission" : submitContent.submitButtonText}
           </Button>
         </motion.div>
       </Form>

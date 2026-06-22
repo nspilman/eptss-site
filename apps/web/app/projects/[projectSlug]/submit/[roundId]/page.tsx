@@ -1,5 +1,5 @@
 import { roundProvider, userParticipationProvider, getProjectIdFromSlug, type ProjectSlug, getUserSubmissionForRound } from "@eptss/core";
-import { submitCover } from "@/actions/userParticipationActions";
+import { submitPlyrCover } from "@/lib/atproto/submit-actions";
 import { SubmitPage } from "../SubmitPage";
 import { getProjectConfig } from "@eptss/project-config";
 
@@ -41,7 +41,7 @@ export default async function SubmitForRound({ params }: Props) {
       hasSubmitted={roundDetails?.hasSubmitted || false}
       existingSubmission={existingSubmission}
       song={song}
-      submitCover={submitCover}
+      submitCover={submitPlyrCover}
       submitContent={projectConfig.content.pages.submit}
       submissionFormConfig={projectConfig.submissionForm}
     />
