@@ -53,8 +53,9 @@ the plyr-track link. The columns go away only as reads move onto the user's repo
 - **Order matters:** reads must move (steps 1–3) *before* any column drop (step 4).
 - **The TID rkey means `payload` is the only submission→track link** — never lose it
   on a record rewrite (re-home/undo already keep it in sync; preserve that).
-- **Scripts reference the columns:** `migrate-to-plyr.ts` (sets/clears
-  `plyr_track_uri`), `reset-migration-for-user.ts --include-plyr` (clears them),
+- **Scripts reference the columns:** `migrate-to-plyr.ts` (sets `plyr_track_uri` +
+  `plyr_cover_image_url`; clears all three on `--purge`), `reset-migration-for-user.ts
+  --include-plyr` (clears `plyr_track_uri`/`cid`, *keeps* `plyr_cover_image_url`),
   `audit-legacy-migration.ts` (reads them). Update or retire alongside step 4.
 - **Postgres rows remain the source of truth for everything non-atproto** (the
   `submissions`/`sign_ups` rows themselves). Only the *pointer columns* are derived.

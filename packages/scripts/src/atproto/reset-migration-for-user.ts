@@ -7,7 +7,7 @@ import {
   and,
   isNull,
 } from "@eptss/db";
-import { isNotNull } from "drizzle-orm";
+import { isNotNull, inArray } from "drizzle-orm";
 import type { AtpAgent } from "@atproto/api";
 import { atUriDid, atUriRkey } from "@eptss/atproto";
 import { loginAtprotoAgent } from "./agent";
@@ -33,9 +33,12 @@ import { loginAtprotoAgent } from "./agent";
  *      and the EPTSS scaffold copies are left alone).
  *   2. Clear the Postgres pointers (`claimed_at_uri` / `claimed_at`). This is the
  *      bit the migration card keys on — once null, the cover reads as "held by
- *      EPTSS" again and is eligible to re-migrate. (The `plyr_track_uri` pointer is
- *      left intact even with --include-plyr — when it points at the EPTSS scaffold it's
- *      the cover-art source the migration reuses.)
+ *      EPTSS" again and is eligible to re-migrate. With --include-plyr, also clear the
+ *      `plyr_track_uri` / `plyr_track_cid` pointers at the tracks we just deleted — they'd
+ *      otherwise dangle at a gone record, and a null pointer also makes the cover eligible
+ *      for a plain `migrate-to-plyr` re-run (no --reprocess). `plyr_cover_image_url` is
+ *      KEPT: it's the durable, R2-hosted cover-art cache the next claim carries onto the
+ *      user's new track, so the image survives the reset.
  *   3. Soft-unlink the identity (`unlinked_at = now()`), so the profile shows the
  *      unlinked first-timer Link form rather than the re-link state.
  *
@@ -61,9 +64,9 @@ import { loginAtprotoAgent } from "./agent";
  *   --user-id=<uuid>     … or by their EPTSS user id (one of the two is required).
  *   --include-signups    also delete every at.atjam.signup record (default: only
  *                        submissions). They won't return on link — see above.
- *   --include-plyr       also delete your own fm.plyr.track records, so covers re-upload
- *                        to plyr on the next link. The plyr_track_uri pointer is LEFT
- *                        intact (it's the cover-art source — see above).
+ *   --include-plyr       also delete your own fm.plyr.track records AND clear the
+ *                        plyr_track_uri/cid pointers at them, so covers re-upload to plyr
+ *                        on the next migrate. The cover art is kept (plyr_cover_image_url).
  *   --keep-link          delete repo records + clear pointers but stay linked.
  *   --no-delete          skip repo deletes entirely (pointer-only reset; recreate
  *                        upserts over the existing records). Needs no app password.
@@ -185,6 +188,7 @@ async function main() {
   // signups are caught). Read-only — runs in dry runs too, to preview the truth.
   let agent: AtpAgent | null = null;
   let toDelete: { collection: string; rkey: string }[] = [];
+  const plyrPointerIdsToClear: number[] = [];
   if (!noDelete) {
     const session = await loginAtprotoAgent({
       handleEnv: "RESET_USER_HANDLE",
@@ -211,17 +215,19 @@ async function main() {
 
   // Plyr tracks: delete the records that live in the user's OWN repo — identified via
   // the pointer's DID, so native plyr uploads and the EPTSS scaffold copies are spared.
-  // The `plyr_track_uri` POINTER is left intact on purpose: when it points at the EPTSS
-  // scaffold, it's the cover-art source the migration reuses (images.plyr.fm is the only
-  // origin plyr trusts), so clearing it would strip the image on re-migration.
+  // We also note their submission ids to clear the pointers (step 2) — leaving them would
+  // dangle at a gone record. The cover art is NOT lost: it lives in plyr_cover_image_url
+  // (kept), the only plyr-trusted image origin, which the next claim carries onto the
+  // user's new track.
   if (includePlyr && agent) {
     const plyrRows = await db
-      .select({ plyrTrackUri: submissions.plyrTrackUri })
+      .select({ id: submissions.id, plyrTrackUri: submissions.plyrTrackUri })
       .from(submissions)
       .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.plyrTrackUri)));
     for (const r of plyrRows) {
       if (r.plyrTrackUri && atUriDid(r.plyrTrackUri) === target.did) {
         toDelete.push({ collection: PLYR_TRACK_COLLECTION, rkey: atUriRkey(r.plyrTrackUri) });
+        plyrPointerIdsToClear.push(r.id);
       }
     }
   }
@@ -247,7 +253,9 @@ async function main() {
     );
   }
   console.log(`  clear claimed pointers: ${claimedCount} cover(s)`);
-  console.log("  plyr pointers:          left intact (cover-art source)");
+  console.log(
+    `  clear plyr pointers:    ${includePlyr ? `${plyrPointerIdsToClear.length} cover(s) (art cache kept)` : "0 (pass --include-plyr)"}`,
+  );
   console.log(
     `  unlink identity:        ${keepLink ? "no (--keep-link)" : target.alreadyUnlinked ? "already unlinked" : "yes"}`,
   );
@@ -290,6 +298,18 @@ async function main() {
     .where(and(eq(submissions.userId, target.userId), isNotNull(submissions.claimedAtUri)));
   console.log(`[reset] cleared claimed pointers on ${claimedCount} cover(s)`);
 
+  // Clear the plyr track pointers we just deleted from the repo — leaving them would
+  // dangle at a gone record, and a null pointer makes the cover eligible for a plain
+  // `migrate-to-plyr` re-run (no --reprocess). plyr_cover_image_url is deliberately kept:
+  // it's the durable, R2-hosted cover cache the next claim carries onto the new track.
+  if (plyrPointerIdsToClear.length > 0) {
+    await db
+      .update(submissions)
+      .set({ plyrTrackUri: null, plyrTrackCid: null })
+      .where(inArray(submissions.id, plyrPointerIdsToClear));
+    console.log(`[reset] cleared plyr pointers on ${plyrPointerIdsToClear.length} cover(s)`);
+  }
+
   // ---- 3. Soft-unlink the identity (skip if already unlinked). ----
   if (!keepLink && !target.alreadyUnlinked) {
     await db
@@ -310,7 +330,9 @@ async function main() {
     "\n[reset] done. Now sign in, open /dashboard/profile, " +
       (keepLink ? "re-link to refresh permissions" : "link your Bluesky account") +
       ", and watch the covers re-migrate." +
-      (includePlyr ? " (Covers now have no plyr track, so they re-upload to plyr on link.)" : "") +
+      (includePlyr
+        ? " (Plyr pointers cleared, so a plain migrate-to-plyr re-uploads the covers; the cover art is retained.)"
+        : "") +
       (includeSignups
         ? " (Signups won't return on link — re-run the signup backfill to restore them.)"
         : "") +
