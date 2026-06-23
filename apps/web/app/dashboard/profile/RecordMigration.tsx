@@ -4,7 +4,7 @@
  * The link→migrate bridge. Linking an Atmosphere account is only half the promise;
  * the other half is that the records EPTSS holds for you actually move into *your*
  * repo. This makes that one continuous moment: when you return from OAuth
- * (`?linked=success`), this card auto-runs and you watch each record land.
+ * (`?linked=success`), a full-screen modal takes over and you watch each record land.
  *
  * It brings home two kinds of record — your COVERS (`at.atjam.submission`) and your
  * SIGNUPS (`at.atjam.signup`) — dispatching each item to its own migrate action.
@@ -20,6 +20,13 @@
  * Sequential, not parallel: every record writes to the same repo, and concurrent
  * commits to one repo race. One at a time is both correct and the better story to
  * watch. When the run settles we `router.refresh()` once.
+ *
+ * Two surfaces, one state machine:
+ *   - idle    → a quiet inline card ("Bring N records home") for a linked user who
+ *               revisits with un-migrated records but didn't just link.
+ *   - running / done → a full-screen modal ("Account migration in progress") that
+ *               blocks the page while records land. The auto-run starts in `running`
+ *               so the modal is there the instant you return from OAuth.
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -31,6 +38,12 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from '@eptss/ui';
 import { migrateOneCover } from '@/lib/atproto/claim-actions';
 import { migrateOneSignup } from '@/lib/atproto/signup-actions';
@@ -69,7 +82,11 @@ interface RecordMigrationProps {
 
 export function RecordMigration({ items, handle, autoStart }: RecordMigrationProps) {
   const router = useRouter();
-  const [phase, setPhase] = useState<Phase>('idle');
+  // Auto-run starts in `running` so the full-screen modal is up the instant the user
+  // lands from OAuth — no flash of the idle card before the effect kicks in.
+  const [phase, setPhase] = useState<Phase>(autoStart ? 'running' : 'idle');
+  // Set once the user closes the completed modal (running can't be dismissed).
+  const [dismissed, setDismissed] = useState(false);
   const [statuses, setStatuses] = useState<Record<string, Status>>(() =>
     Object.fromEntries(items.map((it) => [keyOf(it), 'pending' as Status])),
   );
@@ -159,79 +176,128 @@ export function RecordMigration({ items, handle, autoStart }: RecordMigrationPro
             ? `${count.done} now live in your repo${home}. ${count.skipped} aren't on the network yet.`
             : `All ${count.done} record${plural(count.done)} are now in your repo${home}. 🎉`;
 
-  return (
-    <Card className="mb-6 border-gray-800 bg-gray-900/50">
-      <CardHeader>
-        <CardTitle>Bring your records home</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
+  // The progress bar + per-record live status — the heart of both surfaces.
+  const progress = (
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs text-gray-400">
+          <span>
+            {count.settled} of {total}
+          </span>
+          <span>{pct}%</span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-800">
+          <div
+            className="h-full rounded-full bg-[var(--color-accent-primary)] transition-all duration-300"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
 
-      <CardContent className="space-y-4">
-        {phase === 'idle' ? (
+      <ul className="max-h-[50vh] space-y-1.5 overflow-y-auto pr-1">
+        {items.map((it) => {
+          const s = statusOf(keyOf(it));
+          const st = STATUS[s];
+          return (
+            <li key={keyOf(it)} className="flex items-center gap-2.5 text-sm">
+              <span className={`inline-flex w-4 shrink-0 justify-center ${st.color}`}>
+                {st.spin ? (
+                  <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-gray-700 border-t-[var(--color-accent-primary)]" />
+                ) : (
+                  st.glyph
+                )}
+              </span>
+              <span className="shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-gray-400">
+                {it.kind}
+              </span>
+              <span
+                className={`min-w-0 truncate ${s === 'pending' ? 'text-gray-500' : 'text-gray-200'}`}
+              >
+                {it.title}
+                {it.subtitle && (
+                  <span className="text-gray-500"> — {it.subtitle}</span>
+                )}
+              </span>
+              {st.note && (
+                <span className={`ml-auto shrink-0 text-xs ${st.color}`}>
+                  {st.note}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+
+  // IDLE — a quiet inline prompt for a linked user revisiting with un-migrated records.
+  if (phase === 'idle') {
+    return (
+      <Card className="mb-6 border-gray-800 bg-gray-900/50">
+        <CardHeader>
+          <CardTitle>Bring your records home</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
           <Button onClick={() => void migrate(items)}>
             Bring {total} record{plural(total)} home
           </Button>
-        ) : (
-          <>
-            {/* Progress bar — advances on real record-landed events. */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <span>
-                  {count.settled} of {total}
-                </span>
-                <span>{pct}%</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-800">
-                <div
-                  className="h-full rounded-full bg-[var(--color-accent-primary)] transition-all duration-300"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
-            {/* Per-record live status. */}
-            <ul className="space-y-1.5">
-              {items.map((it) => {
-                const s = statusOf(keyOf(it));
-                const st = STATUS[s];
-                return (
-                  <li key={keyOf(it)} className="flex items-center gap-2.5 text-sm">
-                    <span className={`inline-flex w-4 shrink-0 justify-center ${st.color}`}>
-                      {st.spin ? (
-                        <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-gray-700 border-t-[var(--color-accent-primary)]" />
-                      ) : (
-                        st.glyph
-                      )}
-                    </span>
-                    <span className="shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-gray-400">
-                      {it.kind}
-                    </span>
-                    <span
-                      className={`min-w-0 truncate ${s === 'pending' ? 'text-gray-500' : 'text-gray-200'}`}
-                    >
-                      {it.title}
-                      {it.subtitle && (
-                        <span className="text-gray-500"> — {it.subtitle}</span>
-                      )}
-                    </span>
-                    {st.note && (
-                      <span className={`ml-auto shrink-0 text-xs ${st.color}`}>
-                        {st.note}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+  // RUNNING / DONE — a full-screen modal that owns the screen while records land.
+  const running = phase === 'running';
+  const title = running
+    ? 'Account migration in progress'
+    : count.failed > 0
+      ? 'Migration finished with issues'
+      : 'Migration complete';
 
-            {phase === 'done' && count.failed > 0 && (
-              <Button variant="outline" onClick={retryFailed}>
-                Retry {count.failed} failed
-              </Button>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+  return (
+    <Dialog
+      open={!dismissed}
+      // Block dismissal while migrating; allow it once the run has settled.
+      onOpenChange={(open) => {
+        if (!open && !running) setDismissed(true);
+      }}
+    >
+      <DialogContent
+        className="left-0 top-0 flex h-screen w-screen max-w-none translate-x-0 translate-y-0 flex-col items-center justify-center overflow-y-auto rounded-none border-0"
+        // No escape / click-away out of an in-flight migration.
+        onEscapeKeyDown={(e) => {
+          if (running) e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          if (running) e.preventDefault();
+        }}
+      >
+        <div className="w-full max-w-xl space-y-6">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-2xl">
+              {running && (
+                <span className="inline-block h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-gray-700 border-t-[var(--color-accent-primary)]" />
+              )}
+              {title}
+            </DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
+
+          {progress}
+
+          {phase === 'done' && (
+            <DialogFooter>
+              {count.failed > 0 && (
+                <Button variant="outline" onClick={retryFailed}>
+                  Retry {count.failed} failed
+                </Button>
+              )}
+              <Button onClick={() => setDismissed(true)}>Done</Button>
+            </DialogFooter>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
