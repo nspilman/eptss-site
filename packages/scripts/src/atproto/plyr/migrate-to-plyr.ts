@@ -55,6 +55,7 @@ import {
 
 const PLYR_API = (process.env.PLYR_API ?? "https://api.plyr.fm").replace(/\/$/, "");
 const PLYR_TOKEN = process.env.PLYR_TOKEN;
+
 const SUPABASE_AUDIO_MARKER = "/audio-submissions/";
 const PLYR_TRACK_COLLECTION = "fm.plyr.track";
 
@@ -238,7 +239,7 @@ async function migrateOne(c: Candidate): Promise<void> {
     }
   }
 
-  const { uri, cid } = await uploadAudioToPlyr({
+  const { uri, cid, reused } = await uploadAudioToPlyr({
     token: PLYR_TOKEN!,
     file,
     title,
@@ -262,7 +263,10 @@ async function migrateOne(c: Candidate): Promise<void> {
     .update(submissions)
     .set({ plyrTrackUri: uri, plyrTrackCid: cid, plyrCoverImageUrl })
     .where(eq(submissions.id, c.id));
-  console.log(`  ✓ ${uri}${plyrCoverImageUrl ? " (+cover)" : ""}`);
+  // `reused` = plyr's dedup matched an existing track (the bytes were already on plyr from
+  // a prior migration); we recovered + re-associated it rather than creating a duplicate.
+  const how = reused ? "↺ re-associated" : "✓ uploaded";
+  console.log(`  ${how} ${uri}${plyrCoverImageUrl ? " (+cover)" : ""}`);
 }
 
 async function runMigrate(): Promise<void> {

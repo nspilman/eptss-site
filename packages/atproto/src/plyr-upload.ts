@@ -29,6 +29,22 @@ export interface PlyrUploadResult {
   trackId: string;
   uri: string;
   cid: string;
+  /** True when plyr's content dedup matched an existing track (the bytes were already
+   *  on plyr) and we recovered its record instead of creating a new one — the upload
+   *  was a no-op and the returned ref points at the pre-existing track. */
+  reused: boolean;
+}
+
+/**
+ * plyr's content dedup rejects a re-upload of bytes it already stores, naming the
+ * existing track in the failure message: "duplicate upload: track already exists
+ * (id: 1083)". Pull that id out so the caller can recover (and re-associate) the
+ * existing track rather than treating a re-run as a hard failure. Returns null when
+ * the message isn't a dedup rejection.
+ */
+export function parseDuplicateTrackId(message: string): string | null {
+  const m = /duplicate upload: track already exists \(id:\s*(\d+)\)/i.exec(message);
+  return m ? m[1] : null;
 }
 
 /** Best-effort MIME from a filename extension, for the multipart part headers. */
@@ -116,7 +132,7 @@ async function waitForUpload(
   token: string,
   uploadId: string,
   onProgress?: (event: ProgressEvent) => void,
-): Promise<{ trackId?: string; uri?: string; cid?: string }> {
+): Promise<{ trackId?: string; uri?: string; cid?: string; duplicate?: boolean }> {
   const res = await fetch(`${apiBase}/tracks/uploads/${uploadId}/progress`, {
     headers: { ...auth(token), accept: "text/event-stream" },
   });
@@ -124,7 +140,7 @@ async function waitForUpload(
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  const found: { trackId?: string; uri?: string; cid?: string } = {};
+  const found: { trackId?: string; uri?: string; cid?: string; duplicate?: boolean } = {};
   let buf = "";
   for (;;) {
     const { value, done } = await reader.read();
@@ -147,7 +163,16 @@ async function waitForUpload(
       }
       onProgress?.(p);
       if (p.status === "failed" || p.error) {
-        throw new Error(`plyr upload failed: ${p.error ?? p.message ?? "unknown"}`);
+        const msg = p.error ?? p.message ?? "unknown";
+        // plyr's content dedup names the existing track when the bytes are already on
+        // plyr — not a failure for us. Recover its id and resolve via fetchTrack below.
+        const dupId = parseDuplicateTrackId(msg);
+        if (dupId) {
+          found.trackId = dupId;
+          found.duplicate = true;
+          return found;
+        }
+        throw new Error(`plyr upload failed: ${msg}`);
       }
       if (p.track_id != null) found.trackId = String(p.track_id);
       if (p.atproto_uri) found.uri = p.atproto_uri;
@@ -195,10 +220,12 @@ export async function uploadAudioToPlyr(opts: {
 
   // The SSE may finish before the atproto record is indexed; resolve it by id then.
   const trackId = progress.trackId;
+  const reused = Boolean(progress.duplicate);
   if (progress.uri && progress.cid && trackId) {
-    return { trackId, uri: progress.uri, cid: progress.cid };
+    return { trackId, uri: progress.uri, cid: progress.cid, reused };
   }
   if (!trackId) throw new Error("upload completed without a track id");
+  // No uri/cid in the stream (indexing lag, or a dedup hit) — resolve the record by id.
   const { uri, cid } = await fetchTrack(apiBase, opts.token, trackId);
-  return { trackId, uri, cid };
+  return { trackId, uri, cid, reused };
 }
