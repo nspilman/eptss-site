@@ -33,7 +33,7 @@ export interface ClaimableCover {
   claimedAtUri: string | null;
   /** This cover's `fm.plyr.track` URI, if re-hosted to plyr — null otherwise. The
    *  URI's DID tells us whether the track is still on the admin scaffold or has
-   *  been re-homed to the user's repo (see lib/atproto/plyr-rehome.ts). */
+   *  been homed to the user's repo (see lib/atproto/plyr-ownership.ts). */
   plyrTrackUri: string | null;
 }
 

@@ -5,7 +5,9 @@
  * See docs/atproto-migration/claiming-backfilled-submissions.md.
  *
  * Claiming brings a cover *fully* into the signed-in user's own repo, in one move:
- *   1. its `fm.plyr.track` is re-homed into the user's repo (ensurePlyrTrackOwned),
+ *   1. its `fm.plyr.track` is re-created in the user's repo — the audio uploaded as a blob
+ *      to their PDS, with the existing R2 url + duration + trusted cover carried along
+ *      (ensurePlyrTrackForCover),
  *   2. its `at.atjam.submission` is written into the user's repo with `payload` →
  *      that owned plyr track (writeOwnedSubmission) — same rkey, round/note/createdAt
  *      carried from the admin scaffold, deliverable upgraded from the raw Supabase
@@ -27,10 +29,17 @@ import { revalidatePath } from "next/cache";
 import { getAuthUser } from "@eptss/auth/server";
 import { loadIdentity } from "@eptss/auth/atproto";
 import { db, submissions, eq, and } from "@eptss/db";
-import { eptssSubmissionRkey, getSubmissionRecord } from "@eptss/atproto";
+import {
+  eptssSubmissionRkey,
+  getSubmissionRecord,
+  getPlyrTrackRecord,
+  atUriRkey,
+  type StrongRef,
+} from "@eptss/atproto";
 import { getUserAgent } from "./agent";
 import { SUBMISSION_COLLECTION, writeOwnedSubmission } from "./migrate-core";
 import { ensurePlyrTrackForCover } from "./plyr-upload";
+import { plyrOwnership } from "./plyr-ownership";
 
 export interface ClaimResult {
   ok: boolean;
@@ -44,9 +53,17 @@ export interface ClaimResult {
 async function loadOwnedSubmission(
   submissionId: number,
   userId: string,
-): Promise<{ claimedAtUri: string | null } | null> {
+): Promise<{
+  claimedAtUri: string | null;
+  plyrTrackUri: string | null;
+  plyrTrackCid: string | null;
+} | null> {
   const rows = await db
-    .select({ claimedAtUri: submissions.claimedAtUri })
+    .select({
+      claimedAtUri: submissions.claimedAtUri,
+      plyrTrackUri: submissions.plyrTrackUri,
+      plyrTrackCid: submissions.plyrTrackCid,
+    })
     .from(submissions)
     .where(and(eq(submissions.id, submissionId), eq(submissions.userId, userId)))
     .limit(1);
@@ -60,8 +77,10 @@ async function loadOwnedSubmission(
  * Deliberately free of revalidation so callers control when the page refreshes:
  * `claimSubmission` refreshes immediately (a manual single claim), while the
  * guided link→migrate loop drives many of these and refreshes once at the end —
- * N covers should not mean N page rebuilds. Idempotent: re-claiming an
- * already-claimed cover is a no-op success.
+ * N covers should not mean N page rebuilds. Idempotent and self-healing: a cover
+ * already fully home (claimed, plyr track in the user's repo) is a no-op success; a
+ * claimed cover whose plyr track never made it home (e.g. a mid-claim upload failure)
+ * is topped up — the track homed and the submission's payload re-stamped.
  */
 async function claimOne(submissionId: number): Promise<ClaimResult> {
   try {
@@ -75,9 +94,14 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
 
     const owned = await loadOwnedSubmission(submissionId, userId);
     if (!owned) return { ok: false, error: "That cover isn't yours to claim." };
-    if (owned.claimedAtUri) {
-      console.log(`[claim] #${submissionId} already claimed -> ${owned.claimedAtUri}`);
-      return { ok: true, claimedAtUri: owned.claimedAtUri };
+
+    const alreadyClaimed = Boolean(owned.claimedAtUri);
+    const ownership = plyrOwnership(owned.plyrTrackUri, identity.did);
+
+    // Already fully home: the submission is claimed AND its plyr track lives in the user's
+    // repo (or there's no plyr track to move). Nothing to do — idempotent no-op.
+    if (alreadyClaimed && ownership !== "eptss") {
+      return { ok: true, claimedAtUri: owned.claimedAtUri! };
     }
 
     const rkey = eptssSubmissionRkey(submissionId);
@@ -85,6 +109,9 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
     // The canonical content lives on the admin scaffold (public read).
     const source = await getSubmissionRecord(rkey);
     if (!source) {
+      // A claimed cover whose scaffold is gone is degenerate — leave it be. An unclaimed
+      // one simply isn't on the network yet, so there's nothing to claim.
+      if (alreadyClaimed) return { ok: true, claimedAtUri: owned.claimedAtUri! };
       console.log(`[claim] #${submissionId} (${rkey}) not on the network — skipped`);
       return {
         ok: false,
@@ -101,19 +128,33 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
       return { ok: false, error: "Your Bluesky session expired — re-link to claim." };
     }
 
-    // 1. Land the cover's plyr track in the user's own repo — audio uploadBlob'd (user-
-    //    owned), the plyr-hosted cover art carried from plyr_cover_image_url. Null when
-    //    there's no uploadable audio, in which case the submission keeps its `url`.
-    const plyrRef = await ensurePlyrTrackForCover({
-      agent,
-      did: identity.did,
-      handle: identity.handle,
-      submissionId,
-      userId,
-    });
+    // 1. Resolve the cover's plyr deliverable, landing it in the user's repo when it isn't
+    //    there yet. ensurePlyrTrackForCover createRecords a NEW track each call, so a track
+    //    already in the user's repo ("mine" — a cover moved before it was claimed) must be
+    //    reused, never re-uploaded, or we'd duplicate it. "eptss"/"none" means we upload
+    //    (audio uploadBlob'd user-owned, with the existing R2 url + duration + plyr-hosted
+    //    cover carried so plyr serves it audio_storage="both"); null when there's no
+    //    uploadable audio, in which case the submission keeps its `url`.
+    let plyrRef: StrongRef | null;
+    if (ownership === "mine" && owned.plyrTrackUri) {
+      const cid =
+        owned.plyrTrackCid ??
+        (await getPlyrTrackRecord(identity.did, atUriRkey(owned.plyrTrackUri)))?.cid ??
+        null;
+      plyrRef = cid ? { uri: owned.plyrTrackUri, cid } : null;
+    } else {
+      plyrRef = await ensurePlyrTrackForCover({
+        agent,
+        did: identity.did,
+        handle: identity.handle,
+        submissionId,
+        userId,
+      });
+    }
 
-    // 2. Write the submission into the user's repo with the plyr ref as its
-    //    deliverable (`payload`), reading it back to prove the new home resolves.
+    // 2. Write (or re-stamp) the submission in the user's repo with the plyr ref as its
+    //    deliverable (`payload`), reading it back to prove the new home resolves. For an
+    //    already-claimed cover this just updates the payload to the freshly-homed track.
     const written = await writeOwnedSubmission({
       agent,
       did: identity.did,
@@ -122,16 +163,19 @@ async function claimOne(submissionId: number): Promise<ClaimResult> {
       plyrRef,
     });
 
-    // 3. Record the new location (the tombstone signal). Admin copy stays a backup.
-    await db
-      .update(submissions)
-      .set({ claimedAtUri: written.uri, claimedAt: new Date() })
-      .where(eq(submissions.id, submissionId));
+    // 3. Record the new location (the tombstone signal) on first claim; a top-up of an
+    //    already-claimed cover leaves claimed_at_uri as-is. Admin copy stays a backup.
+    if (!alreadyClaimed) {
+      await db
+        .update(submissions)
+        .set({ claimedAtUri: written.uri, claimedAt: new Date() })
+        .where(eq(submissions.id, submissionId));
+    }
 
     console.log(
-      `[claim] #${submissionId} claimed -> ${written.uri} (${plyrRef ? "plyr payload" : "url"})`,
+      `[claim] #${submissionId} ${alreadyClaimed ? "topped up" : "claimed"} -> ${written.uri} (${plyrRef ? "plyr payload" : "url"})`,
     );
-    return { ok: true, claimedAtUri: written.uri };
+    return { ok: true, claimedAtUri: alreadyClaimed ? owned.claimedAtUri! : written.uri };
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown error";
     console.error(`[claim] #${submissionId} FAILED:`, err);

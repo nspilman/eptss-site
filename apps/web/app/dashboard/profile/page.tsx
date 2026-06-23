@@ -10,12 +10,11 @@ import {
   MyCoversSection,
 } from '@eptss/profile';
 import { getClaimableCovers, getClaimableSignups } from '@/lib/atproto/claims';
-import { plyrOwnership } from '@/lib/atproto/plyr-rehome';
+import { plyrOwnership } from '@/lib/atproto/plyr-ownership';
 import { resolvePlyrTrackIds, plyrTrackPageUrl } from '@eptss/atproto';
 import { formatDate } from '@eptss/core/utils/formatDate';
 import { ClaimButton } from './ClaimButton';
 import { RecordMigration, type MigratableItem } from './RecordMigration';
-import { PlyrRehomeButton } from './PlyrRehomeButton';
 
 /**
  * Resolve each cover's plyr.fm listen URL (the canonical track page), for covers
@@ -79,12 +78,19 @@ export default async function ProfilePage({
     plyrListenUrl: plyrListenUrls.get(c.submissionId) ?? null,
   }));
 
-  // The records still only in Postgres (claimed_at_uri NULL), covers + signups, as
-  // one list the migration card walks. Covers name their song; signups name only
-  // their round — the nominated song is private and never travels.
+  // The records not yet fully home, covers + signups, as one list the migration card
+  // walks. A cover qualifies when its submission is unclaimed OR its plyr track is still
+  // on the EPTSS scaffold (the self-healing top-up — e.g. a mid-claim upload that failed).
+  // Covers name their song; signups name only their round — the nominated song is private
+  // and never travels.
+  const migratorDid = identity?.did ?? '';
   const migrationItems: MigratableItem[] = [
     ...coversView
-      .filter((c) => c.claimedAtUri == null)
+      .filter(
+        (c) =>
+          c.claimedAtUri == null ||
+          plyrOwnership(c.plyrTrackUri ?? null, migratorDid) === 'eptss',
+      )
       .map((c) => ({
         kind: 'cover' as const,
         id: c.submissionId,
@@ -152,12 +158,6 @@ export default async function ProfilePage({
                 claimed={cover.claimedAtUri != null}
               />
             )}
-            renderPlyrAction={(cover) => {
-              const st = plyrOwnership(cover.plyrTrackUri ?? null, identity.did);
-              return st === 'none' ? null : (
-                <PlyrRehomeButton submissionId={cover.submissionId} state={st} />
-              );
-            }}
           />
         )}
       </div>
