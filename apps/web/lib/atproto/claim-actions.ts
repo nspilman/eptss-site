@@ -21,8 +21,9 @@
  * Self-verifying, no curation gate: EPTSS's own DB confirms the submission is
  * this user's, and OAuth has proven they control the DID.
  *
- * Every step is reversible until Phase D: unclaimSubmission clears the pointer
- * (the reader reverts to the admin copy) and best-effort removes the user copy.
+ * Claiming only ever moves records INTO the user's repo. The reverse — unclaiming,
+ * deleting the user copy — is a teardown/admin concern handled by the reset script
+ * (packages/scripts/.../reset-migration-for-user.ts), not something the app exposes.
  */
 
 import { revalidatePath } from "next/cache";
@@ -37,7 +38,7 @@ import {
   type StrongRef,
 } from "@eptss/atproto";
 import { getUserAgent } from "./agent";
-import { SUBMISSION_COLLECTION, writeOwnedSubmission } from "./migrate-core";
+import { writeOwnedSubmission } from "./migrate-core";
 import { ensurePlyrTrackForCover } from "./plyr-upload";
 import { plyrOwnership } from "./plyr-ownership";
 
@@ -201,44 +202,4 @@ export async function migrateOneCover(
   submissionId: number,
 ): Promise<ClaimResult> {
   return claimOne(submissionId);
-}
-
-/**
- * Reverse a claim: clear the Postgres pointer (the reader reverts to the admin
- * scaffold immediately) and best-effort delete the user-repo copy. Nothing was
- * destroyed on the admin side, so re-claiming later is safe.
- */
-export async function unclaimSubmission(
-  submissionId: number,
-): Promise<ClaimResult> {
-  const { userId } = await getAuthUser();
-  if (!userId) return { ok: false, error: "Not signed in." };
-
-  const identity = await loadIdentity(userId);
-  if (!identity) return { ok: false, error: "Link your Bluesky account first." };
-
-  const owned = await loadOwnedSubmission(submissionId, userId);
-  if (!owned) return { ok: false, error: "That cover isn't yours." };
-
-  // Reader reverts to the admin scaffold the moment the pointer is cleared.
-  await db
-    .update(submissions)
-    .set({ claimedAtUri: null, claimedAt: null })
-    .where(eq(submissions.id, submissionId));
-
-  // Best-effort cleanup of the user-repo copy; non-fatal if the session is gone.
-  try {
-    const agent = await getUserAgent(identity.did);
-    await agent.com.atproto.repo.deleteRecord({
-      repo: identity.did,
-      collection: SUBMISSION_COLLECTION,
-      rkey: eptssSubmissionRkey(submissionId),
-    });
-  } catch {
-    // The pointer is already cleared; an orphaned user copy is harmless and a
-    // future claim upserts it.
-  }
-
-  revalidatePath("/dashboard/profile");
-  return { ok: true };
 }
