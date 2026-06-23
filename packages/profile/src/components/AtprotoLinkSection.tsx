@@ -86,7 +86,10 @@ export function AtprotoLinkSection({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {linkedSuccess && (
+        {/* Only claim success when we're actually linked right now. `?linked=success`
+            can linger in the URL after the link is gone (e.g. an unlink/reset, or
+            reopening the tab), so the param alone must not assert a live link. */}
+        {linkedSuccess && identity && (
           <div className="rounded-md border border-green-700/40 bg-green-900/20 p-3 text-sm text-green-300">
             Linked successfully.
           </div>
