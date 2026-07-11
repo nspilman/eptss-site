@@ -20,6 +20,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser } from "@eptss/auth/server";
 import { getOAuthClient } from "@/lib/atproto/client";
+import { sanitizeReturnTo } from "@/lib/atproto/return-to";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { handle?: unknown };
+  let body: { handle?: unknown; returnTo?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -42,13 +43,17 @@ export async function POST(request: NextRequest) {
   }
   const handle = handleRaw.trim();
 
+  // Where to send the user after OAuth, so the flow lands back where it began (the
+  // profile or a project dashboard). sanitizeReturnTo admits only same-origin
+  // relative paths, so this can't become an open redirect.
+  const returnTo = sanitizeReturnTo(body.returnTo);
+
   try {
     const client = getOAuthClient();
     const url = await client.authorize(handle, {
-      // Custom app-state — comes back verbatim in callback's result.state.
-      // We use it to carry userId through the redirect dance, since the
-      // library doesn't know about EPTSS users.
-      state: JSON.stringify({ userId }),
+      // Custom app-state — comes back verbatim in callback's result.state. Carries the
+      // userId (the library doesn't know EPTSS users) and an optional returnTo path.
+      state: JSON.stringify({ userId, ...(returnTo ? { returnTo } : {}) }),
     });
     return NextResponse.json({ url: url.toString() });
   } catch (err) {

@@ -10,11 +10,10 @@ import {
   MyCoversSection,
 } from '@eptss/profile';
 import { getClaimableCovers, getClaimableSignups } from '@/lib/atproto/claims';
-import { plyrOwnership } from '@/lib/atproto/plyr-ownership';
+import { toMigrationItems, type MigratableItem } from '@/lib/atproto/migration-items';
 import { resolvePlyrTrackIds, plyrTrackPageUrl } from '@eptss/atproto';
-import { formatDate } from '@eptss/core/utils/formatDate';
 import { ClaimButton } from './ClaimButton';
-import { RecordMigration, type MigratableItem } from './RecordMigration';
+import { RecordMigration } from '@/components/RecordMigration/RecordMigration';
 
 /**
  * Resolve each cover's plyr.fm listen URL (the canonical track page), for covers
@@ -79,31 +78,11 @@ export default async function ProfilePage({
   }));
 
   // The records not yet fully home, covers + signups, as one list the migration card
-  // walks. A cover qualifies when its submission is unclaimed OR its plyr track is still
-  // on the EPTSS scaffold (the self-healing top-up — e.g. a mid-claim upload that failed).
-  // Covers name their song; signups name only their round — the nominated song is private
-  // and never travels.
-  const migratorDid = identity?.did ?? '';
-  const migrationItems: MigratableItem[] = [
-    ...coversView
-      .filter(
-        (c) =>
-          c.claimedAtUri == null ||
-          plyrOwnership(c.plyrTrackUri ?? null, migratorDid) === 'eptss',
-      )
-      .map((c) => ({
-        kind: 'cover' as const,
-        id: c.submissionId,
-        title: c.songTitle ?? 'Unknown song',
-        subtitle: c.songArtist,
-      })),
-    ...signups.map((s) => ({
-      kind: 'signup' as const,
-      id: s.signupId,
-      title: `Round ${s.roundSlug ?? s.roundId}`,
-      subtitle: formatDate(s.createdAt),
-    })),
-  ];
+  // walks — shared with the project dashboard via toMigrationItems so the two surfaces
+  // can't drift on what "needs migrating" means.
+  const migrationItems: MigratableItem[] = identity
+    ? toMigrationItems(covers, signups, identity.did)
+    : [];
 
   // Decode atproto link status from the callback redirect params.
   const linkedSuccess = sp.linked === 'success';

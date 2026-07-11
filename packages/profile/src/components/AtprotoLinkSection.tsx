@@ -27,6 +27,9 @@ interface AtprotoLinkSectionProps {
   existingDid?: string | null;
   /** Whether the link succeeded (?linked=success on the URL). */
   linkedSuccess?: boolean;
+  /** Relative path to return to after OAuth (so the flow lands back where it began).
+   *  Defaults server-side to /dashboard/profile when omitted. */
+  returnTo?: string;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -41,6 +44,7 @@ export function AtprotoLinkSection({
   linkedError,
   existingDid,
   linkedSuccess,
+  returnTo,
 }: AtprotoLinkSectionProps) {
   const [handle, setHandle] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -55,7 +59,7 @@ export function AtprotoLinkSection({
       const res = await fetch('/api/atproto/link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ handle: h }),
+        body: JSON.stringify({ handle: h, returnTo }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

@@ -9,7 +9,8 @@
  *   2. Parse app-state to recover the userId we stashed at link-initiate.
  *   3. Resolve handle via plc.directory (best-effort).
  *   4. Write the (user_id, did, handle) row in user_atproto_identities.
- *   5. Redirect to /dashboard/profile with status query params.
+ *   5. Redirect to the flow's returnTo path (default /dashboard/profile) with status
+ *      query params, so linking lands back where it began (profile or a dashboard).
  *
  * Failure modes (each becomes a query param on the profile redirect):
  *
@@ -41,12 +42,17 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { getOAuthClient, resolveHandleForDid } from "@/lib/atproto/client";
+import { DEFAULT_RETURN_TO, sanitizeReturnTo } from "@/lib/atproto/return-to";
 import { loadIdentity, saveIdentity } from "@eptss/auth/atproto";
 
 export const dynamic = "force-dynamic";
 
-function profileRedirect(origin: string, params: Record<string, string>): NextResponse {
-  const url = new URL("/dashboard/profile", origin);
+function landingRedirect(
+  origin: string,
+  path: string,
+  params: Record<string, string>,
+): NextResponse {
+  const url = new URL(path, origin);
   for (const [k, v] of Object.entries(params)) {
     url.searchParams.set(k, v);
   }
@@ -61,7 +67,7 @@ export async function GET(request: NextRequest) {
   // went wrong server-side before token exchange).
   const oauthError = params.get("error");
   if (oauthError) {
-    return profileRedirect(url.origin, {
+    return landingRedirect(url.origin, DEFAULT_RETURN_TO, {
       linked_error: oauthError === "access_denied" ? "oauth_denied" : oauthError,
     });
   }
@@ -76,21 +82,23 @@ export async function GET(request: NextRequest) {
     appState = result.state;
   } catch (err) {
     console.error("OAuth callback failed:", err);
-    return profileRedirect(url.origin, { linked_error: "callback_failed" });
+    return landingRedirect(url.origin, DEFAULT_RETURN_TO, { linked_error: "callback_failed" });
   }
 
   // Parse the userId we stashed at link-initiate.
   let userId: string | undefined;
+  let returnTo = DEFAULT_RETURN_TO;
   if (typeof appState === "string") {
     try {
-      const parsed = JSON.parse(appState) as { userId?: unknown };
+      const parsed = JSON.parse(appState) as { userId?: unknown; returnTo?: unknown };
       if (typeof parsed.userId === "string") userId = parsed.userId;
+      returnTo = sanitizeReturnTo(parsed.returnTo) ?? DEFAULT_RETURN_TO;
     } catch {
       // appState malformed — fall through to invalid_state error.
     }
   }
   if (!userId) {
-    return profileRedirect(url.origin, { linked_error: "invalid_state" });
+    return landingRedirect(url.origin, DEFAULT_RETURN_TO, { linked_error: "invalid_state" });
   }
 
   const did = session.did;
@@ -99,7 +107,7 @@ export async function GET(request: NextRequest) {
   // We don't silently switch identities; UI must explicitly resolve.
   const existing = await loadIdentity(userId);
   if (existing && existing.did !== did) {
-    return profileRedirect(url.origin, {
+    return landingRedirect(url.origin, returnTo, {
       linked_error: "different_identity",
       existing_did: existing.did,
     });
@@ -110,5 +118,5 @@ export async function GET(request: NextRequest) {
 
   await saveIdentity({ userId, did, handle });
 
-  return profileRedirect(url.origin, { linked: "success" });
+  return landingRedirect(url.origin, returnTo, { linked: "success" });
 }

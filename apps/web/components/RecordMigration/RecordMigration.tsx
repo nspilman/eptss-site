@@ -47,10 +47,9 @@ import {
 } from '@eptss/ui';
 import { migrateOneCover } from '@/lib/atproto/claim-actions';
 import { migrateOneSignup } from '@/lib/atproto/signup-actions';
-
-export type MigratableItem =
-  | { kind: 'cover'; id: number; title: string; subtitle: string | null }
-  | { kind: 'signup'; id: number; title: string; subtitle: string | null };
+// The item shape lives with its builder (toMigrationItems) in the lib, so the
+// dependency arrow points app → lib, never the reverse.
+import type { MigratableItem } from '@/lib/atproto/migration-items';
 
 type Status = 'pending' | 'migrating' | 'done' | 'skipped' | 'failed';
 type Phase = 'idle' | 'running' | 'done';
