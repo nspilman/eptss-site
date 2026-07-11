@@ -4,15 +4,15 @@ The sibling of [claiming backfilled submissions](./claiming-the-form.md). A cove
 re-hosted to plyr is two records: an `at.atjam.submission` (the claimable artifact)
 **and** an `fm.plyr.track` whose audio streams from plyr's R2. Claiming the
 submission re-homes the first; this doc is about the second — getting a
-participant's *plyr track* attributed to **their own** plyr identity, with them
-OAuth'd as themselves.
+participant's *plyr track* into **their own** repo, attributed to their own
+identity, with them OAuth'd as themselves.
 
-**Status: solved, and far simpler than first feared.** The in-app OAuth re-home
-(record duplication) is sufficient on its own. Verified live (June 2026): after the
-profile "Move plyr track to my PDS" button wrote `fm.plyr.track` records into a
-user's repo, plyr's firehose indexer — after a short lag — created
-`audio_storage: r2`, user-owned tracks for them (`artist_did` = the user, real
-`r2_url`), with **no plyr token, no re-upload, and no `audioBlob`**.
+**Status: solved — automatic on link.** When a member links their Bluesky account,
+the link→migrate run (`RecordMigration`, the full-screen modal) claims each cover,
+and each claim lands the cover's plyr track in the member's repo via
+`ensurePlyrTrackForCover` (`apps/web/lib/atproto/plyr-user-track.ts`). There is no
+button and no manual step; a member whose track didn't make it home (e.g. a
+mid-claim upload failure) is topped up on their next visit — the claim self-heals.
 
 ---
 
@@ -21,84 +21,90 @@ user's repo, plyr's firehose indexer — after a short lag — created
 Three sentences, same shape as the submission Form:
 
 1. Every re-hosted cover is an `fm.plyr.track` in **its author's repo**, with plyr's
-   `artist_did` equal to that author, streaming from plyr's R2.
+   `artist_did` equal to that author.
 2. The cover's `at.atjam.submission` reaches its audio by **strong-ref to that
-   track** — no Postgres pointer stands between them.
+   track** (`payload`).
 3. Attribution is **intrinsic**: the track's repo DID *is* the artist, on plyr and
    on the network alike.
 
-> **When the move is done, nothing in either system remembers it happened.**
+---
+
+## How it works — "both" storage
+
+The user's track is written over their own atproto OAuth session (the
+`fm.plyr.track` repo scope + blob upload their link grants):
+
+1. The cover's original audio is downloaded and **`uploadBlob`'d into the USER's
+   PDS** — self-custody of the bytes. Per plyr's lexicon, `audioBlob` is the
+   canonical source.
+2. The record **also carries `audioUrl`** — the existing R2 object the admin
+   migration minted — plus `duration`. This is load-bearing: plyr's ingester does
+   NOT transcode a bare PDS blob to R2 (a blob-only record stays
+   `audio_storage: "pds"`, gets no `r2_url`, and the embed shows NaN:NaN). Carrying
+   the R2 url makes the ingested track `audio_storage: "both"` — user-custodied
+   bytes, clean R2 playback.
+3. `imageUrl` carries the plyr-hosted cover art from `plyr_cover_image_url` — the
+   only image origin plyr's ingester trusts (anything else is stripped on ingest).
+4. plyr's firehose indexes the record under the user's DID; the branded embed
+   resolves under them.
+
+The EPTSS scaffold record stays behind as a backup and as the source the claim
+harvests the R2 url + duration from. **Purge caveat:** user records reference the
+*admin's* R2 objects — any future `migrate-to-plyr.ts --purge` must spare R2
+objects that user records still point at, or their `r2_url` playback 404s.
 
 ---
 
-## How it actually works
+## History — the record-duplication era
 
-A re-hosted cover's audio already lives on plyr's R2 — the admin's migration upload
-put it there — and the `fm.plyr.track` record carries that R2 URL in `audioUrl`. So
-claiming is pure record movement:
-
-1. The user, OAuth'd as themselves, `putRecord`s a copy of the `fm.plyr.track` into
-   their own repo (same `audioUrl` + metadata; `artist` re-stamped to them). EPTSS's
-   existing atproto OAuth — with `fm.plyr.track` added to its scope — is all that's
-   needed.
-2. plyr's firehose indexer sees the new record and, because its `audioUrl` already
-   points at audio on R2, attaches a new track row to that existing R2 object,
-   attributed to the record's repo DID. (Lag: minutes, eventually-consistent.)
-3. The round page resolves the embed by querying plyr for the user's DID → the new
-   track → the branded player plays under the user.
-
-The audio never moves; only the attribution does. No upload, no transcode-by-us, no
-admin token. The admin's original track still exists (same R2 file) — harmless, and
-removable later via `migrate-to-plyr.ts --purge` if we want the Form's single copy.
-
----
-
-## What we feared vs. what was true
-
-A too-early check showed plyr *not* listing the re-homed records, which sent us down
-a long path of wrong assumptions. The verified result corrects them — recorded here
-so we don't re-derive the same mistakes:
+The first solution (verified live, June 2026) simply **copied** the admin's record
+into the user's repo pointing at the same R2 url — no upload, no blob. That
+verification corrected a chain of wrong assumptions, recorded here so we don't
+re-derive them:
 
 | Feared | Actually |
 |---|---|
 | Copying the record can't move plyr ownership — `artist_did` stays admin. | plyr **re-attributes** via the firehose record; the new track's `artist_did` is the user. |
 | A track only gets R2 via `POST /tracks/`; a PDS-native record stays `audio_storage: pds`. | True only for *new* audio. When `audioUrl` already points at R2, the ingested record becomes `audio_storage: r2`. |
-| Global content dedup blocks it. | Dedup only rejects **file uploads** of duplicate bytes. A *record* referencing existing R2 doesn't dedup — plyr mints a second track row on the same file. |
+| Global content dedup blocks it. | Dedup only rejects **file uploads** of duplicate bytes. A *record* referencing existing R2 doesn't dedup. |
 | Needs a plyr token / delegated upload / OAuth client. | Not for claiming. The atproto OAuth record write is enough. |
 
-The lesson: don't conclude from one read of an eventually-consistent index.
+The lesson stands: don't conclude from one read of an eventually-consistent index.
+
+It shipped as a manual per-cover "Move plyr track to my PDS" button, and was
+retired when the automatic claim adopted "both"-storage: the copy gave the user the
+*record* but not the *bytes*; the upload path gives both, and it runs without a
+click. (The dedup lesson lives on in code — `migrate-to-plyr` recovers and
+re-associates when plyr rejects a re-upload of bytes it already stores.)
 
 ---
 
-## The one residual boundary — *new* uploads
+## New uploads — no migration at all
 
-All of the above works **because the audio is already on plyr's R2.** A genuinely
-new track — audio that has never been uploaded to plyr (e.g. a future EPTSS
-submission that never went through the migration) — has no R2 object for a record to
-point at, so it still needs a real upload through `POST api.plyr.fm/tracks/`. That
-endpoint is authorized by a **plyr** developer token (plyr.fm/portal,
-`Authorization: Bearer`), not EPTSS's atproto OAuth — confirmed against plyr's
-OpenAPI spec and the `plyrfm` Python SDK, neither of which exposes a third-party
-OAuth/token-delegation flow. Making that path in-app would need plyr to add
-delegated upload. **That is a separate question from claiming, and not a blocker for
-it.**
+Future rounds need none of this. Members upload directly to plyr under their own
+account and paste the track link into the submit form, which resolves it to the
+`fm.plyr.track` already in their repo and writes the `at.atjam.submission` with
+`payload` → that track (`apps/web/lib/atproto/submit-actions.ts`). Born owned;
+nothing to claim.
 
 ---
 
 ## What's built
 
-- **OAuth scope** (`apps/web/lib/atproto/metadata.ts`) includes `fm.plyr.track`; the
-  OAuth client cache is keyed by scope (`client.ts`) so scope edits take effect.
-  Existing links must re-link once to pick up the grant — the action detects a scope
-  denial and prompts a re-link (`AtprotoLinkSection`).
-- **`rehomePlyrTrack` / `undoRehomePlyrTrack`** (`apps/web/lib/atproto/plyr-actions.ts`):
-  copy the admin's `fm.plyr.track` (its R2 `audioUrl` + metadata, `artist`
-  re-stamped) into the user's repo, read it back, repoint the Postgres
-  `plyr_track_uri` pointer. Reversible — the admin copy is untouched, and Undo
-  removes the user copy.
-- **Profile UI**: per-cover "Move plyr track to my PDS" / "Undo" control
-  (`PlyrRehomeButton`, via `MyCoversSection`'s `renderPlyrAction` slot).
+- **OAuth scope** (`apps/web/lib/atproto/metadata.ts`) includes `fm.plyr.track` +
+  blob upload; the OAuth client cache is keyed by scope (`client.ts`), so a link
+  made before the scope existed must re-link once.
+- **`ensurePlyrTrackForCover`** (`apps/web/lib/atproto/plyr-user-track.ts`):
+  download the original audio → `uploadBlob` into the user's PDS → `createRecord`
+  with `audioBlob` + the scaffold's `audioUrl` + `duration` + trusted `imageUrl` →
+  repoint `plyr_track_uri`.
+- **Self-healing claim** (`claim-actions.ts`): an already-claimed cover whose track
+  still sits on the EPTSS scaffold is topped up — track homed, submission `payload`
+  re-stamped — gated on ownership so it never duplicates.
+- **`RecordMigration`** (`apps/web/components/RecordMigration/`): the auto-run on
+  link — a full-screen modal while each record lands, an inline card for a linked
+  revisit with un-migrated records.
 
-The `plyr_track_uri` / `plyr_track_cid` columns and per-DID embed resolution remain
-scaffolding (like `claimed_at_uri`): in the Form the submission strong-refs its
-track and no Postgres pointer stands between them.
+The `plyr_track_uri`/`plyr_track_cid` columns still do double duty (live-embed
+source *and* ownership marker) — retiring that, by reading the deliverable from the
+submission's `payload`, is the remaining structural work (tasks #174–176).

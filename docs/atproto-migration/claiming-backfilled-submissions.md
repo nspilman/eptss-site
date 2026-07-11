@@ -100,8 +100,10 @@ Batch Phase B over the user's whole history. Three properties keep it safe:
   twice.
 - **Resumable** — each submission's `claimed_at_uri` is independent; a mid-batch
   failure leaves a partially-claimed-but-whole state, and the next run continues.
-- **Reversible** — `unclaimSubmission` clears `claimed_at_uri`, restoring the admin
-  copy as canonical. Nothing was destroyed.
+- **Reversible in principle** — clearing `claimed_at_uri` restores the admin copy
+  as canonical; nothing was destroyed. The app deliberately exposes no unclaim (an
+  end user never un-homes their own records) — teardown is admin work, via
+  `packages/scripts/src/atproto/reset-migration-for-user.ts`.
 
 ### Phase D — *Take the scaffold down → reveal the Form*
 
@@ -200,17 +202,17 @@ motivates the whole effort.
 
 ## What ships
 
-- [ ] **Phase A** — "your covers" view, read-only, from the existing crosswalk.
-- [ ] Postgres migration: `claimed_at_uri` + `claimed_at` on `submissions`.
-- [ ] Reader location function in `packages/atproto/src/read.ts` (admin-unclaimed +
-      `claimed_at_uri`, prefer-user dedup).
-- [ ] **Phase B** — `claimSubmission(submissionId)` (6-step move), guarded by
-      `getAuthUser` + `loadIdentity`; read-back before Postgres update; tombstone
-      (no delete).
-- [ ] **Phase C** — `claimAllMine()` batch (idempotent, resumable) +
-      `unclaimSubmission` (proves reversibility).
-- [ ] Smoke test: claim a real backfilled submission on a dev identity; confirm the
-      round renders identically from the user copy, backup intact.
+- [x] **Phase A** — "your covers" view, read-only, from the existing crosswalk.
+- [x] Postgres migration: `claimed_at_uri` + `claimed_at` on `submissions`.
+- [x] Reader location function (claim-aware read seam, prefer-user dedup).
+- [x] **Phase B** — `claimSubmission(submissionId)`, guarded by `getAuthUser` +
+      `loadIdentity`; read-back before Postgres update; tombstone (no delete); now
+      self-healing (tops up a claimed cover whose plyr track never made it home).
+- [x] **Phase C** — the batch claim, shipped as the link→migrate auto-run
+      (`RecordMigration`, idempotent + resumable). Reversal is admin-only via the
+      reset script; the in-app `unclaimSubmission` was removed.
+- [x] Smoke test: claimed real backfilled submissions on a live identity; rounds
+      render identically from the user copy, backups intact.
 - [ ] **Phase D** (later, gated on proof) — backlink reader in parallel → cutover →
       sweep backups → drop scaffold columns + claim code. *Reveals the Form.*
 
