@@ -183,13 +183,8 @@
       "name": "@eptss/atproto",
       "version": "0.1.0",
       "devDependencies": {
-        "@types/react": "18",
         "typescript": "5.1.3",
         "vitest": "^4.0.17",
-      },
-      "peerDependencies": {
-        "react": "^18",
-        "react-dom": "^18",
       },
     },
     "packages/auth": {
@@ -562,6 +557,7 @@
       "version": "1.0.0",
       "dependencies": {
         "@date-fns/tz": "^1.2.0",
+        "@eptss/atproto": "workspace:*",
         "@eptss/db": "workspace:*",
         "@eptss/shared": "workspace:*",
         "@eptss/ui": "workspace:*",

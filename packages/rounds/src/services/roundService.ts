@@ -4,6 +4,7 @@ import { defaultDateString } from "@eptss/shared";
 import { db, roundMetadata, songs, songSelectionVotes, signUps, submissions, roundPrompts } from "@eptss/db";
 import { eq, gte, asc, desc, and, or, sql, avg } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '../types/asyncResult';
+import { publishRoundToNetwork } from './publishRound';
 
 // Helper function to safely convert to Date
 const toDate = (value: Date | string | null) => {
@@ -495,6 +496,10 @@ export const setRoundSong = async (roundId: number, songId: number): Promise<Asy
       return createErrorResult(new Error(`Failed to retrieve updated round ${roundId}`));
     }
 
+    // The song is settled — mirror the round to the network (now carrying the
+    // chosen song + selection aggregates). Best-effort: never fails the mutation.
+    await publishRoundToNetwork(roundId);
+
     return createSuccessResult(mapToRound(updatedRound[0]));
   } catch (error) {
     console.error('Error setting round song:', error);
@@ -548,8 +553,11 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
       return createErrorResult(new Error(`A round with slug "${input.slug}" already exists for this project`));
     }
 
-    // Start a transaction
-    return await db.transaction(async (tx) => {
+    // Start a transaction. The new round's id escapes to the outer scope so the
+    // network mirror can run AFTER the commit — a publish inside the transaction
+    // would read its own uncommitted row (and hold the tx open on a network call).
+    let createdRoundId: number | null = null;
+    const result = await db.transaction(async (tx) => {
       // Handle song if provided
       let songId: number | null = null;
 
@@ -616,6 +624,8 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
         throw new Error('Failed to create round');
       }
 
+      createdRoundId = nextRoundId;
+
       // Map to our Round type
       const createdRound = mapToRound({
         ...newRound[0],
@@ -630,6 +640,14 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
 
       return createSuccessResult(createdRound);
     });
+
+    // The round exists — mirror it to the network from the moment of its birth.
+    // Best-effort: a mirror failure never fails the creation.
+    if (result.status === 'success' && createdRoundId != null) {
+      await publishRoundToNetwork(createdRoundId);
+    }
+
+    return result;
   } catch (error) {
     console.error('Error creating round:', error);
     return createErrorResult(error instanceof Error ? error : new Error('Failed to create round'));
@@ -705,6 +723,10 @@ export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<
     if (updatedRound.status !== 'success') {
       return createErrorResult(new Error('Failed to retrieve updated round'));
     }
+
+    // Mirror the changed round (dates, prompt, closing playlist) to the network.
+    // Best-effort: never fails the mutation.
+    await publishRoundToNetwork(roundId);
 
     return createSuccessResult(updatedRound.data);
   } catch (error) {

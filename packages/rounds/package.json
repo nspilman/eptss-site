@@ -30,6 +30,7 @@
     "clean": "rm -rf .turbo node_modules"
   },
   "dependencies": {
+    "@eptss/atproto": "workspace:*",
     "@eptss/db": "workspace:*",
     "@eptss/ui": "workspace:*",
     "@eptss/shared": "workspace:*",
