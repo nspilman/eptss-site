@@ -157,7 +157,7 @@ export async function ensurePlyrTrackForCover(opts: {
     });
     ref = { uri: created.data.uri, cid: created.data.cid };
   } catch (err) {
-    console.error(`[plyr-upload] #${submissionId} upload failed`, err);
+    console.error(`[plyr-user-track] #${submissionId} upload failed`, err);
     return null;
   }
 
@@ -170,7 +170,7 @@ export async function ensurePlyrTrackForCover(opts: {
     .set({ plyrTrackUri: ref.uri, plyrTrackCid: ref.cid })
     .where(eq(submissions.id, submissionId));
   console.log(
-    `[plyr-upload] #${submissionId} uploaded -> ${ref.uri} (${playback.r2Url ? "both" : "pds"})`,
+    `[plyr-user-track] #${submissionId} uploaded -> ${ref.uri} (${playback.r2Url ? "both" : "pds"})`,
   );
   return ref;
 }

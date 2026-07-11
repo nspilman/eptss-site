@@ -6,5 +6,5 @@ export * from "./eptss-rkey";
 export * from "./claim-view";
 export * from "./at-uri";
 export * from "./plyr";
-export * from "./plyr-upload";
+export * from "./plyr-api-upload";
 export * from "./soundcloud";

@@ -39,7 +39,7 @@ import {
 } from "@eptss/atproto";
 import { getUserAgent } from "./agent";
 import { writeOwnedSubmission } from "./migrate-core";
-import { ensurePlyrTrackForCover } from "./plyr-upload";
+import { ensurePlyrTrackForCover } from "./plyr-user-track";
 import { plyrOwnership } from "./plyr-ownership";
 
 export interface ClaimResult {

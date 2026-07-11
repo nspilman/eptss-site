@@ -10,7 +10,7 @@
  *
  * `payload` makes the submission reference a first-class record instead of raw storage;
  * the `url` is only kept as a fallback for a cover that has no plyr track at all. The plyr
- * track itself is landed elsewhere — uploaded into the user's repo in plyr-upload.ts (the
+ * track itself is landed elsewhere — uploaded into the user's repo in plyr-user-track.ts (the
  * claim) or resolved from a pasted link in submit-actions.ts (a native submit) — and passed
  * in here as a strong-ref.
  *

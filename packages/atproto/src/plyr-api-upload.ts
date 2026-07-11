@@ -1,11 +1,16 @@
 /**
- * The one plyr.fm upload client — `POST /tracks/` → transcode → `fm.plyr.track`.
+ * The one plyr.fm *API* upload client — `POST /tracks/` → transcode → `fm.plyr.track`.
  *
- * Every place that re-hosts audio on plyr (the in-app cover migration and the
- * packages/scripts migration/test tools) flows through here, so there is a single
- * truth for "how an upload talks to plyr." The track is owned by the atproto identity
- * the `token` belongs to — so passing the EPTSS developer token lands it on the EPTSS
- * repo (the caller may then re-home it).
+ * This is the token-authed path: every upload that goes through plyr's own API (the
+ * admin migration + test tools in packages/scripts) flows through here, so there is a
+ * single truth for "how an upload talks to plyr's API." The track is owned by the
+ * atproto identity the `token` belongs to — the EPTSS developer token lands it on the
+ * EPTSS scaffold repo.
+ *
+ * It is deliberately NOT the only way audio reaches plyr: the in-app claim writes the
+ * user's own fm.plyr.track over their OAuth session instead — blob into their PDS,
+ * existing R2 url carried along — with no token and no API call. That sibling lives in
+ * apps/web/lib/atproto/plyr-user-track.ts.
  *
  * Field names are taken from plyr's own source (backend/api/tracks/uploads.py), not
  * guessed. Note the deliberate asymmetry that bit the earlier copies:

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseDuplicateTrackId } from "./plyr-upload";
+import { parseDuplicateTrackId } from "./plyr-api-upload";
 
 describe("parseDuplicateTrackId", () => {
   it("pulls the existing track id out of plyr's dedup rejection", () => {
