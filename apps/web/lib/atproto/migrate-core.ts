@@ -1,9 +1,12 @@
 /**
- * The submission-record write-core: "write an at.atjam.submission into a user's repo."
+ * The record write-cores: "write an at.atjam.* record into a user's repo."
  *
- * Two "use server" callers compose this so a submission always lands the same way:
- *   - the cover migration / claim (claim-actions.ts), and
- *   - the native plyr-link submission (submit-actions.ts).
+ * The "use server" callers compose these so each record kind always lands the
+ * same way, whether it arrives natively or by migration:
+ *   - submissions — the cover migration / claim (claim-actions.ts) and the
+ *     native plyr-link submission (submit-actions.ts);
+ *   - signups — the signup migration (signup-actions.ts) and the native
+ *     signup mirror (native-signup.ts).
  *
  * The shape, per cover, in the user's OWN repo:
  *   at.atjam.submission/eptss-sub<id>  — with `payload` → the user's fm.plyr.track
@@ -19,12 +22,50 @@
  */
 import type { Agent } from "@atproto/api";
 import {
+  eptssSignupRkey,
   eptssSubmissionRkey,
   type StrongRef,
   type Submission,
 } from "@eptss/atproto";
 
 export const SUBMISSION_COLLECTION = "at.atjam.submission";
+export const SIGNUP_COLLECTION = "at.atjam.signup";
+
+/**
+ * The single home for "write an at.atjam.signup into a user's repo": upsert at the
+ * stable `eptss-sig<id>` rkey and read it back to prove it resolves. Song-free by
+ * construction — the record carries only the round strong-ref, the timestamp, and
+ * an optional note; the nominated song never leaves Postgres (the lexicon has no
+ * song field). Shared by the signup migration and the native signup mirror so the
+ * two paths can't drift. Idempotent on the rkey; returns the written ref.
+ */
+export async function writeSignupRecord(opts: {
+  agent: Agent;
+  did: string;
+  signupId: number;
+  round: StrongRef;
+  note?: string | null;
+  createdAt: string;
+}): Promise<StrongRef> {
+  const { agent, did, signupId, round, note, createdAt } = opts;
+  const rkey = eptssSignupRkey(signupId);
+
+  const record: Record<string, unknown> = { $type: SIGNUP_COLLECTION, round, createdAt };
+  if (note) record.note = note;
+
+  const put = await agent.com.atproto.repo.putRecord({
+    repo: did,
+    collection: SIGNUP_COLLECTION,
+    rkey,
+    record,
+  });
+  await agent.com.atproto.repo.getRecord({
+    repo: did,
+    collection: SIGNUP_COLLECTION,
+    rkey,
+  });
+  return { uri: put.data.uri, cid: put.data.cid };
+}
 
 /**
  * The single home for "write an at.atjam.submission into a user's repo": upsert at the

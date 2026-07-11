@@ -22,10 +22,9 @@
 import { getAuthUser } from "@eptss/auth/server";
 import { loadIdentity } from "@eptss/auth/atproto";
 import { db, signUps, eq, and } from "@eptss/db";
-import { eptssSignupRkey, eptssRoundRkey, getRoundRecord } from "@eptss/atproto";
+import { eptssRoundRkey, getRoundRecord } from "@eptss/atproto";
 import { getUserAgent } from "./agent";
-
-const SIGNUP_COLLECTION = "at.atjam.signup";
+import { writeSignupRecord } from "./migrate-core";
 
 export interface SignupMigrateResult {
   ok: boolean;
@@ -80,15 +79,6 @@ export async function migrateOneSignup(
       };
     }
 
-    // Song-free by construction — see the file header. Canonical shape mirrors
-    // create-user-signup.ts buildSignupRecord: { round, createdAt, note? }.
-    const record: Record<string, unknown> = {
-      $type: SIGNUP_COLLECTION,
-      round: { uri: roundRec.uri, cid: roundRec.cid },
-      createdAt: (owned.createdAt ?? new Date()).toISOString(),
-    };
-    if (owned.note) record.note = owned.note;
-
     let agent;
     try {
       agent = await getUserAgent(identity.did);
@@ -97,25 +87,20 @@ export async function migrateOneSignup(
       return { ok: false, error: "Your Bluesky session expired — re-link to migrate." };
     }
 
-    const rkey = eptssSignupRkey(signupId);
-    const put = await agent.com.atproto.repo.putRecord({
-      repo: identity.did,
-      collection: SIGNUP_COLLECTION,
-      rkey,
-      record,
+    // The shared writer (song-free by construction, stable rkey, read-back) — the
+    // same core the native signup mirror uses, so the two paths can't drift. No DB
+    // pointer: the repo itself records that this signup is home (getClaimableSignups).
+    const written = await writeSignupRecord({
+      agent,
+      did: identity.did,
+      signupId,
+      round: { uri: roundRec.uri, cid: roundRec.cid },
+      note: owned.note,
+      createdAt: (owned.createdAt ?? new Date()).toISOString(),
     });
 
-    // Prove the new home resolves before we treat it as done. The stable rkey
-    // makes this idempotent — a re-run upserts the same record. No DB pointer:
-    // the repo itself records that this signup is now home (see getClaimableSignups).
-    await agent.com.atproto.repo.getRecord({
-      repo: identity.did,
-      collection: SIGNUP_COLLECTION,
-      rkey,
-    });
-
-    console.log(`[signup-migrate] #${signupId} -> ${put.data.uri}`);
-    return { ok: true, claimedAtUri: put.data.uri };
+    console.log(`[signup-migrate] #${signupId} -> ${written.uri}`);
+    return { ok: true, claimedAtUri: written.uri };
   } catch (err) {
     const message = err instanceof Error ? err.message : "unknown error";
     console.error(`[signup-migrate] #${signupId} FAILED:`, err);

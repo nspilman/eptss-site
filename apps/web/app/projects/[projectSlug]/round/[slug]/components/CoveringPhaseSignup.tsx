@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Badge, Button } from "@eptss/ui";
 import { useRouter } from "next/navigation";
-import { signupUserWithoutSong } from "@eptss/core";
+import { signupForRound } from "@/actions/userParticipationActions";
 import { createClient } from "@eptss/core/utils/supabase/client";
-import { FormReturn } from "@/types";
 import { routes } from "@eptss/routing";
 import { useToast } from "@eptss/ui";
 import { useRouteParams } from '../../../ProjectContext';
@@ -38,16 +37,15 @@ export const CoveringPhaseSignup = ({ roundId, isSignedUp = false }: CoveringPha
         return;
       }
       
-      // User is logged in, proceed with signup
-      const result = await signupUserWithoutSong({
-        projectId,
-        roundId,
-        userId: session.user.id
-      }) as FormReturn;
-      
-      // Convert status to number if it's a string
-      const statusCode = typeof result.status === 'string' ? parseInt(result.status, 10) : result.status;
-      if (statusCode === 200) {
+      // User is logged in — sign up through the web action layer (rate limiting +
+      // the atproto signup mirror ride along), not the core service directly.
+      const formData = new FormData();
+      formData.set("projectId", projectId);
+      formData.set("roundId", String(roundId));
+      formData.set("userId", session.user.id);
+      const result = await signupForRound(formData);
+
+      if (result.status === "Success") {
         // Show success toast notification
         toast({
           title: "Success!",
