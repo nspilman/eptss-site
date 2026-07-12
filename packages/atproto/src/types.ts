@@ -1,8 +1,13 @@
 /**
  * The shapes EPTSS reads off the AT Protocol network. These mirror the
  * at.atjam.* lexicon records (the generic coordination layer) plus the
- * EPTSS-specific `site.eptss.song` subject the backfill embeds. Kept as
- * loose, read-tolerant interfaces — this package only ever reads.
+ * EPTSS-specific `site.eptss.song` subject the round records embed. Kept as
+ * loose, read-tolerant interfaces.
+ *
+ * (The package as a whole is the zero-dependency atproto client — public
+ * reads here and in read.ts, record building in build-records.ts, and the
+ * admin-voiced writes in admin-write.ts. User-voiced writes stay OUT: they
+ * need an OAuth session and live in the web app.)
  */
 
 export interface StrongRef {

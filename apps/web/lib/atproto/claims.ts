@@ -6,9 +6,8 @@
  * Postgres crosswalk: it makes ownership legible — and proves the data is
  * right — *before* any write (Phase B) trusts it. Pure Postgres read; no
  * network, no writes; nothing here encodes an rkey, because Phase A never needs
- * one. (The backfill writer and the read layer share the one encode/decode home
- * in @eptss/atproto/rkey; Phase B will import the encoder from there when it
- * actually writes to the user's repo.)
+ * one. (rkey encode/decode has its one home in @eptss/atproto's eptss-rkey
+ * module; the write paths import it from there.)
  *
  * Data-access convention: atproto feature reads query @eptss/db directly from
  * the app/route layer (here, and in app/atproto/...), rather than going through
