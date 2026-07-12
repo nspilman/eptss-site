@@ -58,16 +58,14 @@ logger.error('Error occurred', { error: error.message, component: 'Component' })
    - Strong typing for log data
    - Consistent structure across codebase
 
-### Fixed Instances
+### Adoption status
 
-**Server-Side (bucket-storage/storageService.ts):**
-- ✅ Replaced `console.log('[storageService] uploadFile called...')` with `logger.debug()`
-- ✅ Replaced `console.error('Upload error:...')` with `logger.error()`
-- ✅ Added structured data to all logs
-
-**Client-Side (media-upload):**
-- ✅ Removed debug `console.log` statements from MediaUploader.tsx
-- ✅ Replaced `console.error('[AudioPreview] WaveSurfer error')` with `logger.error()`
+The standard stands; adoption is **not complete**. `bucket-storage/storageService.ts`
+and the media-upload components were converted, but `console.*` remains in places —
+e.g. `packages/core/src/services/orphanFileCleanupService.ts` logs entirely via
+`console.log`/`console.error`, and the atproto action layer uses tagged `console`
+logging by convention. When you touch a file, bring its logging up to this standard;
+don't trust this doc as a completion record.
 
 ## 2. Null vs Undefined Handling
 

@@ -15,3 +15,5 @@ When a plan ships, link it from the relevant code or from
 | Plan | Status |
 |------|--------|
 | [identity-model.md](./identity-model.md) — the account as membrane, named by the DID | 🟢 Agreed direction · not yet built |
+| [text-component-migration.md](./text-component-migration.md) — raw `<p>`/`<span>` → the `Text` primitive | 🟡 Stalled — component shipped, ~3 of 47 files migrated |
+| [integration-test-plan.md](./integration-test-plan.md) — Playwright integration suite | 🔴 Drafted, never executed — playwright config exists, no tests written |

@@ -34,9 +34,10 @@ the plyr-track link. The columns go away only as reads move onto the user's repo
 
 ## Staged plan
 
-1. **Backfill `payload` on the scaffold submissions.** Teach the backfill
-   (`scripts/.../backfill`) to set `payload` from `plyr_track_uri` so the canonical
-   scaffold copy matches the user copies. (This was already flagged as a follow-up.)
+1. **Backfill `payload` on the scaffold submissions.** ✅ Scripted —
+   `packages/scripts/src/atproto/backfill-payload.ts`
+   (`bun run atproto:backfill-payload`, dry-run by default, `--apply` to execute).
+   Sets `payload` from the current `plyr_track_uri` ref; run it once against prod.
 2. **Resolve plyr embeds from `submission.payload`,** not the column — in
    `app/atproto/round/[rkey]/page.tsx` and `dashboard/profile/page.tsx`
    (`resolvePlyrListenUrls`). Embeds derive from the record, not Postgres.
@@ -52,7 +53,9 @@ the plyr-track link. The columns go away only as reads move onto the user's repo
 
 - **Order matters:** reads must move (steps 1–3) *before* any column drop (step 4).
 - **The TID rkey means `payload` is the only submission→track link** — never lose it
-  on a record rewrite (re-home/undo already keep it in sync; preserve that).
+  on a record rewrite. Today's writers keep it: the claim writes `payload` via
+  `writeOwnedSubmission`, and native submits are born with it (`submit-actions.ts`).
+  Preserve that in any future writer.
 - **Scripts reference the columns:** `migrate-to-plyr.ts` (sets `plyr_track_uri` +
   `plyr_cover_image_url`; clears all three on `--purge`), `reset-migration-for-user.ts
   --include-plyr` (clears `plyr_track_uri`/`cid`, *keeps* `plyr_cover_image_url`),

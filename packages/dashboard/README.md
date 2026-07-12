@@ -2,6 +2,11 @@
 
 A modular, extensible dashboard system for the EPTSS application. Built with a plugin-like architecture where panels can be easily added, removed, and configured.
 
+> This README is the primary reference. Focused companions:
+> [ARCHITECTURE.md](./ARCHITECTURE.md) (diagrams, component hierarchy, data flow),
+> [ACTION-PANEL-GUIDE.md](./ACTION-PANEL-GUIDE.md) (the ActionPanel in depth), and
+> [CHANGELOG.md](./CHANGELOG.md) (version history).
+
 ## Features
 
 - **Modular Panel System**: Add/remove dashboard panels without touching core code

@@ -18,7 +18,12 @@ This is your **single source of truth** for architectural decisions.
 
 ---
 
-### 🔍 Zod & Validation
+### 🔍 Server Actions & Validation
+
+**[SERVER_ACTIONS_BEST_PRACTICES.md](./SERVER_ACTIONS_BEST_PRACTICES.md)**
+Server Action conventions: the "use server" contract (async-function exports
+only — no re-exports), structured `FormReturn` results, auth guards, and
+rate limiting.
 
 **[ZOD_FORMDATA_GUIDE.md](./ZOD_FORMDATA_GUIDE.md)** (7.4KB)
 Best practices for using Zod with FormData in Server Actions:
