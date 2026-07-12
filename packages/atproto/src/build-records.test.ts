@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { transformRound } from "./transform";
-import type { RoundExport, SubmissionExport } from "./extract";
+import { transformRound } from "./build-records";
+import type { RoundExport, SubmissionExport } from "./build-records";
 
 const JAM = { uri: "at://did:plc:eptss/at.atjam.jam/eptss", cid: "bafyjam" };
 

@@ -41,7 +41,7 @@ import {
   type StrongRef,
   type SubmissionDraft,
   type TransformedRound,
-} from "./transform";
+} from "@eptss/atproto";
 
 const ROUND_COLLECTION = "at.atjam.round";
 const SUBMISSION_COLLECTION = "at.atjam.submission";

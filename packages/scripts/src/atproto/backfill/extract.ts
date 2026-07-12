@@ -28,53 +28,16 @@ import {
   inArray,
 } from "@eptss/db";
 
-export interface SongRef {
-  title: string;
-  artist: string;
-}
-
-/** A song people signed up suggesting, and how many signed up with it. */
-export interface SignupSong extends SongRef {
-  count: number;
-}
-
-/**
- * Aggregate vote result for one candidate song (no per-voter data). Stores the
- * integer `total` (sum of scores) + `count` rather than a float average:
- * ATProto records are DAG-CBOR, which forbids floats. average = total/count,
- * computed by readers at display time.
- */
-export interface VoteResult extends SongRef {
-  total: number;
-  count: number;
-}
-
-export interface SubmissionExport {
-  id: number;
-  userId: string;
-  username: string | null;
-  /** audio_file_url ?? soundcloud_url — null when neither is set. */
-  url: string | null;
-  note: string | null;
-  createdAt: Date;
-}
-
-export interface RoundExport {
-  id: number;
-  slug: string | null;
-  createdAt: Date | null;
-  chosenSong: SongRef | null;
-  promptText: string | null;
-  playlistUrl: string | null;
-  signupOpens: Date | null;
-  votingOpens: Date | null;
-  coveringBegins: Date | null;
-  coversDue: Date | null;
-  listeningParty: Date | null;
-  signups: SignupSong[];
-  voteResults: VoteResult[];
-  submissions: SubmissionExport[];
-}
+// The export shapes live with the record builder in @eptss/atproto — they ARE its
+// input contract. Re-exported here so the backfill's local imports keep working.
+import type {
+  RoundExport,
+  SignupSong,
+  SongRef,
+  SubmissionExport,
+  VoteResult,
+} from "@eptss/atproto";
+export type { RoundExport, SignupSong, SongRef, SubmissionExport, VoteResult };
 
 export const PROJECT_IDS = {
   cover: COVER_PROJECT_ID,

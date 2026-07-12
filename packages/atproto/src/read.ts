@@ -7,7 +7,7 @@
  * needed yet; submissions are grouped to their round by the round strong-ref
  * they already carry.
  */
-import type { Jam, PlyrTrack, RecordEnvelope, Round, Submission } from "./types";
+import type { Jam, PlyrTrack, RecordEnvelope, Round, StrongRef, Submission } from "./types";
 
 /** The EPTSS service account that owns the jam, rounds, and backfilled submissions. */
 export const EPTSS_DID = "did:plc:pf6izdjdonyd46isl3txwu4g";
@@ -128,6 +128,20 @@ export async function getRound(
 ): Promise<RoundWithSubmissions | null> {
   const data = await getEptssData(did);
   return data.rounds.find((r) => r.rkey === rkey) ?? null;
+}
+
+/**
+ * The strong-ref of the EPTSS jam — the parent every at.atjam.round must
+ * reference. There is one jam record on the admin repo; null means it hasn't
+ * been created yet (see packages/scripts create-eptss-jam).
+ */
+export async function getJamRef(
+  did: string = EPTSS_DID,
+): Promise<StrongRef | null> {
+  const pds = await resolvePds(did);
+  const recs = await listRecords<Jam>(pds, did, "at.atjam.jam");
+  const first = recs[0];
+  return first ? { uri: first.uri, cid: first.cid } : null;
 }
 
 /**
