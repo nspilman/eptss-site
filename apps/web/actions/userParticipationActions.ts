@@ -8,6 +8,7 @@ import { getAuthUser } from "@eptss/auth/server";
 import {
   signup as signupCore,
   signupForRound as signupForRoundCore,
+  signupWithOTP as signupWithOTPCore,
 } from "@eptss/actions";
 import type { FormReturn } from "@eptss/core/types/index";
 import { votingRateLimit, submissionRateLimit, signupRateLimit, emailRateLimit } from "@/lib/ratelimit";
@@ -59,13 +60,13 @@ export async function signupForRound(formData: FormData): Promise<FormReturn> {
   return result;
 }
 
-// Pass-throughs with no web-layer composition. New-user flows (OTP / email
-// verification) can't be linked yet, so there is nothing to mirror — their
-// signups come home via the link→migrate flow.
-export {
-  submitCover,
-  signupWithOTP,
-  completeSignupAfterVerification,
-  verifySignupByEmail,
-  signout,
-} from "@eptss/actions";
+/**
+ * Pass-through with no web-layer composition: a new user signing up via OTP
+ * can't be linked yet, so there is nothing to mirror — their signup comes home
+ * via the link→migrate flow. Declared (not re-exported) because a "use server"
+ * file may only export async functions it declares; `export { x } from` breaks
+ * `next build` even when x is async.
+ */
+export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
+  return signupWithOTPCore(formData);
+}
