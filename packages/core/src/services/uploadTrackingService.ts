@@ -4,6 +4,7 @@ import { db } from "../db";
 import { pendingUploads } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { BucketName } from "@eptss/bucket-storage";
+import { logger } from "@eptss/logger/server";
 
 /**
  * Register a file upload as pending
@@ -41,7 +42,7 @@ export async function registerPendingUpload(params: {
 
     return { id: result.id, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Register pending upload error:", error);
+    logger.error("Register pending upload error", { component: "uploadTrackingService", operation: "registerPendingUpload", error });
     return {
       id: null,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -67,7 +68,7 @@ export async function commitPendingUpload(
 
     return { success: true, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Commit pending upload error:", error);
+    logger.error("Commit pending upload error", { component: "uploadTrackingService", operation: "commitPendingUpload", error });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -92,7 +93,7 @@ export async function failPendingUpload(
 
     return { success: true, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Fail pending upload error:", error);
+    logger.error("Fail pending upload error", { component: "uploadTrackingService", operation: "failPendingUpload", error });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -118,7 +119,7 @@ export async function commitMultiplePendingUploads(
 
     return { success: true, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Commit multiple pending uploads error:", error);
+    logger.error("Commit multiple pending uploads error", { component: "uploadTrackingService", operation: "commitMultiplePendingUploads", error });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -162,7 +163,7 @@ export async function getExpiredPendingUploads(): Promise<{
 
     return { uploads, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Get expired pending uploads error:", error);
+    logger.error("Get expired pending uploads error", { component: "uploadTrackingService", operation: "getExpiredPendingUploads", error });
     return {
       uploads: [],
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -182,7 +183,7 @@ export async function deletePendingUploadRecord(
 
     return { success: true, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Delete pending upload record error:", error);
+    logger.error("Delete pending upload record error", { component: "uploadTrackingService", operation: "deletePendingUploadRecord", error });
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -224,7 +225,7 @@ export async function cleanupOldUploadRecords(
     // Always returns 0 - use .returning() if you need the actual count
     return { deletedCount: 0, error: null };
   } catch (error) {
-    console.error("[uploadTrackingService] Cleanup old upload records error:", error);
+    logger.error("Cleanup old upload records error", { component: "uploadTrackingService", operation: "cleanupOldUploadRecords", error });
     return {
       deletedCount: 0,
       error: error instanceof Error ? error.message : "Unknown error occurred",

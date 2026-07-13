@@ -1,6 +1,7 @@
 "use server";
 
 import { deleteFile, listFiles, BUCKETS, BucketName } from "@eptss/bucket-storage";
+import { logger } from "@eptss/logger/server";
 import {
   getExpiredPendingUploads,
   deletePendingUploadRecord,
@@ -35,7 +36,9 @@ export async function cleanupExpiredUploads(): Promise<{
   const errors: string[] = [];
 
   try {
-    console.log("[orphanFileCleanupService] Starting cleanup of expired uploads");
+    logger.info("Starting cleanup of expired uploads", {
+      component: "orphanFileCleanupService",
+    });
 
     // Get all expired pending uploads
     const { uploads, error } = await getExpiredPendingUploads();
@@ -45,7 +48,10 @@ export async function cleanupExpiredUploads(): Promise<{
       return { filesDeleted, errors };
     }
 
-    console.log(`[orphanFileCleanupService] Found ${uploads.length} expired uploads to clean`);
+    logger.info("Found expired uploads to clean", {
+      component: "orphanFileCleanupService",
+      count: uploads.length,
+    });
 
     // Delete each expired upload file and record
     for (const upload of uploads) {
@@ -74,9 +80,11 @@ export async function cleanupExpiredUploads(): Promise<{
         }
 
         filesDeleted++;
-        console.log(
-          `[orphanFileCleanupService] Cleaned up expired upload: ${upload.bucket}/${upload.filePath}`
-        );
+        logger.info("Cleaned up expired upload", {
+          component: "orphanFileCleanupService",
+          bucket: upload.bucket,
+          filePath: upload.filePath,
+        });
       } catch (error) {
         errors.push(
           `Error cleaning up ${upload.bucket}/${upload.filePath}: ${
@@ -87,9 +95,12 @@ export async function cleanupExpiredUploads(): Promise<{
     }
 
     const duration = Date.now() - startTime;
-    console.log(
-      `[orphanFileCleanupService] Cleanup completed in ${duration}ms. Deleted ${filesDeleted} files with ${errors.length} errors`
-    );
+    logger.info("Expired upload cleanup completed", {
+      component: "orphanFileCleanupService",
+      durationMs: duration,
+      filesDeleted,
+      errorCount: errors.length,
+    });
 
     return { filesDeleted, errors };
   } catch (error) {
@@ -110,18 +121,23 @@ export async function cleanupOldTrackingRecords(
   deletedCount: number;
   error: string | null;
 }> {
-  console.log(
-    `[orphanFileCleanupService] Cleaning up tracking records older than ${daysToKeep} days`
-  );
+  logger.info("Cleaning up old tracking records", {
+    component: "orphanFileCleanupService",
+    daysToKeep,
+  });
 
   const result = await cleanupOldUploadRecords(daysToKeep);
 
   if (result.error) {
-    console.error("[orphanFileCleanupService] Failed to cleanup old records:", result.error);
+    logger.error("Failed to cleanup old records", {
+      component: "orphanFileCleanupService",
+      error: result.error,
+    });
   } else {
-    console.log(
-      `[orphanFileCleanupService] Cleaned up ${result.deletedCount} old tracking records`
-    );
+    logger.info("Cleaned up old tracking records", {
+      component: "orphanFileCleanupService",
+      deletedCount: result.deletedCount,
+    });
   }
 
   return result;
@@ -140,7 +156,9 @@ export async function runComprehensiveCleanup(
 }> {
   const startTime = Date.now();
 
-  console.log("[orphanFileCleanupService] Starting comprehensive cleanup");
+  logger.info("Starting comprehensive cleanup", {
+    component: "orphanFileCleanupService",
+  });
 
   // Clean up expired uploads
   const expiredUploads = await cleanupExpiredUploads();
@@ -150,12 +168,13 @@ export async function runComprehensiveCleanup(
 
   const totalDuration = Date.now() - startTime;
 
-  console.log(
-    `[orphanFileCleanupService] Comprehensive cleanup completed in ${totalDuration}ms`
-  );
-  console.log(`  - Expired uploads deleted: ${expiredUploads.filesDeleted}`);
-  console.log(`  - Old records deleted: ${oldRecords.deletedCount}`);
-  console.log(`  - Total errors: ${expiredUploads.errors.length + (oldRecords.error ? 1 : 0)}`);
+  logger.info("Comprehensive cleanup completed", {
+    component: "orphanFileCleanupService",
+    durationMs: totalDuration,
+    expiredUploadsDeleted: expiredUploads.filesDeleted,
+    oldRecordsDeleted: oldRecords.deletedCount,
+    totalErrors: expiredUploads.errors.length + (oldRecords.error ? 1 : 0),
+  });
 
   return {
     expiredUploads,

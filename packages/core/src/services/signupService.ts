@@ -9,6 +9,7 @@ import { handleResponse } from "../utils";
 import { getAuthUser } from "../utils/supabase/server";
 import { createClient } from "../utils/supabase/server";
 import { eq, sql, and, ne } from "drizzle-orm";
+import { logger } from "@eptss/logger/server";
 
 /**
  * Get the most recent signup data for a user
@@ -238,7 +239,7 @@ export async function checkSignupCap(roundId: number): Promise<{
       maxSignups,
     };
   } catch (error) {
-    console.error("[checkSignupCap] Error checking signup cap:", error);
+    logger.error("Error checking signup cap", { component: "signupService", operation: "checkSignupCap", error });
     return {
       canSignup: false,
       currentCount: 0,
@@ -291,7 +292,7 @@ async function validateReferralCodeForSignup(
 
     return { valid: true, message: 'Referral code is valid', referralCodeId: referralCode.id };
   } catch (error) {
-    console.error('Error validating referral code:', error);
+    logger.error("Error validating referral code", { component: "signupService", error });
     return { valid: false, message: 'Failed to validate referral code' };
   }
 }
@@ -339,7 +340,7 @@ async function recordReferralForSignup(
 
     return { success: true, message: 'Referral recorded successfully' };
   } catch (error) {
-    console.error('Error recording referral:', error);
+    logger.error("Error recording referral", { component: "signupService", error });
     return { success: false, message: 'Failed to record referral' };
   }
 }
@@ -351,7 +352,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
   try {
     // Get roundId early to determine project and business rules
     const roundId = Number(formData.get("roundId"));
-    console.log('[signupWithOTP] Starting validation. RoundId:', roundId);
+    logger.info("Starting validation", { component: "signupService", operation: "signupWithOTP", roundId });
 
     if (!roundId || isNaN(roundId)) {
       return handleResponse(400, routes.dashboard.root(), "Invalid round ID");
@@ -364,7 +365,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
       .where(eq(roundMetadata.id, roundId))
       .limit(1);
 
-    console.log('[signupWithOTP] Round lookup result:', roundResult);
+    logger.info("Round lookup complete", { component: "signupService", operation: "signupWithOTP", roundResult });
 
     if (!roundResult.length) {
       return handleResponse(404, routes.dashboard.root(), "Round not found");
@@ -373,7 +374,7 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     const projectId = roundResult[0].projectId;
     const projectSlug = getProjectSlugFromId(projectId);
 
-    console.log('[signupWithOTP] ProjectId:', projectId, 'ProjectSlug:', projectSlug);
+    logger.info("Resolved project for round", { component: "signupService", operation: "signupWithOTP", projectId, projectSlug });
 
     if (!projectSlug) {
       return handleResponse(404, routes.dashboard.root(), "Project not found");
@@ -383,15 +384,19 @@ export async function signupWithOTP(formData: FormData): Promise<FormReturn> {
     const businessRules = await getProjectBusinessRules(projectSlug);
     const schema = businessRules.requireSongOnSignup ? nonLoggedInSchema : nonLoggedInSchemaNoSong;
 
-    console.log('[signupWithOTP] Business rules:', businessRules);
-    console.log('[signupWithOTP] requireSongOnSignup:', businessRules.requireSongOnSignup);
-    console.log('[signupWithOTP] Using schema:', businessRules.requireSongOnSignup ? 'nonLoggedInSchema (WITH song)' : 'nonLoggedInSchemaNoSong (NO song)');
+    logger.info("Resolved business rules and validation schema", {
+      component: "signupService",
+      operation: "signupWithOTP",
+      businessRules,
+      requireSongOnSignup: businessRules.requireSongOnSignup,
+      schema: businessRules.requireSongOnSignup ? "nonLoggedInSchema" : "nonLoggedInSchemaNoSong",
+    });
 
     // Validate form data with the appropriate schema
     const validation = validateFormData(formData, schema);
 
     if (!validation.success) {
-      console.warn('⚠️ [WARN] OTP signup validation failed', { error: validation.error });
+      logger.warn("OTP signup validation failed", { component: "signupService", operation: "signupWithOTP", error: validation.error });
       return handleResponse(400, routes.dashboard.root(), validation.error);
     }
 
@@ -569,7 +574,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
 
     // If user doesn't exist, create them
     if (existingUser.length === 0) {
-      console.log("Creating new user in database:", { userId, email });
+      logger.info("Creating new user in database", { component: "signupService", userId, email });
       // Generate a username based on email
       const username = email.split('@')[0] + Math.floor(Math.random() * 1000);
 
@@ -588,7 +593,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
       userName = currentUser.username;
 
       if (!currentUser.publicDisplayName && publicDisplayName) {
-        console.log('[verifySignupByEmail] Backfilling publicDisplayName from Supabase metadata for user:', userId);
+        logger.info("Backfilling publicDisplayName from Supabase metadata", { component: "signupService", operation: "verifySignupByEmail", userId });
         await db
           .update(users)
           .set({ publicDisplayName })
@@ -601,7 +606,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     // Check signup cap before allowing new signup
     const capCheck = await checkSignupCap(signupData.roundId);
     if (!capCheck.canSignup) {
-      console.log('[verifySignupByEmail] Signup cap reached:', capCheck);
+      logger.info("Signup cap reached", { component: "signupService", operation: "verifySignupByEmail", capCheck });
       return handleResponse(400, routes.dashboard.root(), capCheck.message || "Cannot signup for this round");
     }
 
@@ -699,7 +704,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
         }
       }
     } catch (emailError) {
-      console.error('[verifySignupByEmail] Failed to send confirmation email:', emailError);
+      logger.error("Failed to send confirmation email", { component: "signupService", operation: "verifySignupByEmail", error: emailError });
       // Don't fail the signup if email fails
     }
 
@@ -707,7 +712,7 @@ export async function verifySignupByEmail(): Promise<FormReturn> {
     if (signupData.referralCode) {
       const referralResult = await recordReferralForSignup(userId, signupData.referralCode);
       if (!referralResult.success) {
-        console.error("Failed to record referral:", referralResult.message);
+        logger.error("Failed to record referral", { component: "signupService", message: referralResult.message });
         // We don't fail the signup if referral recording fails, just log it
       }
     }
@@ -760,7 +765,7 @@ export async function completeSignupAfterVerification(params: {
 export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
   "use server";
   
-  console.log("=== adminSignupUser START ===");
+  logger.info("adminSignupUser started", { component: "signupService", operation: "adminSignupUser" });
   
   try {
     // Extract and validate form data
@@ -772,7 +777,7 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
     const youtubeLink = formData.get("youtubeLink")?.toString() || "";
     const additionalComments = formData.get("additionalComments")?.toString() || "";
     
-    console.log("adminSignupUser called with:", { userId, roundId, providedSongId, songTitle, artist });
+    logger.info("Called with form data", { component: "signupService", operation: "adminSignupUser", userId, roundId, providedSongId, songTitle, artist });
     
     if (!userId) {
       return { status: "Error", message: "User ID is required" };
@@ -786,11 +791,11 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
     
     // Check if signing up without a song
     if (providedSongId === "-1") {
-      console.log("Signing up without a song");
+      logger.info("Signing up without a song", { component: "signupService" });
       songId = -1;
-      console.log("Set songId to -1");
+      logger.info("Set songId to -1", { component: "signupService" });
     } else {
-      console.log("Creating new song");
+      logger.info("Creating new song", { component: "signupService" });
       // Validate song fields are provided
       if (!songTitle || !artist || !youtubeLink) {
         return { status: "Error", message: "Song title, artist, and YouTube link are required" };
@@ -823,7 +828,7 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
     }
 
     // Get the project ID from the round
-    console.log("Getting project ID from round");
+    logger.info("Getting project ID from round", { component: "signupService" });
     const roundResult = await db
       .select({ projectId: roundMetadata.projectId })
       .from(roundMetadata)
@@ -835,10 +840,10 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
     }
 
     const projectId = roundResult[0].projectId;
-    console.log("Found projectId:", projectId);
+    logger.info("Found projectId", { component: "signupService", projectId });
 
     // Check if user is already signed up for this round
-    console.log("Checking for existing signup");
+    logger.info("Checking for existing signup", { component: "signupService" });
     const existingSignup = await db
       .select()
       .from(signUps)
@@ -846,14 +851,14 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
         eq(signUps.userId, userId),
         eq(signUps.roundId, roundId)
       ));
-    console.log("Existing signup check complete:", existingSignup.length);
+    logger.info("Existing signup check complete", { component: "signupService", existingSignupCount: existingSignup.length });
 
     if (existingSignup.length > 0) {
       return { status: "Error", message: "User is already signed up for this round" };
     }
 
     // Insert the signup using raw SQL to avoid ID generation issues
-    console.log("Inserting signup with songId:", songId, "projectId:", projectId);
+    logger.info("Inserting signup", { component: "signupService", songId, projectId });
 
     try {
       const result = await db.execute(sql`
@@ -870,9 +875,9 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
         )
         RETURNING id
       `);
-      console.log("Signup inserted successfully, result:", result);
+      logger.info("Signup inserted successfully", { component: "signupService", result });
     } catch (insertError) {
-      console.error("Insert error:", insertError);
+      logger.error("Insert error", { component: "signupService", error: insertError });
       throw insertError;
     }
 
@@ -880,10 +885,10 @@ export async function adminSignupUser(formData: FormData): Promise<FormReturn> {
       ? "User has been successfully signed up for the round without a song!" 
       : "User has been successfully signed up for the round!";
     
-    console.log("=== adminSignupUser SUCCESS ===");
+    logger.info("adminSignupUser succeeded", { component: "signupService", operation: "adminSignupUser" });
     return { status: "Success", message: successMessage };
   } catch (error) {
-    console.error("=== adminSignupUser ERROR ===", error);
+    logger.error("adminSignupUser failed", { component: "signupService", operation: "adminSignupUser", error });
     return { status: "Error", message: (error as Error).message };
   }
 }
@@ -902,10 +907,10 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
   try {
     // Get the round ID early to fetch project config
     const roundId = Number(formData.get("roundId"));
-    console.log('[signup] Starting signup for roundId:', roundId, 'userId:', userId);
+    logger.info("Starting signup", { component: "signupService", operation: "signup", roundId, userId });
 
     if (!roundId || isNaN(roundId)) {
-      console.error('[signup] Invalid round ID:', formData.get("roundId"));
+      logger.error("Invalid round ID", { component: "signupService", operation: "signup", rawRoundId: formData.get("roundId") });
       return handleResponse(400, routes.dashboard.root(), "Invalid round ID");
     }
 
@@ -917,35 +922,35 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
       .limit(1);
 
     if (!roundResult.length) {
-      console.error('[signup] Round not found:', roundId);
+      logger.error("Round not found", { component: "signupService", operation: "signup", roundId });
       return handleResponse(404, routes.dashboard.root(), "Round not found");
     }
 
     const projectId = roundResult[0].projectId;
-    console.log('[signup] Found projectId:', projectId);
+    logger.info("Found projectId", { component: "signupService", operation: "signup", projectId });
 
     // Get project slug and business rules to determine schema
     const projectSlug = getProjectSlugFromId(projectId);
     if (!projectSlug) {
-      console.error('[signup] Project slug not found for projectId:', projectId);
+      logger.error("Project slug not found", { component: "signupService", operation: "signup", projectId });
       return handleResponse(404, routes.dashboard.root(), "Project not found");
     }
 
     const businessRules = await getProjectBusinessRules(projectSlug);
     const schema = businessRules.requireSongOnSignup ? signupSchema : signupSchemaNoSong;
 
-    console.log('[signup] projectSlug:', projectSlug, 'requireSongOnSignup:', businessRules.requireSongOnSignup);
+    logger.info("Resolved project business rules", { component: "signupService", operation: "signup", projectSlug, requireSongOnSignup: businessRules.requireSongOnSignup });
 
     // Validate form data with the appropriate Zod schema
     const validation = validateFormData(formData, schema);
 
     if (!validation.success) {
-      console.error('[signup] Validation failed:', validation.error);
+      logger.error("Validation failed", { component: "signupService", operation: "signup", error: validation.error });
       return handleResponse(400, routes.dashboard.root(), validation.error);
     }
 
     const validData = validation.data;
-    console.log('[signup] Validation succeeded, validData:', validData);
+    logger.info("Validation succeeded", { component: "signupService", operation: "signup", validData });
 
     // Check if user has already signed up for this round
     const existingSignup = await db
@@ -963,7 +968,7 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
     if (existingSignup.length === 0) {
       const capCheck = await checkSignupCap(validData.roundId);
       if (!capCheck.canSignup) {
-        console.log('[signup] Signup cap reached:', capCheck);
+        logger.info("Signup cap reached", { component: "signupService", operation: "signup", capCheck });
         return handleResponse(400, routes.dashboard.root(), capCheck.message || "Cannot signup for this round");
       }
     }
@@ -1071,15 +1076,19 @@ export async function signup(formData: FormData, providedUserId?: string): Promi
           }
         }
       } catch (emailError) {
-        console.error('[signup] Failed to send confirmation email:', emailError);
+        logger.error("Failed to send confirmation email", { component: "signupService", operation: "signup", error: emailError });
         // Don't fail the signup if email fails
       }
 
       return handleResponse(200, routes.dashboard.root(), "Your signup has been verified successfully!");
     }
   } catch (error) {
-    console.error('[signup] Unexpected error during signup:', error);
-    console.error('[signup] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    logger.error("Unexpected error during signup", {
+      component: "signupService",
+      operation: "signup",
+      error,
+      stack: error instanceof Error ? error.stack : "No stack trace",
+    });
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     return handleResponse(500, routes.dashboard.root(), `Signup failed: ${errorMessage}`);
   }

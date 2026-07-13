@@ -4,6 +4,7 @@ import { db } from "../db";
 import { tags, Tag, NewTag } from "../db/schema";
 import { eq, desc, like, or, sql } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createErrorResult } from '../types/asyncResult';
+import { logger } from "@eptss/logger/server";
 
 /**
  * Create or get an existing tag by name
@@ -41,7 +42,7 @@ export const createOrGetTag = async (
 
     return createSuccessResult(newTag);
   } catch (error) {
-    console.error("Error in createOrGetTag:", error);
+    logger.error("Failed to create or get tag", { component: "tagService", operation: "createOrGetTag", error });
     return createErrorResult(new Error(`Failed to create or get tag: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -59,7 +60,7 @@ export const getTagBySlug = async (slug: string): Promise<AsyncResult<Tag | null
 
     return createSuccessResult(tag || null);
   } catch (error) {
-    console.error("Error in getTagBySlug:", error);
+    logger.error("Failed to get tag by slug", { component: "tagService", operation: "getTagBySlug", error });
     return createErrorResult(new Error(`Failed to get tag: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -78,7 +79,7 @@ export const getAllTags = async (category?: string): Promise<AsyncResult<Tag[]>>
     const result = await query;
     return createSuccessResult(result);
   } catch (error) {
-    console.error("Error in getAllTags:", error);
+    logger.error("Failed to get all tags", { component: "tagService", operation: "getAllTags", error });
     return createErrorResult(new Error(`Failed to get tags: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -95,7 +96,7 @@ export const incrementTagUseCount = async (tagId: number): Promise<AsyncResult<v
 
     return createSuccessResult(undefined);
   } catch (error) {
-    console.error("Error in incrementTagUseCount:", error);
+    logger.error("Failed to increment tag use count", { component: "tagService", operation: "incrementTagUseCount", error });
     return createErrorResult(new Error(`Failed to increment tag use count: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -119,7 +120,7 @@ export const searchTags = async (searchTerm: string, limit = 10): Promise<AsyncR
 
     return createSuccessResult(result);
   } catch (error) {
-    console.error("Error in searchTags:", error);
+    logger.error("Failed to search tags", { component: "tagService", operation: "searchTags", error });
     return createErrorResult(new Error(`Failed to search tags: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -147,7 +148,7 @@ export const deleteTag = async (tagId: number): Promise<AsyncResult<void>> => {
     await db.delete(tags).where(eq(tags.id, tagId));
     return createSuccessResult(undefined);
   } catch (error) {
-    console.error("Error in deleteTag:", error);
+    logger.error("Failed to delete tag", { component: "tagService", operation: "deleteTag", error });
     return createErrorResult(new Error(`Failed to delete tag: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };

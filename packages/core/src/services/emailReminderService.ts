@@ -5,6 +5,7 @@ import { emailRemindersSent, signUps, submissions } from "../db/schema";
 import { eq, and } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createErrorResult } from '../types/asyncResult';
 import { ReminderEmailType } from '../utils/reminderEmailScheduler';
+import { logger } from "@eptss/logger/server";
 
 /**
  * Check if a reminder email has already been sent to a user for a specific round
@@ -29,7 +30,7 @@ export async function hasReminderBeenSent(
 
     return existing.length > 0;
   } catch (error) {
-    console.error('[hasReminderBeenSent] Error:', error);
+    logger.error("Failed to check if reminder was sent", { component: "emailReminderService", operation: "hasReminderBeenSent", error });
     return false; // Fail open - if we can't check, don't send
   }
 }
@@ -57,7 +58,7 @@ export async function recordReminderSent(
 
     return createSuccessResult(undefined);
   } catch (error) {
-    console.error('[recordReminderSent] Error:', error);
+    logger.error("Failed to record reminder sent", { component: "emailReminderService", operation: "recordReminderSent", error });
     return createErrorResult(error instanceof Error ? error : new Error('Failed to record reminder'));
   }
 }
@@ -75,7 +76,7 @@ export async function getUsersSignedUpForRound(roundId: number): Promise<AsyncRe
     const userIds = signups.map(s => s.userId).filter(Boolean) as string[];
     return createSuccessResult(userIds);
   } catch (error) {
-    console.error('[getUsersSignedUpForRound] Error:', error);
+    logger.error("Failed to get users signed up for round", { component: "emailReminderService", operation: "getUsersSignedUpForRound", error });
     return createErrorResult(error instanceof Error ? error : new Error('Failed to get signed up users'));
   }
 }
@@ -93,7 +94,7 @@ export async function getUsersWhoSubmitted(roundId: number): Promise<AsyncResult
     const userIds = subs.map(s => s.userId).filter(Boolean) as string[];
     return createSuccessResult(userIds);
   } catch (error) {
-    console.error('[getUsersWhoSubmitted] Error:', error);
+    logger.error("Failed to get users who submitted", { component: "emailReminderService", operation: "getUsersWhoSubmitted", error });
     return createErrorResult(error instanceof Error ? error : new Error('Failed to get users who submitted'));
   }
 }
@@ -116,7 +117,7 @@ export async function getUsersWhoHaventSubmitted(roundId: number): Promise<Async
     const notSubmitted = signedUp.filter(userId => !submitted.has(userId));
     return createSuccessResult(notSubmitted);
   } catch (error) {
-    console.error('[getUsersWhoHaventSubmitted] Error:', error);
+    logger.error("Failed to get users who haven't submitted", { component: "emailReminderService", operation: "getUsersWhoHaventSubmitted", error });
     return createErrorResult(error instanceof Error ? error : new Error('Failed to get users who haven\'t submitted'));
   }
 }
@@ -139,7 +140,7 @@ export async function hasUserSubmitted(roundId: number, userId: string): Promise
 
     return submission.length > 0;
   } catch (error) {
-    console.error('[hasUserSubmitted] Error:', error);
+    logger.error("Failed to check if user has submitted", { component: "emailReminderService", operation: "hasUserSubmitted", error });
     return false;
   }
 }

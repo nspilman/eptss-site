@@ -7,6 +7,7 @@ import { AsyncResult, createSuccessResult, createErrorResult, createEmptyResult 
 import { createOrGetTag } from './tagService';
 import { getDisplayName } from "@eptss/shared";
 import { getProjectSlugFromId } from "../utils/projectUtils";
+import { logger } from "@eptss/logger/server";
 
 export interface Reflection extends Omit<UserContent, 'createdAt' | 'updatedAt' | 'publishedAt'> {
   createdAt: string;
@@ -78,7 +79,7 @@ const autoTagReflection = async (
   roundId: number,
   reflectionType: ReflectionType = 'initial'
 ): Promise<void> => {
-  console.log('[autoTagReflection] Starting for contentId:', contentId, 'roundId:', roundId, 'reflectionType:', reflectionType);
+  logger.info("Starting auto-tagging", { component: "reflectionService", operation: "autoTagReflection", contentId, roundId, reflectionType });
 
   // Get round slug for tagging
   const [roundResult] = await db
@@ -87,24 +88,24 @@ const autoTagReflection = async (
     .where(eq(roundMetadata.id, roundId))
     .limit(1);
 
-  console.log('[autoTagReflection] Round result:', roundResult);
+  logger.info("Round lookup completed", { component: "reflectionService", operation: "autoTagReflection", roundResult });
 
   if (!roundResult) {
     throw new Error('Round not found');
   }
 
   const roundSlug = roundResult.slug;
-  console.log('[autoTagReflection] Round slug:', roundSlug);
+  logger.info("Resolved round slug", { component: "reflectionService", operation: "autoTagReflection", roundSlug });
 
   // Create/get type:reflection tag
-  console.log('[autoTagReflection] Creating type:reflection tag...');
+  logger.info("Creating type:reflection tag", { component: "reflectionService", operation: "autoTagReflection" });
   const typeTagResult = await createOrGetTag(
     'Reflection',
     'type:reflection',
     'system',
     true
   );
-  console.log('[autoTagReflection] Type tag result:', typeTagResult);
+  logger.info("Type tag created", { component: "reflectionService", operation: "autoTagReflection", typeTagResult });
 
   if (typeTagResult.status !== 'success' || !typeTagResult.data) {
     const errorMsg = typeTagResult.status === 'error' ? typeTagResult.error.message : 'Unknown error';
@@ -112,14 +113,14 @@ const autoTagReflection = async (
   }
 
   // Create/get round-specific tag
-  console.log('[autoTagReflection] Creating round tag...');
+  logger.info("Creating round tag", { component: "reflectionService", operation: "autoTagReflection" });
   const roundTagResult = await createOrGetTag(
     `Round: ${roundSlug}`,
     `round:${roundSlug}`,
     'system',
     true
   );
-  console.log('[autoTagReflection] Round tag result:', roundTagResult);
+  logger.info("Round tag created", { component: "reflectionService", operation: "autoTagReflection", roundTagResult });
 
   if (roundTagResult.status !== 'success' || !roundTagResult.data) {
     const errorMsg = roundTagResult.status === 'error' ? roundTagResult.error.message : 'Unknown error';
@@ -127,14 +128,14 @@ const autoTagReflection = async (
   }
 
   // Create/get reflection-type tag (initial or checkin)
-  console.log('[autoTagReflection] Creating reflection-type tag...');
+  logger.info("Creating reflection-type tag", { component: "reflectionService", operation: "autoTagReflection" });
   const reflectionTypeTagResult = await createOrGetTag(
     reflectionType === 'initial' ? 'Initial Reflection' : 'Check-in',
     `reflection-type:${reflectionType}`,
     'system',
     true
   );
-  console.log('[autoTagReflection] Reflection type tag result:', reflectionTypeTagResult);
+  logger.info("Reflection-type tag created", { component: "reflectionService", operation: "autoTagReflection", reflectionTypeTagResult });
 
   if (reflectionTypeTagResult.status !== 'success' || !reflectionTypeTagResult.data) {
     const errorMsg = reflectionTypeTagResult.status === 'error' ? reflectionTypeTagResult.error.message : 'Unknown error';
@@ -142,7 +143,7 @@ const autoTagReflection = async (
   }
 
   // Associate tags with content
-  console.log('[autoTagReflection] Inserting content tags associations...');
+  logger.info("Inserting content tag associations", { component: "reflectionService", operation: "autoTagReflection" });
   await db.insert(contentTags).values([
     {
       contentId,
@@ -160,7 +161,7 @@ const autoTagReflection = async (
       addedBy: 'system',
     },
   ]);
-  console.log('[autoTagReflection] Successfully completed tagging');
+  logger.info("Successfully completed tagging", { component: "reflectionService", operation: "autoTagReflection" });
 };
 
 /**
@@ -218,7 +219,7 @@ export const createReflection = async (
 
     return createSuccessResult(mapToReflection(newContent, ['type:reflection', `round:${slug}`, `reflection-type:${reflectionType}`]));
   } catch (error) {
-    console.error("Error in createReflection:", error);
+    logger.error("Failed to create reflection", { component: "reflectionService", operation: "createReflection", error });
     return createErrorResult(new Error(`Failed to create reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -265,7 +266,7 @@ export const getReflectionBySlug = async (slug: string): Promise<AsyncResult<Ref
 
     return createSuccessResult(mapToReflection(content, tagSlugs, authorName, roundSlug || undefined, username || undefined, projectSlug));
   } catch (error) {
-    console.error("Error in getReflectionBySlug:", error);
+    logger.error("Failed to get reflection by slug", { component: "reflectionService", operation: "getReflectionBySlug", error });
     return createErrorResult(new Error(`Failed to get reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -295,7 +296,7 @@ export const getAllPublicReflections = async (): Promise<AsyncResult<Reflection[
 
     return createSuccessResult(reflections);
   } catch (error) {
-    console.error("Error in getAllPublicReflections:", error);
+    logger.error("Failed to get all public reflections", { component: "reflectionService", operation: "getAllPublicReflections", error });
     return createErrorResult(new Error(`Failed to get public reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -333,7 +334,7 @@ export const getReflectionsByRound = async (
 
     return createSuccessResult(reflections);
   } catch (error) {
-    console.error("Error in getReflectionsByRound:", error);
+    logger.error("Failed to get reflections by round", { component: "reflectionService", operation: "getReflectionsByRound", error });
     return createErrorResult(new Error(`Failed to get reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -362,7 +363,7 @@ export const getReflectionsByUser = async (
 
     return createSuccessResult(reflections);
   } catch (error) {
-    console.error("Error in getReflectionsByUser:", error);
+    logger.error("Failed to get reflections by user", { component: "reflectionService", operation: "getReflectionsByUser", error });
     return createErrorResult(new Error(`Failed to get user reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -405,7 +406,7 @@ export const updateReflection = async (
 
     return createSuccessResult(mapToReflection(updated));
   } catch (error) {
-    console.error("Error in updateReflection:", error);
+    logger.error("Failed to update reflection", { component: "reflectionService", operation: "updateReflection", error });
     return createErrorResult(new Error(`Failed to update reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -418,7 +419,7 @@ export const deleteReflection = async (id: string): Promise<AsyncResult<void>> =
     await db.delete(userContent).where(eq(userContent.id, id));
     return createSuccessResult(undefined);
   } catch (error) {
-    console.error("Error in deleteReflection:", error);
+    logger.error("Failed to delete reflection", { component: "reflectionService", operation: "deleteReflection", error });
     return createErrorResult(new Error(`Failed to delete reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -466,7 +467,7 @@ export const getUserInitialReflectionForRound = async (
 
     return createSuccessResult(mapToReflection(result[0].content));
   } catch (error) {
-    console.error("Error in getUserInitialReflectionForRound:", error);
+    logger.error("Failed to get user initial reflection for round", { component: "reflectionService", operation: "getUserInitialReflectionForRound", error });
     return createErrorResult(new Error(`Failed to check for initial reflection: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -492,7 +493,7 @@ export const getUserReflectionsForRound = async (
 
     return createSuccessResult(reflections);
   } catch (error) {
-    console.error("Error in getUserReflectionsForRound:", error);
+    logger.error("Failed to get user reflections for round", { component: "reflectionService", operation: "getUserReflectionsForRound", error });
     return createErrorResult(new Error(`Failed to get user reflections for round: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -539,7 +540,7 @@ export const getPublicReflectionsByUsername = async (
 
     return createSuccessResult(reflections);
   } catch (error) {
-    console.error("Error in getPublicReflectionsByUsername:", error);
+    logger.error("Failed to get public reflections by username", { component: "reflectionService", operation: "getPublicReflectionsByUsername", error });
     return createErrorResult(new Error(`Failed to get public reflections: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };
@@ -571,7 +572,7 @@ export const getContentSlugById = async (contentId: string): Promise<AsyncResult
 
     return createSuccessResult({ slug: content.slug, projectId: content.projectId });
   } catch (error) {
-    console.error("Error in getContentSlugById:", error);
+    logger.error("Failed to get content slug by id", { component: "reflectionService", operation: "getContentSlugById", error });
     return createErrorResult(new Error(`Failed to get content slug: ${error instanceof Error ? error.message : 'Unknown error'}`));
   }
 };

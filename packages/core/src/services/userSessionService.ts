@@ -1,6 +1,7 @@
 "use server";
 import { createClient } from "../utils/supabase/server";
 import type { Database } from "../types/database";
+import { logger } from "@eptss/logger/server";
 
 
 export const signOut = async () => {
@@ -150,7 +151,7 @@ export const signUpWithPassword = async ({
       error: null 
     };
   } catch (err) {
-    console.error("Registration error:", err);
+    logger.error("Registration error", { component: "userSessionService", operation: "signUpWithPassword", error: err });
     return { error: { message: "An unexpected error occurred during registration" } };
   }
 };

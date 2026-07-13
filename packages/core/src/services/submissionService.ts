@@ -361,7 +361,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
     });
 
     if (audioUploadResult.error) {
-      console.error("[submitCover] Failed to register audio upload:", audioUploadResult.error);
+      logger.error("Failed to register audio upload", { component: "submissionService", operation: "submitCover", error: audioUploadResult.error });
       // Continue anyway - tracking is best effort
     } else {
       audioUploadId = audioUploadResult.id;
@@ -382,7 +382,7 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       });
 
       if (imageUploadResult.error) {
-        console.error("[submitCover] Failed to register image upload:", imageUploadResult.error);
+        logger.error("Failed to register image upload", { component: "submissionService", operation: "submitCover", error: imageUploadResult.error });
         // Continue anyway - tracking is best effort
       } else {
         imageUploadId = imageUploadResult.id;
@@ -459,19 +459,19 @@ export async function submitCover(formData: FormData): Promise<FormReturn> {
       // SUCCESS: Mark uploads as committed
       if (audioUploadId) {
         await commitPendingUpload(audioUploadId).catch((err) =>
-          console.error("[submitCover] Failed to commit audio upload:", err)
+          logger.error("Failed to commit audio upload", { component: "submissionService", operation: "submitCover", error: err })
         );
       }
       if (imageUploadId) {
         await commitPendingUpload(imageUploadId).catch((err) =>
-          console.error("[submitCover] Failed to commit image upload:", err)
+          logger.error("Failed to commit image upload", { component: "submissionService", operation: "submitCover", error: err })
         );
       }
 
       return handleResponse(201, routes.dashboard.root(), "");
     } catch (dbError) {
       // FAILURE: Mark uploads as failed and clean up files
-      console.error("[submitCover] Database operation failed:", dbError);
+      logger.error("Database operation failed", { component: "submissionService", operation: "submitCover", error: dbError });
 
       if (audioUploadId) {
         await failPendingUpload(audioUploadId).catch(() => {});

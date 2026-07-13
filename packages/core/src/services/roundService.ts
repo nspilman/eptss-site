@@ -5,6 +5,7 @@ import { db } from "../db";
 import { roundMetadata, songs, songSelectionVotes, signUps, submissions, roundPrompts, COVER_PROJECT_ID } from "../db/schema";
 import { eq, gte, asc, desc, and, or, sql, avg } from "drizzle-orm";
 import { AsyncResult, createSuccessResult, createEmptyResult, createErrorResult } from '../types/asyncResult';
+import { logger } from "@eptss/logger/server";
 
 // Helper function to safely convert to Date
 const toDate = (value: Date | string | null) => {
@@ -393,7 +394,7 @@ export const getAllRoundSlugs = async (): Promise<AsyncResult<string[]>> => {
 export const getVoteBreakdownBySong = async (roundId: number) => {
   // Validate roundId is a valid number
   if (isNaN(roundId) || !Number.isFinite(roundId)) {
-    console.error(`Invalid round ID passed to getVoteBreakdownBySong: ${roundId}`);
+    logger.error("Invalid round ID", { component: "roundService", operation: "getVoteBreakdownBySong", roundId });
     return [];
   }
   
@@ -446,7 +447,7 @@ export const getSignupSongsForRound = async (roundId: number): Promise<AsyncResu
 
     return createSuccessResult(signupSongs);
   } catch (error) {
-    console.error('Error getting signup songs for round:', error);
+    logger.error("Error getting signup songs for round", { component: "roundService", operation: "getSignupSongsForRound", error });
     return createErrorResult(error instanceof Error ? error : new Error(`Failed to get signup songs for round ${roundId}`));
   }
 };
@@ -498,7 +499,7 @@ export const setRoundSong = async (roundId: number, songId: number): Promise<Asy
 
     return createSuccessResult(mapToRound(updatedRound[0]));
   } catch (error) {
-    console.error('Error setting round song:', error);
+    logger.error("Error setting round song", { component: "roundService", operation: "setRoundSong", error });
     return createErrorResult(error instanceof Error ? error : new Error(`Failed to set song for round ${roundId}`));
   }
 };
@@ -632,7 +633,7 @@ export const createRound = async (input: CreateRoundInput): Promise<AsyncResult<
       return createSuccessResult(createdRound);
     });
   } catch (error) {
-    console.error('Error creating round:', error);
+    logger.error("Error creating round", { component: "roundService", operation: "createRound", error });
     return createErrorResult(error instanceof Error ? error : new Error('Failed to create round'));
   }
 };
@@ -709,7 +710,7 @@ export const updateRound = async (input: UpdateRoundInput): Promise<AsyncResult<
 
     return createSuccessResult(updatedRound.data);
   } catch (error) {
-    console.error('Error updating round:', error);
+    logger.error("Error updating round", { component: "roundService", operation: "updateRound", error });
     return createErrorResult(error instanceof Error ? error : new Error('Failed to update round'));
   }
 };
@@ -762,7 +763,7 @@ export const getRoundPrompt = async (roundId: number): Promise<AsyncResult<strin
 
     return createSuccessResult(result[0].promptText);
   } catch (error) {
-    console.error('Error getting round prompt:', error);
+    logger.error("Error getting round prompt", { component: "roundService", operation: "getRoundPrompt", error });
     return createErrorResult(error instanceof Error ? error : new Error(`Failed to get prompt for round ${roundId}`));
   }
 };
@@ -811,7 +812,7 @@ export const setRoundPrompt = async (roundId: number, promptText: string): Promi
 
     return createSuccessResult(undefined);
   } catch (error) {
-    console.error('Error setting round prompt:', error);
+    logger.error("Error setting round prompt", { component: "roundService", operation: "setRoundPrompt", error });
     return createErrorResult(error instanceof Error ? error : new Error(`Failed to set prompt for round ${roundId}`));
   }
 };
