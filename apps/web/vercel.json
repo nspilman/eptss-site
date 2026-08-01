@@ -6,6 +6,11 @@
   "outputDirectory": ".next",
   "redirects": [
     {
+      "source": "/",
+      "destination": "https://eptss.at",
+      "statusCode": 307
+    },
+    {
       "source": "/:path*",
       "destination": "https://eptss.at",
       "statusCode": 307
