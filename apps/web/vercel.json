@@ -4,6 +4,13 @@
   "installCommand": "cd ../.. && bun install",
   "framework": "nextjs",
   "outputDirectory": ".next",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://eptss.at",
+      "statusCode": 307
+    }
+  ],
   "rewrites": [
     {
       "source": "/admin",
