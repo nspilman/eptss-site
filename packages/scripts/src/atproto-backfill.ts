@@ -367,18 +367,22 @@ async function backfillVoteResults(agent: AtpAgent, did: string, args: Args): Pr
 
   for (const r of target) {
     stats.attempted++;
-    const rkey = rkeyFor("voteResult", [r.round_id, r.song_id]);
-    const closedAt = finishedClosedAt.get(r.round_id);
+    // Translate from Postgres-land (song_id) to publish-land (subjectId) once
+    // at the top of the loop; everything below reads in subject vocabulary.
+    const roundId = r.round_id;
+    const subjectId = r.song_id;
+    const rkey = rkeyFor("voteResult", [roundId, subjectId]);
+    const closedAt = finishedClosedAt.get(roundId);
     if (!closedAt) {
       // Defensive — the filter above guarantees this can't happen.
       stats.failed++;
-      console.error(`  voteResult/${rkey}  FAILED: no coveringBegins for round ${r.round_id}`);
+      console.error(`  voteResult/${rkey}  FAILED: no coveringBegins for round ${roundId}`);
       continue;
     }
     try {
       await putRecord(agent, did, COLLECTIONS.voteResult, rkey, {
-        round: uriFor(did, "round", rkeyFor("round", [r.round_id])),
-        subject: uriFor(did, "subject", rkeyFor("subject", [r.song_id])),
+        round: uriFor(did, "round", rkeyFor("round", [roundId])),
+        subject: uriFor(did, "subject", rkeyFor("subject", [subjectId])),
         average: r.average,
         count: r.count,
         scaleMin,

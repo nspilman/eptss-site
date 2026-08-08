@@ -19,11 +19,6 @@
             "description": "URL-safe identifier. Conventionally used as the record key.",
             "maxLength": 64
           },
-          "description": {
-            "type": "string",
-            "description": "What this community is and does, in one paragraph.",
-            "maxLength": 2000
-          },
           "subjectKind": {
             "type": "string",
             "description": "Default kind of subject this project's rounds work with — 'song', 'book', 'recipe', 'theme', etc. Lets clients render appropriate UI without inspecting individual subjects. Free-form to allow new community types.",
